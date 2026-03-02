@@ -1,0 +1,359 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8"></meta>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"></meta>
+    <title>Explore - Tournyx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&amp;family=Rajdhani:wght@500;600;700&amp;display=swap" rel="stylesheet"></link>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"></link>
+    <style>
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(25, 25, 40, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--primary-bg); color: white; font-family: var(--font-body); padding-bottom: 110px; overflow-x: hidden; }
+
+        /* Background */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #050511 100%); }
+
+        /* Header */
+        .explore-header { padding: 15px 20px; position: sticky; top: 0; z-index: 100; background: rgba(5, 5, 17, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .page-title { font-family: var(--font-head); font-size: 1.2rem; color: white; margin-right: auto; }
+        .search-box { position: relative; flex: 1; }
+        .search-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); padding: 8px 15px 8px 35px; border-radius: 12px; color: white; transition: 0.3s; font-size: 0.9rem; }
+        .search-input:focus { border-color: var(--accent-cyan); outline: none; }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 0.9rem; }
+        
+        .refresh-btn { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .refresh-btn:active { background: var(--accent-cyan); color: black; }
+
+        /* GAME MENU FILTER */
+        .game-menu-container { padding: 20px 0 10px; }
+        .section-label { padding: 0 20px; font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .game-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px; scrollbar-width: none; }
+        .game-item { display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0.6; transition: 0.3s; cursor: pointer; }
+        .game-item.active { opacity: 1; transform: scale(1.05); }
+        .game-icon { width: 55px; height: 55px; border-radius: 12px; border: 2px solid transparent; object-fit: cover; background: #222; transition: 0.3s; }
+        .game-item.active .game-icon { border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); }
+        .game-name { font-size: 0.75rem; font-weight: bold; }
+
+        /* SECONDARY FILTERS */
+        .filter-row { display: flex; gap: 10px; padding: 0 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-chip { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; color: #aaa; cursor: pointer; }
+        .filter-chip.active { background: var(--accent-purple); color: white; border-color: var(--accent-purple); }
+
+        /* TOURNAMENT LIST */
+        .tourney-list { padding: 0 20px; display: flex; flex-direction: column; gap: 15px; min-height: 300px; }
+        .tourney-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 15px; display: flex; gap: 15px; animation: slideUp 0.5s ease-out; position: relative; overflow: hidden; margin-bottom: 15px; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .t-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
+        .t-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .t-title { font-family: var(--font-head); font-size: 1rem; margin-bottom: 5px; color: white; }
+        .t-tags { display: flex; gap: 8px; margin-bottom: 10px; }
+        .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #ccc; }
+        
+        .join-btn { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 6px 20px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; width: fit-content; transition: 0.3s; }
+        .join-btn:active { transform: scale(0.95); }
+        .join-btn:disabled { background: #333; border-color: #444; color: #666; cursor: default; }
+
+        /* Footer */
+        .app-footer { text-align: center; padding: 30px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a14; display: flex; justify-content: space-around; padding: 15px 0 20px; border-top: 1px solid #1f1f35; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent-cyan); }
+        .nav-item i { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="explore-header">
+        <div class="page-title">EXPLORE</div>
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input class="search-input" id="searchInput" onkeyup="applyFilter()" placeholder="Search..." type="text" />
+        </div>
+        <div class="refresh-btn" onclick="refreshContent()">
+            <i class="fa-solid fa-rotate-right" id="refreshIcon" style="color: var(--accent-cyan);"></i>
+        </div>
+    </div>
+
+    <div class="game-menu-container">
+        <div class="section-label">Select Game</div>
+        <div class="game-scroll">
+            <div class="game-item active" onclick="filterGame('All', this)">
+                <img class="game-icon" src="https://cdn-icons-png.flaticon.com/512/8002/8002111.png" />
+                <span class="game-name">All</span>
+            </div>
+            <div class="game-item" onclick="filterGame('BGMI', this)">
+                <img class="game-icon" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3MKUI87mMK4_3DltS3LQgqfrK1sESUIMMqlENdi0dPRtOFkeDbvPsTbSaCRaJOb17QZ5s9OO5dR6kFCYiCkgUCF2zBWwvGFSb3T-9Nz51XuIzMvIiOuqwcLzyzeFmn1orKbiETP4LrlaG-RidnWAAzBwUA3aL5_z62HP4_F7R02lAK_WSYdH0U_Gn7Es/s250/1000094211.jpg" />
+                <span class="game-name">BGMI</span>
+            </div>
+            <div class="game-item" onclick="filterGame('Free Fire', this)">
+                <img class="game-icon" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJvPTY_y_XU-0Lwbnjwm7961lCDkSlQh2MtCWHunFVX6WS7WCprCtkPyB334BU_-4vGsP0NseDQf4NPBEOIxqjk7VZQqZUHpnLb4Bw-c1UeXQy2M9DzNrNdYt_aL0GEb1AlTPupC5zEjJiP3Ci0Oxk-wdg5TF5cs8_UNSe3uTT1BE884je3iXr8QlMjx8/s240/1000094210.jpg" />
+                <span class="game-name">Free Fire</span>
+            </div>
+            <div class="game-item" onclick="filterGame('COD', this)">
+                <img class="game-icon" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg8vsDFFkLAXTA234WJzc3OqsLbmB3HBlKaXhiJo-JFVcTtYmMUI2DVdk5ljTPvGPKj-vtcejjFAxZO0sapDafr6xqN7VpHLGCcxqYWWY2LIZszXhrnnO1gcXFeJzY2EclP6G1bLoea5bshOtT7Dl3p4F_l0pGDuz1j5KJ78dEnI7cQixwAeDC1vKG89N4/s460/1000094209.jpg" />
+                <span class="game-name">COD</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-label">Format &amp; Entry</div>
+    <div class="filter-row">
+        <div class="filter-chip active" onclick="filterMode('All', this)">Any Mode</div>
+        <div class="filter-chip" onclick="filterMode('Solo', this)">Solo</div>
+        <div class="filter-chip" onclick="filterMode('Squad', this)">Squad</div>
+        <div class="filter-chip" onclick="filterFee('Free', this)">Free Entry</div>
+    </div>
+
+    <div class="tourney-list" id="tournamentContainer">
+        <div id="contentLoader" style="display: none; padding: 40px; text-align: center; width: 100%;">
+            <i class="fa-solid fa-spinner fa-spin" style="color: var(--accent-cyan); font-size: 2rem;"></i>
+            <p style="color: #888888; font-family: var(--font-head); letter-spacing: 1px; margin-top: 10px;">UPDATING...</p>
+        </div>
+        </div>
+
+    <div class="app-footer">
+        © 2026 TOURNYX. ALL RIGHTS RESERVED.<br />
+        <span style="color: var(--accent-cyan); font-size: 0.6rem; font-weight: bold; opacity: 0.8;">DESIGNED BY JacksolutioTj</span>
+    </div>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a class="nav-item active" href="#"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1"><i class="fa-solid fa-plus-circle" style="color: var(--accent-cyan); font-size: 1.8rem;"></i><span style="color: white;">Create</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html?m=1"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script>
+        // BACKGROUND ANIMATION
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let pArray = [];
+        class P { constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; } u(){ this.y-=0.5; if(this.y<0)this.y=canvas.height; } d(){ ctx.fillStyle='rgba(0,242,255,0.2)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); } }
+        for(let i=0; i<40; i++) pArray.push(new P());
+        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); pArray.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
+        anim();
+
+        // CONFIGURATION
+        const API_URL = 'https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec';
+
+        // STARTUP
+        document.addEventListener("DOMContentLoaded", function() {
+            loadLiveTournaments();
+        });
+
+        // --- REFRESH FUNCTION ---
+        function refreshContent() {
+            const icon = document.getElementById('refreshIcon');
+            const loader = document.getElementById('contentLoader');
+            const container = document.getElementById('tournamentContainer');
+
+            // 1. Show Animation
+            if(icon) icon.classList.add('fa-spin'); 
+            if(loader) loader.style.display = 'block'; 
+            
+            // 2. Hide existing cards temporarily (keep loader visible)
+            if(container) {
+                Array.from(container.children).forEach(child => {
+                    if (child.id !== 'contentLoader') {
+                        child.style.display = 'none';
+                    }
+                });
+            }
+
+            // 3. Reload Data
+            loadLiveTournaments(true); 
+        }
+
+        // --- LOAD FUNCTION ---
+        function loadLiveTournaments(isRefresh = false) {
+            fetch(API_URL + "?action=get_tournaments")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const feed = document.getElementById('tournamentContainer');
+                    const loader = document.getElementById('contentLoader');
+                    const icon = document.getElementById('refreshIcon');
+
+                    // Clear feed but SAVE the loader div
+                    feed.innerHTML = "";
+                    if(loader) feed.appendChild(loader);
+
+                    // Add Cards
+                    data.data.forEach(t => {
+                        const card = document.createElement('div');
+                        card.className = 'tourney-card'; 
+                        
+                        // Set attributes for filtering
+                        card.setAttribute('data-game', t.game);
+                        card.setAttribute('data-mode', t.format); 
+                        card.setAttribute('data-fee', t.fee === '0' || t.fee === 'Free' ? 'Free' : 'Paid');
+
+                        const bg = (t.banner && t.banner.startsWith('http')) ? t.banner : 'https://via.placeholder.com/400x200';
+                        const prize = t.prize == 0 ? "Glory" : "₹" + t.prize;
+                        const fee = (t.fee == 0 || t.fee == 'Free') ? "Free" : "₹" + t.fee;
+                        const feeColor = (t.fee == 0 || t.fee == 'Free') ? '#00ff7f' : '#ffd700';
+
+                        card.innerHTML = `
+                            <img src="${bg}" class="t-img">
+                            <div class="t-info">
+                                <div class="t-title">${t.title}</div>
+                                <div class="t-tags">
+                                    <span class="tag">${t.game}</span>
+                                    <span class="tag">${t.format}</span>
+                                    <span class="tag" style="color:${feeColor}">${fee}</span>
+                                </div>
+                                <button class="join-btn" onclick="joinTournament(this, '${t.title}', '${t.date}', '${t.prize}', '${bg}', '${t.game}', '${t.id}')">JOIN</button>
+                            </div>`;
+                        
+                        feed.appendChild(card);
+                    });
+
+                    // Stop Animation
+                    setTimeout(() => {
+                        if(loader) loader.style.display = 'none';
+                        if(icon) icon.classList.remove('fa-spin');
+                        if(typeof checkJoinedStatus === 'function') checkJoinedStatus();
+                        applyFilter(); // Re-apply filters if active
+                    }, 800); 
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if(document.getElementById('contentLoader')) document.getElementById('contentLoader').style.display = 'none';
+                if(document.getElementById('refreshIcon')) document.getElementById('refreshIcon').classList.remove('fa-spin');
+            });
+        }
+
+        // --- FILTERS ---
+        let activeGame = 'All';
+        let activeMode = 'All';
+        let activeFee = false; 
+
+        function filterGame(game, el) {
+            document.querySelectorAll('.game-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            activeGame = game;
+            applyFilter();
+        }
+
+        function filterMode(mode, el) {
+            el.parentElement.querySelectorAll('.filter-chip').forEach(c => {
+                if(c.textContent.includes('Mode') || c.textContent === 'Solo' || c.textContent === 'Squad') c.classList.remove('active');
+            });
+            el.classList.add('active');
+            activeMode = mode === 'Any Mode' ? 'All' : mode;
+            applyFilter();
+        }
+
+        function filterFee(fee, el) {
+            el.classList.toggle('active');
+            activeFee = el.classList.contains('active');
+            applyFilter();
+        }
+
+        function applyFilter() {
+            const cards = document.querySelectorAll('.tourney-card');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            cards.forEach(card => {
+                const g = card.dataset.game;
+                const m = card.dataset.mode;
+                const f = card.dataset.fee;
+                const title = card.querySelector('.t-title').innerText.toLowerCase();
+
+                let show = true;
+                if(activeGame !== 'All' && g !== activeGame) show = false;
+                if(activeMode !== 'All' && m !== activeMode) show = false;
+                if(activeFee && f !== 'Free') show = false;
+                if(search && !title.includes(search)) show = false;
+
+                card.style.display = show ? 'flex' : 'none';
+            });
+        }
+
+        // --- JOIN FUNCTION ---
+        function joinTournament(btnElement, name, date, prize, imgUrl, gameName, tID) {
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let userEmail = user ? user.email : "";
+            let userName = user ? (user.ign || user.username) : "Guest";
+
+            let phone = prompt("Please enter your WhatsApp Number for Room ID:");
+            if (!phone || phone.trim() === "") {
+                alert("Join Cancelled. Phone number is required.");
+                return;
+            }
+
+            btnElement.innerText = "Processing...";
+            btnElement.disabled = true;
+
+            let newMatch = {
+                name: name, date: date, prize: prize, img: imgUrl,
+                status: "Upcoming", roomID: "WAITING", roomPass: "WAITING",
+                phone: phone, email: userEmail, joinedAt: new Date().getTime()
+            };
+
+            let existingMatches = JSON.parse(localStorage.getItem('myMatches')) || [];
+            existingMatches.push(newMatch);
+            localStorage.setItem('myMatches', JSON.stringify(existingMatches));
+
+            let finalMatchID = tID || ("T-" + Math.floor(Math.random() * 1000)); 
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "join",      
+                    match_id: finalMatchID,
+                    game: gameName || "Esports",
+                    title: name,
+                    date: date,
+                    time: "20:00 PM",
+                    prize: prize,
+                    email: userEmail,   
+                    phone: phone,        
+                    username: userName   
+                })
+            }).then(() => {
+                alert("Success! Check 'Matches' tab.");
+                btnElement.innerText = "JOINED";
+            }).catch(error => {
+                alert("Joined locally! (Check Matches tab)");
+                btnElement.innerText = "JOINED";
+            });
+        }
+
+        // --- CHECK STATUS ---
+        function checkJoinedStatus() {
+            let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+            let buttons = document.querySelectorAll('.join-btn');
+            buttons.forEach(btn => {
+                let clickText = btn.getAttribute('onclick'); 
+                matches.forEach(match => {
+                    if (clickText && clickText.includes(match.name)) {
+                        btn.innerText = "JOINED";
+                        btn.style.background = "#555";
+                        btn.style.color = "#aaa";
+                        btn.disabled = true;
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
