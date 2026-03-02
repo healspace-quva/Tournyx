@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>About Us - Tournyx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(20, 20, 35, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-gold: #ffd700;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--primary-bg); color: white; font-family: var(--font-body); padding-bottom: 90px; overflow-x: hidden; }
+
+        /* NEW NETWORK ANIMATION CANVAS */
+        #network-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050511 100%); }
+
+        /* Header */
+        .about-header {
+            padding: 40px 20px 30px; text-align: center;
+            background: linear-gradient(180deg, rgba(20,20,35,0.95) 0%, rgba(5,5,17,0) 100%);
+        }
+        .main-title { 
+            font-family: var(--font-head); font-size: 2rem; font-weight: 900; letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(189, 0, 255, 0.4);
+            margin-bottom: 10px;
+        }
+        .sub-title { color: #aaa; font-size: 1rem; max-width: 80%; margin: 0 auto; }
+
+        /* Sections */
+        .content-section { padding: 30px 20px; position: relative; }
+        
+        .highlight-text {
+            font-size: 1.2rem; line-height: 1.6; text-align: center; color: #ddd;
+            border-left: 3px solid var(--accent-cyan); padding-left: 15px; margin: 20px;
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent);
+            border-radius: 0 10px 10px 0;
+        }
+        .highlight-text span { color: var(--accent-cyan); font-weight: bold; font-family: var(--font-head); }
+
+        /* Quotes */
+        .quotes-container { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
+        .quote-card {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            padding: 25px; border-radius: 15px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .quote-card::before {
+            content: '"'; position: absolute; top: -10px; left: 10px;
+            font-family: var(--font-head); font-size: 5rem; color: rgba(255,255,255,0.05);
+        }
+        .quote-text { font-size: 1.1rem; font-style: italic; color: #fff; margin-bottom: 15px; position: relative; z-index: 2; }
+        .quote-author { text-align: right; font-family: var(--font-head); color: var(--accent-gold); font-size: 0.9rem; }
+        .quote-card.purple { border-color: var(--accent-purple); }
+        .quote-card.cyan { border-color: var(--accent-cyan); }
+
+        /* VISION Section */
+        .vision-box {
+            background: linear-gradient(135deg, rgba(20,20,35,0.8), rgba(5,5,17,0.9));
+            padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--accent-purple);
+            box-shadow: 0 0 30px rgba(189, 0, 255, 0.2) inset;
+        }
+        .vision-title { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 15px; }
+
+        /* --- ROBUST FOOTER (JacksolutioTj) --- */
+        .robust-footer {
+            background: #080810;
+            padding: 50px 20px 130px 20px; /* High bottom padding to clear Nav Bar */
+            margin-top: 50px; border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        .footer-brand { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 20px; }
+        .footer-brand span { color: var(--accent-cyan); }
+        
+        .social-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+        .social-icon {
+            width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center; color: #aaa;
+            font-size: 1.2rem; text-decoration: none; border: 1px solid var(--glass-border); transition: 0.3s;
+        }
+        .social-icon:hover { background: var(--accent-purple); color: white; border-color: var(--accent-purple); box-shadow: 0 0 15px var(--accent-purple); }
+
+        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 30px; flex-wrap: wrap; }
+        .f-link { color: #888; text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .f-link:hover { color: var(--accent-cyan); }
+
+        .copyright-text { color: #555; font-size: 0.75rem; letter-spacing: 1px; line-height: 1.5; }
+        .dev-credit { color: var(--accent-cyan); font-weight: bold; opacity: 0.8; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a14;
+            display: flex; justify-content: space-around; padding: 15px 0 20px;
+            border-top: 1px solid #1f1f35; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent-cyan); }
+        .nav-item i { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <canvas id="network-canvas"></canvas>
+
+    <div class="about-header">
+        <h1 class="main-title">FORGED IN FIRE</h1>
+        <p class="sub-title">The story behind the ultimate mobile eSports revolution.</p>
+    </div>
+
+    <div class="content-section">
+        <div class="highlight-text">
+            Tournyx isn't just a platform; it's a <span>Battleground</span>. We exist to erase the line between amateur passion and professional glory. Here, legends are born on small screens with big dreams.
+        </div>
+
+        <div class="quotes-container">
+            <div class="quote-card purple">
+                <div class="quote-text">"Victory isn't given. It's snatched from the jaws of defeat, one headshot at a time."</div>
+                <div class="quote-author">- The Gamer's Creed</div>
+            </div>
+            <div class="quote-card cyan">
+                <div class="quote-text">"In the world of eSports, your squad is your family, and the arena is your only home."</div>
+                <div class="quote-author">- Community Voice</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="vision-box">
+            <h2 class="vision-title">OUR MISSION</h2>
+            <p style="color:#ccc; line-height:1.6;">
+                Born from the adrenaline of competitive gaming, Tournyx was engineered to democratize eSports. We provide the pro-level stage; you bring the skill. No barriers, just pure competition.
+            </p>
+            <i class="fa-solid fa-rocket" style="font-size:3rem; color:var(--accent-purple); margin-top:20px; filter: drop-shadow(0 0 10px var(--accent-purple));"></i>
+        </div>
+    </div>
+
+    <footer class="robust-footer">
+        <div class="footer-brand">TOURN<span>YX</span></div>
+        
+        <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-discord"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+
+        <div class="footer-links">
+            <a href="contact.html" class="f-link">Contact Support</a>
+            <a href="#" class="f-link">Terms of Service</a>
+            <a href="#" class="f-link">Privacy Policy</a>
+        </div>
+
+        <div class="copyright-text">
+            &copy; 2026 TOURNYX ESPORTS.<br>
+            POWERED & DESIGNED BY <span class="dev-credit">JacksolutioTj</span>
+        </div>
+    </footer>
+
+    <nav class="bottom-nav">
+        <a href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="https://tournyx.blogspot.com/p/browse-tournaments-tournyx-root-primary.html?m=1" class="nav-item"><i class="fa-solid fa-compass"></i><span>Browse</span></a>
+        <a href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1" class="nav-item"><i class="fa-solid fa-plus-circle" style="font-size: 1.8rem; color: var(--accent-cyan);"></i><span style="color:white">Create</span></a>
+        <a href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1" class="nav-item"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html?m=1" class="nav-item"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script>
+        // --- NEW "NETWORK/CONSTELLATION" ANIMATION ---
+        const canvas = document.getElementById('network-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+        let particlesArray;
+        const numberOfParticles = 50; // Adjust density
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = (Math.random() * 2) + 1;
+                this.speedX = (Math.random() * 1) - 0.5; // Slow movement
+                this.speedY = (Math.random() * 1) - 0.5;
+                this.color = Math.random() > 0.5 ? '#bd00ff' : '#00f2ff'; // Purple or Cyan
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                // Bounce off edges
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    // If close enough, draw a line
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance / 10000);
+                        ctx.strokeStyle = 'rgba(189, 0, 255,' + opacityValue * 0.2 + ')'; // Purple lines
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connect(); // Draw lines between particles
+        }
+
+        window.addEventListener('resize', function(){
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
