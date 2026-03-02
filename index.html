@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tournyx - Ultimate Esports Platform</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(20, 20, 35, 0.6);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-orange: #ff9900;
+            --accent-green: #00ff7f;
+            --accent-gradient: linear-gradient(90deg, #bd00ff, #00f2ff);
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 90px; 
+            padding-top: 65px; /* Adjusted slightly for slimmer top */
+        }
+
+        /* --- BACKGROUND --- */
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050511 100%);
+        }
+
+        /* --- LOADER --- */
+        #tournyx-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050511; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out; overflow: hidden;
+        }
+        .loader-logo {
+            font-family: var(--font-head); font-size: 4rem; font-weight: 900;
+            color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.3);
+            position: relative; z-index: 10;
+        }
+        .loader-logo::after {
+            content: 'T'; position: absolute; top: 0; left: 0; color: #fff;
+            text-shadow: 0 0 20px #bd00ff, 0 0 40px #00f2ff; opacity: 0;
+            animation: flashHit 1s infinite;
+        }
+        .bullet {
+            position: absolute; height: 4px; width: 100px; background: linear-gradient(90deg, transparent, #00f2ff);
+            border-radius: 4px; box-shadow: 0 0 10px #00f2ff; opacity: 0;
+        }
+        .b1 { top: 40%; left: -150px; animation: shootRight 1s infinite; }
+        .b2 { top: 60%; right: -150px; background: linear-gradient(-90deg, transparent, #bd00ff); box-shadow: 0 0 10px #bd00ff; animation: shootLeft 1s 0.5s infinite; }
+        .b3 { animation-delay: 1.3s; left: 80px; } 
+        .b4 { top: 40%; bottom: -100px; animation:shootup 1s infinite; animation-delay: 1.4s; left: 90px; }
+        .b5 { top: 40%; margin-top: -90px; animation:shootdown 1s infinite; animation-delay: 1.5s; left: 120px; }
+        
+        @keyframes shootRight { 0% { left: -150px; opacity: 1; } 50% { left: 50%; opacity: 0; } 100% { left: 50%; opacity: 0; } }
+        @keyframes shootLeft { 0% { right: -150px; opacity: 1; } 50% { right: 50%; opacity: 0; } 100% { right: 50%; opacity: 0; } }
+        @keyframes flashHit { 0%, 48% { opacity: 0; } 50% { opacity: 1; text-shadow: 0 0 30px white; } 52%, 100% { opacity: 0; } }
+
+        .loader-text {
+            margin-top: 30px; font-family: var(--font-body); font-size: 1rem; 
+            letter-spacing: 3px; color: #888; text-transform: uppercase;
+            animation: blink 1s infinite alternate;
+        }
+        @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
+
+        /* --- HEADER --- */
+        .top-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 10px 20px;
+            background: rgba(5, 5, 17, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: space-between; z-index: 2000;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .app-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: contain; }
+        .app-title {
+            font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+            background: linear-gradient(90deg, #fff, #00f2ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        /* HEADER RIGHT SIDE (Wallet / Menu) */
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        
+        .header-balance {
+            background: linear-gradient(90deg, #ff9900, #ff5e00); 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            font-family: var(--font-head); 
+            font-size: 0.8rem; 
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 2px 10px rgba(255, 153, 0, 0.3);
+        }
+        .header-balance:hover {
+            box-shadow: 0 4px 15px rgba(255, 153, 0, 0.6);
+            transform: scale(1.02);
+        }
+
+        .menu-btn { font-size: 1.3rem; color: white; cursor: pointer; }
+
+        /* --- NOTIFICATION SLIDER (MINIMAL) --- */
+        .notification-bar {
+            width: 100%;
+            background: rgba(5, 5, 17, 0.85);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 4px 0; /* Minimal height */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .noti-track {
+            display: flex;
+            width: max-content;
+            animation: slideRight 25s linear infinite;
+        }
+        .noti-item {
+            font-size: 0.7rem; /* Sleek text */
+            color: #ccc;
+            margin-right: 40px;
+            font-family: var(--font-head);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            white-space: nowrap; /* Forces one line */
+        }
+        @keyframes slideRight {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0); }
+        }
+
+        /* --- MENU --- */
+        .overlay-menu {
+            position: fixed; top: 0; right: 0; width: 100%; max-width: 300px; height: 100vh;
+            background: #050511; border-left: 1px solid var(--card-border);
+            z-index: 3000; transform: translateX(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px; display: flex; flex-direction: column;
+        }
+        .overlay-menu.active { transform: translateX(0); }
+        
+        .menu-header-top { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        
+        .menu-user-info-link { text-decoration: none; display: block; margin-bottom: 30px; }
+        .menu-user-info { display: flex; align-items: center; gap: 15px; }
+        .menu-user-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #5d5dff; object-fit: cover; }
+        .menu-user-details { display: flex; flex-direction: column; justify-content: center; }
+        .menu-user-name { font-family: var(--font-head); font-size: 1.2rem; color: white; margin-bottom: 2px; }
+        .menu-user-sub { font-size: 0.85rem; color: #888; font-style: italic; }
+
+        .menu-links { flex-grow: 1; overflow-y: auto; }
+        .menu-links a {
+            display: flex; align-items: center; 
+            font-family: var(--font-head); font-size: 1rem; color: white;
+            text-decoration: none; margin-bottom: 22px; 
+            transition: 0.2s;
+        }
+        .menu-links a i { width: 30px; font-size: 1.1rem; color: #fff; margin-right: 15px; text-align: center; }
+        .menu-links a:hover { color: var(--accent-cyan); }
+        .menu-links a:hover i { color: var(--accent-cyan); }
+
+        .logout-link { margin-top: 10px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .menu-version { text-align: right; color: #555; font-size: 0.8rem; font-family: var(--font-body); margin-top: 10px; font-style: italic; }
+
+        /* --- NEXT MATCH WIDGET --- */
+        .next-match-card {
+            margin: 15px 20px 0 20px;
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.1), rgba(189, 0, 255, 0.1));
+            border: 1px solid var(--accent-cyan); border-radius: 16px; padding: 20px;
+            position: relative; overflow: hidden; display: none; 
+        }
+        .nm-label { font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .nm-title { font-family: var(--font-head); font-size: 1.2rem; margin-bottom: 5px; }
+        .nm-time { font-size: 0.9rem; color: #ccc; }
+        .nm-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: white; color: black; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; text-decoration: none; }
+
+        /* --- HERO --- */
+        .hero { text-align: center; padding: 20px 20px 10px; }
+        .hero h1 { font-family: var(--font-head); font-size: 1.8rem; line-height: 1.4; margin-bottom: 10px; }
+        .gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .hero p { color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto; }
+
+        /* --- ROLE CARDS --- */
+        .role-cards { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .role-card {
+            border-radius: 20px; padding: 25px; text-align: center; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        }
+        .role-card.player {
+            background: linear-gradient(160deg, rgba(138, 43, 226, 0.15) 0%, rgba(138, 43, 226, 0.05) 100%);
+            border-top: 3px solid var(--accent-purple);
+        }
+        .role-card.organizer {
+            background: linear-gradient(160deg, rgba(0, 242, 255, 0.15) 0%, rgba(0, 242, 255, 0.05) 100%);
+            border-top: 3px solid var(--accent-cyan);
+        }
+        .role-icon {
+            width: 50px; height: 50px; margin: 0 auto 15px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .role-card h3 { font-family: var(--font-head); margin-bottom: 8px; letter-spacing: 1px; }
+        .role-card p { font-size: 0.85rem; color: #aaa; margin-bottom: 20px; line-height: 1.4; }
+        .role-btn {
+            display: block; width: 100%; padding: 12px; border-radius: 10px;
+            font-family: var(--font-head); font-weight: 600; text-transform: uppercase;
+            text-decoration: none; color: white; text-align: center; letter-spacing: 1px;
+            transition: 0.2s;
+        }
+        .btn-purple { background: var(--accent-purple); box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4); }
+        .btn-cyan { background: var(--accent-cyan); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.4); }
+        .role-btn:active { transform: scale(0.98); }
+
+        /* --- STATS & MARQUEE --- */
+        .stats-area { padding: 30px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid #222; border-bottom: 1px solid #222; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-box { text-align: center; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid #1f1f35; }
+        .stat-val { font-family: var(--font-head); font-size: 1.3rem; display: block; color: white; margin-bottom: 5px; }
+        .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+        .marquee-container { width: 100%; overflow: hidden; padding-bottom: 5px; }
+        .marquee-track { display: flex; gap: 20px; width: fit-content; animation: scroll 20s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .game-pill {
+            padding: 8px 20px; background: #111; border: 1px solid #333; border-radius: 50px;
+            font-family: var(--font-head); font-size: 0.8rem; color: #ccc; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* --- LEADERBOARD --- */
+        .section-pad { padding: 0 20px 30px; }
+        .section-title { text-align: center; font-family: var(--font-head); font-size: 1.4rem; margin-bottom: 25px; letter-spacing: 1px; }
+        .section-title span { color: var(--accent-orange); }
+
+        .lb-tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; }
+        .lb-tab { flex: 1; text-align: center; padding: 10px; font-size: 0.8rem; color: #888; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: var(--font-body); font-weight: bold; }
+        .lb-tab.active { background: var(--accent-cyan); color: #000; }
+
+        .people-list { display: flex; flex-direction: column; gap: 10px; }
+        .person-row { display: flex; align-items: center; gap: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 12px; }
+        .person-img-small { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
+        .person-info { flex: 1; }
+        .person-name { font-size: 0.9rem; font-weight: bold; color: white; }
+        .person-role { font-size: 0.75rem; color: var(--accent-cyan); }
+        .lb-content { display: none; animation: fadeIn 0.4s; }
+        .lb-content.active { display: flex; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+        /* --- WORKFLOW --- */
+        .toggle-container {
+            display: flex; background: #111; border-radius: 30px; padding: 5px;
+            position: relative; margin-bottom: 30px; border: 1px solid #333;
+        }
+        .toggle-bg {
+            position: absolute; top: 5px; left: 5px; width: 50%; height: calc(100% - 10px);
+            background: var(--accent-purple); border-radius: 25px; transition: 0.3s ease;
+            box-shadow: 0 0 15px rgba(189,0,255,0.4);
+        }
+        .toggle-option {
+            flex: 1; text-align: center; padding: 12px; z-index: 2; cursor: pointer;
+            font-family: var(--font-head); font-size: 0.85rem; color: #888; transition: 0.3s;
+        }
+        .toggle-option.active { color: white; }
+
+        .steps-wrapper { display: flex; flex-direction: column; gap: 15px; }
+        .step-card {
+            background: #0f0f1a; border: 1px solid #222; border-radius: 15px; padding: 20px;
+            display: flex; align-items: center; gap: 20px; transition: 0.3s; text-decoration: none; color: inherit;
+        }
+        a.step-card:hover { border-color: var(--accent-cyan); transform: translateX(5px); }
+        
+        .step-badge {
+            width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center; font-family: var(--font-head);
+            font-weight: bold; font-size: 1.1rem; color: white; flex-shrink: 0;
+        }
+        .step-info h3 { font-family: var(--font-head); font-size: 1rem; margin-bottom: 5px; }
+        .step-info p { font-size: 0.85rem; color: #888; margin: 0; line-height: 1.4; }
+
+        .theme-cyan .toggle-bg { background: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.4); left: calc(50% - 5px); }
+        .theme-cyan .step-badge { background: var(--accent-cyan); color: black; }
+
+        /* --- FEATURED SLIDER --- */
+        .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .view-all { font-size: 0.8rem; color: var(--accent-cyan); text-decoration: none; border-bottom: 1px solid var(--accent-cyan); }
+
+        .tourney-slider {
+            display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 20px;
+            scroll-snap-type: x mandatory; scrollbar-width: none;
+        }
+        .tourney-slider::-webkit-scrollbar { display: none; }
+
+        .tourney-card {
+            flex: 0 0 88%; scroll-snap-align: center; background: var(--card-bg);
+            border-radius: 15px; overflow: hidden; border: 1px solid var(--card-border);
+            transition: 0.3s; position: relative;
+        }
+        .tourney-card:hover { border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+
+        .t-img-box { height: 130px; background: #222; position: relative; }
+        .t-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .t-tag {
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8);
+            padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px;
+        }
+        .t-content { padding: 15px; }
+        .t-title { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 10px; }
+        .t-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; margin-bottom: 15px; }
+        .t-prize { color: var(--accent-orange); font-weight: bold; }
+        
+        .t-btn {
+            display: block; width: 100%; padding: 10px; background: var(--accent-gradient);
+            border: none; border-radius: 8px; color: white; font-family: var(--font-head);
+            font-size: 0.9rem; cursor: pointer; text-decoration: none; text-align: center;
+        }
+        .t-btn.disabled { background: #333; color: #777; cursor: default; }
+
+        /* --- PAYMENTS --- */
+        .pay-section { background: linear-gradient(to bottom, var(--primary-bg), #0d0d15); text-align: center; padding: 40px 20px; }
+        .pay-card {
+            background: #0d0d18; border: 1px solid #1f1f30; border-radius: 15px;
+            padding: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; text-align: left;
+            position: relative; overflow: hidden;
+        }
+        .pay-card::before { content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 3px; background: var(--accent-orange); border-radius: 2px; }
+        .pay-icon {
+            width: 45px; height: 45px; background: rgba(255, 153, 0, 0.1); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-orange);
+            flex-shrink: 0;
+        }
+        .pay-head { font-family: var(--font-head); font-size: 1rem; margin-bottom: 3px; }
+        .pay-desc { font-size: 0.8rem; color: #888; line-height: 1.3; }
+
+        /* --- FOOTER --- */
+        .app-footer { background: #020205; padding: 40px 20px 30px; border-top: 1px solid #222; text-align: center; }
+        .social-row { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .social-btn {
+            width: 40px; height: 40px; border-radius: 50%; background: #111; border: 1px solid #333;
+            display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s;
+        }
+        .social-btn:hover { background: var(--accent-purple); border-color: var(--accent-purple); }
+        .footer-links a { color: #666; font-size: 0.8rem; margin: 0 10px; text-decoration: none; }
+        .footer-copy { color: #444; font-size: 0.7rem; margin-top: 20px; }
+
+        /* --- FAB & MODAL --- */
+        .fab {
+            position: fixed; bottom: 100px; left: 20px; width: 55px; height: 55px;
+            background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+            z-index: 1001; cursor: pointer; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 4000; display: flex;
+            align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #151525; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px;
+            text-align: center; border: 1px solid var(--accent-purple); transform: scale(0.8); transition: 0.3s;
+        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .support-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px;
+            text-decoration: none; font-weight: bold; color: white;
+        }
+        .btn-discord { background: #5865F2; } .btn-telegram { background: #0088cc; }
+        .close-modal-text { color: #888; cursor: pointer; font-size: 0.9rem; margin-top: 15px; display: inline-block; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #0a0a14; display: flex; justify-content: space-around;
+            padding: 15px 0 20px; border-top: 1px solid #1f1f35; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent-cyan); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .fade-up { opacity: 0; transform: translateY(20px); animation: fadeUpAnim 0.6s forwards; }
+        @keyframes fadeUpAnim { to { opacity: 1; transform: translateY(0); } }
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="tournyx-loader">
+        <div class="loader-logo">T</div>
+        <div class="bullet b1"></div><div class="bullet b2"></div><div class="bullet b3"></div><div class="bullet b4"></div><div class="bullet b5"></div>
+        <div class="loader-text">INITIALIZING BATTLEGROUNDS...</div>
+    </div>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <header class="top-header">
+        <div class="header-left">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" alt="Logo" class="app-logo">
+            <div class="app-title" id="welcomeText">TOURNYX</div>
+        </div>
+        <div class="header-right">
+            <a href="https://tournyx.blogspot.com/p/tournyx-redeem-rewards-global-variables_20.html" class="header-balance">
+                <i class="fa-solid fa-wallet"></i> <span id="homeWalletBalance">0</span> PTS
+            </a>
+            <i class="fa-solid fa-bars menu-btn" onclick="toggleMenu()"></i>
+        </div>
+    </header>
+
+    <div class="notification-bar fade-up">
+        <div class="noti-track">
+            <div class="noti-item"><i class="fa-solid fa-bell" style="color:var(--accent-orange)"></i> Free Fire Showdown Live! Prize Pool ₹5,000</div>
+            <div class="noti-item"><i class="fa-solid fa-gift" style="color:var(--accent-purple)"></i> Claim 500 Bonus PTS in the Offer Wall today!</div>
+            <div class="noti-item"><i class="fa-solid fa-trophy" style="color:var(--accent-green)"></i> Team K9 Esports just won ₹8,840</div>
+            <div class="noti-item"><i class="fa-solid fa-bell" style="color:var(--accent-orange)"></i> Free Fire Showdown Live! Prize Pool ₹5,000</div>
+            <div class="noti-item"><i class="fa-solid fa-gift" style="color:var(--accent-purple)"></i> Claim 500 Bonus PTS in the Offer Wall today!</div>
+            <div class="noti-item"><i class="fa-solid fa-trophy" style="color:var(--accent-green)"></i> Team K9 Esports just won ₹8,840</div>
+        </div>
+    </div>
+
+    <div class="overlay-menu" id="overlayMenu">
+        <a href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html?m=1" class="menu-user-info-link">
+            <div class="menu-user-info" id="menuUserInfo">
+                <img src="https://via.placeholder.com/60" class="menu-user-img" id="menuUserImg">
+                <div class="menu-user-details">
+                    <div class="menu-user-name" id="menuUserName">Player</div>
+                    <div class="menu-user-sub">See your profile</div>
+                </div>
+            </div>
+        </a>
+
+        <div class="menu-links">
+            <a href="https://tournyx.blogspot.com/p/tournyx-premium-plans-global-variables.html?m=1"><i class="fa-solid fa-crown"></i> Premium Plans</a>
+            <a href="#"><i class="fa-solid fa-headset"></i> Game Profiles</a>
+            <a href="#"><i class="fa-solid fa-users-gear"></i> Manage Teams</a>
+            <a href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1"><i class="fa-solid fa-users"></i> My Joined Matches</a>
+            <a href="https://tournyx.blogspot.com/p/tournyx-giveaways-global-variables-root.html"><i class="fa-solid fa-gift"></i> Giveaways</a>
+            <a href="https://tournyx.blogspot.com/p/tournyx-offer-wall-global-variables.html?m=1"><i class="fa-solid fa-envelope-open-text"></i> Offers Wall</a>
+            <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html?m=1"><i class="fa-solid fa-gamepad"></i> All Tournaments</a>
+            <a href="https://tournyx.blogspot.com/p/tournyx-refer-earn-global-variables.html"><i class="fa-solid fa-share-nodes"></i> Refer & Earn</a>
+            <a href="https://tournyx.blogspot.com/p/contact-support-tournyx-root-primary-bg.html"><i class="fa-solid fa-comments"></i> Help & Support</a>
+            <a href="https://tournyx.blogspot.com/p/tournyx-settings-global-variables-root.html"><i class="fa-solid fa-gear"></i> Settings</a>
+            <a href="#" onclick="logoutUser()" class="logout-link"><i class="fa-solid fa-power-off"></i> Logout</a>
+        </div>
+        <div class="menu-version">Version 2.0.1</div>
+    </div>
+
+    <div class="next-match-card fade-up" id="nextMatchWidget">
+        <div class="nm-label">Your Next Match</div>
+        <div class="nm-title" id="nmTitle">Loading...</div>
+        <div class="nm-time" id="nmDate">--</div>
+        <a href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1" class="nm-btn">VIEW</a>
+    </div>
+
+    <section class="hero fade-up">
+        <h1 id="heroTitle">Esports Journey Starts here<br><span class="gradient-text">Power ur play own the arena🏆</span></h1>
+        <p>Whether you're here to <span style="color:#bd00ff">compete</span>, organize, or <span style="color:springgreen">earn</span> - Tournyx is your platform.</p>
+    </section>
+
+    <section class="role-cards fade-up delay-1">
+        <div class="role-card player">
+            <div class="role-icon" style="color:#bd00ff; background:rgba(189,0,255,0.1); border-color:rgba(189,0,255,0.2);">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <h3 style="color:#bd00ff">For Players</h3>
+            <p>Discover tournaments, compete with the best, and win real rewards.</p>
+            <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html" class="role-btn btn-purple">View Tournaments</a>
+        </div>
+
+        <div class="role-card organizer">
+            <div class="role-icon" style="color:#00f2ff; background:rgba(0,242,255,0.1); border-color:rgba(0,242,255,0.2);">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h3 style="color:#00f2ff">For Organizers</h3>
+            <p>Create tournaments, manage participants, and monetize your events.</p>
+            <a href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1" class="role-btn btn-cyan">Create Tournament</a>
+        </div>
+    </section>
+
+    <section class="stats-area fade-up delay-1">
+        <div class="stats-grid">
+            <div class="stat-box"><span class="stat-val">56K+</span><span class="stat-label">Active Players</span></div>
+            <div class="stat-box"><span class="stat-val" style="color:var(--accent-green)">₹93K+</span><span class="stat-label">Prizes Distributed</span></div>
+            <div class="stat-box"><span class="stat-val" style="color:var(--accent-orange)">150+</span><span class="stat-label">Tournaments</span></div>
+            <div class="stat-box"><span class="stat-val" style="color:var(--accent-cyan)">4+</span><span class="stat-label">States</span></div>
+        </div>
+
+        <p style="text-align:center; margin-bottom:15px; font-family:var(--font-head); font-size:0.9rem;">GAMES WE SUPPORT</p>
+        <div class="marquee-container">
+            <div class="marquee-track">
+                <div class="game-pill"><i class="fa-solid fa-fire" style="color:orange"></i> FREE FIRE</div>
+                <div class="game-pill"><i class="fa-solid fa-crosshairs" style="color:yellow"></i> BGMI</div>
+                <div class="game-pill"><i class="fa-solid fa-v" style="color:red"></i> Mobile: Legends</div>
+                <div class="game-pill"><i class="fa-solid fa-skull" style="color:green"></i> COD: MOBILE</div>
+                <div class="game-pill"><i class="fa-solid fa-fire" style="color:orange"></i> FREE FIRE</div>
+                <div class="game-pill"><i class="fa-solid fa-crosshairs" style="color:yellow"></i> BGMI</div>
+            </div>
+        </div>
+    </section>
+  
+    <section class="section-pad fade-up">
+        <h2 class="section-title">Community <span>Leaderboard</span></h2>
+        <div class="lb-tabs">
+            <div class="lb-tab active" onclick="switchTab('organizers', this)">Organizers</div>
+            <div class="lb-tab" onclick="switchTab('teams', this)">Teams</div>
+            <div class="lb-tab" onclick="switchTab('contributors', this)">Contributors</div>
+        </div>
+
+        <div id="organizers" class="lb-content people-list active">
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small">
+                <div class="person-info"><div class="person-name">Eagle Esports</div><div class="person-role">1 Tournament Hosted</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small">
+                <div class="person-info"><div class="person-name">Wolves Org</div><div class="person-role">4 Tournaments Hosted</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small">
+                <div class="person-info"><div class="person-name">MGM Esports</div><div class="person-role">65 Tournaments Hosted</div></div>
+            </div>
+        </div>
+
+        <div id="teams" class="lb-content people-list">
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#bd00ff">
+                <div class="person-info"><div class="person-name">K9 Esports</div><div class="person-role" style="color:#bd00ff">₹ 8,840 Won</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#bd00ff">
+                <div class="person-info"><div class="person-name">BooWrath</div><div class="person-role" style="color:#bd00ff">₹ 6,735 Won</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#bd00ff">
+                <div class="person-info"><div class="person-name">True Impact</div><div class="person-role" style="color:#bd00ff">₹ 6,630 Won</div></div>
+            </div>
+        </div>
+
+        <div id="contributors" class="lb-content people-list">
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#ffd700">
+                <div class="person-info"><div class="person-name">Serpent</div><div class="person-role" style="color:#ffd700">32 Contributions</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#ffd700">
+                <div class="person-info"><div class="person-name">SATAN</div><div class="person-role" style="color:#ffd700">28 Contributions</div></div>
+            </div>
+            <div class="person-row">
+                <img src="https://via.placeholder.com/100" class="person-img-small" style="border-color:#ffd700">
+                <div class="person-info"><div class="person-name">Lucifer</div><div class="person-role" style="color:#ffd700">10 Contributions</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-pad fade-up" id="workflowSection">
+        <div class="toggle-container theme-purple" id="workflowToggle">
+            <div class="toggle-bg"></div>
+            <div class="toggle-option active" onclick="switchWorkflow('player')">I'm a Player</div>
+            <div class="toggle-option" onclick="switchWorkflow('organizer')">I'm an Organizer</div>
+        </div>
+        <div class="steps-wrapper" id="playerSteps">
+             <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html?m=1" class="step-card">
+                <div class="step-badge">1</div>
+                <div class="step-info"><h3>Browse Tournaments</h3><p>Explore events by game, region, or prize pool.</p></div>
+                <i class="fa-solid fa-chevron-right" style="color:#666; margin-left:auto;"></i>
+            </a>
+            <div class="step-card">
+                <div class="step-badge">2</div>
+                <div class="step-info"><h3>Register & Check-in</h3><p>Sign up solo or with your squad seamlessly.</p></div>
+            </div>
+            <div class="step-card">
+                <div class="step-badge">3</div>
+                <div class="step-info"><h3>Play & Win</h3><p>Compete in matches and claim your rewards.</p></div>
+            </div>
+        </div>
+        <div class="steps-wrapper hidden" id="organizerSteps">
+             <a href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1" class="step-card">
+                <div class="step-badge">1</div>
+                <div class="step-info"><h3>Create Your Event</h3><p>Set up brackets, rules, schedules, and prizes.</p></div>
+                <i class="fa-solid fa-chevron-right" style="color:#666; margin-left:auto;"></i>
+            </a>
+            <div class="step-card">
+                <div class="step-badge">2</div>
+                <div class="step-info"><h3>Manage Participants</h3><p>Handle registrations, seeding, and results.</p></div>
+            </div>
+            <div class="step-card">
+                <div class="step-badge">3</div>
+                <div class="step-info"><h3>Earn & Grow</h3><p>Collect entry fees and build your brand.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-pad fade-up">
+        <div class="slider-header">
+            <h2 class="section-title" style="margin:0; text-align:left; font-size:1.3rem;">Featured <span>Events</span></h2>
+            <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html" class="view-all">View All</a>
+        </div>
+        <div class="tourney-slider" id="featuredSlider">
+            <div style="text-align:center; width:100%; color:#666;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+    </section>
+
+    <section class="pay-section fade-up delay-1">
+        <h2 class="section-title">Secure & <span style="color:#ff9900">Reliable</span> Payments</h2>
+        <p style="color:#888; font-size:0.9rem; margin-bottom:30px;">Powered by trusted wallet and payment solutions.</p>
+        <div class="pay-card">
+            <div class="pay-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div><div class="pay-head">Secure Transactions</div><div class="pay-desc">End-to-end encrypted payments with industry-leading security.</div></div>
+        </div>
+        <div class="pay-card">
+            <div class="pay-icon"><i class="fa-solid fa-wallet"></i></div>
+            <div><div class="pay-head">Multi-Wallet Support</div><div class="pay-desc">Connect with your preferred wallet seamlessly.</div></div>
+        </div>
+        <div class="pay-card">
+            <div class="pay-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div><div class="pay-head">Instant Payouts</div><div class="pay-desc">Winners receive rewards immediately after match completion.</div></div>
+        </div>
+    </section>
+
+    <footer class="app-footer">
+        <div style="font-family:var(--font-head); font-size:1.3rem; color:white; margin-bottom:10px;">
+            <i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> TOURNYX
+        </div>
+        <p style="color:#666; font-size:0.85rem; margin-bottom:20px;">The ultimate esports platform for gamers and organizers.</p>
+        <div class="social-row">
+            <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" class="social-btn"><i class="fa-brands fa-discord"></i></a>
+        </div>
+        <div class="footer-links">
+            <a href="REPLACE_WITH_PRIVACY_LINK">Privacy Policy</a> | <a href="REPLACE_WITH_TERMS_LINK">Terms of Service</a>
+        </div>
+        <p class="footer-copy">© 2026 Tournyx. All rights reserved.</p>
+    </footer>
+
+    <div class="fab" onclick="toggleModal()"><i class="fa-solid fa-headset"></i></div>
+    <div class="modal-overlay" id="supportModal">
+        <div class="modal-box">
+            <h3 style="font-family:var(--font-head); margin-bottom:15px; color:white;">Need Help?</h3>
+            <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">Join our community channels.</p>
+            <a href="REPLACE_WITH_DISCORD_LINK" class="support-btn btn-discord"><i class="fa-brands fa-discord"></i> Join Discord</a>
+            <a href="REPLACE_WITH_TELEGRAM_LINK" class="support-btn btn-telegram"><i class="fa-brands fa-telegram"></i> Join Telegram</a>
+            <p style="color:#666; font-size:0.8rem; margin-top:15px; cursor:pointer;" onclick="toggleModal()">Close Window</p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a class="nav-item active" href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1"><i class="fa-solid fa-plus-circle" style="color:var(--accent-cyan); font-size:1.8rem;"></i><span>Create</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script>
+        // CONFIG
+        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec";
+
+        // STARTUP
+        window.addEventListener('load', () => {
+            // --- SECURITY: CHECK LOGIN STATUS ---
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            
+            if (!user) {
+                window.location.href = "https://tournyx.blogspot.com/p/login-tournyx-root-primary-bg-050511_8.html?m=1";
+                return; 
+            }
+            // ------------------------------------
+
+            setTimeout(() => {
+                const loader = document.getElementById('tournyx-loader');
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }, 2000);
+
+            // Run Standard Page Functions
+            checkLoginStatus();
+            checkNextMatch();
+            loadFeaturedTournaments();
+            syncLiveWalletPoints(user); // Added to sync live points
+        });
+
+        // LIVE WALLET SYNC LOGIC
+        function syncLiveWalletPoints(user) {
+            const balanceDisplay = document.getElementById('homeWalletBalance');
+            
+            // Show immediate local balance
+            if (user.points !== undefined) {
+                balanceDisplay.innerText = user.points;
+            }
+
+            // Silently fetch real approved balance
+            if (user.email) {
+                fetch(API_URL + "?email=" + encodeURIComponent(user.email))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        user.points = data.balance; 
+                        localStorage.setItem('tournyx_user', JSON.stringify(user));
+                        balanceDisplay.innerText = user.points;
+                    }
+                }).catch(err => console.log("Failed to sync live points.", err));
+            }
+        }
+
+        // 1. CHECK LOGIN STATUS (UI UPDATES)
+        function checkLoginStatus() {
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            
+            if (user) {
+                // A. Update Welcome Message
+                document.getElementById('welcomeText').innerText = "Hi, " + (user.username || user.ign || "Player");
+
+                // B. Show User Info in Side Menu
+                document.getElementById('menuUserName').innerText = user.username || "Player";
+                document.getElementById('menuUserImg').src = user.avatar || "https://via.placeholder.com/60";
+            }
+        }
+        
+        function logoutUser() {
+            if(confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem('tournyx_user');
+                localStorage.removeItem('myMatches');
+                window.location.href = "https://tournyx.blogspot.com/p/login-tournyx-root-primary-bg-050511_8.html?m=1";
+            }
+        }
+
+        // 2. TOGGLES
+        function toggleMenu() { 
+            document.getElementById('overlayMenu').classList.toggle('active'); 
+        }
+        
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('overlayMenu');
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            if (!menu.contains(event.target) && !menuBtn.contains(event.target) && menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        });
+
+        function toggleModal() { document.getElementById('supportModal').classList.toggle('active'); }
+
+        // 3. WORKFLOW SWITCHER
+        function switchWorkflow(role) {
+            const container = document.getElementById('workflowToggle');
+            const pSteps = document.getElementById('playerSteps');
+            const oSteps = document.getElementById('organizerSteps');
+            const opts = document.querySelectorAll('.toggle-option');
+
+            if (role === 'player') {
+                container.classList.remove('theme-cyan'); container.classList.add('theme-purple');
+                pSteps.classList.remove('hidden'); oSteps.classList.add('hidden');
+                opts[0].classList.add('active'); opts[1].classList.remove('active');
+            } else {
+                container.classList.remove('theme-purple'); container.classList.add('theme-cyan');
+                pSteps.classList.add('hidden'); oSteps.classList.remove('hidden');
+                opts[0].classList.remove('active'); opts[1].classList.add('active');
+            }
+        }
+
+        // 4. LEADERBOARD TABS
+        function switchTab(tabId, tabElement) {
+            document.querySelectorAll('.lb-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.lb-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            tabElement.classList.add('active');
+        }
+
+        // 5. NEXT MATCH WIDGET
+        function checkNextMatch() {
+            let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+            let activeMatches = matches.filter(m => m.status !== 'Completed');
+            
+            if (activeMatches.length > 0) {
+                let next = activeMatches[activeMatches.length - 1]; 
+                document.getElementById('nextMatchWidget').style.display = 'block';
+                document.getElementById('nmTitle').innerText = next.name;
+                document.getElementById('nmDate').innerHTML = `<i class="fa-regular fa-clock"></i> ${next.date}`;
+            }
+        }
+
+        // 6. LOAD FEATURED TOURNAMENTS (From Sheet)
+        function loadFeaturedTournaments() {
+            fetch(API_URL + "?action=get_tournaments")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const slider = document.getElementById('featuredSlider');
+                    slider.innerHTML = "";
+                    
+                    let featured = data.data.slice(0, 5);
+                    
+                    featured.forEach(t => {
+                        const bg = (t.banner && t.banner.startsWith('http')) ? t.banner : 'https://via.placeholder.com/400x200';
+                        const prize = t.prize == 0 ? "Glory" : "₹" + t.prize;
+                        
+                        let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+                        let isJoined = matches.some(m => m.name === t.title);
+                        let btnState = isJoined ? 'disabled style="background:#333; color:#666;"' : '';
+                        let btnText = isJoined ? 'JOINED' : 'Register Now';
+
+                        slider.innerHTML += `
+                            <div class="tourney-card">
+                                <div class="t-img-box">
+                                    <img src="${bg}" class="t-img">
+                                    <div class="t-tag">${t.game}</div>
+                                </div>
+                                <div class="t-content">
+                                    <div class="t-title">${t.title}</div>
+                                    <div class="t-meta"><span>${t.date}</span><span class="t-prize">${prize}</span></div>
+                                    <button class="t-btn" ${btnState} 
+                                        onclick="joinTournament(this, '${t.title}', '${t.date}', '${t.prize}', '${bg}', '${t.game}', '${t.id}')">
+                                        ${btnText}
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            })
+            .catch(err => {
+                // FIXED OFFLINE MODE: Now displays beautiful fallback cards instead of an error message
+                const slider = document.getElementById('featuredSlider');
+                slider.innerHTML = `
+                    <div class="tourney-card">
+                        <div class="t-img-box">
+                            <img src="https://via.placeholder.com/400x200/1a0b2e/00f2ff?text=Free+Fire+Clash" class="t-img">
+                            <div class="t-tag">FREE FIRE</div>
+                        </div>
+                        <div class="t-content">
+                            <div class="t-title">Free Fire Friday Clash</div>
+                            <div class="t-meta"><span>Friday, 8:00 PM</span><span class="t-prize">₹2,000</span></div>
+                            <button class="t-btn" onclick="alert('Join via Tournyx App')">Register Now</button>
+                        </div>
+                    </div>
+                    <div class="tourney-card">
+                        <div class="t-img-box">
+                            <img src="https://via.placeholder.com/400x200/050511/bd00ff?text=BGMI+Showdown" class="t-img">
+                            <div class="t-tag">BGMI</div>
+                        </div>
+                        <div class="t-content">
+                            <div class="t-title">BGMI Weekend Showdown</div>
+                            <div class="t-meta"><span>Saturday, 5:00 PM</span><span class="t-prize">₹5,000</span></div>
+                            <button class="t-btn" onclick="alert('Join via Tournyx App')">Register Now</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 7. UNIFIED JOIN FUNCTION
+        function joinTournament(btnElement, name, date, prize, imgUrl, gameName, tID) {
+            
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let userEmail = user ? user.email : "";
+            let userName = user ? (user.ign || user.username) : "Guest";
+
+            let phone = prompt("Please enter your WhatsApp Number for Room ID:");
+            if (!phone || phone.trim() === "") {
+                alert("Join Cancelled. Phone number is required.");
+                return;
+            }
+
+            btnElement.innerText = "...";
+            btnElement.disabled = true;
+
+            let newMatch = {
+                name: name,
+                date: date,
+                prize: prize,
+                img: imgUrl,
+                status: "Upcoming",
+                roomID: "WAITING",
+                roomPass: "WAITING",
+                phone: phone,
+                email: userEmail,
+                joinedAt: new Date().getTime()
+            };
+
+            let existingMatches = JSON.parse(localStorage.getItem('myMatches')) || [];
+            existingMatches.push(newMatch);
+            localStorage.setItem('myMatches', JSON.stringify(existingMatches));
+
+            let matchIDToUse = tID || ("M-" + Math.floor(Math.random() * 100000));
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "join",      
+                    match_id: matchIDToUse,
+                    game: gameName || "Esports",
+                    title: name,
+                    date: date,
+                    time: "20:00 PM",
+                    prize: prize,
+                    email: userEmail,
+                    phone: phone,
+                    username: userName
+                })
+            }).then(() => {
+                alert("Joined Successfully! Check Matches tab.");
+                btnElement.innerText = "JOINED";
+                checkNextMatch(); 
+            }).catch(error => {
+                alert("Joined locally! (Check Matches tab)");
+                btnElement.innerText = "JOINED";
+                checkNextMatch();
+            });
+        }
+        
+        // Particles
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        class P {
+            constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; this.vx=Math.random()*0.5-0.25; this.vy=Math.random()*0.5-0.25; }
+            u(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
+            d(){ ctx.fillStyle='rgba(0,242,255,0.3)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+        }
+        for(let i=0;i<50;i++) particles.push(new P());
+        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
+        anim();
+    </script>
+</body>
+</html>
