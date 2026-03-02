@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Matches - Tournyx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(20, 20, 35, 0.95); /* Slightly darker, more opaque */
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--primary-bg); color: white; font-family: var(--font-body); padding-bottom: 120px; overflow-x: hidden; }
+
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 20%, #1a0b2e 0%, #050511 100%); }
+
+        .header { padding: 30px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { font-family: var(--font-head); font-size: 1.8rem; color: white; }
+        .subtitle { color: #888; font-size: 0.9rem; }
+        
+        .refresh-btn {
+            background: rgba(255,255,255,0.1); width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; border: 1px solid var(--accent-cyan);
+        }
+        .refresh-btn:active { transform: rotate(180deg); background: var(--accent-cyan); color: black; }
+
+        /* TABS */
+        .tabs { display: flex; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-top: 20px; }
+        .tab { flex: 1; text-align: center; padding: 12px; color: #666; font-family: var(--font-head); cursor: pointer; position: relative; transition: 0.3s; }
+        .tab.active { color: white; }
+        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 20%; width: 60%; height: 3px; background: var(--accent-cyan); box-shadow: 0 -5px 10px var(--accent-cyan); }
+
+        /* LIST CONTAINER */
+        .match-list { padding: 20px; min-height: 50vh; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* --- NEW WIDER CARD DESIGN --- */
+        .match-card {
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+            overflow: hidden; /* Important for banner */
+            animation: fadeIn 0.4s ease-out; position: relative;
+            display: flex; flex-direction: column; /* Stack content vertically */
+        }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+        /* BIG BANNER IMAGE */
+        .m-banner {
+            width: 100%;
+            height: 140px; /* Taller image */
+            object-fit: cover;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* CONTENT WRAPPER */
+        .m-content { padding: 15px; }
+
+        /* HEADER SECTION (Title & Status) */
+        .m-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .m-title-box { flex: 1; }
+        .m-title { font-family: var(--font-head); font-size: 1.1rem; color: white; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .m-date { font-size: 0.85rem; color: #aaa; display: flex; align-items: center; gap: 6px; }
+
+        /* ACTIONS (Status & Leave Btn) */
+        .m-actions-box { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .status-badge { 
+            color: #000; background: var(--accent-cyan);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; 
+            font-family: var(--font-head); box-shadow: 0 0 10px rgba(0,242,255,0.3);
+        }
+        .leave-btn {
+            background: rgba(255, 50, 50, 0.15); border: 1px solid rgba(255, 50, 50, 0.5);
+            color: #ff6b6b; padding: 6px 14px; border-radius: 6px; font-size: 0.75rem;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        .leave-btn:active { transform: scale(0.95); background: rgba(255, 50, 50, 0.3); }
+
+        /* --- NEW WIDER ROOM ID BOX AT BOTTOM --- */
+        .room-box-container {
+            margin-top: 10px;
+            background: rgba(0,0,0,0.6); /* Darker background for contrast */
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between; /* Split ID and Pass wide */
+            align-items: center;
+        }
+
+        .room-item { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+        /* Separator line between ID and Pass */
+        .room-item:first-child { border-right: 1px solid rgba(255,255,255,0.1); padding-right: 15px; }
+        .room-item:last-child { padding-left: 15px; }
+
+        .room-label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        
+        /* Big Font for 12-digit ID */
+        .room-val { 
+            font-family: 'Courier New', monospace; /* Monospace for alignment */
+            font-size: 1.1rem; /* Much larger font */
+            letter-spacing: 1px;
+            white-space: nowrap; /* Forces onto one line */
+            overflow-x: auto; /* Adds scroll if SOMEHOW it's longer than 12 digits */
+        }
+        /* Default gray color for WAITING */
+        .val-waiting { color: #555; }
+        /* Cyan color when active */
+        .val-active { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0,242,255,0.5); }
+
+
+        /* Empty State */
+        .empty-box { text-align: center; padding: 80px 20px; color: #666; }
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.2; color: var(--accent-cyan); }
+        .browse-link { 
+            display: inline-block; margin-top: 25px; padding: 12px 30px; 
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); 
+            color: white; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 0.9rem; 
+            box-shadow: 0 5px 15px rgba(0,242,255,0.3);
+        }
+
+        /* Footer & Nav */
+        .app-footer { text-align: center; padding: 20px 0 100px 0; color: #555; font-size: 0.7rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 30px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a14; display: flex; justify-content: space-around; padding: 15px 0 20px; border-top: 1px solid #1f1f35; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent-cyan); }
+        .nav-item i { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="header">
+        <div>
+            <h1>My Matches</h1>
+            <div class="subtitle">Track your registrations</div>
+        </div>
+        <div class="refresh-btn" onclick="syncLiveStatus()">
+            <i class="fa-solid fa-rotate-right" style="font-size: 1.2rem;"></i>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('Upcoming', this)">UPCOMING</div>
+        <div class="tab" onclick="switchTab('Completed', this)">HISTORY</div>
+    </div>
+
+    <div class="match-list" id="matchList">
+        </div>
+
+    <div class="app-footer">
+        &copy; 2026 TOURNYX. ALL RIGHTS RESERVED.<br>
+        <span style="color:var(--accent-cyan); font-size:0.6rem; opacity:0.8; font-weight:bold;">DESIGNED BY JacksolutioTj</span>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html?m=1" class="nav-item"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+        <a href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1" class="nav-item"><i class="fa-solid fa-plus-circle" style="font-size: 1.8rem; color: var(--accent-cyan);"></i><span style="color:white">Create</span></a>
+        <a href="#" class="nav-item active"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html?m=1" class="nav-item"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script>
+        // --- 1. BACKGROUND ANIMATION ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let pArray = [];
+        class P { constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; } u(){ this.y-=0.5; if(this.y<0)this.y=canvas.height; } d(){ ctx.fillStyle='rgba(189,0,255,0.2)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); } }
+        for(let i=0; i<40; i++) pArray.push(new P());
+        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); pArray.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
+        anim();
+
+        // --- 2. CONFIGURATION ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec";
+        let currentTab = 'Upcoming'; 
+
+        // --- 3. STARTUP ---
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMatches(); 
+            // Auto-sync faster (1 second after load)
+            setTimeout(syncLiveStatus, 1000);
+        });
+
+        // --- 4. TAB SWITCHER ---
+        function switchTab(tabName, element) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if(element) element.classList.add('active');
+            renderMatches();
+        }
+
+        // --- 5. RENDER ENGINE (New Redesigned Card) ---
+        function renderMatches() {
+            const container = document.getElementById('matchList');
+            let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+
+            container.innerHTML = ""; 
+
+            let displayMatches = [];
+            if (currentTab === 'Upcoming') {
+                displayMatches = matches.filter(m => m.status !== 'Completed');
+            } else {
+                displayMatches = matches.filter(m => m.status === 'Completed');
+            }
+
+            if (displayMatches.length === 0) {
+                let msg = currentTab === 'Upcoming' ? "No Matches Yet" : "No History Found";
+                let subMsg = currentTab === 'Upcoming' ? "Join a tournament to see it here." : "You haven't finished any matches.";
+                container.innerHTML = `
+                    <div class="empty-box">
+                        <i class="fa-solid fa-gamepad empty-icon"></i>
+                        <h3 style="color:white; font-family:var(--font-head);">${msg}</h3>
+                        <p style="font-size:0.9rem; margin-top:5px; margin-bottom: 20px;">${subMsg}</p>
+                        ${currentTab === 'Upcoming' ? `<a href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html?m=1" class="browse-link">Go to Explore</a>` : ''}
+                    </div>`;
+                return;
+            }
+
+            displayMatches.reverse().forEach((match) => {
+                // FIX: Ensure "WAITING" is shown if data is missing or empty string
+                let rID = (match.roomID && match.roomID !== "") ? match.roomID : "WAITING";
+                let rPass = (match.roomPass && match.roomPass !== "") ? match.roomPass : "WAITING";
+                let rStatus = match.status || "Upcoming";
+
+                // Determine color class for Room ID/Pass
+                let idClass = rID === 'WAITING' ? 'val-waiting' : 'val-active';
+                let passClass = rPass === 'WAITING' ? 'val-waiting' : 'val-active';
+
+                let html = `
+                    <div class="match-card">
+                        <img src="${match.img || 'https://via.placeholder.com/400x200'}" class="m-banner">
+                        
+                        <div class="m-content">
+                            <div class="m-header-row">
+                                <div class="m-title-box">
+                                    <h4 class="m-title">${match.name}</h4>
+                                    <div class="m-date">
+                                        <i class="fa-regular fa-calendar" style="color:var(--accent-cyan)"></i> ${match.date}
+                                    </div>
+                                </div>
+                                <div class="m-actions-box">
+                                    <span class="status-badge">${rStatus}</span>
+                                    ${currentTab === 'Upcoming' ? 
+                                    `<button onclick="unjoinMatch('${match.name}')" class="leave-btn">LEAVE</button>` : 
+                                    `<span style="font-size:0.7rem; color:#666;">Ended</span>`}
+                                </div>
+                            </div>
+                            
+                            <div class="room-box-container">
+                                <div class="room-item">
+                                    <span class="room-label"><i class="fa-solid fa-key"></i> Room ID</span>
+                                    <span class="room-val ${idClass}" id="rid-${match.name}">${rID}</span>
+                                </div>
+                                <div class="room-item">
+                                    <span class="room-label"><i class="fa-solid fa-lock"></i> Password</span>
+                                    <span class="room-val ${passClass}" id="pass-${match.name}">${rPass}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        // --- 6. LIVE SYNC (Fixes "Waiting" issue) ---
+        function syncLiveStatus() {
+            let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+            if (matches.length === 0) return;
+
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let userEmail = user ? user.email : "";
+            let userPhone = matches[0].phone; 
+            
+            if(!userEmail && !userPhone) return;
+
+            let icon = document.querySelector('.refresh-btn i');
+            if(icon) icon.classList.add('fa-spin');
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "get_matches",
+                    email: userEmail,
+                    phone: userPhone
+                })
+            })
+            .then(() => {
+                fetch(API_URL + "?action=get_matches&email=" + userEmail + "&phone=" + userPhone)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === "success" && data.data) {
+                        let updatedMatches = matches.map(localMatch => {
+                            // Match by Tournament ID first, then Title as fallback
+                            let cloudMatch = data.data.find(c => (c.match_id === localMatch.match_id) || (c.tournament_title === localMatch.name));
+                            
+                            if(cloudMatch) {
+                                // FIX: Use "WAITING" if the sheet cell is empty
+                                localMatch.roomID = cloudMatch.room_id || "WAITING";
+                                localMatch.roomPass = cloudMatch.room_pass || "WAITING";
+                                localMatch.status = cloudMatch.status || localMatch.status;
+                            }
+                            return localMatch;
+                        });
+
+                        localStorage.setItem('myMatches', JSON.stringify(updatedMatches));
+                        renderMatches(); 
+                    }
+                })
+                .catch(e => console.log("Sync error:", e))
+                .finally(() => {
+                    if(icon) icon.classList.remove('fa-spin');
+                });
+            });
+        }
+
+        // --- 7. UNJOIN FUNCTION ---
+        function unjoinMatch(tournamentName) {
+            if(confirm("Are you sure you want to leave " + tournamentName + "? By leaving, you may forfeit your entry fee.")) {
+                let matches = JSON.parse(localStorage.getItem('myMatches')) || [];
+                let updatedMatches = matches.filter(m => m.name !== tournamentName);
+                localStorage.setItem('myMatches', JSON.stringify(updatedMatches));
+                renderMatches();
+            }
+        }
+    </script>
+</body>
+</html>
