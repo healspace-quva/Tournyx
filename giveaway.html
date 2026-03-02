@@ -1,1 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tournyx - Giveaways</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(20, 20, 35, 0.65);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-orange: #ff9900;
+            --accent-green: #00ff7f;
+            --accent-gradient: linear-gradient(90deg, #bd00ff, #00f2ff);
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 90px; 
+            padding-top: 70px;
+        }
+
+        /* --- BACKGROUND --- */
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050511 100%);
+        }
+
+        /* --- HEADER --- */
+        .top-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 15px 20px;
+            background: rgba(5, 5, 17, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: space-between; z-index: 2000;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: white; font-size: 1.2rem; text-decoration: none; }
+        .app-title {
+            font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
+            background: linear-gradient(90deg, #fff, var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero { text-align: center; padding: 20px 20px 10px; }
+        .hero-icon { font-size: 3rem; color: var(--accent-cyan); margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+        .hero h1 { font-family: var(--font-head); font-size: 1.8rem; line-height: 1.4; margin-bottom: 5px; }
+        .gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .hero p { color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto; }
+
+        /* --- GIVEAWAY CARD --- */
+        .giveaway-container { padding: 15px 20px; max-width: 500px; margin: 0 auto; }
+        
+        .prize-card {
+            background: var(--card-bg);
+            border: 1px solid var(--accent-purple);
+            border-radius: 20px; padding: 25px 20px;
+            backdrop-filter: blur(10px); position: relative; overflow: hidden;
+            box-shadow: 0 0 25px rgba(189, 0, 255, 0.15);
+        }
+
+        .prize-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        /* Live Badge */
+        .live-badge {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(255, 0, 85, 0.15); border: 1px solid #ff0055; color: #ff0055;
+            padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;
+            display: flex; align-items: center; gap: 5px; letter-spacing: 1px;
+            animation: pulse 2s infinite;
+        }
+        .live-dot { width: 6px; height: 6px; background: #ff0055; border-radius: 50%; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,85,0.4); } 70% { box-shadow: 0 0 0 10px rgba(255,0,85,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,85,0); } }
+
+        /* Timer */
+        .timer-container { text-align: center; margin-bottom: 20px; }
+        .timer-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .countdown { display: flex; justify-content: center; gap: 10px; font-family: var(--font-head); }
+        .time-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; min-width: 50px; }
+        .time-val { display: block; font-size: 1.4rem; font-weight: 700; color: white; }
+        .time-unit { font-size: 0.6rem; color: var(--accent-cyan); letter-spacing: 1px; }
+
+        /* Prize Info */
+        .prize-image-wrap { text-align: center; margin: 15px 0; }
+        .prize-icon { font-size: 4rem; color: var(--accent-orange); filter: drop-shadow(0 0 15px rgba(255, 153, 0, 0.4)); }
+        .prize-title { font-family: var(--font-head); font-size: 1.5rem; text-align: center; margin-bottom: 5px; color: white; }
+        .prize-sub { text-align: center; font-size: 0.9rem; color: #aaa; margin-bottom: 25px; }
+
+        /* Action Checklist */
+        .mission-box {
+            background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 15px; margin-bottom: 20px;
+        }
+        .mission-title { font-family: var(--font-head); font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 12px; letter-spacing: 1px; }
+        
+        .task-list { list-style: none; }
+        .task-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .task-item:last-child { margin-bottom: 0; }
+        
+        .task-check { 
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid #444; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: transparent;
+            transition: 0.3s; flex-shrink: 0;
+        }
+        .task-item.completed .task-check { border-color: var(--accent-green); background: rgba(0,255,127,0.1); color: var(--accent-green); }
+        .task-text { font-size: 0.9rem; color: #ddd; flex: 1; }
+        .task-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: var(--font-body); }
+        .task-btn:hover { background: var(--accent-cyan); color: #000; }
+
+        .btn-enter {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: var(--accent-gradient); color: white;
+            font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.3);
+        }
+        .btn-enter:active { transform: scale(0.98); }
+        .btn-enter.locked { background: #333; color: #888; box-shadow: none; cursor: not-allowed; }
+
+        /* --- PREVIOUS WINNERS --- */
+        .winners-section { padding: 10px 20px 30px; max-width: 500px; margin: 0 auto; }
+        .section-header { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        
+        .winner-card {
+            display: flex; align-items: center; gap: 15px; background: var(--card-bg);
+            padding: 12px 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--card-border);
+        }
+        .w-avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #aaa; }
+        .w-info { flex: 1; }
+        .w-name { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 2px; }
+        .w-prize { font-size: 0.8rem; color: var(--accent-green); }
+
+        /* --- FOOTER CREDITS --- */
+        .footer {
+            text-align: center; padding: 20px; margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .footer-logo {
+            font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 2px;
+            color: white; margin-bottom: 5px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .footer-text { font-size: 0.8rem; color: #666; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #0a0a14; display: flex; justify-content: space-around;
+            padding: 15px 0 20px; border-top: 1px solid #1f1f35; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
+        .nav-item.active { color: var(--accent-cyan); }
+        .nav-item i { font-size: 1.2rem; }
+
+        /* Toast */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: var(--accent-cyan);
+            color: #000; text-align: center; border-radius: 30px; padding: 12px;
+            position: fixed; z-index: 3000; left: 50%; bottom: 100px; transform: translateX(-50%);
+            font-family: var(--font-head); font-weight: 600; font-size: 0.9rem;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    </style>
+</head>
+<body>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <header class="top-header">
+        <div class="header-left">
+            <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="app-title">LOOT DROPS</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-icon"><i class="fa-solid fa-parachute-box"></i></div>
+        <h1>Epic Weekly <br><span class="gradient-text">Giveaways</span></h1>
+        <p>Complete tasks in the app to earn your free entry tickets!</p>
+    </section>
+
+    <div class="giveaway-container">
+        <div class="prize-card">
+            <div class="live-badge"><div class="live-dot"></div> LIVE NOW</div>
+            
+            <div class="timer-container">
+                <div class="timer-label">Ends In</div>
+                <div class="countdown">
+                    <div class="time-box"><span class="time-val" id="days">02</span><span class="time-unit">DAYS</span></div>
+                    <div class="time-box"><span class="time-val" id="hours">14</span><span class="time-unit">HRS</span></div>
+                    <div class="time-box"><span class="time-val" id="mins">45</span><span class="time-unit">MINS</span></div>
+                    <div class="time-box"><span class="time-val" id="secs">30</span><span class="time-unit">SECS</span></div>
+                </div>
+            </div>
+
+            <div class="prize-image-wrap">
+                <i class="fa-solid fa-gem prize-icon" style="color:#00f2ff;"></i>
+            </div>
+            
+            <h2 class="prize-title">5,000 FF Diamonds</h2>
+            <p class="prize-sub">3 Lucky Winners will be randomly selected!</p>
+
+            <div class="mission-box">
+                <div class="mission-title"><i class="fa-solid fa-list-check"></i> HOW TO ENTER</div>
+                <ul class="task-list">
+                    <li class="task-item completed">
+                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="task-text">Create a Tournyx Account</div>
+                        <span style="font-size:0.7rem; color:var(--accent-green)">Done</span>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="task-text">Play 2 Matches this week</div>
+                        <button class="task-btn" onclick="window.location.href='https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1'">Play</button>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
+                        <div class="task-text">Refer 1 Friend</div>
+                        <button class="task-btn" onclick="window.location.href='https://tournyx.blogspot.com/p/refer-earn.html'">Refer</button>
+                    </li>
+                </ul>
+            </div>
+
+            <button class="btn-enter locked" onclick="attemptEntry()" id="enterBtn"><i class="fa-solid fa-lock"></i> Claim Ticket</button>
+            <p style="text-align:center; font-size:0.75rem; color:#666; margin-top:10px;">Complete all tasks to unlock your ticket.</p>
+        </div>
+    </div>
+
+    <div class="winners-section">
+        <h3 class="section-header">Last Week's Winners</h3>
+        
+        <div class="winner-card">
+            <div class="w-avatar"><i class="fa-solid fa-user-ninja"></i></div>
+            <div class="w-info">
+                <div class="w-name">WH_Xeron99</div>
+                <div class="w-prize">Won Elite Pass Season 58</div>
+            </div>
+            <i class="fa-solid fa-trophy" style="color:gold;"></i>
+        </div>
+
+        <div class="winner-card">
+            <div class="w-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+            <div class="w-info">
+                <div class="w-name">ToxicPlayer07</div>
+                <div class="w-prize">Won 1,000 Diamonds</div>
+            </div>
+            <i class="fa-solid fa-trophy" style="color:gold;"></i>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-logo"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> TOURNYX</div>
+        <div class="footer-text">Built for Gamers, By Gamers.</div>
+        <div class="footer-text" style="margin-top: 10px; font-size: 0.7rem;">&copy; 2026 Tournyx eSports. All Rights Reserved.</div>
+    </footer>
+
+    <div id="toast"><i class="fa-solid fa-circle-exclamation"></i> Complete all tasks first!</div>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1"><i class="fa-solid fa-plus-circle" style="color:var(--accent-cyan); font-size:1.8rem;"></i><span>Create</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+        <script>
+        // ==========================================
+        // 1. BACKEND CONNECTION
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec"; // <-- Paste your live Google Script link here!
+
+        // ==========================================
+        // 2. COUNTDOWN TIMER LOGIC
+        // ==========================================
+        function startTimer() {
+            // Set end time to 2 days from now for demo purposes
+            let endTime = new Date().getTime() + (2 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000); 
+
+            setInterval(function() {
+                let now = new Date().getTime();
+                let distance = endTime - now;
+
+                if (distance < 0) return;
+
+                let d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                let h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+                document.getElementById("mins").innerText = m < 10 ? "0" + m : m;
+                document.getElementById("secs").innerText = s < 10 ? "0" + s : s;
+            }, 1000);
+        }
+        startTimer();
+
+        // ==========================================
+        // 3. SECURE GIVEAWAY ENTRY LOGIC
+        // ==========================================
+        async function attemptEntry() {
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            const btn = document.getElementById("enterBtn");
+            const toast = document.getElementById("toast");
+
+            // Check if logged in
+            if (!user) {
+                toast.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please log in to enter!';
+                toast.style.backgroundColor = "#ff0055";
+                showToastUI(toast);
+                return;
+            }
+
+            // Prevent spam clicking if already claimed
+            if (btn.innerText.includes("Claimed")) {
+                toast.innerHTML = '<i class="fa-solid fa-check"></i> You already have a ticket!';
+                toast.style.backgroundColor = "var(--accent-green)";
+                showToastUI(toast);
+                return;
+            }
+
+            // Show loading state
+            toast.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying your tasks...';
+            toast.style.backgroundColor = "var(--accent-cyan)";
+            showToastUI(toast);
+
+            try {
+                // Ask the database if they completed the missions
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'enter_giveaway', 
+                        email: user.email 
+                    })
+                });
+                
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    // SUCCESS: Update the button to look premium
+                    toast.innerHTML = `<i class="fa-solid fa-ticket"></i> ${result.data}`; 
+                    toast.style.backgroundColor = "var(--accent-green)";
+                    
+                    btn.classList.remove("locked");
+                    btn.innerHTML = `<i class="fa-solid fa-check-double"></i> Ticket Claimed`;
+                    btn.style.background = "var(--accent-green)";
+                    btn.style.color = "#000";
+                    btn.style.boxShadow = "0 0 15px rgba(0,255,127,0.4)";
+                } else {
+                    // FAILED: Not enough matches/referrals
+                    toast.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${result.data}`;
+                    toast.style.backgroundColor = "#ff0055";
+                }
+            } catch (err) {
+                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Connection error.`;
+                toast.style.backgroundColor = "#ff0055";
+            }
+            
+            showToastUI(toast);
+        }
+
+        // Helper to show the toast on screen
+        function showToastUI(toastElement) {
+            toastElement.className = "show";
+            setTimeout(function(){ toastElement.className = toastElement.className.replace("show", ""); }, 3000);
+        }
+
+        // ==========================================
+        // 4. BACKGROUND PARTICLES ANIMATION
+        // ==========================================
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        class P {
+            constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; this.vx=Math.random()*0.5-0.25; this.vy=Math.random()*0.5-0.25; }
+            u(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
+            d(){ ctx.fillStyle='rgba(0,242,255,0.3)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+        }
+        for(let i=0;i<50;i++) particles.push(new P());
+        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
+        anim();
+
+                
+            
+  
+ 
+    </script>
+</body>
+</html>
 
