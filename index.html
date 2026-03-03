@@ -457,16 +457,16 @@
         </a>
 
         <div class="menu-links">
-            <a href="https://tournyx.blogspot.com/p/tournyx-premium-plans-global-variables.html?m=1"><i class="fa-solid fa-crown"></i> Premium Plans</a>
+            <a href="premium.html"><i class="fa-solid fa-crown"></i> Premium Plans</a>
             <a href="#"><i class="fa-solid fa-headset"></i> Game Profiles</a>
             <a href="#"><i class="fa-solid fa-users-gear"></i> Manage Teams</a>
-            <a href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1"><i class="fa-solid fa-users"></i> My Joined Matches</a>
-            <a href="https://tournyx.blogspot.com/p/tournyx-giveaways-global-variables-root.html"><i class="fa-solid fa-gift"></i> Giveaways</a>
-            <a href="https://tournyx.blogspot.com/p/tournyx-offer-wall-global-variables.html?m=1"><i class="fa-solid fa-envelope-open-text"></i> Offers Wall</a>
-            <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html?m=1"><i class="fa-solid fa-gamepad"></i> All Tournaments</a>
-            <a href="https://tournyx.blogspot.com/p/tournyx-refer-earn-global-variables.html"><i class="fa-solid fa-share-nodes"></i> Refer & Earn</a>
-            <a href="https://tournyx.blogspot.com/p/contact-support-tournyx-root-primary-bg.html"><i class="fa-solid fa-comments"></i> Help & Support</a>
-            <a href="https://tournyx.blogspot.com/p/tournyx-settings-global-variables-root.html"><i class="fa-solid fa-gear"></i> Settings</a>
+            <a href="matches.html"><i class="fa-solid fa-users"></i> My Joined Matches</a>
+            <a href="giveaway.html"><i class="fa-solid fa-gift"></i> Giveaways</a>
+            <a href="offerwall.html"><i class="fa-solid fa-envelope-open-text"></i> Offers Wall</a>
+            <a href="browse.html"><i class="fa-solid fa-gamepad"></i> All Tournaments</a>
+            <a href="refer&earn.html"><i class="fa-solid fa-share-nodes"></i> Refer & Earn</a>
+            <a href="contact.html"><i class="fa-solid fa-comments"></i> Help & Support</a>
+            <a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
             <a href="#" onclick="logoutUser()" class="logout-link"><i class="fa-solid fa-power-off"></i> Logout</a>
         </div>
         <div class="menu-version">Version 2.0.1</div>
@@ -476,7 +476,7 @@
         <div class="nm-label">Your Next Match</div>
         <div class="nm-title" id="nmTitle">Loading...</div>
         <div class="nm-time" id="nmDate">--</div>
-        <a href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html?m=1" class="nm-btn">VIEW</a>
+        <a href="matches.html" class="nm-btn">VIEW</a>
     </div>
 
     <section class="hero fade-up">
@@ -491,7 +491,7 @@
             </div>
             <h3 style="color:#bd00ff">For Players</h3>
             <p>Discover tournaments, compete with the best, and win real rewards.</p>
-            <a href="https://tournyx.blogspot.com/p/browse-tournyx-root-primary-bg-050511_16.html" class="role-btn btn-purple">View Tournaments</a>
+            <a href="browse.html" class="role-btn btn-purple">View Tournaments</a>
         </div>
 
         <div class="role-card organizer">
@@ -500,7 +500,7 @@
             </div>
             <h3 style="color:#00f2ff">For Organizers</h3>
             <p>Create tournaments, manage participants, and monetize your events.</p>
-            <a href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1" class="role-btn btn-cyan">Create Tournament</a>
+            <a href="tournament.html" class="role-btn btn-cyan">Create Tournament</a>
         </div>
     </section>
 
@@ -672,11 +672,11 @@
     </div>
 
     <nav class="bottom-nav">
-        <a class="nav-item active" href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1"><i class="fa-solid fa-plus-circle" style="color:var(--accent-cyan); font-size:1.8rem;"></i><span>Create</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a class="nav-item" href="explore.html"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+        <a class="nav-item" href="tournament.html"><i class="fa-solid fa-plus-circle" style="color:var(--accent-cyan); font-size:1.8rem;"></i><span>Create</span></a>
+        <a class="nav-item" href="matches.html"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
+        <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
     </nav>
 
     <script>
@@ -748,7 +748,7 @@
             if(confirm("Are you sure you want to logout?")) {
                 localStorage.removeItem('tournyx_user');
                 localStorage.removeItem('myMatches');
-                window.location.href = "https://tournyx.blogspot.com/p/login-tournyx-root-primary-bg-050511_8.html?m=1";
+                window.location.href = "login.html";
             }
         }
 
