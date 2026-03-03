@@ -1,0 +1,238 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8"></meta>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"></meta>
+    <title>Download Tournyx - eSports App</title>
+    
+    <link href="https://fonts.googleapis.com" rel="preconnect"></link>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&amp;family=Rajdhani:wght@400;500;600;700&amp;display=swap" rel="stylesheet"></link>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"></link>
+
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary-bg: #050511;
+            --card-bg: rgba(20, 20, 35, 0.65);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-orange: #ff9900;
+            --accent-green: #00ff7f;
+            --accent-gradient: linear-gradient(90deg, #bd00ff, #00f2ff);
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 20px; /* Removed the extra space since there is no bottom nav anymore */
+            padding-top: 70px;
+        }
+
+        /* --- BACKGROUND --- */
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050511 100%);
+        }
+
+        /* --- HEADER (Browser Style) --- */
+        .top-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 15px 20px;
+            background: rgba(5, 5, 17, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center; /* Centered for browser view */
+            z-index: 2000;
+        }
+        .app-title {
+            font-family: var(--font-head); font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* --- HERO & APP ICON --- */
+        .download-hero { text-align: center; padding: 30px 20px 20px; }
+        
+        .app-icon-container {
+            width: 110px; height: 110px; margin: 0 auto 20px;
+            border-radius: 25px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3); border: 2px solid rgba(255,255,255,0.2);
+            position: relative; overflow: hidden; background: #1a1a2e;
+        }
+        
+        /* The custom image logo */
+        .app-icon-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .download-hero h1 { font-family: var(--font-head); font-size: 1.8rem; margin-bottom: 5px; letter-spacing: 1px; }
+        .version-tag { 
+            display: inline-block; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem;
+            padding: 3px 10px; border-radius: 12px; margin-bottom: 15px; font-weight: 700;
+        }
+        .download-hero p { font-size: 0.95rem; color: var(--text-muted); max-width: 350px; margin: 0 auto 25px; line-height: 1.4; }
+
+        /* --- DOWNLOAD BUTTONS --- */
+        .btn-container { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto 30px; padding: 0 20px; }
+
+        .dl-btn {
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            width: 100%; padding: 16px; border-radius: 16px; text-decoration: none;
+            font-family: var(--font-head); transition: transform 0.2s, box-shadow 0.2s;
+            position: relative; overflow: hidden;
+        }
+        .dl-btn:active { transform: scale(0.98); }
+
+        .dl-icon { font-size: 2rem; }
+        .dl-text-stack { display: flex; flex-direction: column; align-items: flex-start; }
+        .dl-small { font-family: var(--font-body); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+        .dl-large { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; }
+
+        /* Android Button (Primary) */
+        .btn-android {
+            background: linear-gradient(90deg, #00b050, #00ff7f); color: #000;
+            box-shadow: 0 10px 25px rgba(0, 255, 127, 0.3); border: none;
+        }
+        .btn-android .dl-icon { color: #000; }
+
+        /* iOS & PC Buttons (Secondary / Disabled) */
+        .btn-secondary {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+            color: #888; cursor: not-allowed;
+        }
+        .btn-secondary .dl-small { color: var(--accent-orange); font-weight: bold; }
+
+        /* --- FEATURES GRID --- */
+        .features-section { padding: 10px 20px 30px; max-width: 600px; margin: 0 auto; }
+        .section-title { font-family: var(--font-head); font-size: 1.1rem; text-align: center; margin-bottom: 20px; color: white; letter-spacing: 1px; }
+        
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .f-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 15px; text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .f-icon { font-size: 1.8rem; margin-bottom: 10px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .f-title { font-family: var(--font-head); font-size: 0.9rem; color: white; margin-bottom: 5px; }
+        .f-desc { font-size: 0.75rem; color: #aaa; line-height: 1.3; }
+
+        /* Full width card for the last feature */
+        .f-card-full { grid-column: span 2; display: flex; align-items: center; gap: 15px; text-align: left; padding: 15px 20px; }
+        .f-card-full .f-icon { margin-bottom: 0; font-size: 2.2rem; }
+
+        /* --- FOOTER CREDITS --- */
+        .footer {
+            text-align: center; padding: 20px; margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .footer-logo {
+            font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 2px;
+            color: white; margin-bottom: 5px; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .footer-text { font-size: 0.8rem; color: #666; }
+    </style>
+</head>
+<body>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <header class="top-header">
+        <div class="app-title"><i class="fa-solid fa-bolt" style="color: var(--accent-orange);"></i> TOURNYX</div>
+    </header>
+
+    <section class="download-hero">
+        <div class="app-icon-container">
+            <img alt="Tournyx Logo" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipVmqyUEA22VpntZdPCHuXoO_Rjco_cRaNl5CyFa-eehdtgXnHe6JoD8a5svxJRJYZfv_yXwww10T2cL2PHTiXLK-J-nWC1swmMs5RDxGVM8FBSlJORaRiX4YiD8gL8SyM4X1tRyQn_v8MsqQvbU4uEyHEU0qaySP1STWHaBEYuWKyF3-6QovSqJR-8xU/s1024/1000093705.png" />
+        </div>
+
+        <h1>TOURNYX ESPORTS</h1>
+        <div class="version-tag">Version 12.0 (Stable)</div>
+        <p>Experience the ultimate competitive gaming platform. Play tournaments, complete offers, and earn rewards instantly.</p>
+    </section>
+
+    <div class="btn-container">
+        <a class="dl-btn btn-android" download="Tournyx_v12.apk" href="PASTE_YOUR_APK_LINK_HERE">
+            <i class="fa-brands fa-android dl-icon"></i>
+            <div class="dl-text-stack">
+                <span class="dl-small">Download APK For</span>
+                <span class="dl-large">ANDROID</span>
+            </div>
+        </a>
+
+        <a class="dl-btn btn-secondary" href="javascript:void(0)" onclick="alert('iOS Version is currently in development. Stay tuned!')">
+            <i class="fa-brands fa-apple dl-icon"></i>
+            <div class="dl-text-stack">
+                <span class="dl-small">Coming Soon</span>
+                <span class="dl-large">APP STORE</span>
+            </div>
+        </a>
+
+        <a class="dl-btn btn-secondary" href="javascript:void(0)" onclick="alert('Web/PC Version is currently in development.')">
+            <i class="fa-brands fa-windows dl-icon"></i>
+            <div class="dl-text-stack">
+                <span class="dl-small">Coming Soon</span>
+                <span class="dl-large">PC &amp; MAC</span>
+            </div>
+        </a>
+    </div>
+
+    <section class="features-section">
+        <h3 class="section-title">WHY DOWNLOAD TOURNYX?</h3>
+        
+        <div class="feature-grid">
+            <div class="f-card">
+                <i class="fa-solid fa-shield-halved f-icon"></i>
+                <div class="f-title">100% Secure</div>
+                <div class="f-desc">Advanced anti-cheat and secure wallets.</div>
+            </div>
+            
+            <div class="f-card">
+                <i class="fa-solid fa-bolt-lightning f-icon"></i>
+                <div class="f-title">Zero Lag</div>
+                <div class="f-desc">Native app performance for smooth browsing.</div>
+            </div>
+
+            <div class="f-card-full">
+                <i class="fa-solid fa-bell f-icon"></i>
+                <div>
+                    <div class="f-title">Instant Room Alerts</div>
+                    <div class="f-desc">Get push notifications the second Room IDs and Passwords are dropped so you never miss a match!</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-logo"><i class="fa-solid fa-bolt" style="color: var(--accent-cyan);"></i> TOURNYX</div>
+        <div class="footer-text">Built for Gamers, By Gamers.</div>
+        <div class="footer-text" style="font-size: 0.7rem; margin-top: 10px;">© 2026 Tournyx eSports. All Rights Reserved.</div>
+    </footer>
+
+    <script>
+        // --- Particles Animation ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        class P {
+            constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; this.vx=Math.random()*0.5-0.25; this.vy=Math.random()*0.5-0.25; }
+            u(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
+            d(){ ctx.fillStyle='rgba(0,242,255,0.3)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+        }
+        for(let i=0;i<50;i++) particles.push(new P());
+        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
+        anim();
+    </script>
+</body>
+</html>
