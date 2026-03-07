@@ -28,6 +28,17 @@
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
         }
+                /* --- HIDE NATIVE SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;  /* Hides scrollbar for IE and Edge */
+            scrollbar-width: none;  /* Hides scrollbar for Firefox */
+        }
+
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
