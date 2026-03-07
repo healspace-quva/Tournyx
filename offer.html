@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Offer Wall - Tournyx</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary-bg: #070311;
+            --secondary-bg: #0d061e;
+            --card-bg: rgba(20, 10, 35, 0.7);
+            --card-border: rgba(189, 0, 255, 0.2);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-orange: #ff9900;
+            --accent-green: #00ff7f;
+            --accent-red: #ff4d4d;
+            --accent-gradient: linear-gradient(90deg, #bd00ff, #00f2ff);
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 90px; 
+            padding-top: 70px;
+        }
+
+        /* --- BACKGROUND --- */
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #15062e 0%, #070311 100%);
+        }
+
+        /* --- HEADER --- */
+        .top-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 10px 15px; height: 65px;
+            background: rgba(7, 3, 17, 0.85); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex; align-items: center; justify-content: space-between; z-index: 2000;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: white; font-size: 1.3rem; text-decoration: none; transition: 0.3s; padding: 5px; }
+        .back-btn:active { color: var(--accent-cyan); transform: scale(0.9); }
+        
+        .app-title {
+            font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
+            background: linear-gradient(90deg, #fff, var(--accent-green));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        /* Balance Display */
+        .header-balance {
+            background: rgba(0, 255, 127, 0.1); border: 1px solid rgba(0, 255, 127, 0.3);
+            padding: 6px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-head); font-size: 0.95rem; color: var(--accent-green); font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,255,127,0.2); transition: 0.3s; cursor: pointer;
+        }
+        .header-balance:active { transform: scale(0.95); }
+
+        /* --- HERO SECTION --- */
+        .hero { text-align: center; padding: 20px 20px 10px; animation: fadeIn 0.4s ease; }
+        .hero-icon { font-size: 2.8rem; color: var(--accent-orange); margin-bottom: 10px; text-shadow: 0 0 25px rgba(255, 153, 0, 0.5); }
+        .hero h1 { font-family: var(--font-head); font-size: 1.6rem; line-height: 1.4; margin-bottom: 5px; }
+        .gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .hero p { color: var(--text-muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto; }
+
+        @keyframes fadeIn { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+        /* --- FILTER TABS --- */
+        .filter-container {
+            padding: 10px 15px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 10px;
+        }
+        .filter-container::-webkit-scrollbar { display: none; }
+        
+        .filter-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+            color: var(--text-muted); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold;
+            padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: 0.3s;
+        }
+        .filter-btn.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+
+        /* --- OFFERS LIST --- */
+        .offers-wrapper { padding: 0 15px 20px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        .offer-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px;
+            transition: 0.3s; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.4s ease backwards;
+        }
+        .offer-card:active { transform: scale(0.97); border-color: var(--accent-cyan); }
+        
+        .offer-card.premium { border-color: rgba(189, 0, 255, 0.4); box-shadow: 0 0 15px rgba(189, 0, 255, 0.15); }
+        .offer-card.premium::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent-gradient); }
+
+        /* Pending State */
+        .offer-card.pending { opacity: 0.6; filter: grayscale(0.5); pointer-events: none; }
+        .offer-card.pending .offer-reward-btn { background: rgba(255,255,255,0.1); color: #888; border-color: #555; }
+
+        .offer-icon-box {
+            width: 55px; height: 55px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .offer-details { flex: 1; }
+        .offer-title { font-family: var(--font-head); font-size: 1.05rem; color: white; margin-bottom: 3px; font-weight: bold; }
+        .offer-desc { font-size: 0.8rem; color: #aaa; line-height: 1.3; }
+        
+        .offer-reward-btn {
+            background: rgba(0, 255, 127, 0.1); border: 1px solid rgba(0, 255, 127, 0.4);
+            color: var(--accent-green); font-family: var(--font-head); font-size: 0.9rem; font-weight: 700;
+            padding: 10px; border-radius: 10px; cursor: pointer; flex-shrink: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s;
+            min-width: 75px; text-align: center;
+        }
+        .offer-reward-btn span { font-size: 0.65rem; color: #fff; opacity: 0.8; margin-top: 2px; text-transform: uppercase; }
+        .offer-reward-btn:hover { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0,255,127,0.4); }
+
+        /* --- INSTRUCTIONS & UPLOAD MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 3000; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px); opacity: 0; transition: 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: var(--secondary-bg); border: 1px solid var(--accent-cyan);
+            border-radius: 20px; width: 90%; max-width: 400px; padding: 25px;
+            position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #888; cursor: pointer; transition: 0.3s; }
+        .close-modal:hover { color: white; transform: rotate(90deg); }
+        
+        .modal-title { font-family: var(--font-head); color: white; font-size: 1.3rem; margin-bottom: 15px; }
+        
+        .modal-instructions { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .modal-instructions h3 { font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 8px; font-family: var(--font-head); text-transform: uppercase; }
+        .modal-instructions p { font-size: 0.85rem; color: #ccc; margin-bottom: 12px; line-height: 1.5; }
+        
+        .task-steps { list-style: none; padding: 0; }
+        .task-steps li { font-size: 0.85rem; color: #aaa; margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
+        .task-steps li i { color: var(--accent-orange); margin-top: 3px; font-size: 0.8rem; }
+        
+        .upload-section { margin-bottom: 20px; }
+        .upload-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(0,242,255,0.1); border: 2px dashed var(--accent-cyan); 
+            color: var(--accent-cyan); padding: 15px; border-radius: 12px; cursor: pointer; 
+            font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; transition: 0.3s;
+        }
+        .upload-btn:hover { background: rgba(0,242,255,0.2); }
+        
+        /* Advanced Preview Grid */
+        .preview-container { display: flex; gap: 10px; margin-top: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .preview-box { position: relative; flex-shrink: 0; }
+        .preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent-purple); box-shadow: 0 0 10px rgba(189,0,255,0.3); }
+        .remove-img-btn { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; cursor: pointer; border: 1px solid white; }
+
+        .verify-btn {
+            width: 100%; background: var(--accent-gradient); border: none;
+            padding: 16px; border-radius: 12px; color: white; font-family: var(--font-head);
+            font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; box-shadow: 0 5px 15px rgba(189,0,255,0.4);
+        }
+        .verify-btn:active { transform: scale(0.96); }
+        .verify-btn:disabled { background: #333; color: #888; box-shadow: none; cursor: not-allowed; }
+
+        /* --- ANIMATED OVERLAYS (Processing) --- */
+        .full-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,3,17,0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .full-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .anim-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; }
+        .anim-loading { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-cyan); animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        .anim-success { background: var(--accent-green); color: black; box-shadow: 0 0 30px rgba(0,255,127,0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .anim-error { background: var(--accent-red); color: white; box-shadow: 0 0 30px rgba(255,77,77,0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .overlay-title { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 10px; }
+        .overlay-desc { color: #aaa; font-size: 0.9rem; text-align: center; max-width: 80%; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* Custom Toast */
+        #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 10px; padding: 14px; position: fixed; z-index: 9999; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 5px 20px rgba(0,242,255,0.6); opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #customToast.show { visibility: visible; opacity: 1; bottom: 100px; }
+
+        /* --- FOOTER & NAV --- */
+        .app-footer { text-align: center; padding: 20px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid var(--card-border); margin-top: 20px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: rgba(7, 3, 17, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); z-index: 1000; display: flex; align-items: stretch; justify-content: space-between; padding: 0 5px; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; color: #666; text-decoration: none; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; transition: 0.3s; }
+        .nav-item.active { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        .nav-item i { font-size: 1.2rem; transition: 0.3s; }
+        .nav-item:hover { color: white; }
+        .nav-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-transform: capitalize; }
+        
+        .fab-slot { flex: 1; display: flex; justify-content: center; position: relative; height: 100%; align-items: center; }
+        .floating-plus { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 48px; height: 48px; background: var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-bg); box-shadow: 0 0 0 2px var(--accent-purple), 0 -3px 10px rgba(0,0,0,0.5); color: #000; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 10; }
+        .floating-plus:active { transform: translateX(-50%) scale(0.95); box-shadow: 0 0 0 2px var(--accent-purple), 0 -1px 5px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <header class="top-header">
+        <div class="header-left">
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="app-title">OFFER WALL</div>
+        </div>
+        <div class="header-balance" onclick="window.location.href='wallet.html'">
+            <i class="fa-solid fa-wallet"></i> <span id="userPointsDisplay"><i class="fa-solid fa-spinner fa-spin" style="font-size: 0.8rem;"></i></span> PTS
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-icon"><i class="fa-solid fa-bullseye"></i></div>
+        <h1>Complete Missions.<br><span class="gradient-text">Earn Free Points.</span></h1>
+        <p>Grab extra points to enter premium tournaments and giveaways!</p>
+    </section>
+
+    <div class="filter-container">
+        <div class="filter-btn active" onclick="filterOffers('all', this)">All Offers</div>
+        <div class="filter-btn" onclick="filterOffers('games', this)">Esports Tasks</div>
+        <div class="filter-btn" onclick="filterOffers('surveys', this)">Surveys</div>
+        <div class="filter-btn" onclick="filterOffers('apps', this)">Apps</div>
+    </div>
+
+    <div class="offers-wrapper" id="offersContainer">
+        <div style="text-align:center; color:#888; padding:30px 0;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px; color:var(--accent-cyan);"></i><br>
+            Fetching Live Offers...
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeTaskModal()"></i>
+            <h2 id="modalTitle" class="modal-title">Task Name</h2>
+            
+            <div class="modal-instructions">
+                <h3><i class="fa-solid fa-clipboard-check"></i> Requirements:</h3>
+                <p id="modalDesc">Task description goes here.</p>
+                <ul class="task-steps">
+                    <li><i class="fa-solid fa-circle-check"></i> Complete the required action in-game or in-app.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Take clear screenshots showing proof.</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Upload below to verify (Admins review within 24h).</li>
+                </ul>
+            </div>
+            
+            <div class="upload-section">
+                <label for="screenshotUpload" class="upload-btn">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Select Images (Max 5)
+                </label>
+                <input type="file" id="screenshotUpload" accept="image/*" multiple style="display: none;" onchange="handleFiles(event)">
+                
+                <div id="imagePreviewContainer" class="preview-container"></div>
+            </div>
+
+            <button class="verify-btn" onclick="processClaim()" id="submitClaimBtn">Submit Proof <span id="modalPoints">0</span> PTS</button>
+        </div>
+    </div>
+
+    <div class="full-overlay" id="statusOverlay">
+        <div class="anim-circle" id="statusCircle"></div>
+        <h2 class="overlay-title" id="statusTitle">Processing...</h2>
+        <p class="overlay-desc" id="statusDesc">Please wait.</p>
+    </div>
+
+    <div id="customToast">Notification</div>
+
+    <footer class="app-footer">
+        <div class="footer-logo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" style="width:20px;"> TOURNYX</div>
+        <div class="footer-text">Built for Gamers, By Gamers.</div>
+    </footer>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="index.html">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </a>
+        <a class="nav-item" href="explore.html">
+            <i class="fa-solid fa-compass"></i><span>Explore</span>
+        </a>
+        <a class="nav-item" href="matches.html">
+            <i class="fa-solid fa-trophy"></i><span>Matches</span>
+        </a>
+        <div class="fab-slot">
+            <div class="floating-plus" onclick="window.location.href='tournament.html'">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <a class="nav-item" href="clans.html">
+            <i class="fa-solid fa-shield-halved"></i><span>Clan</span>
+        </a>
+        <a class="nav-item" href="wallet.html">
+            <i class="fa-solid fa-wallet"></i><span>Wallet</span>
+        </a>
+        <a class="nav-item" href="profile.html">
+            <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION & SETUP
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec"; 
+        const IMGBB_API_KEY = "727c66ecfe2882d63fee08fee7495850"; 
+        
+        let currentUser = JSON.parse(localStorage.getItem('tournyx_user'));
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Strict Auth Check
+            if (!currentUser || currentUser.email === "guest@tournyx.com") {
+                alert("Please log in to access the Offer Wall.");
+                window.location.href = "login.html";
+                return;
+            }
+            
+            // Show cached balance, fetch live balance
+            document.getElementById('userPointsDisplay').innerText = formatNum(parseInt(currentUser.points) || 0);
+            syncLivePoints();
+            
+            // Fetch live offers from Google Sheets
+            fetchLiveOffers();
+        });
+
+        function formatNum(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('customToast');
+            t.innerText = msg; t.className = "show";
+            t.style.backgroundColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            t.style.color = isError ? "white" : "#000";
+            setTimeout(() => t.className = "", 3000);
+        }
+
+        // Live Balance Sync (Optimistic/No-Cors architecture mapping)
+        function syncLivePoints() {
+            fetch(API_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'sync_user', email: currentUser.email })
+            }).catch(e => console.log("Offline mode"));
+        }
+
+        // --- OVERLAY CONTROLLER ---
+        function showOverlay(state, title, desc) {
+            const overlay = document.getElementById('statusOverlay');
+            const circle = document.getElementById('statusCircle');
+            
+            overlay.classList.add('active');
+            document.getElementById('statusTitle').innerText = title;
+            document.getElementById('statusDesc').innerText = desc;
+
+            circle.className = 'anim-circle'; 
+            if (state === 'loading') { circle.classList.add('anim-loading'); circle.innerHTML = ''; }
+            else if (state === 'success') { circle.classList.add('anim-success'); circle.innerHTML = '<i class="fa-solid fa-check"></i>'; }
+            else if (state === 'error') { circle.classList.add('anim-error'); circle.innerHTML = '<i class="fa-solid fa-xmark"></i>'; }
+        }
+        function hideOverlay() { document.getElementById('statusOverlay').classList.remove('active'); }
+
+        // ==========================================
+        // 2. LIVE FETCHING ENGINE
+        // ==========================================
+        
+        // Fallback Default Offers (in case sheet is empty or fetch fails)
+        const defaultOffers = [
+            { id: "offer-ff-booyah", category: "games", premium: true, title: "Free Fire Booyah", desc: "Play 3 Ranked Matches today and verify your screenshot.", points: 250, icon: "fa-fire", color: "#ff9900" },
+            { id: "offer-bgmi-chicken", category: "games", premium: false, title: "BGMI Chicken Dinner", desc: "Get 5 kills in a classic match. Upload end-screen proof.", points: 150, icon: "fa-crosshairs", color: "#00f2ff" },
+            { id: "offer-survey-profile", category: "surveys", premium: true, title: "Gamer Profile Survey", desc: "Answer a quick 5-minute survey about your gaming habits.", points: 500, icon: "fa-clipboard-list", color: "#bd00ff" },
+            { id: "offer-app-download", category: "apps", premium: false, title: "Download & Play", desc: "Install the sponsor app and reach Level 5 to unlock points.", points: 300, icon: "fa-google-play", color: "#00ff7f", isBrand: true }
+        ];
+
+        function fetchLiveOffers() {
+            // Use GET request for fetching public data from Google Sheets API
+            fetch(API_URL + "?action=get_offers")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success" && data.data.length > 0) {
+                    renderOffersList(data.data);
+                } else {
+                    // Fallback to local default
+                    renderOffersList(defaultOffers);
+                }
+            })
+            .catch(err => {
+                console.log("Using cached/default offers due to network error.");
+                renderOffersList(defaultOffers);
+            });
+        }
+
+        function renderOffersList(offersList) {
+            const container = document.getElementById('offersContainer');
+            container.innerHTML = "";
+            
+            offersList.forEach((offer, index) => {
+                let animDelay = (index * 0.1) + "s";
+                let premiumClass = offer.premium ? "premium" : "";
+                let brandClass = offer.isBrand || offer.icon.includes('google') || offer.icon.includes('discord') ? "fa-brands" : "fa-solid";
+                
+                // Safe string escaping for function params
+                let safeTitle = offer.title.replace(/'/g, "\\'");
+                let safeDesc = offer.desc.replace(/'/g, "\\'");
+
+                container.innerHTML += `
+                    <div class="offer-card ${premiumClass} category-${offer.category}" id="${offer.id}" style="animation-delay: ${animDelay};">
+                        <div class="offer-icon-box"><i class="${brandClass} ${offer.icon}" style="color: ${offer.color};"></i></div>
+                        <div class="offer-details">
+                            <div class="offer-title">${offer.title}</div>
+                            <div class="offer-desc">${offer.desc}</div>
+                        </div>
+                        <button class="offer-reward-btn" onclick="openTaskModal('${offer.id}', '${safeTitle}', '${safeDesc}', ${offer.points})">
+                            +${formatNum(offer.points)} <span>PTS</span>
+                        </button>
+                    </div>
+                `;
+            });
+
+            // Re-apply "Pending" greyed-out states to the newly rendered cards
+            renderPendingOffers();
+        }
+
+        // ==========================================
+        // 3. UI LOGIC (Filtering & Pending States)
+        // ==========================================
+        function filterOffers(category, element) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            document.querySelectorAll('.offer-card').forEach(card => {
+                if (category === 'all' || card.classList.contains('category-' + category)) {
+                    card.style.display = 'flex';
+                    // Re-trigger animation
+                    card.style.animation = 'none';
+                    card.offsetHeight; /* trigger reflow */
+                    card.style.animation = 'fadeIn 0.4s ease backwards';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function renderPendingOffers() {
+            let pendingOffers = JSON.parse(localStorage.getItem('tournyx_pending_offers')) || [];
+            pendingOffers.forEach(offerId => {
+                let card = document.getElementById(offerId);
+                if (card) {
+                    card.classList.add('pending');
+                    let btn = card.querySelector('.offer-reward-btn');
+                    btn.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> <span>Pending Review</span>`;
+                    btn.onclick = null; // Disable click
+                }
+            });
+        }
+
+        // ==========================================
+        // 4. TASK MODAL & IMAGE UPLOAD LOGIC
+        // ==========================================
+        let currentOfferId = "";
+        let currentTaskName = "";
+        let currentTaskPoints = 0;
+        let base64ImagesData = []; // Array of objects { id, base64, src }
+
+        function openTaskModal(offerId, title, desc, points) {
+            currentOfferId = offerId;
+            currentTaskName = title;
+            currentTaskPoints = points;
+            
+            // Reset Data
+            base64ImagesData = []; 
+            document.getElementById('imagePreviewContainer').innerHTML = ""; 
+            document.getElementById('screenshotUpload').value = ""; 
+            
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('modalPoints').innerText = formatNum(points);
+            
+            document.getElementById('taskModal').classList.add('active');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('active');
+        }
+
+        // Handle File Selection
+        function handleFiles(event) {
+            const files = event.target.files;
+            if (files.length + base64ImagesData.length > 5) {
+                showToast("Maximum 5 screenshots allowed!", true);
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                // Size validation (Max 3MB per image to save bandwidth)
+                if(file.size > 3 * 1024 * 1024) {
+                    showToast("One or more images exceed 3MB.", true);
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uniqueId = "img_" + Date.now() + Math.floor(Math.random() * 1000);
+                    const base64String = e.target.result.split(',')[1]; 
+                    
+                    base64ImagesData.push({ id: uniqueId, base64: base64String, src: e.target.result });
+                    renderImagePreviews();
+                }
+                reader.readAsDataURL(file); 
+            });
+            
+            // Reset input so same file can be selected again if needed
+            document.getElementById('screenshotUpload').value = ""; 
+        }
+
+        function renderImagePreviews() {
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = "";
+            
+            base64ImagesData.forEach(imgData => {
+                container.innerHTML += `
+                    <div class="preview-box" id="box_${imgData.id}">
+                        <img src="${imgData.src}" class="preview-img">
+                        <div class="remove-img-btn" onclick="removeSelectedImage('${imgData.id}')"><i class="fa-solid fa-xmark"></i></div>
+                    </div>
+                `;
+            });
+        }
+
+        function removeSelectedImage(id) {
+            base64ImagesData = base64ImagesData.filter(img => img.id !== id);
+            renderImagePreviews();
+        }
+
+        // ==========================================
+        // 5. PROCESS CLAIM TO IMGBB & GOOGLE SHEETS
+        // ==========================================
+        async function processClaim() {
+            if (base64ImagesData.length === 0) {
+                showToast("Please upload at least 1 screenshot as proof.", true);
+                return;
+            }
+
+            closeTaskModal();
+            showOverlay('loading', 'Uploading Images...', 'Securely transmitting data (1/2)');
+
+            try {
+                let uploadedUrls = [];
+
+                // Step A: Upload to ImgBB iteratively
+                for (let i = 0; i < base64ImagesData.length; i++) {
+                    document.getElementById('statusDesc').innerText = `Uploading image ${i+1} of ${base64ImagesData.length}...`;
+                    
+                    let formData = new FormData();
+                    formData.append("image", base64ImagesData[i].base64);
+                    
+                    let uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    
+                    let imgData = await uploadRes.json();
+                    if (imgData.success) {
+                        uploadedUrls.push(imgData.data.url);
+                    }
+                }
+
+                // Step B: Send Data to Google Sheets
+                document.getElementById('statusTitle').innerText = "Logging Claim...";
+                document.getElementById('statusDesc').innerText = "Updating secure server (2/2)";
+
+                const payload = {
+                    action: 'claim_offer',
+                    email: currentUser.email,
+                    offerName: currentTaskName,
+                    reward: currentTaskPoints,
+                    imageLinks: uploadedUrls.join(" | ") // Joins all links into one text string
+                };
+
+                fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(() => {
+                    // Optimistic Local UX State update
+                    let pendingOffers = JSON.parse(localStorage.getItem('tournyx_pending_offers')) || [];
+                    pendingOffers.push(currentOfferId);
+                    localStorage.setItem('tournyx_pending_offers', JSON.stringify(pendingOffers));
+                    
+                    renderPendingOffers();
+
+                    showOverlay('success', 'Proof Submitted!', 'Admins will review and credit your points within 24 hours.');
+                    setTimeout(hideOverlay, 4000);
+                }).catch(() => {
+                    showOverlay('error', 'Network Error', 'Failed to log claim. Please try again.');
+                    setTimeout(hideOverlay, 3000);
+                });
+
+            } catch (err) {
+                showOverlay('error', 'Upload Failed', 'There was an issue processing your images.');
+                setTimeout(hideOverlay, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
