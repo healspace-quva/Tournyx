@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wallet - Tournyx</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --primary-bg: #070311;
+            --secondary-bg: #0d061e;
+            --card-bg: rgba(20, 10, 35, 0.7);
+            --card-border: rgba(189, 0, 255, 0.2);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --accent-orange: #ff9900;
+            --accent-green: #00ff7f;
+            --accent-red: #ff4d4d;
+            --accent-gradient: linear-gradient(90deg, #7b2cbf, #bd00ff, #00f2ff);
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--primary-bg); color: white; font-family: var(--font-body); padding-bottom: 90px; padding-top: 65px; overflow-x: hidden; }
+
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #15062e 0%, #070311 100%); }
+
+        /* --- HEADER --- */
+        .top-header { position: fixed; top: 0; left: 0; width: 100%; padding: 10px 15px; height: 65px; background: rgba(7, 3, 17, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; z-index: 2000; box-shadow: 0 4px 30px rgba(0,0,0,0.5); transition: 0.3s; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .app-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
+        .header-greeting { font-size: 0.75rem; color: #aaa; margin-top: -2px; }
+        .header-action-icon { font-size: 1.2rem; color: white; cursor: pointer; padding: 5px; transition: 0.3s; }
+        .header-action-icon:active { color: var(--accent-cyan); transform: scale(0.9); }
+        .header-profile-img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; cursor: pointer; box-shadow: 0 0 10px rgba(0,242,255,0.4); transition: 0.3s; }
+
+        /* --- MAIN CONTENT --- */
+        .content-container { padding: 15px; animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+        /* --- WALLET CARD --- */
+        .wallet-card { background: linear-gradient(135deg, rgba(189,0,255,0.2) 0%, rgba(0,242,255,0.1) 100%); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px 20px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
+        .wallet-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); transform: rotate(45deg); pointer-events: none; }
+        
+        .balance-label { font-size: 0.85rem; color: #ccc; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .balance-amount { font-family: var(--font-head); font-size: 2.5rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 15px rgba(255,255,255,0.4); margin-bottom: 15px; transition: 0.3s; }
+        
+        /* Privacy Blur Class */
+        .blur-balance { filter: blur(8px); user-select: none; opacity: 0.8; }
+
+        .pts-balance { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(0,242,255,0.3); width: fit-content; transition: 0.3s; }
+        .pts-balance i { color: var(--accent-cyan); }
+        .pts-balance span { font-family: var(--font-head); font-size: 1rem; font-weight: bold; color: var(--accent-cyan); }
+
+        /* --- QUICK ACTIONS --- */
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .action-btn { background: var(--secondary-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-decoration: none; color: white; }
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn i { font-size: 1.5rem; }
+        .action-btn span { font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        
+        .btn-add { border-color: var(--accent-purple); } .btn-add i { color: var(--accent-purple); text-shadow: 0 0 10px rgba(189,0,255,0.5); }
+        .btn-withdraw { border-color: var(--accent-orange); } .btn-withdraw i { color: var(--accent-orange); text-shadow: 0 0 10px rgba(255,153,0,0.5); }
+        .btn-redeem { border-color: var(--accent-cyan); } .btn-redeem i { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+
+        /* --- SUPPORT SECTION --- */
+        .support-card { background: linear-gradient(90deg, rgba(0,242,255,0.1), rgba(0,0,0,0)); border: 1px solid var(--accent-cyan); border-radius: 15px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; cursor: pointer; transition: 0.3s; }
+        .support-card:active { transform: scale(0.98); border-color: var(--accent-purple); }
+        .sc-left h4 { font-family: var(--font-head); font-size: 1rem; color: white; margin-bottom: 5px; }
+        .sc-left p { font-size: 0.8rem; color: #ccc; max-width: 200px; }
+        .sc-icon { width: 50px; height: 50px; background: var(--accent-cyan); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 0 15px rgba(0,242,255,0.5); }
+
+        /* --- TRANSACTION HISTORY (Main Page) --- */
+        .section-title { font-family: var(--font-head); font-size: 1.1rem; color: white; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title span { font-size: 0.8rem; color: var(--accent-cyan); cursor: pointer; text-transform: uppercase; padding: 5px; border-radius: 5px; transition: 0.3s; }
+        .section-title span:active { background: rgba(0,242,255,0.1); }
+        
+        .txn-list { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .txn-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; }
+        .txn-item:active { background: rgba(255,255,255,0.05); border-color: var(--accent-cyan); }
+        
+        .txn-left { display: flex; align-items: center; gap: 12px; }
+        .txn-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .icon-credit { background: rgba(0,255,127,0.1); color: var(--accent-green); border: 1px solid rgba(0,255,127,0.3); }
+        .icon-debit { background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.3); }
+        .txn-info h4 { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+        .txn-info p { font-size: 0.7rem; color: #888; }
+        
+        .txn-right { text-align: right; }
+        .txn-amt { font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; }
+        .amt-credit { color: var(--accent-green); }
+        .amt-debit { color: var(--accent-red); }
+        .txn-status { font-size: 0.65rem; color: #aaa; text-transform: uppercase; margin-top: 2px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+
+        /* --- FULL LEDGER MODAL (Advanced Feature) --- */
+        .ledger-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 4000; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; overflow: hidden; }
+        .ledger-modal.active { transform: translateX(0); }
+        
+        .lm-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); background: rgba(7,3,17,0.95); backdrop-filter: blur(10px); z-index: 10; height: 65px; }
+        .lm-title { font-family: var(--font-head); font-size: 1.2rem; color: white; font-weight: bold; flex: 1; text-align: center; }
+        
+        .lm-search-bar { margin: 15px; position: relative; }
+        .lm-search-input { width: 100%; background: var(--input-bg); border: 1px solid var(--card-border); padding: 12px 15px 12px 40px; border-radius: 12px; color: white; font-family: var(--font-body); outline: none; transition: 0.3s; }
+        .lm-search-input:focus { border-color: var(--accent-cyan); }
+        .lm-search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+
+        .lm-filters { display: flex; gap: 10px; padding: 0 15px 10px; overflow-x: auto; scrollbar-width: none; }
+        .lm-filter-chip { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); padding: 6px 15px; border-radius: 20px; font-family: var(--font-head); font-size: 0.8rem; font-weight: bold; color: #888; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .lm-filter-chip.active { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+        .lm-scroll-area { flex: 1; overflow-y: auto; padding: 0 15px 20px; }
+        .empty-ledger { text-align: center; padding: 40px 20px; color: #666; }
+
+        /* --- BOTTOM SHEETS --- */
+        .bottom-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(5px); opacity: 0; transition: 0.3s; }
+        .bottom-sheet-overlay.active { display: flex; opacity: 1; }
+        .bottom-sheet { width: 100%; background: var(--secondary-bg); border-radius: 20px 20px 0 0; border-top: 1px solid var(--card-border); padding: 25px 20px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .bottom-sheet-overlay.active .bottom-sheet { transform: translateY(0); }
+        
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .sheet-title { font-family: var(--font-head); font-size: 1.2rem; color: white; display: flex; align-items: center; gap: 8px; }
+        .close-sheet { color: #888; font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.3s; }
+
+        /* Add Money Input */
+        .amt-input-wrapper { position: relative; margin-bottom: 20px; }
+        .amt-currency { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-family: var(--font-head); font-size: 1.5rem; color: white; font-weight: bold; }
+        .amt-input { width: 100%; background: #070311; border: 2px solid var(--card-border); padding: 20px 20px 20px 60px; border-radius: 15px; color: white; font-family: var(--font-head); font-size: 1.8rem; font-weight: bold; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .amt-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(189,0,255,0.3), inset 0 0 10px rgba(0,0,0,0.5); }
+
+        .quick-amt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .quick-amt-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #ccc; padding: 12px 0; text-align: center; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.95rem; }
+        .quick-amt-btn:active { background: rgba(189,0,255,0.2); border-color: var(--accent-purple); color: white; }
+
+        .pay-btn { width: 100%; padding: 18px; background: var(--accent-gradient); border: none; border-radius: 15px; color: white; font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; text-transform: uppercase; cursor: pointer; box-shadow: 0 5px 20px rgba(189,0,255,0.4); transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .pay-btn:active { transform: scale(0.98); }
+        .secure-badge { text-align: center; font-size: 0.75rem; color: #888; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        /* Receipt UI */
+        .rcpt-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 15px; }
+        .rcpt-amt { text-align: center; font-family: var(--font-head); font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; }
+        .rcpt-title { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+        .rcpt-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; }
+        .rcpt-row:last-child { border-bottom: none; margin-bottom: 20px; }
+        .rcpt-lbl { color: #888; }
+        .rcpt-val { color: white; font-weight: bold; font-family: var(--font-head); display: flex; align-items: center; gap: 8px; }
+        
+        /* Support Selection Items */
+        .sup-txn-item { background: #070311; border: 1px solid var(--card-border); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
+        .sup-txn-item:active { border-color: var(--accent-cyan); background: rgba(0,242,255,0.1); }
+        .sup-txn-item h5 { font-family: var(--font-head); font-size: 1rem; color: white; margin-bottom: 3px; }
+        .sup-txn-item p { font-size: 0.75rem; color: #888; }
+
+        /* --- ANIMATED OVERLAYS --- */
+        .full-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,3,17,0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .full-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .anim-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; }
+        .anim-loading { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-cyan); animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        .anim-success { background: var(--accent-green); color: black; box-shadow: 0 0 30px rgba(0,255,127,0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .anim-error { background: var(--accent-red); color: white; box-shadow: 0 0 30px rgba(255,77,77,0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .overlay-title { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 10px; }
+        .overlay-desc { color: #aaa; font-size: 0.9rem; text-align: center; max-width: 80%; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- Custom Toast --- */
+        #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-green); color: #000; text-align: center; border-radius: 10px; padding: 14px; position: fixed; z-index: 9999; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 5px 20px rgba(0,255,127,0.6); opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #customToast.show { visibility: visible; opacity: 1; bottom: 100px; }
+
+        /* --- FOOTER & NAV --- */
+        .app-footer { text-align: center; padding: 20px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid var(--card-border); margin-top: 10px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: rgba(7, 3, 17, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); z-index: 1000; display: flex; align-items: stretch; justify-content: space-between; padding: 0 5px; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; color: #666; text-decoration: none; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; transition: 0.3s; }
+        .nav-item.active { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        .nav-item i { font-size: 1.2rem; transition: 0.3s; }
+        .nav-item:hover { color: white; }
+        .nav-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-transform: capitalize; }
+        
+        .fab-slot { flex: 1; display: flex; justify-content: center; position: relative; height: 100%; align-items: center; }
+        .floating-plus { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 48px; height: 48px; background: var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-bg); box-shadow: 0 0 0 2px var(--accent-purple), 0 -3px 10px rgba(0,0,0,0.5); color: #000; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 10; }
+        .floating-plus:active { transform: translateX(-50%) scale(0.95); box-shadow: 0 0 0 2px var(--accent-purple), 0 -1px 5px rgba(0,0,0,0.5); }
+
+    </style>
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <header class="top-header">
+        <div class="header-left">
+            <a href="index.html" style="color:white;"><i class="fa-solid fa-arrow-left header-action-icon"></i></a>
+            <div>
+                <div class="header-greeting" id="dynamicGreeting">Welcome,</div>
+                <div class="app-title">WALLET</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <img src="https://via.placeholder.com/40" class="header-profile-img" id="headerProfilePic" onclick="window.location.href='profile.html'">
+        </div>
+    </header>
+
+    <div class="content-container">
+        
+        <div class="wallet-card">
+            <div class="balance-label">
+                Total Balance 
+                <i class="fa-solid fa-eye" id="eyeIcon" onclick="togglePrivacy()" style="font-size: 1.1rem; color: #888; cursor: pointer; padding: 5px;"></i>
+            </div>
+            <div class="balance-amount" id="balanceWrapper">
+                Rs. <span id="displayRupees">0</span>
+            </div>
+            
+            <div class="pts-balance" id="ptsWrapper">
+                <i class="fa-solid fa-coins"></i>
+                <span id="displayPoints">0 PTS</span>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="action-btn btn-add" onclick="openAddMoney()">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Add Cash</span>
+            </div>
+            <a href="withdraw.html" class="action-btn btn-withdraw">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="redeem.html" class="action-btn btn-redeem">
+                <i class="fa-solid fa-gift"></i>
+                <span>Redeem</span>
+            </a>
+        </div>
+
+        <div class="support-card" onclick="openSupportModal()">
+            <div class="sc-left">
+                <h4>Need Transaction Help?</h4>
+                <p>Contact Support via WhatsApp.</p>
+            </div>
+            <div class="sc-icon">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+        </div>
+
+        <div class="section-title">
+            Recent Transactions <span onclick="openAllTxns()">View All</span>
+        </div>
+        
+        <div class="txn-list" id="txnListContainer">
+            <div style="text-align:center; padding: 20px; color: #888; font-size: 0.9rem;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Fetching ledger...
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ledger-modal" id="ledgerModal">
+        <div class="lm-header">
+            <i class="fa-solid fa-arrow-left header-action-icon" onclick="closeAllTxns()"></i>
+            <div class="lm-title">All Transactions</div>
+            <i class="fa-solid fa-rotate-right header-action-icon" onclick="syncLiveTransactions(true)" id="ledgerRefreshIcon"></i>
+        </div>
+        
+        <div class="lm-search-bar">
+            <i class="fa-solid fa-magnifying-glass lm-search-icon"></i>
+            <input type="text" class="lm-search-input" id="ledgerSearchInp" placeholder="Search by ID or Title..." onkeyup="applyLedgerFilters()">
+        </div>
+
+        <div class="lm-filters">
+            <div class="lm-filter-chip active" onclick="setLedgerFilter('All', this)">All</div>
+            <div class="lm-filter-chip" onclick="setLedgerFilter('Credit', this)">Money In (+)</div>
+            <div class="lm-filter-chip" onclick="setLedgerFilter('Debit', this)">Money Out (-)</div>
+        </div>
+
+        <div class="lm-scroll-area">
+            <div class="txn-list" id="fullTxnListContainer" style="border:none; padding:0; background:transparent;"></div>
+        </div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="receiptOverlay">
+        <div class="bottom-sheet">
+            <div class="sheet-header">
+                <div class="sheet-title">Transaction Receipt</div>
+                <i class="fa-solid fa-xmark close-sheet" onclick="closeReceipt()"></i>
+            </div>
+            
+            <div class="rcpt-icon" id="rcptIcon"></div>
+            <div class="rcpt-amt" id="rcptAmt">Rs. 0</div>
+            <div class="rcpt-title" id="rcptTitle">Payment</div>
+
+            <div class="rcpt-row">
+                <span class="rcpt-lbl">Status</span>
+                <span class="rcpt-val" style="color:var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Successful</span>
+            </div>
+            <div class="rcpt-row">
+                <span class="rcpt-lbl">Date & Time</span>
+                <span class="rcpt-val" id="rcptDate">Jan 1, 12:00 PM</span>
+            </div>
+            <div class="rcpt-row">
+                <span class="rcpt-lbl">Transaction ID</span>
+                <span class="rcpt-val">
+                    <span id="rcptId" style="font-size:0.85rem; color:#ccc;">TXN...</span>
+                    <i class="fa-regular fa-copy" style="color:var(--accent-cyan); cursor:pointer; padding:5px;" onclick="copyTxnId()"></i>
+                </span>
+            </div>
+            <button class="btn-secondary" style="width:100%; border-color:#444; color:white; margin-top:10px;" onclick="contactSupportSpecificReceipt()">Need Help with this?</button>
+        </div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="addMoneyOverlay">
+        <div class="bottom-sheet">
+            <div class="sheet-header">
+                <div class="sheet-title"><i class="fa-solid fa-wallet" style="color:var(--accent-purple);"></i> Add Money to Wallet</div>
+                <i class="fa-solid fa-xmark close-sheet" onclick="closeAddMoney()"></i>
+            </div>
+            
+            <div class="amt-input-wrapper">
+                <div class="amt-currency">Rs.</div>
+                <input type="number" id="addAmtInput" class="amt-input" placeholder="0">
+            </div>
+
+            <div class="quick-amt-grid">
+                <div class="quick-amt-btn" onclick="setAmt(100)">+100</div>
+                <div class="quick-amt-btn" onclick="setAmt(250)">+250</div>
+                <div class="quick-amt-btn" onclick="setAmt(500)">+500</div>
+                <div class="quick-amt-btn" onclick="setAmt(1000)">+1000</div>
+            </div>
+
+            <button class="pay-btn" id="razorpayBtn" onclick="initiateRazorpay()">
+                Proceed to Pay <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            
+            <div class="secure-badge">
+                <i class="fa-solid fa-shield-halved" style="color:var(--accent-green);"></i> Secured by Razorpay & SSL Encryption
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="supportModalOverlay">
+        <div class="bottom-sheet">
+            <div class="sheet-header">
+                <div class="sheet-title"><i class="fa-solid fa-headset" style="color:var(--accent-cyan);"></i> Select Transaction</div>
+                <i class="fa-solid fa-xmark close-sheet" onclick="closeSupportModal()"></i>
+            </div>
+            <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">Select a recent transaction to attach to your support ticket:</p>
+            
+            <div id="supportTxnList" style="max-height: 40vh; overflow-y:auto; margin-bottom:15px;">
+                </div>
+
+            <button class="btn-secondary" style="width:100%; border-color:#444; color:white;" onclick="contactSupportGeneral()">I have a general inquiry instead</button>
+        </div>
+    </div>
+
+    <div class="full-overlay" id="statusOverlay">
+        <div class="anim-circle" id="statusCircle"></div>
+        <h2 class="overlay-title" id="statusTitle">Processing...</h2>
+        <p class="overlay-desc" id="statusDesc">Please do not close this window.</p>
+    </div>
+
+    <div class="app-footer">
+        © 2026 TOURNYX. All rights reserved.<br>
+        <div class="footer-made-with">made with ⚡ for gamers worldwide</div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="index.html">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </a>
+        <a class="nav-item" href="explore.html">
+            <i class="fa-solid fa-compass"></i><span>Explore</span>
+        </a>
+        <a class="nav-item" href="matches.html">
+            <i class="fa-solid fa-trophy"></i><span>Matches</span>
+        </a>
+        <div class="fab-slot">
+            <div class="floating-plus" onclick="window.location.href='tournament.html'">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <a class="nav-item" href="clans.html">
+            <i class="fa-solid fa-shield-halved"></i><span>Clan</span>
+        </a>
+        <a class="nav-item active" href="wallet.html">
+            <i class="fa-solid fa-wallet"></i><span>Wallet</span>
+        </a>
+        <a class="nav-item" href="profile.html">
+            <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_URL = 'https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec';
+        let currentUser = JSON.parse(localStorage.getItem('tournyx_user'));
+
+        // --- STARTUP LOGIC ---
+        document.addEventListener("DOMContentLoaded", function() {
+            if(!currentUser) {
+                alert("Please login to access your Wallet.");
+                window.location.href = "login.html";
+                return;
+            }
+            if(currentUser && currentUser.avatar) { document.getElementById('headerProfilePic').src = currentUser.avatar; }
+            
+            setDynamicGreeting();
+            updateWalletDisplay();
+            fetchTransactions();
+            syncLiveTransactions(false); // Background sync
+        });
+
+        function showToast(msg, isError = false) {
+            var x = document.getElementById("customToast");
+            x.innerText = msg;
+            x.style.backgroundColor = isError ? "#ff4d4d" : "var(--accent-green)";
+            x.style.color = isError ? "white" : "#000";
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3500);
+        }
+
+        function formatNum(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // --- DYNAMIC GREETING ---
+        function setDynamicGreeting() {
+            const hr = new Date().getHours();
+            let greet = "Welcome,";
+            if (hr < 12) greet = "Good Morning,";
+            else if (hr < 18) greet = "Good Afternoon,";
+            else greet = "Good Evening,";
+            
+            let name = currentUser.username ? currentUser.username.split(" ")[0] : "Player";
+            document.getElementById('dynamicGreeting').innerText = `${greet} ${name}`;
+        }
+
+        // --- PRIVACY TOGGLE ---
+        let isPrivacyOn = false;
+        function togglePrivacy() {
+            isPrivacyOn = !isPrivacyOn;
+            const rs = document.getElementById('balanceWrapper');
+            const pts = document.getElementById('ptsWrapper');
+            const icon = document.getElementById('eyeIcon');
+            
+            if(isPrivacyOn) {
+                rs.classList.add('blur-balance'); pts.classList.add('blur-balance');
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                rs.classList.remove('blur-balance'); pts.classList.remove('blur-balance');
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // --- UI UPDATES ---
+        function updateWalletDisplay() {
+            let uRupees = parseInt(currentUser.rupees) || 0;
+            let uPoints = parseInt(currentUser.points) || 0;
+            
+            document.getElementById('displayRupees').innerText = formatNum(uRupees);
+            document.getElementById('displayPoints').innerText = formatNum(uPoints) + " PTS";
+        }
+
+        // --- ADD MONEY LOGIC ---
+        function openAddMoney() { document.getElementById('addMoneyOverlay').classList.add('active'); }
+        function closeAddMoney() { document.getElementById('addMoneyOverlay').classList.remove('active'); document.getElementById('addAmtInput').value = ""; }
+        function setAmt(val) { document.getElementById('addAmtInput').value = val; }
+
+        // --- OVERLAY CONTROLLER ---
+        function showOverlay(state, title, desc) {
+            const overlay = document.getElementById('statusOverlay');
+            const circle = document.getElementById('statusCircle');
+            
+            overlay.classList.add('active');
+            document.getElementById('statusTitle').innerText = title;
+            document.getElementById('statusDesc').innerText = desc;
+
+            circle.className = 'anim-circle'; 
+            if (state === 'loading') { circle.classList.add('anim-loading'); circle.innerHTML = ''; }
+            else if (state === 'success') { circle.classList.add('anim-success'); circle.innerHTML = '<i class="fa-solid fa-check"></i>'; }
+            else if (state === 'error') { circle.classList.add('anim-error'); circle.innerHTML = '<i class="fa-solid fa-xmark"></i>'; }
+        }
+        function hideOverlay() { document.getElementById('statusOverlay').classList.remove('active'); }
+
+        // --- RAZORPAY INTEGRATION LOGIC ---
+        function initiateRazorpay() {
+            const amtStr = document.getElementById('addAmtInput').value;
+            const amount = parseInt(amtStr);
+
+            if (isNaN(amount) || amount < 10) {
+                showToast("Please enter a valid amount (Min Rs. 10)", true);
+                return;
+            }
+
+            closeAddMoney(); 
+            showOverlay('loading', 'Initializing Gateway', 'Securely connecting to Razorpay...');
+
+            // ⚠️ INSERT YOUR RAZORPAY KEY HERE ⚠️
+            var options = {
+                "key": "YOUR_RAZORPAY_KEY_ID_HERE", // Replace this
+                "amount": amount * 100, // paise
+                "currency": "INR",
+                "name": "Tournyx Esports",
+                "description": "Wallet Top-up",
+                "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png",
+                "handler": function (response) {
+                    let rzpId = response.razorpay_payment_id;
+                    verifyAndSavePayment(rzpId, amount);
+                },
+                "prefill": {
+                    "name": currentUser.username || "Player",
+                    "email": currentUser.email || "player@tournyx.com"
+                },
+                "theme": { "color": "#bd00ff" },
+                "modal": {
+                    "ondismiss": function(){
+                        showOverlay('error', 'Transaction Stopped', 'Payment was cancelled or stopped by the user.');
+                        setTimeout(hideOverlay, 3000);
+                    }
+                }
+            };
+
+            // DEV OVERRIDE (For testing without a real key)
+            if (options.key === "YOUR_RAZORPAY_KEY_ID_HERE") {
+                setTimeout(() => {
+                    hideOverlay();
+                    let simConfirm = confirm("DEVELOPER MODE: Simulate successful payment of Rs. " + amount + "?");
+                    if(simConfirm) { verifyAndSavePayment("SIM_PAY_" + Date.now(), amount); }
+                    else { showOverlay('error', 'Transaction Stopped', 'Payment aborted.'); setTimeout(hideOverlay, 3000); }
+                }, 1000);
+            } else {
+                hideOverlay();
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response){
+                    showOverlay('error', 'Transaction Failed', response.error.description);
+                    setTimeout(hideOverlay, 4000);
+                });
+                rzp1.open();
+            }
+        }
+
+        // --- BACKGROUND VERIFICATION & SHEETS RECORDING ---
+        function verifyAndSavePayment(paymentId, amount) {
+            showOverlay('loading', 'Verifying Payment', 'Confirming transaction with bank...');
+
+            const txnId = "TXN" + Date.now() + Math.floor(Math.random() * 1000);
+            const dateStr = formatDateTime(new Date());
+
+            const payload = {
+                action: "add_transaction", email: currentUser.email, txn_id: txnId, rzp_id: paymentId,
+                amount: amount, currency: "INR", type: "Credit", status: "Success"
+            };
+
+            fetch(API_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                // Lively update
+                currentUser.rupees = (parseInt(currentUser.rupees) || 0) + amount;
+                localStorage.setItem('tournyx_user', JSON.stringify(currentUser));
+                updateWalletDisplay();
+
+                let localTxns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+                localTxns.unshift({ id: txnId, date: dateStr, amount: amount, type: "Credit", title: "Wallet Top-up" });
+                localStorage.setItem('tournyx_txns', JSON.stringify(localTxns));
+                
+                renderTransactions();
+                if(document.getElementById('ledgerModal').classList.contains('active')) applyLedgerFilters();
+
+                showOverlay('success', 'Payment Successful!', `Rs. ${amount} added to your wallet.`);
+                setTimeout(hideOverlay, 3000);
+
+                fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "update_wallet", email: currentUser.email, rupees: currentUser.rupees }) });
+
+            }).catch(e => {
+                showOverlay('error', 'Verification Failed', 'Transaction recorded, but sync failed.');
+                setTimeout(hideOverlay, 4000);
+            });
+        }
+
+        // --- TRANSACTION LEDGER RENDERING (Main Page) ---
+        function fetchTransactions() {
+            let localTxns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            if (localTxns.length === 0) {
+                localTxns.push({ id: "TXN10019284", date: formatDateTime(new Date(Date.now() - 86400000)), amount: 50, type: "Debit", title: "Tournament Entry" });
+                localTxns.push({ id: "TXN10002811", date: formatDateTime(new Date(Date.now() - 172800000)), amount: 200, type: "Credit", title: "Wallet Top-up" });
+                localStorage.setItem('tournyx_txns', JSON.stringify(localTxns));
+            }
+            renderTransactions();
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('txnListContainer');
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+
+            container.innerHTML = "";
+            if (txns.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">No transactions found.</div>`;
+                return;
+            }
+
+            txns.slice(0, 4).forEach(t => { container.innerHTML += buildTxnHtml(t); });
+        }
+
+        function buildTxnHtml(t) {
+            let isCredit = t.type === "Credit";
+            let iconClass = isCredit ? "fa-arrow-down icon-credit" : "fa-arrow-up icon-debit";
+            let amtClass = isCredit ? "amt-credit" : "amt-debit";
+            let prefix = isCredit ? "+" : "-";
+
+            return `
+                <div class="txn-item" onclick="openReceipt('${t.id}')">
+                    <div class="txn-left">
+                        <div class="txn-icon ${iconClass.split(' ')[1]}"><i class="fa-solid ${iconClass.split(' ')[0]}"></i></div>
+                        <div class="txn-info">
+                            <h4>${t.title}</h4>
+                            <p>${t.date}</p>
+                        </div>
+                    </div>
+                    <div class="txn-right">
+                        <div class="txn-amt ${amtClass}">${prefix} Rs. ${formatNum(t.amount)}</div>
+                        <div class="txn-status">Success</div>
+                    </div>
+                </div>`;
+        }
+
+        function formatDateTime(dateObj) {
+            const options = { month: 'short', day: '2-digit', hour: 'numeric', minute: '2-digit', hour12: true };
+            return dateObj.toLocaleString('en-US', options);
+        }
+
+        // --- FULL LEDGER MODAL (View All) ---
+        let currentLedgerFilter = 'All';
+
+        function openAllTxns() {
+            document.getElementById('ledgerModal').classList.add('active');
+            applyLedgerFilters();
+        }
+        function closeAllTxns() {
+            document.getElementById('ledgerModal').classList.remove('active');
+        }
+        
+        function setLedgerFilter(filter, el) {
+            document.querySelectorAll('.lm-filter-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentLedgerFilter = filter;
+            applyLedgerFilters();
+        }
+
+        function applyLedgerFilters() {
+            const container = document.getElementById('fullTxnListContainer');
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            let searchQ = document.getElementById('ledgerSearchInp').value.toLowerCase();
+
+            // Apply Filters
+            let filtered = txns;
+            if (currentLedgerFilter !== 'All') {
+                filtered = filtered.filter(t => t.type === currentLedgerFilter);
+            }
+            if (searchQ) {
+                filtered = filtered.filter(t => t.id.toLowerCase().includes(searchQ) || t.title.toLowerCase().includes(searchQ));
+            }
+
+            container.innerHTML = "";
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-ledger">
+                        <i class="fa-solid fa-file-invoice-dollar" style="font-size:3rem; opacity:0.3; margin-bottom:15px;"></i>
+                        <h3 style="color:white; font-family:var(--font-head);">No Transactions Found</h3>
+                        <p style="font-size:0.85rem; margin-top:5px;">Try adjusting your search or filters.</p>
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach(t => { container.innerHTML += buildTxnHtml(t); });
+        }
+
+        function syncLiveTransactions(manual = false) {
+            if(manual) {
+                let icon = document.getElementById('ledgerRefreshIcon');
+                icon.classList.add('fa-spin');
+                setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+            }
+            
+            fetch(API_URL + "?action=get_transactions&email=" + encodeURIComponent(currentUser.email))
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success" && data.data) {
+                    localStorage.setItem('tournyx_txns', JSON.stringify(data.data));
+                    renderTransactions();
+                    if(document.getElementById('ledgerModal').classList.contains('active')) applyLedgerFilters();
+                    if(manual) showToast("Ledger synced successfully.");
+                }
+            }).catch(e => {
+                if(manual) showToast("Offline: Showing cached transactions.", true);
+            });
+        }
+
+        // --- RECEIPT MODAL ---
+        let activeReceiptId = "";
+        function openReceipt(txnId) {
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            let t = txns.find(x => x.id === txnId);
+            if(!t) return;
+
+            activeReceiptId = txnId;
+            let isCredit = t.type === "Credit";
+            
+            let iconEl = document.getElementById('rcptIcon');
+            iconEl.innerHTML = `<i class="fa-solid ${isCredit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>`;
+            iconEl.className = `rcpt-icon ${isCredit ? 'icon-credit' : 'icon-debit'}`;
+
+            let prefix = isCredit ? "+" : "-";
+            document.getElementById('rcptAmt').innerText = `${prefix} Rs. ${formatNum(t.amount)}`;
+            document.getElementById('rcptAmt').className = `rcpt-amt ${isCredit ? 'amt-credit' : 'amt-debit'}`;
+            
+            document.getElementById('rcptTitle').innerText = t.title;
+            document.getElementById('rcptDate').innerText = t.date;
+            document.getElementById('rcptId').innerText = t.id;
+
+            document.getElementById('receiptOverlay').classList.add('active');
+        }
+
+        function closeReceipt() { document.getElementById('receiptOverlay').classList.remove('active'); activeReceiptId = ""; }
+        function copyTxnId() {
+            navigator.clipboard.writeText(activeReceiptId).then(() => showToast("Transaction ID Copied!"));
+        }
+
+        // --- SUPPORT ROUTER LOGIC ---
+        function openSupportModal() {
+            const container = document.getElementById('supportTxnList');
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            
+            container.innerHTML = "";
+            if (txns.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:10px; color:#666; font-size:0.8rem;">No recent transactions available.</div>`;
+            } else {
+                txns.slice(0, 5).forEach(t => {
+                    let color = t.type === "Credit" ? "var(--accent-green)" : "var(--accent-red)";
+                    container.innerHTML += `
+                        <div class="sup-txn-item" onclick="contactSupportSpecific('${t.id}', '${t.amount}', '${t.type}', '${t.date}')">
+                            <div>
+                                <h5>${t.title}</h5>
+                                <p>ID: ${t.id} • ${t.date}</p>
+                            </div>
+                            <div style="color:${color}; font-family:var(--font-head); font-weight:bold;">Rs. ${t.amount}</div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('supportModalOverlay').classList.add('active');
+        }
+
+        function closeSupportModal() { document.getElementById('supportModalOverlay').classList.remove('active'); }
+
+        function contactSupportSpecific(txnId, amount, type, date) {
+            let msg = `Hello Tournyx Support, I need help with a transaction.%0A%0A*Transaction ID:* ${txnId}%0A*Amount:* Rs. ${amount}%0A*Type:* ${type}%0A*Date:* ${date}%0A*User Email:* ${currentUser.email}%0A%0APlease assist me with...`;
+            window.open(`https://wa.me/919876543210?text=${msg}`, '_blank');
+            closeSupportModal();
+        }
+
+        function contactSupportSpecificReceipt() {
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            let t = txns.find(x => x.id === activeReceiptId);
+            if(t) contactSupportSpecific(t.id, t.amount, t.type, t.date);
+            closeReceipt();
+        }
+
+        function contactSupportGeneral() {
+            let msg = `Hello Tournyx Support, I need some assistance with my account. (%0AUser: ${currentUser.email})`;
+            window.open(`https://wa.me/919876543210?text=${msg}`, '_blank');
+            closeSupportModal();
+        }
+    </script>
+</body>
+</html>
