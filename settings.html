@@ -44,6 +44,19 @@
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
         }
+                /* --- ULTIMATE SCROLLBAR KILLER --- */
+        * {
+            -ms-overflow-style: none !important;  /* IE and Edge */
+            scrollbar-width: none !important;  /* Firefox */
+        }
+        *::-webkit-scrollbar {
+            display: none !important; /* Chrome, Safari, Android Webview, iOS */
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+            -webkit-appearance: none !important;
+        }
+
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -235,7 +248,7 @@
 
     <header class="top-header">
         <div class="header-left">
-            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="app-title">SETTINGS</div>
         </div>
     </header>
