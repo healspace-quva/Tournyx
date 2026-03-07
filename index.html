@@ -788,20 +788,18 @@
         // CONFIG
         const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec";
 
-                // STARTUP
-        window.addEventListener('load', () => {
+                        // STARTUP (Blazing Fast Loading)
+        document.addEventListener('DOMContentLoaded', () => {
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             if (!user) {
                 window.location.href = "login.html";
                 return; 
             }
 
-            // FIX: Reduced delay from 2000ms to 200ms for a snappy, premium feel
-            setTimeout(() => {
-                const loader = document.getElementById('tournyx-loader');
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 400); // Fade out faster
-            }, 200);
+            // Immediately trigger the loader fade-out without waiting for images
+            const loader = document.getElementById('tournyx-loader');
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 400); // Wait for CSS fade transition to finish
 
             checkLoginStatus();
             checkNextMatch();
@@ -810,6 +808,7 @@
             renderQuests(); 
             initScrollAnimations(); 
         });
+
 
 
         // LIVE WALLET SYNC
