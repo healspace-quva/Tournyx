@@ -7,20 +7,22 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
         /* --- GLOBAL VARIABLES --- */
         :root {
-            --primary-bg: #050511;
-            --card-bg: rgba(20, 20, 35, 0.65);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --primary-bg: #070311;
+            --secondary-bg: #0d061e;
+            --card-bg: rgba(20, 10, 35, 0.7);
+            --card-border: rgba(189, 0, 255, 0.2);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-orange: #ff9900;
             --accent-green: #00ff7f;
-            --accent-gradient: linear-gradient(90deg, #bd00ff, #00f2ff);
+            --accent-red: #ff4d4d;
+            --accent-gradient: linear-gradient(90deg, #7b2cbf, #bd00ff, #00f2ff);
             --text-main: #ffffff;
             --text-muted: #a0a0b0;
             --font-head: 'Orbitron', sans-serif;
@@ -41,145 +43,194 @@
         /* --- BACKGROUND --- */
         #particles-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050511 100%);
+            background: radial-gradient(circle at 50% 50%, #15062e 0%, #070311 100%);
         }
 
         /* --- HEADER --- */
         .top-header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 15px 20px;
-            background: rgba(5, 5, 17, 0.95); backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed; top: 0; left: 0; width: 100%; padding: 10px 15px; height: 65px;
+            background: rgba(7, 3, 17, 0.85); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--card-border);
             display: flex; align-items: center; justify-content: space-between; z-index: 2000;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
         }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .back-btn { color: white; font-size: 1.2rem; text-decoration: none; }
+        .back-btn { color: white; font-size: 1.3rem; text-decoration: none; transition: 0.3s; padding: 5px; cursor: pointer; }
+        .back-btn:active { color: var(--accent-cyan); transform: scale(0.9); }
         .app-title {
             font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
-            background: linear-gradient(90deg, #fff, var(--accent-purple));
+            background: var(--accent-gradient);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
         /* --- HERO SECTION --- */
-        .hero { text-align: center; padding: 20px 20px 10px; }
+        .hero { text-align: center; padding: 20px 20px 10px; animation: fadeIn 0.4s ease; }
         .hero-icon { font-size: 3rem; color: var(--accent-cyan); margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
-        .hero h1 { font-family: var(--font-head); font-size: 1.8rem; line-height: 1.4; margin-bottom: 5px; }
+        .hero h1 { font-family: var(--font-head); font-size: 1.8rem; line-height: 1.4; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
         .gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
         .hero p { color: var(--text-muted); font-size: 1rem; max-width: 400px; margin: 0 auto; }
 
+        @keyframes fadeIn { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
         /* --- GIVEAWAY CARD --- */
-        .giveaway-container { padding: 15px 20px; max-width: 500px; margin: 0 auto; }
+        .giveaway-container { padding: 15px 20px; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         
         .prize-card {
-            background: var(--card-bg);
-            border: 1px solid var(--accent-purple);
-            border-radius: 20px; padding: 25px 20px;
-            backdrop-filter: blur(10px); position: relative; overflow: hidden;
-            box-shadow: 0 0 25px rgba(189, 0, 255, 0.15);
+            background: var(--card-bg); border: 1px solid var(--accent-purple);
+            border-radius: 20px; padding: 25px 20px; backdrop-filter: blur(10px); 
+            position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.5s ease backwards; transition: 0.3s;
         }
+        .prize-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent-gradient); }
 
-        .prize-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--accent-gradient);
-        }
+        .prize-card.ended { filter: grayscale(0.8); opacity: 0.8; border-color: #444; }
+        .prize-card.ended::before { background: #555; }
 
         /* Live Badge */
         .live-badge {
-            position: absolute; top: 15px; right: 15px;
-            background: rgba(255, 0, 85, 0.15); border: 1px solid #ff0055; color: #ff0055;
+            position: absolute; top: 15px; right: 15px; background: rgba(255, 77, 77, 0.15); 
+            border: 1px solid var(--accent-red); color: var(--accent-red);
             padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;
-            display: flex; align-items: center; gap: 5px; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 5px; letter-spacing: 1px; font-family: var(--font-head);
             animation: pulse 2s infinite;
         }
-        .live-dot { width: 6px; height: 6px; background: #ff0055; border-radius: 50%; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,85,0.4); } 70% { box-shadow: 0 0 0 10px rgba(255,0,85,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,85,0); } }
+        .live-dot { width: 6px; height: 6px; background: var(--accent-red); border-radius: 50%; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,77,77,0.4); } 70% { box-shadow: 0 0 0 10px rgba(255,77,77,0); } 100% { box-shadow: 0 0 0 0 rgba(255,77,77,0); } }
 
         /* Timer */
-        .timer-container { text-align: center; margin-bottom: 20px; }
-        .timer-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .countdown { display: flex; justify-content: center; gap: 10px; font-family: var(--font-head); }
-        .time-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; min-width: 50px; }
-        .time-val { display: block; font-size: 1.4rem; font-weight: 700; color: white; }
-        .time-unit { font-size: 0.6rem; color: var(--accent-cyan); letter-spacing: 1px; }
+        .timer-container { text-align: center; margin-bottom: 20px; margin-top: 10px; }
+        .timer-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-head); font-weight: bold; }
+        .countdown { display: flex; justify-content: center; gap: 8px; font-family: var(--font-head); }
+        .time-box { background: rgba(0,0,0,0.5); border: 1px solid var(--card-border); border-radius: 10px; padding: 8px 12px; min-width: 55px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .time-val { display: block; font-size: 1.5rem; font-weight: 700; color: white; }
+        .time-unit { font-size: 0.65rem; color: var(--accent-cyan); letter-spacing: 1px; }
 
-        /* Prize Info */
+        /* Prize Info & Animations */
         .prize-image-wrap { text-align: center; margin: 15px 0; }
-        .prize-icon { font-size: 4rem; color: var(--accent-orange); filter: drop-shadow(0 0 15px rgba(255, 153, 0, 0.4)); }
-        .prize-title { font-family: var(--font-head); font-size: 1.5rem; text-align: center; margin-bottom: 5px; color: white; }
-        .prize-sub { text-align: center; font-size: 0.9rem; color: #aaa; margin-bottom: 25px; }
+        .prize-icon { 
+            font-size: 4.5rem; 
+            animation: floatIcon 3s ease-in-out infinite; 
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); }
+            50% { transform: translateY(-12px); filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)); }
+        }
+
+        .prize-title { font-family: var(--font-head); font-size: 1.5rem; text-align: center; margin-bottom: 5px; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .prize-sub { text-align: center; font-size: 0.9rem; color: #aaa; margin-bottom: 25px; font-weight: bold; }
 
         /* Action Checklist */
-        .mission-box {
-            background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15);
-            border-radius: 12px; padding: 15px; margin-bottom: 20px;
-        }
-        .mission-title { font-family: var(--font-head); font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 12px; letter-spacing: 1px; }
+        .mission-box { background: rgba(0,0,0,0.3); border: 1px dashed var(--card-border); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        .mission-title { font-family: var(--font-head); font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; }
         
         .task-list { list-style: none; }
         .task-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .task-item:last-child { margin-bottom: 0; }
         
         .task-check { 
-            width: 20px; height: 20px; border-radius: 50%; border: 2px solid #444; 
-            display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: transparent;
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #444; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: transparent;
             transition: 0.3s; flex-shrink: 0;
         }
-        .task-item.completed .task-check { border-color: var(--accent-green); background: rgba(0,255,127,0.1); color: var(--accent-green); }
-        .task-text { font-size: 0.9rem; color: #ddd; flex: 1; }
-        .task-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: var(--font-body); }
-        .task-btn:hover { background: var(--accent-cyan); color: #000; }
+        .task-item.completed .task-check { border-color: var(--accent-green); background: rgba(0,255,127,0.1); color: var(--accent-green); box-shadow: 0 0 10px rgba(0,255,127,0.3); }
+        .task-text { font-size: 0.9rem; color: #ddd; flex: 1; font-weight: bold; }
+        
+        .task-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-family: var(--font-head); font-weight: bold; transition: 0.3s; }
+        .task-btn:active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
+        .task-status { font-size: 0.75rem; color: var(--accent-green); font-weight: bold; font-family: var(--font-head); text-transform: uppercase; }
 
+        /* Buttons */
         .btn-enter {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
             background: var(--accent-gradient); color: white;
             font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase; letter-spacing: 2px;
-            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.3);
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px;
+            position: relative; overflow: hidden;
         }
-        .btn-enter:active { transform: scale(0.98); }
-        .btn-enter.locked { background: #333; color: #888; box-shadow: none; cursor: not-allowed; }
+        .btn-enter::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmerBtn 2.5s infinite;
+        }
+        @keyframes shimmerBtn { 100% { left: 200%; } }
+        
+        .btn-enter:active { transform: scale(0.96); }
+        .btn-enter.locked { background: #2a2a3a; color: #888; box-shadow: none; border: 1px solid #444; }
+        .btn-enter.locked::after { display: none; }
+        .btn-enter.claimed { background: rgba(0,255,127,0.1); color: var(--accent-green); border: 1px solid var(--accent-green); box-shadow: 0 0 15px rgba(0,255,127,0.2); pointer-events: none; }
+        .btn-enter.claimed::after { display: none; }
+
+        /* --- UID INPUT MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 3000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px); opacity: 0; transition: 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--secondary-bg); border: 1px solid var(--accent-cyan);
+            border-radius: 20px; width: 90%; max-width: 380px; padding: 25px;
+            position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #888; cursor: pointer; transition: 0.3s; }
+        .close-modal:hover { color: white; transform: rotate(90deg); }
+        
+        .form-control {
+            width: 100%; background: #110822; border: 1px solid var(--card-border);
+            padding: 14px 15px; color: white; border-radius: 10px; font-family: var(--font-body); 
+            font-size: 1.05rem; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); outline: none; margin-bottom: 20px;
+        }
+        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2), inset 0 0 10px rgba(0,0,0,0.5); }
 
         /* --- PREVIOUS WINNERS --- */
-        .winners-section { padding: 10px 20px 30px; max-width: 500px; margin: 0 auto; }
-        .section-header { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .winners-section { padding: 20px 20px 30px; max-width: 500px; margin: 0 auto; }
+        .section-header { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; color: white; }
         
         .winner-card {
             display: flex; align-items: center; gap: 15px; background: var(--card-bg);
-            padding: 12px 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--card-border);
+            padding: 15px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--card-border);
+            animation: fadeIn 0.4s ease backwards; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .w-avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #aaa; }
+        .w-avatar { width: 45px; height: 45px; border-radius: 10px; background: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
         .w-info { flex: 1; }
-        .w-name { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 2px; }
-        .w-prize { font-size: 0.8rem; color: var(--accent-green); }
+        .w-name { font-family: var(--font-head); font-size: 1rem; color: white; margin-bottom: 2px; font-weight: bold; }
+        .w-prize { font-size: 0.8rem; color: var(--accent-green); font-weight: bold; }
 
-        /* --- FOOTER CREDITS --- */
-        .footer {
-            text-align: center; padding: 20px; margin-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .footer-logo {
-            font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 2px;
-            color: white; margin-bottom: 5px; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .footer-text { font-size: 0.8rem; color: #666; }
+        /* --- ANIMATED OVERLAYS (Status) --- */
+        .full-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,3,17,0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; }
+        .full-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .anim-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; }
+        .anim-loading { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-cyan); animation: spin 1s linear infinite; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        .anim-success { background: var(--accent-green); color: black; box-shadow: 0 0 30px rgba(0,255,127,0.6); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .overlay-title { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 10px; }
+        .overlay-desc { color: #aaa; font-size: 0.9rem; text-align: center; max-width: 80%; }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: #0a0a14; display: flex; justify-content: space-around;
-            padding: 15px 0 20px; border-top: 1px solid #1f1f35; z-index: 1000;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #666; text-decoration: none; font-size: 0.7rem; }
-        .nav-item.active { color: var(--accent-cyan); }
-        .nav-item i { font-size: 1.2rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Toast */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: var(--accent-cyan);
-            color: #000; text-align: center; border-radius: 30px; padding: 12px;
-            position: fixed; z-index: 3000; left: 50%; bottom: 100px; transform: translateX(-50%);
-            font-family: var(--font-head); font-weight: 600; font-size: 0.9rem;
-        }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        /* Custom Toast */
+        #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 10px; padding: 14px; position: fixed; z-index: 9999; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 5px 20px rgba(0,242,255,0.6); opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #customToast.show { visibility: visible; opacity: 1; bottom: 100px; }
+
+        /* --- FOOTER & NAV --- */
+        .app-footer { text-align: center; padding: 30px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid var(--card-border); margin-top: 20px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: rgba(7, 3, 17, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); z-index: 1000; display: flex; align-items: stretch; justify-content: space-between; padding: 0 5px; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; color: #666; text-decoration: none; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; transition: 0.3s; }
+        .nav-item.active { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        .nav-item i { font-size: 1.2rem; transition: 0.3s; }
+        .nav-item:hover { color: white; }
+        .nav-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-transform: capitalize; }
+        
+        .fab-slot { flex: 1; display: flex; justify-content: center; position: relative; height: 100%; align-items: center; }
+        .floating-plus { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 48px; height: 48px; background: var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-bg); box-shadow: 0 0 0 2px var(--accent-purple), 0 -3px 10px rgba(0,0,0,0.5); color: #000; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 10; }
+        .floating-plus:active { transform: translateX(-50%) scale(0.95); box-shadow: 0 0 0 2px var(--accent-purple), 0 -1px 5px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -188,7 +239,7 @@
 
     <header class="top-header">
         <div class="header-left">
-            <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="app-title">LOOT DROPS</div>
         </div>
     </header>
@@ -199,50 +250,10 @@
         <p>Complete tasks in the app to earn your free entry tickets!</p>
     </section>
 
-    <div class="giveaway-container">
-        <div class="prize-card">
-            <div class="live-badge"><div class="live-dot"></div> LIVE NOW</div>
-            
-            <div class="timer-container">
-                <div class="timer-label">Ends In</div>
-                <div class="countdown">
-                    <div class="time-box"><span class="time-val" id="days">02</span><span class="time-unit">DAYS</span></div>
-                    <div class="time-box"><span class="time-val" id="hours">14</span><span class="time-unit">HRS</span></div>
-                    <div class="time-box"><span class="time-val" id="mins">45</span><span class="time-unit">MINS</span></div>
-                    <div class="time-box"><span class="time-val" id="secs">30</span><span class="time-unit">SECS</span></div>
-                </div>
-            </div>
-
-            <div class="prize-image-wrap">
-                <i class="fa-solid fa-gem prize-icon" style="color:#00f2ff;"></i>
-            </div>
-            
-            <h2 class="prize-title">5,000 FF Diamonds</h2>
-            <p class="prize-sub">3 Lucky Winners will be randomly selected!</p>
-
-            <div class="mission-box">
-                <div class="mission-title"><i class="fa-solid fa-list-check"></i> HOW TO ENTER</div>
-                <ul class="task-list">
-                    <li class="task-item completed">
-                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
-                        <div class="task-text">Create a Tournyx Account</div>
-                        <span style="font-size:0.7rem; color:var(--accent-green)">Done</span>
-                    </li>
-                    <li class="task-item">
-                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
-                        <div class="task-text">Play 2 Matches this week</div>
-                        <button class="task-btn" onclick="window.location.href='https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1'">Play</button>
-                    </li>
-                    <li class="task-item">
-                        <div class="task-check"><i class="fa-solid fa-check"></i></div>
-                        <div class="task-text">Refer 1 Friend</div>
-                        <button class="task-btn" onclick="window.location.href='https://tournyx.blogspot.com/p/refer-earn.html'">Refer</button>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="btn-enter locked" onclick="attemptEntry()" id="enterBtn"><i class="fa-solid fa-lock"></i> Claim Ticket</button>
-            <p style="text-align:center; font-size:0.75rem; color:#666; margin-top:10px;">Complete all tasks to unlock your ticket.</p>
+    <div class="giveaway-container" id="giveawaysList">
+        <div style="text-align:center; padding: 40px; color:#888;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size:2.5rem; color:var(--accent-cyan); margin-bottom:15px;"></i><br>
+            <span style="font-family:var(--font-head); font-weight:bold; letter-spacing:1px;">Fetching Live Drops...</span>
         </div>
     </div>
 
@@ -255,7 +266,7 @@
                 <div class="w-name">WH_Xeron99</div>
                 <div class="w-prize">Won Elite Pass Season 58</div>
             </div>
-            <i class="fa-solid fa-trophy" style="color:gold;"></i>
+            <i class="fa-solid fa-trophy" style="color:gold; font-size: 1.5rem; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));"></i>
         </div>
 
         <div class="winner-card">
@@ -264,131 +275,382 @@
                 <div class="w-name">ToxicPlayer07</div>
                 <div class="w-prize">Won 1,000 Diamonds</div>
             </div>
-            <i class="fa-solid fa-trophy" style="color:gold;"></i>
+            <i class="fa-solid fa-trophy" style="color:gold; font-size: 1.5rem; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));"></i>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer-logo"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> TOURNYX</div>
+    <div id="uidModal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeUidModal()"></i>
+            <h2 class="modal-title" style="margin-bottom: 5px;"><i class="fa-solid fa-gamepad" style="color:var(--accent-cyan);"></i> Enter Game UID</h2>
+            <p style="color:#aaa; font-size:0.85rem; margin-bottom:20px; line-height:1.4;">Please enter your exact Game UID. If you win, the prize will be sent directly to this account.</p>
+            
+            <input type="text" id="giveawayUidInput" class="form-control" placeholder="e.g. 543216789">
+            
+            <button class="btn-enter" style="width:100%; margin-top:10px;" onclick="submitGiveawayEntry()">Submit Entry</button>
+        </div>
+    </div>
+
+    <div class="full-overlay" id="statusOverlay">
+        <div class="anim-circle" id="statusCircle"></div>
+        <h2 class="overlay-title" id="statusTitle">Verifying...</h2>
+        <p class="overlay-desc" id="statusDesc">Checking your account status.</p>
+    </div>
+
+    <div id="customToast">Notification</div>
+
+    <footer class="app-footer">
+        <div class="footer-logo"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" style="width:20px;"> TOURNYX</div>
         <div class="footer-text">Built for Gamers, By Gamers.</div>
-        <div class="footer-text" style="margin-top: 10px; font-size: 0.7rem;">&copy; 2026 Tournyx eSports. All Rights Reserved.</div>
     </footer>
 
-    <div id="toast"><i class="fa-solid fa-circle-exclamation"></i> Complete all tasks first!</div>
-
     <nav class="bottom-nav">
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/tournyx-ultimate-esports-platform_95.html?m=1"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/explore-tournyx-root-primary-bg-050511_25.html"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/create-tournament-tournyx-root-primary_16.html?m=1"><i class="fa-solid fa-plus-circle" style="color:var(--accent-cyan); font-size:1.8rem;"></i><span>Create</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-matches-tournyx-root-primary-bg.html"><i class="fa-solid fa-trophy"></i><span>Matches</span></a>
-        <a class="nav-item" href="https://tournyx.blogspot.com/p/my-profile-tournyx-root-primary-bg_83.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        <a class="nav-item" href="index.html">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </a>
+        <a class="nav-item" href="explore.html">
+            <i class="fa-solid fa-compass"></i><span>Explore</span>
+        </a>
+        <a class="nav-item" href="matches.html">
+            <i class="fa-solid fa-trophy"></i><span>Matches</span>
+        </a>
+        <div class="fab-slot">
+            <div class="floating-plus" onclick="window.location.href='tournament.html'">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <a class="nav-item" href="clans.html">
+            <i class="fa-solid fa-shield-halved"></i><span>Clan</span>
+        </a>
+        <a class="nav-item" href="wallet.html">
+            <i class="fa-solid fa-wallet"></i><span>Wallet</span>
+        </a>
+        <a class="nav-item" href="profile.html">
+            <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
     </nav>
 
-        <script>
+    <script>
         // ==========================================
-        // 1. BACKEND CONNECTION
+        // 1. CONFIGURATION & SETUP
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec"; // <-- Paste your live Google Script link here!
+        const API_URL = "https://script.google.com/macros/s/AKfycbynNLDDXS1wMrU6RGnk4nKb1jfQkQGuqrNIKWAt8wf46MaKP6y1rwGmSJg5fmm4KYU/exec"; 
+        let currentUser = JSON.parse(localStorage.getItem('tournyx_user'));
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!currentUser || currentUser.email === "guest@tournyx.com") {
+                alert("Please log in to access Giveaways.");
+                window.location.href = "login.html";
+                return;
+            }
+            
+            // Sync user data to ensure latest matches/stats are cached locally
+            fetch(API_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'sync_user', email: currentUser.email })
+            }).then(() => { fetchLiveGiveaways(); }).catch(() => { fetchLiveGiveaways(); });
+        });
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('customToast');
+            t.innerText = msg; t.className = "show";
+            t.style.backgroundColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            t.style.color = isError ? "white" : "#000";
+            setTimeout(() => t.className = "", 3000);
+        }
+
+        function showOverlay(state, title, desc) {
+            const overlay = document.getElementById('statusOverlay');
+            const circle = document.getElementById('statusCircle');
+            
+            overlay.classList.add('active');
+            document.getElementById('statusTitle').innerText = title;
+            document.getElementById('statusDesc').innerText = desc;
+
+            circle.className = 'anim-circle'; 
+            if (state === 'loading') { circle.classList.add('anim-loading'); circle.innerHTML = ''; }
+            else if (state === 'success') { circle.classList.add('anim-success'); circle.innerHTML = '<i class="fa-solid fa-check"></i>'; }
+            else if (state === 'error') { circle.classList.add('anim-error'); circle.innerHTML = '<i class="fa-solid fa-xmark"></i>'; }
+        }
+        function hideOverlay() { document.getElementById('statusOverlay').classList.remove('active'); }
 
         // ==========================================
-        // 2. COUNTDOWN TIMER LOGIC
+        // 2. SMART TASK ENGINE (NLP Logic)
         // ==========================================
-        function startTimer() {
-            // Set end time to 2 days from now for demo purposes
-            let endTime = new Date().getTime() + (2 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000); 
+        function analyzeTask(taskText) {
+            let isComplete = false;
+            let actionUrl = "index.html";
+            let btnText = "Go";
 
-            setInterval(function() {
+            let t = taskText.toLowerCase();
+
+            // Check Account / Register
+            if (t.includes("account") || t.includes("register")) {
+                isComplete = true; // Always true if they reached this page logged in
+            }
+            // Check Match Playing
+            else if (t.includes("play") || t.includes("match")) {
+                let match = taskText.match(/\d+/);
+                let reqCount = match ? parseInt(match[0]) : 1;
+                let userMatches = parseInt(currentUser.matches) || 0;
+                isComplete = userMatches >= reqCount;
+                actionUrl = "explore.html";
+                btnText = "Play";
+            }
+            // Check Referrals
+            else if (t.includes("refer") || t.includes("friend")) {
+                let match = taskText.match(/\d+/);
+                let reqCount = match ? parseInt(match[0]) : 1;
+                let userRefs = parseInt(currentUser.referrals) || 0;
+                isComplete = userRefs >= reqCount;
+                actionUrl = "profile.html"; // Assume referral code is in profile
+                btnText = "Refer";
+            }
+            // Check Clan
+            else if (t.includes("clan") || t.includes("squad")) {
+                isComplete = currentUser.clan && currentUser.clan.trim() !== "";
+                actionUrl = "clans.html";
+                btnText = "Join";
+            }
+            // Check Wallet / Funds
+            else if (t.includes("wallet") || t.includes("fund") || t.includes("rs")) {
+                let match = taskText.match(/\d+/);
+                let reqCount = match ? parseInt(match[0]) : 10;
+                let userRupees = parseInt(currentUser.rupees) || 0;
+                isComplete = userRupees >= reqCount;
+                actionUrl = "wallet.html";
+                btnText = "Add";
+            }
+            // Default generic fallback
+            else {
+                isComplete = true; 
+            }
+
+            return { isComplete, actionUrl, btnText };
+        }
+
+
+        // ==========================================
+        // 3. LIVE FETCHING ENGINE & TIMERS
+        // ==========================================
+        
+        // Default Fallback Data
+        const defaultGiveaways = [
+            { id: "GA-001", title: "5,000 FF Diamonds", sub: "3 Lucky Winners will be selected!", endDate: new Date(Date.now() + 172800000).toISOString(), icon: "fa-gem", color: "#00f2ff", tasksStr: "Create a Tournyx Account|Play 1 Match this week|Refer 1 Friend" },
+            { id: "GA-002", title: "Royal Pass Season 58", sub: "Guaranteed drop for 5 players.", endDate: new Date(Date.now() + 345600000).toISOString(), icon: "fa-crown", color: "#ff9900", tasksStr: "Create a Tournyx Account|Play 3 Matches" }
+        ];
+
+        let timers = {}; 
+
+        function fetchLiveGiveaways() {
+            fetch(API_URL + "?action=get_giveaways")
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success" && data.data.length > 0) renderGiveawaysList(data.data);
+                else renderGiveawaysList(defaultGiveaways);
+            }).catch(() => renderGiveawaysList(defaultGiveaways));
+        }
+
+        function renderGiveawaysList(list) {
+            const container = document.getElementById('giveawaysList');
+            container.innerHTML = "";
+            
+            Object.values(timers).forEach(clearInterval);
+            timers = {};
+
+            list.forEach((ga, index) => {
+                let animDelay = (index * 0.2) + "s";
+                let isClaimed = localStorage.getItem(`tournyx_ga_${ga.id}`) === "true";
+                
+                // Parse Dynamic Tasks & Check Status
+                let tasksArray = ga.tasksStr ? ga.tasksStr.split('|') : ["Create a Tournyx Account", "Play 1 Match"];
+                let tasksHtml = "";
+                let allComplete = true;
+                let redirectUrl = ""; // Where to send them if incomplete
+
+                tasksArray.forEach(task => {
+                    let analysis = analyzeTask(task);
+                    
+                    if (!analysis.isComplete) {
+                        allComplete = false;
+                        if(redirectUrl === "") redirectUrl = analysis.actionUrl; // Save first incomplete action
+                    }
+
+                    let isDoneClass = analysis.isComplete ? "completed" : ""; 
+                    let statusHtml = analysis.isComplete 
+                        ? `<span class="task-status">Done</span>` 
+                        : `<button class="task-btn" onclick="window.location.href='${analysis.actionUrl}'">${analysis.btnText}</button>`;
+                    
+                    tasksHtml += `
+                        <li class="task-item ${isDoneClass}">
+                            <div class="task-check"><i class="fa-solid fa-check"></i></div>
+                            <div class="task-text">${task}</div>
+                            ${statusHtml}
+                        </li>`;
+                });
+
+                // Generate Button Logic
+                let btnHtml = "";
+                if (isClaimed) {
+                    btnHtml = `<button class="btn-enter claimed" disabled><i class="fa-solid fa-check-double"></i> Ticket Claimed</button>`;
+                } else if (!allComplete) {
+                    btnHtml = `<button class="btn-enter locked" id="btn_${ga.id}" onclick="window.location.href='${redirectUrl}'"><i class="fa-solid fa-lock"></i> Complete Tasks First</button>`;
+                } else {
+                    btnHtml = `<button class="btn-enter" id="btn_${ga.id}" onclick="initiateEntry('${ga.id}')"><i class="fa-solid fa-ticket"></i> Claim Ticket</button>`;
+                }
+
+                container.innerHTML += `
+                    <div class="prize-card" id="card_${ga.id}" style="animation-delay: ${animDelay};">
+                        <div class="live-badge" id="badge_${ga.id}"><div class="live-dot"></div> LIVE NOW</div>
+                        
+                        <div class="timer-container">
+                            <div class="timer-label">Ends In</div>
+                            <div class="countdown">
+                                <div class="time-box"><span class="time-val" id="d_${ga.id}">00</span><span class="time-unit">DAYS</span></div>
+                                <div class="time-box"><span class="time-val" id="h_${ga.id}">00</span><span class="time-unit">HRS</span></div>
+                                <div class="time-box"><span class="time-val" id="m_${ga.id}">00</span><span class="time-unit">MINS</span></div>
+                                <div class="time-box"><span class="time-val" id="s_${ga.id}">00</span><span class="time-unit">SECS</span></div>
+                            </div>
+                        </div>
+
+                        <div class="prize-image-wrap">
+                            <i class="fa-solid ${ga.icon || 'fa-gift'} prize-icon" style="color:${ga.color || '#bd00ff'};"></i>
+                        </div>
+                        
+                        <h2 class="prize-title">${ga.title}</h2>
+                        <p class="prize-sub">${ga.sub}</p>
+
+                        <div class="mission-box">
+                            <div class="mission-title"><i class="fa-solid fa-list-check"></i> HOW TO ENTER</div>
+                            <ul class="task-list">
+                                ${tasksHtml}
+                            </ul>
+                        </div>
+
+                        ${btnHtml}
+                        <p style="text-align:center; font-size:0.75rem; color:#888; margin-top:12px;">Complete tasks to officially unlock your ticket.</p>
+                    </div>
+                `;
+
+                startTimer(ga.id, ga.endDate, isClaimed);
+            });
+        }
+
+        // ==========================================
+        // 4. DYNAMIC SYNCHRONIZED TIMERS
+        // ==========================================
+        function startTimer(id, endDateString, isClaimed) {
+            let endTime = new Date(endDateString).getTime();
+
+            timers[id] = setInterval(function() {
                 let now = new Date().getTime();
                 let distance = endTime - now;
 
-                if (distance < 0) return;
+                if (distance <= 0) {
+                    clearInterval(timers[id]);
+                    document.getElementById(`d_${id}`).innerText = "00";
+                    document.getElementById(`h_${id}`).innerText = "00";
+                    document.getElementById(`m_${id}`).innerText = "00";
+                    document.getElementById(`s_${id}`).innerText = "00";
+                    
+                    let card = document.getElementById(`card_${id}`);
+                    if(card) card.classList.add('ended');
+
+                    let badge = document.getElementById(`badge_${id}`);
+                    if(badge) {
+                        badge.innerHTML = `<i class="fa-solid fa-stopwatch"></i> ENDED`;
+                        badge.style.background = "rgba(255,255,255,0.1)";
+                        badge.style.color = "#aaa";
+                        badge.style.borderColor = "#555";
+                        badge.style.animation = "none";
+                    }
+                    
+                    let btn = document.getElementById(`btn_${id}`);
+                    if(btn && !isClaimed) {
+                        btn.innerHTML = `<i class="fa-solid fa-ban"></i> Event Closed`;
+                        btn.classList.add('locked');
+                        btn.onclick = null;
+                    }
+                    return;
+                }
 
                 let d = Math.floor(distance / (1000 * 60 * 60 * 24));
                 let h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 let m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 let s = Math.floor((distance % (1000 * 60)) / 1000);
 
-                document.getElementById("days").innerText = d < 10 ? "0" + d : d;
-                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
-                document.getElementById("mins").innerText = m < 10 ? "0" + m : m;
-                document.getElementById("secs").innerText = s < 10 ? "0" + s : s;
+                document.getElementById(`d_${id}`).innerText = d < 10 ? "0" + d : d;
+                document.getElementById(`h_${id}`).innerText = h < 10 ? "0" + h : h;
+                document.getElementById(`m_${id}`).innerText = m < 10 ? "0" + m : m;
+                document.getElementById(`s_${id}`).innerText = s < 10 ? "0" + s : s;
             }, 1000);
         }
-        startTimer();
 
         // ==========================================
-        // 3. SECURE GIVEAWAY ENTRY LOGIC
+        // 5. SECURE ENTRY LOGIC & UID PROMPT
         // ==========================================
-        async function attemptEntry() {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            const btn = document.getElementById("enterBtn");
-            const toast = document.getElementById("toast");
+        let activeGiveawayId = "";
 
-            // Check if logged in
-            if (!user) {
-                toast.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please log in to enter!';
-                toast.style.backgroundColor = "#ff0055";
-                showToastUI(toast);
+        function initiateEntry(gaId) {
+            // Re-verify tasks quickly before opening modal
+            showOverlay('loading', 'Verifying Tasks...', 'Checking match history securely.');
+
+            setTimeout(() => {
+                hideOverlay();
+                openUidModal(gaId);
+            }, 1000);
+        }
+
+        function openUidModal(gaId) {
+            activeGiveawayId = gaId;
+            document.getElementById('giveawayUidInput').value = ""; 
+            document.getElementById('uidModal').classList.add('active');
+        }
+        function closeUidModal() {
+            document.getElementById('uidModal').classList.remove('active');
+            activeGiveawayId = "";
+        }
+
+        function submitGiveawayEntry() {
+            let uid = document.getElementById('giveawayUidInput').value.trim();
+            if(!uid) {
+                showToast("Please enter your Game UID.", true);
                 return;
             }
 
-            // Prevent spam clicking if already claimed
-            if (btn.innerText.includes("Claimed")) {
-                toast.innerHTML = '<i class="fa-solid fa-check"></i> You already have a ticket!';
-                toast.style.backgroundColor = "var(--accent-green)";
-                showToastUI(toast);
-                return;
-            }
+            closeUidModal();
+            showOverlay('loading', 'Securing Ticket...', 'Entering you into the draw.');
 
-            // Show loading state
-            toast.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying your tasks...';
-            toast.style.backgroundColor = "var(--accent-cyan)";
-            showToastUI(toast);
-
-            try {
-                // Ask the database if they completed the missions
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: 'enter_giveaway', 
-                        email: user.email 
-                    })
-                });
+            // Final submission to Google Sheets
+            fetch(API_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    action: 'enter_giveaway', 
+                    email: currentUser.email, 
+                    ga_id: activeGiveawayId,
+                    game_uid: uid 
+                })
+            }).then(() => {
+                showOverlay('success', 'Ticket Claimed!', 'Your UID has been recorded. Good luck!');
                 
-                const result = await res.json();
-                
-                if (result.status === 'success') {
-                    // SUCCESS: Update the button to look premium
-                    toast.innerHTML = `<i class="fa-solid fa-ticket"></i> ${result.data}`; 
-                    toast.style.backgroundColor = "var(--accent-green)";
-                    
+                // Lock button locally
+                localStorage.setItem(`tournyx_ga_${activeGiveawayId}`, "true");
+                const btn = document.getElementById(`btn_${activeGiveawayId}`);
+                if(btn) {
                     btn.classList.remove("locked");
+                    btn.classList.add("claimed");
                     btn.innerHTML = `<i class="fa-solid fa-check-double"></i> Ticket Claimed`;
-                    btn.style.background = "var(--accent-green)";
-                    btn.style.color = "#000";
-                    btn.style.boxShadow = "0 0 15px rgba(0,255,127,0.4)";
-                } else {
-                    // FAILED: Not enough matches/referrals
-                    toast.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${result.data}`;
-                    toast.style.backgroundColor = "#ff0055";
+                    btn.onclick = null;
                 }
-            } catch (err) {
-                toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Connection error.`;
-                toast.style.backgroundColor = "#ff0055";
-            }
-            
-            showToastUI(toast);
+                
+                setTimeout(hideOverlay, 3000);
+            }).catch(() => {
+                showOverlay('error', 'Network Error', 'Could not record entry. Try again.');
+                setTimeout(hideOverlay, 3000);
+            });
         }
 
-        // Helper to show the toast on screen
-        function showToastUI(toastElement) {
-            toastElement.className = "show";
-            setTimeout(function(){ toastElement.className = toastElement.className.replace("show", ""); }, 3000);
-        }
-
-        // ==========================================
-        // 4. BACKGROUND PARTICLES ANIMATION
-        // ==========================================
+        // --- PARTICLE BACKGROUND SCRIPT ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -398,15 +660,10 @@
             u(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
             d(){ ctx.fillStyle='rgba(0,242,255,0.3)'; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
         }
-        for(let i=0;i<50;i++) particles.push(new P());
+        for(let i=0;i<40;i++) particles.push(new P());
         function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
         anim();
 
-                
-            
-  
- 
     </script>
 </body>
 </html>
-
