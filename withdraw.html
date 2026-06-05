@@ -70,7 +70,7 @@
         .back-btn { color: white; font-size: 1.1rem; text-decoration: none; transition: 0.3s; cursor: pointer; padding: 5px; flex-shrink:0;}
         .back-btn:active { color: var(--accent-cyan); transform: scale(0.9); }
         html.theme-vip .back-btn:active { color: #FFD700; }
-        .app-title { font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; white-space: normal; line-height: 1.1; word-break: break-word; text-transform: uppercase; margin:0;}
+        .app-title { font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; white-space: normal; line-height: 1.1; overflow-wrap: anywhere;; text-transform: uppercase; margin:0;}
         .header-greeting { font-size: 0.65rem; color: #aaa; margin-bottom: 2px; display: flex; align-items: center; font-weight: bold;}
         .header-profile-img { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; cursor: pointer; box-shadow: 0 0 8px rgba(0,242,255,0.4); transition: 0.3s; flex-shrink: 0; background:#000; }
         html.theme-vip .header-profile-img { border-color: #FFD700; box-shadow: 0 0 8px rgba(255,215,0,0.6); }
@@ -98,7 +98,7 @@
         
         /* 🔥 UPGRADE: Bulletproof Select & Inputs CSS to stop glitching */
         .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); padding: 12px 12px 12px 35px; color: white; border-radius: 10px; font-family: var(--font-body); font-size: 0.95rem; transition: 0.3s; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); outline: none; font-weight: bold; }
-        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 8px rgba(0, 242, 255, 0.2), inset 0 0 5px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8);}
+        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 8px rgba(0, 242, 255, 0.2), inset 0 0 5px rgba(0,0,0,0.5); background-color: rgba(0,0,0,0.8);}
         html.theme-vip .form-control:focus { border-color: #FFD700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.2), inset 0 0 5px rgba(0,0,0,0.5); }
         .form-control.no-prefix { padding-left: 12px; }
         
@@ -241,14 +241,14 @@
         
         /* 🔥 THE TX ICON OVERFLOW FIX EXACT MATCH */
         .tx-ticket-composite { position: relative; display: inline-flex; align-items: center; justify-content: center; height: 24px; }
-        .tx-ticket-composite i { display: block; line-height: 1; font-size: 1.2rem; color: inherit; -webkit-text-fill-color: inherit; transition: 0.3s; background: inherit; filter: inherit; -webkit-background-clip: inherit; }
+        .tx-ticket-composite i { display: block; line-height: 1; font-size: 1.2rem; color: inherit; -webkit-text-fill-color: inherit; transition: 0.3s; background: inherit; filter: inherit; background-clip: inherit; -webkit-background-clip: inherit; }
         .tx-ticket-composite .tx-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -46%); font-family: var(--font-head); font-size: 0.38em; font-weight: 900; color: var(--primary-bg) !important; -webkit-text-fill-color: var(--primary-bg) !important; letter-spacing: -0.5px; pointer-events: none; z-index: 2; transition: 0.3s; font-style: normal !important; }
         
         .nav-item.active { color: var(--accent-cyan); }
         html.theme-vip .nav-item.active { color: #d4af37; }
         .nav-item.active > .tx-ticket-composite { transform: translateY(-4px); }
-        .nav-item.active > i, .nav-item.active > .tx-icon, .nav-item.active > .tx-ticket-composite i { transform: translateY(-4px); background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px var(--accent-cyan)); font-style: normal; }
-        html.theme-vip .nav-item.active > i, html.theme-vip .nav-item.active > .tx-icon, html.theme-vip .nav-item.active > .tx-ticket-composite i { background: linear-gradient(135deg, #FFE87C, #FF8C00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(212,175,55,0.8)); }
+        .nav-item.active > i, .nav-item.active > .tx-icon, .nav-item.active > .tx-ticket-composite i { transform: translateY(-4px); background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); background-clip: text; -webkit-background-clip: text;; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px var(--accent-cyan)); font-style: normal; }
+        html.theme-vip .nav-item.active > i, html.theme-vip .nav-item.active > .tx-icon, html.theme-vip .nav-item.active > .tx-ticket-composite i { background: linear-gradient(135deg, #FFE87C, #FF8C00); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(212,175,55,0.8)); }
         .nav-item.active .tx-ticket-composite i { transform: translateY(0); }
         .nav-item.active span { transform: translateY(2px); color: white; text-shadow: 0 0 5px rgba(255,255,255,0.5);}
         .fab-slot { flex: 1.2; display: flex; justify-content: center; position: relative; height: 100%; align-items: center; }
@@ -275,7 +275,7 @@
     <div class="top-header">
         <div class="header-wrapper">
             <div class="header-left">
-                <a href="profile.html" class="back-btn" onclick="triggerHaptic()"><i class="fa-solid fa-arrow-left"></i></a>
+                <a href="#" class="back-btn" onclick="goBack(); return false;"><i class="fa-solid fa-arrow-left"></i></a>
                 <div>
                     <div class="header-greeting" id="dynamicGreeting">Withdraw Funds</div>
                     <h1 class="app-title">FUNDS</h1>
@@ -548,7 +548,7 @@
         © 2026 TOURNYX. All rights reserved.<br>
         <div style="margin-top: 5px; font-style: italic; color: #777; font-size: 0.7rem;">made with ⚡ for gamers</div>
         <div style="margin-top: 10px; font-size: 0.75rem; color: #888; font-family: var(--font-head); letter-spacing: 1px;">
-            Powered by <span style="font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;">QUVA</span>
+            Powered by <span style="font-weight: 900; background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;">QUVA</span>
         </div>
     </div>
 
@@ -591,7 +591,7 @@
 
     <script>
         // --- MOBILE KEYBOARD NAVIGATION FIX ---
-        const inputs = document.querySelectorAll('input, select, textarea');
+        const inputs = document.querySelectorAll('input,textarea');
         const bNav = document.querySelector('.bottom-nav');
         inputs.forEach(inp => {
             inp.addEventListener('focus', () => { if(bNav) bNav.style.display = 'none'; });
@@ -642,13 +642,38 @@
             }
         }
 
-        function getISTDateTime() {
-            let d = new Date();
-            let options = { timeZone: 'Asia/Kolkata', month: 'short', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
-            return d.toLocaleString('en-IN', options).toUpperCase();
-        }
+       function getISTDateTime() {
+    let d = new Date();
+    
+    // Get Date, Month, Year
+    let day = String(d.getDate()).padStart(2, '0');
+    let month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    let year = d.getFullYear();
+    
+    // Get Time
+    let hours = d.getHours();
+    let minutes = String(d.getMinutes()).padStart(2, '0');
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // The hour '0' should be '12'
+    let strHours = String(hours).padStart(2, '0');
+    
+    // Final Format: DD/MM/YYYY, HH:MM AM/PM
+    return `${day}/${month}/${year}, ${strHours}:${minutes} ${ampm}`;
+}
 
         function triggerHaptic() { if(navigator.vibrate) navigator.vibrate(30); }
+        function goBack() {
+            triggerHaptic();
+
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = "profile.html";
+            }
+        }
         function triggerError(id) { let el = document.getElementById(id); el.classList.add('input-error'); triggerHaptic(); setTimeout(()=>el.classList.remove('input-error'),400); }
         function showToast(msg, isError = false) {
             const t = document.getElementById('customToast'); t.innerText = msg; t.className = "show";
@@ -1077,13 +1102,35 @@
                     else if (isCancelled) { statusColor = "var(--accent-red)"; statusBg = "rgba(255, 77, 77, 0.1)"; statusBorder = "rgba(255, 77, 77, 0.3)"; mainIcon = "fa-xmark"; } 
                     else if (isRefunded) { statusColor = "var(--accent-cyan)"; statusBg = "rgba(0, 242, 255, 0.1)"; statusBorder = "rgba(0, 242, 255, 0.3)"; mainIcon = "fa-rotate-left"; }
 
+                    // --- NEW DATE FORMATTING LOGIC ---
+                    let displayDate = item.date;
+                    try {
+                        let d = new Date(item.date);
+                        if (!isNaN(d.getTime())) { 
+                            let day = String(d.getDate()).padStart(2, '0');
+                            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                            let month = monthNames[d.getMonth()];
+                            let year = d.getFullYear();
+                            
+                            let hours = d.getHours();
+                            let minutes = String(d.getMinutes()).padStart(2, '0');
+                            let ampm = hours >= 12 ? 'PM' : 'AM';
+                            hours = hours % 12;
+                            hours = hours ? hours : 12;
+                            let strHours = String(hours).padStart(2, '0');
+                            
+                            displayDate = `${day} ${month} ${year}, ${strHours}:${minutes} ${ampm}`;
+                        }
+                    } catch(e) {}
+                    // ---------------------------------
+
                     historyList.innerHTML += `
                         <div class="txn-item glow-hover" style="animation-delay:${delay*0.05}s" onclick="openMessageInput('${item.id}', '${item.amount}', '${item.date}', '${item.status || 'Pending'}', '${item.method || ''}', '${item.details || ''}'); triggerHaptic();">
                             <div class="txn-left">
                                 <div class="txn-icon icon-debit"><i class="fa-solid ${mainIcon}"></i></div>
                                 <div class="txn-info">
                                     <h4>${item.title}</h4>
-                                    <p><span class="cat-tag"><i class="fa-solid fa-money-bill-transfer"></i> Payout</span> <span>${item.date}</span></p>
+                                    <p><span class="cat-tag"><i class="fa-solid fa-money-bill-transfer"></i> Payout</span> <span>${displayDate}</span></p>
                                 </div>
                             </div>
                             <div class="txn-right">
@@ -1097,7 +1144,6 @@
                 historyList.innerHTML = `<div class="empty-history"><i class="fa-solid fa-file-invoice" style="font-size:1.8rem; opacity:0.5; margin-bottom:8px; color:var(--accent-purple);"></i><br>No withdrawal records found.</div>`;
             }
         }
-
         // --- EXPLICIT WITHDRAW PROCESSING ---
         function processWithdrawal() {
             const grossAmount = parseFloat(document.getElementById('withdrawAmount').value);
