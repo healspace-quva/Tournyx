@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports | Support Command Center</title>
+    <title>Tournyx Payout Portal</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,145 +11,150 @@
 
     <style>
         :root {
-            --bg-main: #05020c; --bg-panel: rgba(15, 7, 30, 0.9);
+            --bg-main: #05020c; --bg-panel: rgba(15, 7, 30, 0.7);
             --accent-cyan: #00f2ff; --accent-purple: #bd00ff;
             --accent-red: #ff4d4d; --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif;
-            --border-glow: rgba(0, 242, 255, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100vh; }
+        body { background-color: var(--bg-main); color: white; font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
         
-        /* BACKGROUND PARTICLE GRID SYSTEM */
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #120529 0%, #05020c 100%); pointer-events: none;}
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #120529 0%, #05020c 100%); }
 
-        .panel-container { width: 100%; max-width: 850px; margin: 40px auto; background: var(--bg-panel); border: 1px solid var(--border-glow); border-radius: 16px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); transition: transform 0.4s ease; }
+        .panel-container { width: 90%; max-width: 500px; margin: 30px auto; background: var(--bg-panel); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 12px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); animation: slideUp 0.4s ease-out; }
         
-        .header-section { text-align: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;}
-        .header-section h1 { font-family: var(--font-head); font-size: 2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;}
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* FORM FIELD DESIGN */
-        .input-box { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 10px; font-family: var(--font-body); font-size: 1.05rem; font-weight: bold; outline: none; transition: 0.3s; margin-bottom: 15px;}
-        .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.25); }
+        .header-section { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
+        .header-section h1 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .header-desc { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-top: 4px; font-weight: bold; letter-spacing: 1px;}
 
-        .btn { width: 100%; padding: 15px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; letter-spacing: 1px;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 5px 15px rgba(0,242,255,0.2); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-success { background: var(--accent-green); color: black; font-weight: bold;}
+        .input-box { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-body); font-size: 0.9rem; font-weight: bold; outline: none; transition: 0.3s; margin-bottom: 12px;}
+        .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+        
+        select.input-box { appearance: none; -webkit-appearance: none; cursor: pointer; color: var(--accent-cyan); }
+        select.input-box option { background: #0a0514; color: white; }
+
+        .btn { width: 100%; padding: 12px; border-radius: 8px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 4px 12px rgba(0,242,255,0.2); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-success { background: var(--accent-green); color: black; }
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
 
-        /* TRANSACTION QUEUE CARDS */
-        .queue-item { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); padding: 16px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .queue-item:hover { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); }
-        .queue-item.locked { opacity: 0.6; border-color: var(--accent-red); pointer-events: none; }
+        .queue-item { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .queue-item:hover { border-color: var(--accent-cyan); }
 
-        /* DEEP PAYOUT CONTROL VIEW */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .info-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; }
-        .info-card label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; margin-bottom: 4px;}
-        .info-card span { font-size: 1.15rem; font-weight: 700; color: white;}
+        .info-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px;}
+        .info-card label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.65rem; font-weight: bold; margin-bottom: 2px;}
+        .info-card span { font-size: 0.95rem; font-weight: 700; color: white; word-break: break-all;}
 
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 20px rgba(0,242,255,0.4); font-size: 0.85rem;}
-        #toast.show { transform: translateX(0); }
+        #toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%) translateY(-150%); background: rgba(10,5,20,0.95); border: 1px solid var(--accent-cyan); color: white; padding: 10px 20px; border-radius: 20px; font-family: var(--font-head); font-weight: bold; transition: 0.4s; z-index: 9999; font-size: 0.75rem; text-align: center; white-space: nowrap;}
+        #toast.show { transform: translateX(50%) translateY(0); }
         
         .hidden { display: none !important; }
 
-        /* --- RECEIPTS LAYOUT ENGINE --- */
-        #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 650px; z-index: -9999; background: #05020c; color: white; padding: 35px; box-sizing: border-box; }
-        .pdf-billing-hdr { border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;}
+        /* INVOICE ENGINE */
+        #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 600px; z-index: -9999; background: #05020c; color: white; padding: 30px; box-sizing: border-box; border: 2px solid #00f2ff;}
+        .pdf-hdr { border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
+        
+        /* SUCCESS ANIMATION */
+        .success-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s;}
+        .success-overlay.active { opacity: 1; pointer-events: all; }
+        .success-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-green); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px var(--accent-green); font-size: 2.5rem; color: black; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 15px;}
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <canvas id="bg-canvas"></canvas>
-    <div id="toast">System Alert Channel</div>
+    <div id="toast">Alert</div>
 
-    <!-- VIEW 1: AGENT SECURE ACCESS GATEWAY -->
-    <div id="view-login" class="panel-container animate-section">
+    <!-- SUCCESS OVERLAY -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+        <h2 style="font-family: var(--font-head); color: white; font-size: 1.2rem; letter-spacing: 1px;">SETTLEMENT SUCCESS</h2>
+        <p style="color: #aaa; font-size: 0.8rem; margin-top: 5px;">Invoice PDF Saved to Drive</p>
+    </div>
+
+    <!-- VIEW 1: LOGIN -->
+    <div id="view-login" class="panel-container">
         <div class="header-section">
-            <h1>AGENT COMMMAND PORTAL</h1>
-            <p style="color: #888; font-size: 0.85rem; text-transform: uppercase; margin-top: 5px; font-weight: bold; letter-spacing: 1px;">Tournyx Esports Customer Operations</p>
+            <h1>AGENT PORTAL</h1>
+            <p class="header-desc">Secure Payout Gateway</p>
         </div>
-        <input type="email" id="agentEmail" class="input-box" placeholder="Authorized Agent Email Address" value="quva.globe.india">
-        <input type="password" id="agentPassword" class="input-box" placeholder="Secure Operations Password">
-        <button class="btn btn-primary" onclick="portal.login()">Authorize Terminal Access</button>
+        <input type="email" id="agentEmail" class="input-box" placeholder="Agent Email (No @gmail.com)">
+        <input type="password" id="agentPassword" class="input-box" placeholder="Password">
+        <button class="btn btn-primary" id="loginBtn" onclick="portal.login()">
+            <span>AUTHORIZE</span> <i class="fa-solid fa-shield-halved"></i>
+        </button>
     </div>
 
-    <!-- VIEW 2: OPERATIONS DESK / LIVE PENDING QUEUE -->
+    <!-- VIEW 2: QUEUE -->
     <div id="view-dashboard" class="panel-container hidden">
-        <div class="header-section" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="header-section" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
             <div style="text-align: left;">
-                <h1 style="font-size: 1.6rem;">PENDING LEDGER</h1>
-                <p id="agentTag" style="color:var(--accent-cyan); font-weight: bold; font-size: 0.85rem;"></p>
+                <h1 style="font-size: 1.2rem;">QUEUE</h1>
+                <p id="agentTag" style="color:var(--accent-cyan); font-weight: bold; font-size: 0.65rem;"></p>
             </div>
-            <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.8rem;" onclick="portal.logout()">Terminate Session</button>
+            <button class="btn btn-outline" style="width: auto; padding: 6px 10px; font-size: 0.65rem;" onclick="portal.logout()"><i class="fa-solid fa-power-off"></i></button>
         </div>
-        
-        <div id="transactionQueueArea">
-            <!-- Populated continuously via background fetching updates -->
-        </div>
+        <div id="transactionQueueArea" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
     </div>
 
-    <!-- VIEW 3: DESK DEEP SYSTEM DISPATCH VIEW -->
+    <!-- VIEW 3: DISPATCH -->
     <div id="view-dispatch" class="panel-container hidden">
-        <div class="header-section" style="text-align: left; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <button class="btn btn-outline" style="width:auto; padding: 6px 12px; font-size:0.75rem; margin-bottom:10px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> Return to Desk</button>
-                <h1 id="dispatchTitle" style="font-size: 1.5rem;">DISPATCH INTENT</h1>
-            </div>
-            <div id="lockBadge" style="background:rgba(255,77,77,0.15); border:1px solid var(--accent-red); color:var(--accent-red); font-size:0.75rem; padding:5px 10px; border-radius:6px; font-family:var(--font-head); font-weight:bold;">MUTEX LOCKED</div>
+        <div class="header-section" style="text-align: left; padding-bottom: 10px; border-bottom: none; margin-bottom: 10px;">
+            <button class="btn btn-outline" style="width:auto; padding: 5px 10px; font-size:0.65rem; margin-bottom:10px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <h1 id="dispatchTitle" style="font-size: 1.2rem;">DISPATCH</h1>
         </div>
 
-        <div class="info-grid">
-            <div class="info-card"><label>Destination Target Account</label><span id="dispEmail">-</span></div>
-            <div class="info-card"><label>Gross Transfer Amount</label><span id="dispAmt" style="color:var(--accent-green); font-family:var(--font-head); font-weight:900;">₹0</span></div>
-            <div class="info-card"><label>Settlement Method Target</label><span id="dispMethod" style="text-transform: uppercase;">-</span></div>
-            <div class="info-card"><label>Account Transfer Destination Parameters</label><span id="dispDetails" style="font-family: monospace; font-size:0.9rem;">-</span></div>
-        </div>
+        <div class="info-card"><label>Target Account</label><span id="dispEmail">-</span></div>
+        <div class="info-card"><label>Payout Amount</label><span id="dispAmt" style="color:var(--accent-green); font-size:1.4rem;">₹0</span></div>
+        <div class="info-card"><label>Given Payment Details</label><span id="dispDetails" style="color:var(--accent-purple);">-</span></div>
 
-        <div style="margin-bottom: 25px;">
-            <button class="btn btn-success" id="payNowBtn" onclick="portal.executeUpiDeepLink()"><i class="fa-solid fa-bolt"></i> LAUNCH MOBILE UPI INTENT</button>
-        </div>
+        <button class="btn btn-success" id="payNowBtn" style="margin-bottom: 20px;" onclick="portal.executeUpiDeepLink()">
+            <i class="fa-solid fa-bolt"></i> OPEN UPI APP
+        </button>
 
-        <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px;">
-            <label class="form-label" style="display:block; margin-bottom:8px; font-family:var(--font-head); font-size:0.8rem; color:var(--accent-purple); font-weight:bold;">RESOLVE DISPATCH VERDICT</label>
-            <select id="dispatchStatusDropdown" class="input-box" style="appearance: none; -webkit-appearance: none; cursor:pointer;">
-                <option value="" disabled selected>Select Settlement Status...</option>
-                <option value="Success">🟢 Success (Clear Ledger & Clear Lock)</option>
-                <option value="Failed">🔴 Failed (Mark Failed Processed)</option>
-                <option value="Refunded">🔵 Refunded (Route Back to Source Balance Column)</option>
+        <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
+            <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.75rem; color:var(--accent-cyan);">SETTLEMENT VERDICT</label>
+            <select id="dispatchStatusDropdown" class="input-box">
+                <option value="" disabled selected>Select Status...</option>
+                <!-- EXACT VALUES AS REQUESTED -->
+                <option value="Success">Success</option>
+                <option value="Failed">Failed</option>
+                <option value="Refunded">Refunded</option>
             </select>
-            <button class="btn btn-primary" onclick="portal.submitStatusResolution()"><i class="fa-solid fa-floppy-disk"></i> Commit Settlement Status</button>
+            <button class="btn btn-primary" id="commitBtn" onclick="portal.submitStatusResolution()">
+                <span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>
+            </button>
         </div>
     </div>
 
-    <!-- VECTOR PDF BILL CAPTURE WRAPPER CONTAINER -->
+    <!-- INVOICE TEMPLATE (HIDDEN) -->
     <div id="pdfWrapper">
-        <div class="pdf-billing-hdr">
+        <div class="pdf-hdr">
             <div>
-                <h1 style="font-size:22px; font-weight:900; letter-spacing:1px; color:#ffffff;">TOURNYX ESPORTS</h1>
-                <p style="color:#888; font-size:10px; letter-spacing:0.5px; margin-top:2px;">OFFICIAL SETTLEMENT INVOICE</p>
+                <h1 style="font-size:18px; font-weight:900; letter-spacing:1px; color:#ffffff; margin:0;">TOURNYX ESPORTS</h1>
+                <p style="color:#888; font-size:9px; margin-top:2px;">OFFICIAL SETTLEMENT INVOICE</p>
             </div>
-            <div style="text-align:right; font-family:'Courier New', Courier, monospace; font-size:12px; color:#00f2ff;" id="pdf-date">DATE</div>
+            <div style="text-align:right; font-family:monospace; font-size:10px; color:#00f2ff;" id="pdf-date">DATE</div>
         </div>
-        <div style="background:rgba(255,255,255,0.02); padding:15px; border-radius:8px; margin-bottom:25px; border:1px solid rgba(255,255,255,0.05); font-size:13px; line-height:1.6;">
-            <div><strong>Transaction Reference ID:</strong> <span id="pdf-txnid" style="color:var(--accent-cyan); font-family:monospace;">-</span></div>
-            <div><strong>User Clearance Identity Account:</strong> <span id="pdf-email">-</span></div>
-            <div><strong>Payment Destination Parameters:</strong> <span id="pdf-dest">-</span></div>
-            <div><strong>Processing Settlement Officer:</strong> <span id="pdf-agent">-</span></div>
+        <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; margin-bottom:20px; font-size:11px; line-height:1.8;">
+            <div><strong>Txn ID:</strong> <span id="pdf-txnid" style="color:var(--accent-cyan); font-family:monospace;">-</span></div>
+            <div><strong>User Email:</strong> <span id="pdf-email">-</span></div>
+            <div><strong>Payment Details:</strong> <span id="pdf-dest">-</span></div>
+            <div><strong>Processed By:</strong> Tournyx Esports [<span id="pdf-agent" style="color:#00ff7f;">-</span>]</div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,255,127,0.05); padding:15px; border-radius:8px; border:1px solid var(--accent-green);">
-            <span style="font-weight:bold; text-transform:uppercase; font-size:11px; letter-spacing:1px;">Net Remitted Disbursal</span>
-            <strong style="font-size:22px; color:var(--accent-green);" id="pdf-amount">₹0</strong>
-        </div>
-        <div style="margin-top:40px; text-align:center; font-size:10px; color:#555; border-top:1px dashed #222; padding-top:15px;">
-            Cryptographic Disbursal Receipt • Tournyx Automated Command Gateway Node
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,255,127,0.1); padding:12px; border-radius:6px; border:1px solid var(--accent-green);">
+            <span style="font-weight:bold; font-size:10px;">NET DISBURSAL</span>
+            <strong style="font-size:18px; color:var(--accent-green);" id="pdf-amount">₹0</strong>
         </div>
     </div>
 
     <script>
-        // 🚨 CONFIGURATION NODE CONNECTIVITY LINK PARAMETERS
+        // 🚨 YOUR API URL
         const SYSTEM_URL = "https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec";
 
         const portal = {
@@ -157,54 +162,55 @@
             pollingTimer: null,
             activeTxn: null,
 
-            init: function() {
-                this.initBackgroundParticles();
-            },
+            init: function() { this.initBG(); },
 
             toast: function(msg) {
                 const t = document.getElementById('toast'); t.innerText = msg;
-                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
+                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
             },
 
             switchView: function(viewId) {
-                document.getElementById('view-login').classList.add('hidden');
-                document.getElementById('view-dashboard').classList.add('hidden');
-                document.getElementById('view-dispatch').classList.add('hidden');
+                document.querySelectorAll('.panel-container').forEach(el => el.classList.add('hidden'));
                 document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            },
+
+            btnLoading: function(btnId, isLoading, originalText) {
+                const btn = document.getElementById(btnId);
+                if(isLoading) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             },
 
             api: async function(action, data = {}) {
                 data.action = action;
                 try {
-                    const res = await fetch(SYSTEM_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify(data)
-                    });
+                    const res = await fetch(SYSTEM_URL, { method: 'POST', body: JSON.stringify(data) });
                     return await res.json();
                 } catch(err) {
-                    // 🔥 FIX: Properly return a message so the toast doesn't say "undefined"
-                    return { success: false, message: "Server Connection Failed. Check your SYSTEM_URL." };
+                    return { success: false, message: "Server Connection Failed." };
                 }
             },
 
             login: async function() {
                 const e = document.getElementById('agentEmail').value.trim();
                 const p = document.getElementById('agentPassword').value.trim();
-                if(!e || !p) return this.toast("Complete credentials entry configuration fields.");
+                if(!e || !p) return this.toast("Enter credentials.");
 
-                this.toast("Authenticating...");
-
+                this.btnLoading('loginBtn', true);
                 const res = await this.api('agent_login', { email: e, password: p });
+                this.btnLoading('loginBtn', false, `<span>AUTHORIZE</span> <i class="fa-solid fa-shield-halved"></i>`);
+
                 if(res.success) {
                     this.agent = res.data.agent;
-                    document.getElementById('agentTag').innerText = `OPERATOR SESSION: ${this.agent}`;
+                    document.getElementById('agentTag').innerText = `AGENT: ${this.agent}`;
                     this.switchView('dashboard');
                     this.startLiveQueueSync();
-                    this.toast("Login Successful!");
                 } else {
-                    // 🔥 FIX: Now it will read the correct error message!
-                    this.toast(res.message || "Authentication Failed.");
+                    this.toast(res.message);
                 }
             },
 
@@ -217,7 +223,7 @@
 
             startLiveQueueSync: function() {
                 this.syncQueue();
-                this.pollingTimer = setInterval(() => this.syncQueue(), 2500); // Poll every 2.5 seconds
+                this.pollingTimer = setInterval(() => this.syncQueue(), 3000); 
             },
 
             syncQueue: async function() {
@@ -228,96 +234,85 @@
                 area.innerHTML = "";
 
                 if(res.data.length === 0) {
-                    area.innerHTML = `<div style="text-align:center; padding:40px; color:#555; font-weight:bold;">QUEUE EMPTY: NO PENDING PAYOUTS DETECTED</div>`;
+                    area.innerHTML = `<div style="text-align:center; padding:30px; color:#555; font-size:0.8rem; font-weight:bold;">NO PENDING PAYOUTS</div>`;
                     return;
                 }
 
                 res.data.forEach(t => {
-                    let isLockedByOther = t.lockedBy !== "" && t.lockedBy.toLowerCase() !== this.agent.toLowerCase();
-                    let lockStatusTag = isLockedByOther ? `<span style="background:var(--accent-red); color:white; padding:3px 6px; border-radius:4px; font-size:0.65rem; font-weight:bold; font-family:var(--font-head);"><i class="fa-solid fa-lock"></i> CLAIMED BY ${t.lockedBy}</span>` : '';
-                    
                     let card = document.createElement('div');
-                    card.className = `queue-item ${isLockedByOther ? 'locked' : ''}`;
+                    card.className = `queue-item`;
                     card.innerHTML = `
-                        <div>
-                            <h3 style="font-family:var(--font-head); font-size:0.95rem; margin-bottom:3px; color:#fff;">ID: ${t.txnId} ${lockStatusTag}</h3>
-                            <p style="font-size:0.8rem; color:#888; font-weight:bold;">${t.email} • Target: <span style="color:var(--accent-cyan); text-transform:uppercase;">${t.method}</span></p>
+                        <div style="min-width:0; overflow:hidden;">
+                            <h3 style="font-family:var(--font-head); font-size:0.85rem; color:#fff;">${t.txnId}</h3>
+                            <p style="font-size:0.7rem; color:#888; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.details}</p>
                         </div>
-                        <div style="text-align:right; display:flex; align-items:center; gap:15px;">
-                            <span style="font-family:var(--font-head); font-size:1.25rem; font-weight:900; color:var(--accent-green);">₹${t.amount}</span>
-                            <button class="btn btn-primary" style="width:auto; padding:8px 14px; font-size:0.75rem;" onclick="portal.claimTransactionRow('${t.txnId}', '${t.email}', ${t.amount}, '${t.method}', '${t.details}')">Dispatch</button>
+                        <div style="text-align:right; flex-shrink:0;">
+                            <span style="font-family:var(--font-head); font-size:1rem; font-weight:900; color:var(--accent-green); display:block;">₹${t.amount}</span>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.65rem; margin-top:4px;" onclick="portal.claimTxn('${t.txnId}', '${t.email}', ${t.amount}, '${t.method}', '${t.details}')">SELECT</button>
                         </div>
                     `;
                     area.appendChild(card);
                 });
             },
 
-            claimTransactionRow: async function(txnId, email, amount, method, details) {
-                const res = await this.api('lock_txn', { txnId: txnId, agentEmail: this.agent });
-                if(!res.success) {
-                    this.toast(res.message);
-                    this.syncQueue();
-                    return;
-                }
-
+            claimTxn: function(txnId, email, amount, method, details) {
                 this.activeTxn = { txnId, email, amount, method, details };
                 
-                // Mount internal parameters into display DOM fields
-                document.getElementById('dispatchTitle').innerText = `PAYOUT INTENT: ${txnId}`;
+                document.getElementById('dispatchTitle').innerText = `ID: ${txnId}`;
                 document.getElementById('dispEmail').innerText = email;
                 document.getElementById('dispAmt').innerText = `₹${amount}`;
-                document.getElementById('dispMethod').innerText = method;
                 document.getElementById('dispDetails').innerText = details;
                 document.getElementById('dispatchStatusDropdown').value = "";
 
-                // Show/hide pay now action dependent on channel type matching upi protocol parameters
+                // PERFECT UPI EXTRACTION
                 const payBtn = document.getElementById('payNowBtn');
                 if(method.toLowerCase() === 'upi' || details.includes('@')) {
                     payBtn.classList.remove('hidden');
                 } else {
                     payBtn.classList.add('hidden');
                 }
-
                 this.switchView('dispatch');
             },
 
             executeUpiDeepLink: function() {
                 if(!this.activeTxn) return;
-                // Parse address cleanly if wrapped in extra string tokens
-                let upiId = this.activeTxn.details.replace('A/C: ', '').trim();
                 
-                // Build absolute standard platform financial URI payload link string layout parameter
-                let upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Tournyx%20Esports&am=${this.activeTxn.amount}&tn=${encodeURIComponent(this.activeTxn.txnId)}&cu=INR`;
+                // Bulletproof regex to scrape just the UPI ID out of the text
+                let upiMatch = this.activeTxn.details.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+                let cleanUpi = upiMatch ? upiMatch[0] : this.activeTxn.details.replace('A/C:', '').trim();
                 
-                this.toast("Launching Android/iOS Native Financial Intent Protocol Portal...");
+                let upiUri = `upi://pay?pa=${encodeURIComponent(cleanUpi)}&pn=Tournyx%20Esports&am=${this.activeTxn.amount}&tn=${encodeURIComponent(this.activeTxn.txnId)}&cu=INR`;
                 window.location.href = upiUri;
             },
 
             submitStatusResolution: async function() {
-                const selectEl = document.getElementById('dispatchStatusDropdown');
-                const selectedStatus = selectEl.value;
-                if(!selectedStatus) return this.toast("Select official settlement resolution status first.");
+                const val = document.getElementById('dispatchStatusDropdown').value;
+                if(!val) return this.toast("Select Status!");
 
-                this.toast("Processing Cryptographic Commit...");
+                this.btnLoading('commitBtn', true);
+                
                 const res = await this.api('update_status', {
                     txnId: this.activeTxn.txnId,
-                    status: selectedStatus,
+                    status: val,
                     agentEmail: this.agent
                 });
 
                 if(res.success) {
-                    this.toast("Ledger successfully reconciled.");
-                    if(selectedStatus === "Success") {
-                        this.compileVectorInvoiceBill();
+                    if(val === "Success") {
+                        await this.generateAndUploadPDF();
                     }
+                    this.toast("Updated!");
+                    this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                     this.activeTxn = null;
-                    setTimeout(() => this.switchView('dashboard'), 1500);
+                    this.switchView('dashboard');
                 } else {
                     this.toast(res.message);
+                    this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                 }
             },
 
-            compileVectorInvoiceBill: function() {
+            generateAndUploadPDF: async function() {
+                // Fill PDF
                 document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB');
                 document.getElementById('pdf-txnid').innerText = this.activeTxn.txnId;
                 document.getElementById('pdf-email').innerText = this.activeTxn.email;
@@ -326,33 +321,35 @@
                 document.getElementById('pdf-amount').innerText = `₹${this.activeTxn.amount}`;
 
                 const element = document.getElementById('pdfWrapper');
-                const opt = {
-                    margin: 0.4,
-                    filename: `BILL_${this.activeTxn.txnId}.pdf`,
-                    image: { type: 'jpeg', quality: 1 },
-                    html2canvas: { scale: 2, backgroundColor: '#05020c' },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
+                const opt = { margin: 0.2, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+                
+                // Get Base64 & Upload
+                const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+                
+                // Show Success Screen instantly
+                const overlay = document.getElementById('successOverlay');
+                overlay.classList.add('active');
+                setTimeout(() => overlay.classList.remove('active'), 2500);
+
+                // Download locally for the agent
                 html2pdf().set(opt).from(element).save();
+
+                // Send to Drive
+                await this.api('upload_invoice', { txnId: this.activeTxn.txnId, pdfBase64: pdfBase64 });
             },
 
-            initBackgroundParticles: function() {
-                const canvas = document.getElementById('bg-canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            initBG: function() {
+                const c = document.getElementById('bg-canvas'); const ctx = c.getContext('2d');
+                c.width = window.innerWidth; c.height = window.innerHeight;
                 let arr = [];
                 class Node {
-                    constructor(){
-                        this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height;
-                        this.s = Math.random()*2; this.v = (Math.random()*0.4) + 0.1;
-                    }
-                    update(){ this.y -= this.v; if(this.y < 0) this.y = canvas.height; }
-                    draw(){ ctx.fillStyle = '#00f2ff'; ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
+                    constructor(){ this.x = Math.random()*c.width; this.y = Math.random()*c.height; this.s = Math.random()*1.5; this.v = (Math.random()*0.3) + 0.1; }
+                    update(){ this.y -= this.v; if(this.y < 0) this.y = c.height; }
+                    draw(){ ctx.fillStyle = '#00f2ff'; ctx.globalAlpha = 0.2; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
                 }
-                for(let i=0; i<30; i++) arr.push(new Node());
-                function loop(){ ctx.clearRect(0,0,canvas.width,canvas.height); arr.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(loop); }
+                for(let i=0; i<20; i++) arr.push(new Node());
+                function loop(){ ctx.clearRect(0,0,c.width,c.height); arr.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(loop); }
                 loop();
-                window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
             }
         };
 
