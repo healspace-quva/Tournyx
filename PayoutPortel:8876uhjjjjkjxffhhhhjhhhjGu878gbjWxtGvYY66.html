@@ -3,71 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Payout Portal</title>
+    <title>Tournyx Agent Command | Esports Payouts</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
+        /* =========================================
+           TOURNYX EXTREME ESPORTS UI ENGINE V3
+           ========================================= */
         :root {
-            --bg-main: #05020c; --bg-panel: rgba(15, 7, 30, 0.75);
+            --bg-main: #030108; --bg-panel: rgba(12, 5, 25, 0.85);
             --accent-cyan: #00f2ff; --accent-purple: #bd00ff;
-            --accent-red: #ff4d4d; --accent-green: #00ff7f;
+            --accent-red: #ff3366; --accent-green: #00e676; --accent-gold: #ffd700;
             --font-head: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif;
+            --glass-border: rgba(0, 242, 255, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-main); color: white; font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
         
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #120529 0%, #05020c 100%); }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #150531 0%, #030108 100%); }
 
-        .panel-container { width: 92%; max-width: 480px; margin: 25px auto; background: var(--bg-panel); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 12px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(12px); animation: slideUp 0.4s ease-out; }
+        .panel-container { width: 92%; max-width: 550px; margin: 30px auto; background: var(--bg-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,242,255,0.05); backdrop-filter: blur(15px); animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        .header-section { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-section h1 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
-        .header-desc { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-top: 4px; font-weight: bold; letter-spacing: 1px;}
-
-        .input-box { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; outline: none; transition: 0.3s; margin-bottom: 12px;}
-        .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+        .brand-header { text-align: center; margin-bottom: 25px; }
+        .brand-logo { width: 70px; height: 70px; border-radius: 50%; box-shadow: 0 0 20px rgba(189,0,255,0.5); border: 2px solid var(--accent-cyan); margin-bottom: 15px; animation: float 3s ease-in-out infinite;}
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,242,255,0.6); } }
         
-        select.input-box { appearance: none; -webkit-appearance: none; cursor: pointer; color: var(--accent-cyan); }
+        .header-section h1 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; text-transform: uppercase;}
+        .header-desc { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-top: 4px; font-weight: 800; letter-spacing: 2px;}
+
+        .input-box { width: 100%; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 10px; font-family: var(--font-body); font-size: 1rem; font-weight: 700; outline: none; transition: 0.3s; margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
+        .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 0 10px rgba(0,0,0,0.5); }
+        select.input-box { appearance: none; cursor: pointer; color: var(--accent-cyan); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f2ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px;}
         select.input-box option { background: #0a0514; color: white; }
 
-        .btn { width: 100%; padding: 12px; border-radius: 8px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 4px 12px rgba(0,242,255,0.2); }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-success { background: var(--accent-green); color: black; box-shadow: 0 4px 12px rgba(0,255,127,0.3);}
-        .btn-success:active { transform: scale(0.97); }
-        .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px; position: relative; overflow: hidden;}
+        .btn::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(255,255,255,0.1); transform: rotate(45deg); transition: 0.3s; opacity: 0; }
+        .btn:hover::after { opacity: 1; left: 100%; transition: 0.5s; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 5px 15px rgba(0,242,255,0.3); }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-success { background: var(--accent-green); color: black; box-shadow: 0 5px 15px rgba(0,230,118,0.4);}
+        .btn-success:active { transform: scale(0.96); }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: inset 0 0 8px rgba(0,242,255,0.1);}
+        
+        /* SHIMMER SKELETON LOADER */
+        .skeleton { position: relative; overflow: hidden; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .skeleton::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%); background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.1) 60%, rgba(255,255,255,0) 100%); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
 
-        .queue-item { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .queue-item:hover { border-color: var(--accent-cyan); }
+        .queue-item { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        .queue-item:hover { border-color: var(--accent-cyan); background: rgba(0,242,255,0.05); transform: translateY(-2px);}
 
-        .info-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px;}
-        .info-card label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.65rem; font-weight: bold; margin-bottom: 2px;}
-        .info-card span { font-size: 0.95rem; font-weight: 700; color: white; word-break: break-all;}
+        .info-card { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 12px; position: relative;}
+        .info-card label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .info-card span { font-size: 1.05rem; font-weight: 700; color: white; word-break: break-all;}
+        
+        .copy-btn { position: absolute; right: 10px; top: 15px; background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-head); transition: 0.3s;}
+        .copy-btn:active { background: var(--accent-cyan); color: black; }
 
-        #toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%) translateY(-150%); background: rgba(10,5,20,0.95); border: 1px solid var(--accent-cyan); color: white; padding: 10px 20px; border-radius: 20px; font-family: var(--font-head); font-weight: bold; transition: 0.4s; z-index: 9999; font-size: 0.75rem; text-align: center; white-space: nowrap;}
-        #toast.show { transform: translateX(50%) translateY(0); }
+        /* QR CODE DESKTOP VIEW */
+        #qrContainer { text-align: center; margin: 15px 0; display: none; background: white; padding: 15px; border-radius: 12px; border: 3px solid var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.4); animation: slideUp 0.4s;}
+        #qrContainer img { width: 150px; height: 150px; }
+        
+        /* REFUND ANIMATION BOX */
+        #refundAmountContainer { overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; opacity: 0; }
+        #refundAmountContainer.expanded { max-height: 120px; opacity: 1; margin-bottom: 15px; }
+
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%); background: rgba(10,5,20,0.95); border: 1px solid var(--accent-cyan); color: white; padding: 12px 25px; border-radius: 30px; font-family: var(--font-head); font-weight: 900; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; font-size: 0.85rem; text-align: center; white-space: nowrap; box-shadow: 0 5px 25px rgba(0,242,255,0.5); text-transform: uppercase;}
+        #toast.show { transform: translateX(-50%) translateY(0); }
         
         .hidden { display: none !important; }
 
-        /* REFUND ANIMATION BOX */
-        #refundAmountContainer { overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; opacity: 0; }
-        #refundAmountContainer.expanded { max-height: 100px; opacity: 1; margin-bottom: 10px; }
-
-        /* INVOICE ENGINE */
-        #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 600px; z-index: -9999; background: #05020c; color: white; padding: 30px; box-sizing: border-box; border: 2px solid #00f2ff;}
-        .pdf-hdr { border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
+        /* =========================================
+           AI INVOICE PRINTING ANIMATION (TIMEPASS)
+           ========================================= */
+        .print-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(3,1,8,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(10px);}
+        .print-overlay.active { opacity: 1; pointer-events: all; }
         
-        /* SUCCESS ANIMATION */
-        .success-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s;}
-        .success-overlay.active { opacity: 1; pointer-events: all; }
-        .success-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-green); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px var(--accent-green); font-size: 2.5rem; color: black; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 15px;}
-        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .blueprint-doc { width: 120px; height: 160px; border: 3px solid rgba(255,255,255,0.1); border-radius: 8px; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 0 30px rgba(0,0,0,0.8); background: rgba(255,255,255,0.02);}
+        .blueprint-doc::before { content:'TX'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-size:3rem; font-weight:900; color:rgba(255,255,255,0.05); }
+        .liquid-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, var(--accent-cyan), var(--accent-purple)); transition: height 2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 20px var(--accent-cyan); opacity: 0.8;}
+        
+        .print-status { font-family: var(--font-head); color: var(--accent-cyan); font-size: 1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-cyan); text-align: center;}
+        .print-sub { color: #888; font-size: 0.75rem; margin-top: 8px; font-weight: bold; font-family: monospace;}
+
+        /* INVOICE ACTUAL PDF ENGINE (HIDDEN) */
+        #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 700px; z-index: -9999; background: #05020c; color: white; padding: 40px; box-sizing: border-box; border: 4px solid #00f2ff;}
+        .pdf-hdr { border-bottom: 2px dashed rgba(255,255,255,0.2); padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;}
     </style>
 </head>
 <body>
@@ -75,61 +102,82 @@
     <canvas id="bg-canvas"></canvas>
     <div id="toast">Alert</div>
 
-    <div class="success-overlay" id="successOverlay">
-        <div class="success-circle"><i class="fa-solid fa-check"></i></div>
-        <h2 style="font-family: var(--font-head); color: white; font-size: 1.2rem; letter-spacing: 1px;">SETTLEMENT SUCCESS</h2>
-        <p style="color: #aaa; font-size: 0.8rem; margin-top: 5px;">Invoice PDF Sent to Storage</p>
+    <div class="print-overlay" id="printOverlay">
+        <div class="blueprint-doc">
+            <div class="liquid-fill" id="liquidFill"></div>
+        </div>
+        <div class="print-status" id="printText">INITIALIZING AI COMPILER...</div>
+        <div class="print-sub" id="printSubText">Establishing secure 256-bit connection</div>
     </div>
 
     <div id="view-login" class="panel-container">
-        <div class="header-section">
-            <h1>AGENT PORTAL</h1>
-            <p class="header-desc">Secure Payout Gateway</p>
+        <div class="brand-header">
+            <img src="https://tournyx.in/favicon.png" class="brand-logo" alt="Tournyx">
+            <div class="header-section" style="margin-bottom:0; border:none; padding:0;">
+                <h1>AGENT PORTAL</h1>
+                <p class="header-desc">Secure Command Gateway</p>
+            </div>
         </div>
-        <input type="email" id="agentEmail" class="input-box" placeholder="Agent Email (No @gmail.com)">
-        <input type="password" id="agentPassword" class="input-box" placeholder="Password">
+        <input type="email" id="agentEmail" class="input-box" placeholder="Agent Core Email">
+        <input type="password" id="agentPassword" class="input-box" placeholder="Master Password">
         <button class="btn btn-primary" id="loginBtn" onclick="portal.login()">
-            <span>AUTHORIZE</span> <i class="fa-solid fa-shield-halved"></i>
+            <span>AUTHORIZE TERMINAL</span> <i class="fa-solid fa-fingerprint"></i>
         </button>
     </div>
 
     <div id="view-dashboard" class="panel-container hidden">
-        <div class="header-section" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+        <div class="header-section" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px;">
             <div style="text-align: left;">
-                <h1 style="font-size: 1.2rem;">QUEUE</h1>
-                <p id="agentTag" style="color:var(--accent-cyan); font-weight: bold; font-size: 0.65rem;"></p>
+                <h1 style="font-size: 1.4rem;">LIVE QUEUE</h1>
+                <p id="agentTag" style="color:var(--accent-cyan); font-weight: 900; font-size: 0.75rem; letter-spacing:1px; text-transform:uppercase;"></p>
             </div>
-            <button class="btn btn-outline" style="width: auto; padding: 6px 10px; font-size: 0.65rem;" onclick="portal.logout()"><i class="fa-solid fa-power-off"></i></button>
+            <button class="btn btn-outline" style="width: auto; padding: 8px 12px; font-size: 0.7rem;" onclick="portal.logout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
         </div>
-        <div id="transactionQueueArea" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
+        
+        <div id="queueLoader" style="display: none;">
+            <div class="queue-item skeleton" style="height: 70px;"></div>
+            <div class="queue-item skeleton" style="height: 70px;"></div>
+            <div class="queue-item skeleton" style="height: 70px;"></div>
+        </div>
+
+        <div id="transactionQueueArea" style="max-height: 65vh; overflow-y: auto; padding-right: 5px;"></div>
     </div>
 
     <div id="view-dispatch" class="panel-container hidden">
-        <div class="header-section" style="text-align: left; padding-bottom: 10px; border-bottom: none; margin-bottom: 10px;">
-            <button class="btn btn-outline" style="width:auto; padding: 5px 10px; font-size:0.65rem; margin-bottom:10px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back</button>
-            <h1 id="dispatchTitle" style="font-size: 1.2rem;">DISPATCH</h1>
+        <div class="header-section" style="text-align: left; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); margin-bottom: 15px;">
+            <button class="btn btn-outline" style="width:auto; padding: 6px 12px; font-size:0.7rem; margin-bottom:12px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> BACK TO QUEUE</button>
+            <h1 id="dispatchTitle" style="font-size: 1.3rem;">DISPATCH INTENT</h1>
         </div>
 
-        <div class="info-card"><label>Target Account</label><span id="dispEmail">-</span></div>
-        <div class="info-card"><label>Payout Amount</label><span id="dispAmt" style="color:var(--accent-green); font-size:1.4rem;">₹0</span></div>
-        <div class="info-card"><label>Given Payment Details</label><span id="dispDetails" style="color:var(--accent-purple);">-</span></div>
+        <div class="info-card"><label>Target Player Account</label><span id="dispEmail">-</span></div>
+        <div class="info-card"><label>Net Payout Amount</label><span id="dispAmt" style="color:var(--accent-green); font-size:1.6rem; text-shadow: 0 0 10px rgba(0,230,118,0.4);">₹0</span></div>
+        <div class="info-card">
+            <label>Payment Parameters</label>
+            <span id="dispDetails" style="color:var(--accent-purple);">-</span>
+            <button class="copy-btn" onclick="portal.copyDetails()"><i class="fa-solid fa-copy"></i> COPY</button>
+        </div>
 
-        <button class="btn btn-success" id="payNowBtn" style="margin-bottom: 20px;" onclick="portal.executeUpiDeepLink()">
-            <i class="fa-solid fa-bolt"></i> OPEN UPI APP
+        <div id="qrContainer">
+            <p style="color:black; font-family:var(--font-head); font-weight:900; font-size:0.8rem; margin-bottom:8px;">SCAN TO PAY VIA UPI</p>
+            <img id="qrImage" src="" alt="UPI QR">
+        </div>
+
+        <button class="btn btn-success" id="payNowBtn" style="margin-bottom: 25px; height: 55px;" onclick="portal.executeUpiDeepLink()">
+            <i class="fa-solid fa-bolt" style="font-size:1.2rem;"></i> <span style="font-size:1.1rem;">OPEN UPI APP</span>
         </button>
 
-        <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
-            <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.75rem; color:var(--accent-cyan);">SETTLEMENT VERDICT</label>
+        <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <label style="display:block; margin-bottom:8px; font-family:var(--font-head); font-size:0.85rem; color:var(--accent-cyan); font-weight:900;">SETTLEMENT VERDICT</label>
             <select id="dispatchStatusDropdown" class="input-box" onchange="portal.handleStatusChange()">
                 <option value="" disabled selected>Select Status...</option>
-                <option value="Success">Success</option>
-                <option value="Failed">Failed</option>
-                <option value="Refunded">Refunded</option>
+                <option value="Success">Success (Clear Ledger & Upload Invoice)</option>
+                <option value="Failed">Failed (Mark as Failed)</option>
+                <option value="Refunded">Refunded (Custom Amount Return)</option>
             </select>
 
             <div id="refundAmountContainer">
-                <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.7rem; color:var(--accent-purple);">EXACT AMOUNT TO REFUND (₹)</label>
-                <input type="number" id="manualRefundAmount" class="input-box" placeholder="Overwrite refund amount...">
+                <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.75rem; color:var(--accent-gold); font-weight:900;"><i class="fa-solid fa-coins"></i> EXACT AMOUNT TO REFUND (₹)</label>
+                <input type="number" id="manualRefundAmount" class="input-box" style="border-color:var(--accent-gold); color:var(--accent-gold);" placeholder="Enter exact ₹ to add to wallet...">
             </div>
 
             <button class="btn btn-primary" id="commitBtn" onclick="portal.submitStatusResolution()">
@@ -140,38 +188,49 @@
 
     <div id="pdfWrapper">
         <div class="pdf-hdr">
-            <div>
-                <h1 style="font-size:18px; font-weight:900; letter-spacing:1px; color:#ffffff; margin:0;">TOURNYX ESPORTS</h1>
-                <p style="color:#888; font-size:9px; margin-top:2px;">OFFICIAL SETTLEMENT INVOICE</p>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="https://tournyx.in/favicon.png" style="width: 50px; height: 50px; border-radius: 50%;">
+                <div>
+                    <h1 style="font-size:24px; font-weight:900; letter-spacing:2px; color:#ffffff; margin:0; font-family: 'Orbitron', sans-serif;">TOURNYX ESPORTS</h1>
+                    <p style="color:#00f2ff; font-size:11px; margin-top:4px; font-weight: bold; letter-spacing: 1px;">OFFICIAL SECURE SETTLEMENT INVOICE</p>
+                </div>
             </div>
-            <div style="text-align:right; font-family:monospace; font-size:10px; color:#00f2ff;" id="pdf-date">DATE</div>
+            <div style="text-align:right; font-family:monospace; font-size:12px; color:#aaa;" id="pdf-date">DATE</div>
         </div>
-        <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; margin-bottom:20px; font-size:11px; line-height:1.8;">
-            <div><strong>Txn ID:</strong> <span id="pdf-txnid" style="color:var(--accent-cyan); font-family:monospace;">-</span></div>
-            <div><strong>User Email:</strong> <span id="pdf-email">-</span></div>
-            <div><strong>Payment Details:</strong> <span id="pdf-dest">-</span></div>
-            <div><strong>Processed By:</strong> Tournyx Esports [<span id="pdf-agent" style="color:#00ff7f;">-</span>]</div>
+        <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:8px; margin-bottom:25px; font-size:14px; line-height:2;">
+            <div><strong>Transaction Reference ID:</strong> <span id="pdf-txnid" style="color:var(--accent-cyan); font-family:monospace; font-weight:bold;">-</span></div>
+            <div><strong>User Identity (Email):</strong> <span id="pdf-email" style="font-weight:bold;">-</span></div>
+            <div><strong>Payment Destination Params:</strong> <span id="pdf-dest" style="color:var(--accent-purple); font-weight:bold;">-</span></div>
+            <div><strong>Processed & Verified By:</strong> Tournyx Esports [<span id="pdf-agent" style="color:#00ff7f; font-weight:bold; text-transform: uppercase;">-</span>]</div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,255,127,0.1); padding:12px; border-radius:6px; border:1px solid var(--accent-green);">
-            <span style="font-weight:bold; font-size:10px;">NET DISBURSAL</span>
-            <strong style="font-size:18px; color:var(--accent-green);" id="pdf-amount">₹0</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,255,127,0.1); padding:20px; border-radius:8px; border:2px solid var(--accent-green);">
+            <span style="font-weight:900; font-size:14px; letter-spacing:1px;">TOTAL NET DISBURSAL</span>
+            <strong style="font-size:28px; color:var(--accent-green);" id="pdf-amount">₹0</strong>
+        </div>
+        <div style="margin-top:40px; text-align:center; font-size:11px; color:#555; border-top:1px dashed #333; padding-top:20px; font-weight:bold;">
+            Automated Cryptographic Ledger Receipt • Generated by Tournyx Gateway Node
         </div>
     </div>
 
     <script>
-        // 🚨 YOUR API URL
+        // 🚨 CRITICAL: YOUR GOOGLE APPS SCRIPT URL
         const SYSTEM_URL = "https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec";
 
         const portal = {
             agent: null,
             pollingTimer: null,
             activeTxn: null,
+            isDesktop: !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
 
-            init: function() { this.initBG(); },
+            init: function() { 
+                this.initBG(); 
+                this.checkSession();
+            },
 
             toast: function(msg) {
+                if(navigator.vibrate) navigator.vibrate(50); // Haptic feedback
                 const t = document.getElementById('toast'); t.innerText = msg;
-                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
+                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
             },
 
             switchView: function(viewId) {
@@ -183,7 +242,7 @@
                 const btn = document.getElementById(btnId);
                 if(isLoading) {
                     btn.disabled = true;
-                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> PROCESSING...`;
                 } else {
                     btn.disabled = false;
                     btn.innerHTML = originalText;
@@ -196,24 +255,50 @@
                     const res = await fetch(SYSTEM_URL, { method: 'POST', body: JSON.stringify(data) });
                     return await res.json();
                 } catch(err) {
-                    return { success: false, message: "Server Connection Failed." };
+                    return { success: false, message: "Server Connection Lost. Check Network." };
                 }
+            },
+
+            // --- 24 HOUR SESSION MEMORY ---
+            checkSession: function() {
+                try {
+                    const session = JSON.parse(localStorage.getItem('tournyx_agent_session'));
+                    if(session && session.agent && session.time) {
+                        const now = Date.now();
+                        const hoursPassed = (now - session.time) / (1000 * 60 * 60);
+                        if(hoursPassed < 24) {
+                            // Valid Session
+                            this.agent = session.agent;
+                            document.getElementById('agentTag').innerText = `OPERATOR: ${this.agent}`;
+                            this.switchView('dashboard');
+                            this.startLiveQueueSync();
+                            this.toast("Session Restored Automatically.");
+                        } else {
+                            localStorage.removeItem('tournyx_agent_session'); // Expired
+                        }
+                    }
+                } catch(e) {}
             },
 
             login: async function() {
                 const e = document.getElementById('agentEmail').value.trim();
                 const p = document.getElementById('agentPassword').value.trim();
-                if(!e || !p) return this.toast("Enter credentials.");
+                if(!e || !p) return this.toast("Enter all secure credentials.");
 
                 this.btnLoading('loginBtn', true);
                 const res = await this.api('agent_login', { email: e, password: p });
-                this.btnLoading('loginBtn', false, `<span>AUTHORIZE</span> <i class="fa-solid fa-shield-halved"></i>`);
+                this.btnLoading('loginBtn', false, `<span>AUTHORIZE TERMINAL</span> <i class="fa-solid fa-fingerprint"></i>`);
 
                 if(res.success) {
                     this.agent = res.data.agent;
-                    document.getElementById('agentTag').innerText = `AGENT: ${this.agent}`;
+                    document.getElementById('agentTag').innerText = `OPERATOR: ${this.agent}`;
+                    
+                    // Save to local storage for 24 hours
+                    localStorage.setItem('tournyx_agent_session', JSON.stringify({ agent: this.agent, time: Date.now() }));
+                    
                     this.switchView('dashboard');
                     this.startLiveQueueSync();
+                    this.toast("Gateway Authorized.");
                 } else {
                     this.toast(res.message);
                 }
@@ -222,38 +307,44 @@
             logout: function() {
                 clearInterval(this.pollingTimer);
                 this.agent = null;
+                localStorage.removeItem('tournyx_agent_session');
                 document.getElementById('agentPassword').value = "";
                 this.switchView('login');
+                this.toast("Terminal Disconnected.");
             },
 
             startLiveQueueSync: function() {
                 this.syncQueue();
-                this.pollingTimer = setInterval(() => this.syncQueue(), 3000); 
+                this.pollingTimer = setInterval(() => this.syncQueue(), 3500); 
             },
 
             syncQueue: async function() {
+                document.getElementById('queueLoader').style.display = 'block';
                 const res = await this.api('get_pending');
+                document.getElementById('queueLoader').style.display = 'none';
+                
                 if(!res.success) return;
 
                 const area = document.getElementById('transactionQueueArea');
                 area.innerHTML = "";
 
                 if(res.data.length === 0) {
-                    area.innerHTML = `<div style="text-align:center; padding:30px; color:#555; font-size:0.8rem; font-weight:bold;">NO PENDING PAYOUTS</div>`;
+                    area.innerHTML = `<div style="text-align:center; padding:40px; color:#555; font-size:0.9rem; font-family:var(--font-head); font-weight:900; letter-spacing:1px;"><i class="fa-solid fa-check-double" style="font-size:2rem; color:var(--accent-green); margin-bottom:10px; opacity:0.5;"></i><br>ALL CLEAR.<br>NO PENDING PAYOUTS DETECTED.</div>`;
                     return;
                 }
 
                 res.data.forEach(t => {
                     let card = document.createElement('div');
                     card.className = `queue-item`;
+                    card.onclick = () => this.claimTxn(t.txnId, t.email, t.amount, t.method, t.details.replace(/'/g, "\\'"));
                     card.innerHTML = `
                         <div style="min-width:0; overflow:hidden;">
-                            <h3 style="font-family:var(--font-head); font-size:0.85rem; color:#fff;">${t.txnId}</h3>
-                            <p style="font-size:0.7rem; color:#888; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.details}</p>
+                            <h3 style="font-family:var(--font-head); font-size:0.95rem; color:#fff; margin-bottom:4px;">${t.txnId}</h3>
+                            <p style="font-size:0.75rem; color:#888; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fa-solid fa-wallet"></i> ${t.details}</p>
                         </div>
-                        <div style="text-align:right; flex-shrink:0;">
-                            <span style="font-family:var(--font-head); font-size:1rem; font-weight:900; color:var(--accent-green); display:block;">₹${t.amount}</span>
-                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.65rem; margin-top:4px;" onclick="portal.claimTxn('${t.txnId}', '${t.email}', ${t.amount}, '${t.method}', '${t.details.replace(/'/g, "\\'")}')">SELECT</button>
+                        <div style="text-align:right; flex-shrink:0; pointer-events:none;">
+                            <span style="font-family:var(--font-head); font-size:1.15rem; font-weight:900; color:var(--accent-green); display:block; text-shadow: 0 0 8px rgba(0,230,118,0.3);">₹${t.amount}</span>
+                            <span style="font-size:0.65rem; color:var(--accent-cyan); font-weight:bold; text-transform:uppercase; margin-top:2px; display:block;">DISPATCH <i class="fa-solid fa-chevron-right"></i></span>
                         </div>
                     `;
                     area.appendChild(card);
@@ -261,6 +352,7 @@
             },
 
             claimTxn: function(txnId, email, amount, method, details) {
+                if(navigator.vibrate) navigator.vibrate(30);
                 this.activeTxn = { txnId, email, amount, method, details };
                 
                 document.getElementById('dispatchTitle').innerText = `ID: ${txnId}`;
@@ -272,14 +364,57 @@
                 document.getElementById('dispatchStatusDropdown').value = "";
                 this.handleStatusChange(); // Hides refund box
 
-                // 🔥 FLAWLESS UPI INTENT EXTRACTION
+                // SCENE ADAPTATION: Desktop gets QR Code, Mobile gets Deep Link Button
                 const payBtn = document.getElementById('payNowBtn');
-                if(method.toLowerCase() === 'upi' || details.includes('@')) {
-                    payBtn.classList.remove('hidden');
-                } else {
+                const qrCont = document.getElementById('qrContainer');
+                
+                let cleanUpi = this.extractUpi(details);
+
+                if(this.isDesktop) {
                     payBtn.classList.add('hidden');
+                    if(method.toLowerCase() === 'upi' || cleanUpi !== "") {
+                        qrCont.style.display = 'block';
+                        let upiUri = `upi://pay?pa=${encodeURIComponent(cleanUpi)}&pn=Tournyx%20Esports&am=${amount}&tn=${encodeURIComponent(txnId)}&cu=INR`;
+                        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=000000&bgcolor=ffffff&data=${encodeURIComponent(upiUri)}`;
+                    } else {
+                        qrCont.style.display = 'none'; // Bank transfer, no QR
+                    }
+                } else {
+                    qrCont.style.display = 'none';
+                    if(method.toLowerCase() === 'upi' || cleanUpi !== "") {
+                        payBtn.classList.remove('hidden');
+                    } else {
+                        payBtn.classList.add('hidden');
+                    }
                 }
+                
                 this.switchView('dispatch');
+            },
+
+            extractUpi: function(details) {
+                let upiMatch = details.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+                if(upiMatch) return upiMatch[0];
+                let clean = details.replace(/upi|id|:|a\/c|account/gi, '').trim();
+                return clean.includes(' ') ? "" : clean;
+            },
+
+            copyDetails: function() {
+                if(!this.activeTxn) return;
+                let textToCopy = this.extractUpi(this.activeTxn.details);
+                if(!textToCopy) textToCopy = this.activeTxn.details; // Fallback to raw text
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    this.toast("Details Copied to Clipboard!");
+                });
+            },
+
+            executeUpiDeepLink: function() {
+                if(!this.activeTxn) return;
+                let cleanUpi = this.extractUpi(this.activeTxn.details);
+                if(!cleanUpi) return this.toast("Invalid UPI ID format detected.");
+                
+                let upiUri = `upi://pay?pa=${encodeURIComponent(cleanUpi)}&pn=Tournyx%20Esports&am=${this.activeTxn.amount}&tn=${encodeURIComponent(this.activeTxn.txnId)}&cu=INR`;
+                window.location.href = upiUri;
             },
 
             handleStatusChange: function() {
@@ -287,43 +422,21 @@
                 const refundContainer = document.getElementById('refundAmountContainer');
                 const refundInput = document.getElementById('manualRefundAmount');
 
-                // Toggle visibility with animation
+                // Dynamic Animation for Refund Input
                 if(val === "Refunded") {
                     refundContainer.classList.add('expanded');
-                    refundInput.value = this.activeTxn.amount; // Auto-fills the exact amount to save time!
+                    refundInput.value = this.activeTxn.amount; // Auto-fills default amount!
                 } else {
                     refundContainer.classList.remove('expanded');
                     refundInput.value = "";
                 }
             },
 
-            executeUpiDeepLink: function() {
-                if(!this.activeTxn) return;
-                
-                let rawDetails = this.activeTxn.details;
-                let cleanUpi = "";
-
-                // Intelligently scrape the EXACT UPI ID even if it has extra text
-                let upiMatch = rawDetails.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
-                if(upiMatch) {
-                    cleanUpi = upiMatch[0]; // Grabs pure "username@ybl"
-                } else {
-                    cleanUpi = rawDetails.replace(/upi|id|:|a\/c|account/gi, '').trim(); // Fallback string cleaner
-                }
-
-                if(!cleanUpi || cleanUpi.includes(' ')) {
-                    return this.toast("Invalid UPI ID format detected.");
-                }
-                
-                let upiUri = `upi://pay?pa=${encodeURIComponent(cleanUpi)}&pn=Tournyx%20Esports&am=${this.activeTxn.amount}&tn=${encodeURIComponent(this.activeTxn.txnId)}&cu=INR`;
-                window.location.href = upiUri;
-            },
-
             submitStatusResolution: async function() {
                 const val = document.getElementById('dispatchStatusDropdown').value;
-                if(!val) return this.toast("Select Status!");
+                if(!val) return this.toast("Select Status Verdict!");
 
-                // Handle the new Manual Refund Box
+                // Handle Exact Manual Refund Input
                 let manualAmt = 0;
                 if(val === "Refunded") {
                     manualAmt = parseFloat(document.getElementById('manualRefundAmount').value);
@@ -336,45 +449,91 @@
                     txnId: this.activeTxn.txnId,
                     status: val,
                     agentEmail: this.agent,
-                    refundAmount: manualAmt // Sends exact custom amount to backend
+                    refundAmount: manualAmt // 🔥 Sent specifically to backend math engine
                 });
 
                 if(res.success) {
                     if(val === "Success") {
-                        await this.generateAndUploadPDF();
+                        await this.triggerPrintAnimationAndUpload(); // 🔥 TIMEPASS ANIMATION CALL
+                    } else {
+                        this.toast("Verdict Recorded Successfully.");
+                        this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
+                        this.activeTxn = null;
+                        this.switchView('dashboard');
                     }
-                    this.toast("Updated!");
-                    this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
-                    this.activeTxn = null;
-                    this.switchView('dashboard');
                 } else {
                     this.toast(res.message);
                     this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                 }
             },
 
-            generateAndUploadPDF: async function() {
-                document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB');
+            // 🔥 THE "WOW FACTOR" AI PRINTING TIMEPASS ANIMATION
+            triggerPrintAnimationAndUpload: async function() {
+                const overlay = document.getElementById('printOverlay');
+                const liquid = document.getElementById('liquidFill');
+                const txt = document.getElementById('printText');
+                const subTxt = document.getElementById('printSubText');
+                
+                // 1. Show Animation Screen
+                overlay.classList.add('active');
+                
+                // 2. Build the PDF DOM Data
+                document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB') + " " + new Date().toLocaleTimeString('en-GB');
                 document.getElementById('pdf-txnid').innerText = this.activeTxn.txnId;
                 document.getElementById('pdf-email').innerText = this.activeTxn.email;
                 document.getElementById('pdf-dest').innerText = this.activeTxn.details;
                 document.getElementById('pdf-agent').innerText = this.agent.split('@')[0].toUpperCase();
                 document.getElementById('pdf-amount').innerText = `₹${this.activeTxn.amount}`;
 
+                // Sequence 1: Init (0s - 1s)
+                liquid.style.height = "15%";
+                
+                // Sequence 2: PDF Compilation (1s - 2.5s)
+                setTimeout(() => {
+                    txt.innerText = "COMPILING LEDGER DATA...";
+                    subTxt.innerText = "Extracting vector geometries...";
+                    liquid.style.height = "45%";
+                }, 1000);
+
                 const element = document.getElementById('pdfWrapper');
-                const opt = { margin: 0.2, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+                const opt = { margin: 0, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
                 
+                // Actually generate the base64 during the animation
                 const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
-                
-                // Trigger Visual Success Checkmark
-                const overlay = document.getElementById('successOverlay');
-                overlay.classList.add('active');
-                setTimeout(() => overlay.classList.remove('active'), 2500);
 
-                html2pdf().set(opt).from(element).save(); // Download for agent record
+                // Sequence 3: Uploading (2.5s - 4s)
+                txt.innerText = "UPLOADING TO SECURE VAULT...";
+                subTxt.innerText = "Sending cryptographic payload to Drive...";
+                liquid.style.height = "85%";
 
-                // Upload to Tournyx Invoices folder silently
+                // Trigger API Upload
                 await this.api('upload_invoice', { txnId: this.activeTxn.txnId, pdfBase64: pdfBase64 });
+
+                // Sequence 4: Complete & Ask Download (4s+)
+                liquid.style.height = "100%";
+                txt.innerText = "SETTLEMENT COMPLETE";
+                txt.style.color = "var(--accent-green)";
+                subTxt.innerText = "Invoice successfully secured.";
+                
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    
+                    // Reset animation for next time
+                    setTimeout(() => { 
+                        liquid.style.height = "0%"; 
+                        txt.innerText = "INITIALIZING AI COMPILER...";
+                        txt.style.color = "var(--accent-cyan)";
+                    }, 500);
+
+                    // Ask agent if they want a local copy downloaded
+                    if(confirm(`Invoice Saved to Drive Successfully.\n\nDo you want to download a local copy of ${this.activeTxn.txnId} to this device?`)) {
+                        html2pdf().set(opt).from(element).save();
+                    }
+
+                    this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
+                    this.activeTxn = null;
+                    this.switchView('dashboard');
+                }, 1500);
             },
 
             initBG: function() {
@@ -382,17 +541,17 @@
                 c.width = window.innerWidth; c.height = window.innerHeight;
                 let arr = [];
                 class Node {
-                    constructor(){ this.x = Math.random()*c.width; this.y = Math.random()*c.height; this.s = Math.random()*1.5; this.v = (Math.random()*0.3) + 0.1; }
+                    constructor(){ this.x = Math.random()*c.width; this.y = Math.random()*c.height; this.s = Math.random()*2; this.v = (Math.random()*0.4) + 0.1; }
                     update(){ this.y -= this.v; if(this.y < 0) this.y = c.height; }
-                    draw(){ ctx.fillStyle = '#00f2ff'; ctx.globalAlpha = 0.2; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
+                    draw(){ ctx.fillStyle = '#00f2ff'; ctx.globalAlpha = 0.15; ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill(); }
                 }
-                for(let i=0; i<20; i++) arr.push(new Node());
+                for(let i=0; i<25; i++) arr.push(new Node());
                 function loop(){ ctx.clearRect(0,0,c.width,c.height); arr.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(loop); }
                 loop();
             }
         };
 
-        portal.init();
+        window.addEventListener('load', () => portal.init());
     </script>
 </body>
 </html>
