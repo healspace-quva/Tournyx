@@ -11,7 +11,7 @@
 
     <style>
         :root {
-            --bg-main: #05020c; --bg-panel: rgba(15, 7, 30, 0.7);
+            --bg-main: #05020c; --bg-panel: rgba(15, 7, 30, 0.75);
             --accent-cyan: #00f2ff; --accent-purple: #bd00ff;
             --accent-red: #ff4d4d; --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif;
@@ -22,7 +22,7 @@
         
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #120529 0%, #05020c 100%); }
 
-        .panel-container { width: 90%; max-width: 500px; margin: 30px auto; background: var(--bg-panel); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 12px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); animation: slideUp 0.4s ease-out; }
+        .panel-container { width: 92%; max-width: 480px; margin: 25px auto; background: var(--bg-panel); border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 12px; padding: 25px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(12px); animation: slideUp 0.4s ease-out; }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -30,7 +30,7 @@
         .header-section h1 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         .header-desc { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-top: 4px; font-weight: bold; letter-spacing: 1px;}
 
-        .input-box { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-body); font-size: 0.9rem; font-weight: bold; outline: none; transition: 0.3s; margin-bottom: 12px;}
+        .input-box { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; outline: none; transition: 0.3s; margin-bottom: 12px;}
         .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
         
         select.input-box { appearance: none; -webkit-appearance: none; cursor: pointer; color: var(--accent-cyan); }
@@ -39,7 +39,8 @@
         .btn { width: 100%; padding: 12px; border-radius: 8px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px;}
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 4px 12px rgba(0,242,255,0.2); }
         .btn-primary:active { transform: scale(0.97); }
-        .btn-success { background: var(--accent-green); color: black; }
+        .btn-success { background: var(--accent-green); color: black; box-shadow: 0 4px 12px rgba(0,255,127,0.3);}
+        .btn-success:active { transform: scale(0.97); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
 
         .queue-item { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
@@ -54,12 +55,16 @@
         
         .hidden { display: none !important; }
 
+        /* REFUND ANIMATION BOX */
+        #refundAmountContainer { overflow: hidden; max-height: 0; transition: max-height 0.4s ease-out; opacity: 0; }
+        #refundAmountContainer.expanded { max-height: 100px; opacity: 1; margin-bottom: 10px; }
+
         /* INVOICE ENGINE */
         #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 600px; z-index: -9999; background: #05020c; color: white; padding: 30px; box-sizing: border-box; border: 2px solid #00f2ff;}
         .pdf-hdr { border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
         
         /* SUCCESS ANIMATION */
-        .success-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s;}
+        .success-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s;}
         .success-overlay.active { opacity: 1; pointer-events: all; }
         .success-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-green); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px var(--accent-green); font-size: 2.5rem; color: black; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 15px;}
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
@@ -70,14 +75,12 @@
     <canvas id="bg-canvas"></canvas>
     <div id="toast">Alert</div>
 
-    <!-- SUCCESS OVERLAY -->
     <div class="success-overlay" id="successOverlay">
         <div class="success-circle"><i class="fa-solid fa-check"></i></div>
         <h2 style="font-family: var(--font-head); color: white; font-size: 1.2rem; letter-spacing: 1px;">SETTLEMENT SUCCESS</h2>
-        <p style="color: #aaa; font-size: 0.8rem; margin-top: 5px;">Invoice PDF Saved to Drive</p>
+        <p style="color: #aaa; font-size: 0.8rem; margin-top: 5px;">Invoice PDF Sent to Storage</p>
     </div>
 
-    <!-- VIEW 1: LOGIN -->
     <div id="view-login" class="panel-container">
         <div class="header-section">
             <h1>AGENT PORTAL</h1>
@@ -90,7 +93,6 @@
         </button>
     </div>
 
-    <!-- VIEW 2: QUEUE -->
     <div id="view-dashboard" class="panel-container hidden">
         <div class="header-section" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
             <div style="text-align: left;">
@@ -102,7 +104,6 @@
         <div id="transactionQueueArea" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
     </div>
 
-    <!-- VIEW 3: DISPATCH -->
     <div id="view-dispatch" class="panel-container hidden">
         <div class="header-section" style="text-align: left; padding-bottom: 10px; border-bottom: none; margin-bottom: 10px;">
             <button class="btn btn-outline" style="width:auto; padding: 5px 10px; font-size:0.65rem; margin-bottom:10px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> Back</button>
@@ -119,20 +120,24 @@
 
         <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
             <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.75rem; color:var(--accent-cyan);">SETTLEMENT VERDICT</label>
-            <select id="dispatchStatusDropdown" class="input-box">
+            <select id="dispatchStatusDropdown" class="input-box" onchange="portal.handleStatusChange()">
                 <option value="" disabled selected>Select Status...</option>
-                <!-- EXACT VALUES AS REQUESTED -->
                 <option value="Success">Success</option>
                 <option value="Failed">Failed</option>
                 <option value="Refunded">Refunded</option>
             </select>
+
+            <div id="refundAmountContainer">
+                <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.7rem; color:var(--accent-purple);">EXACT AMOUNT TO REFUND (₹)</label>
+                <input type="number" id="manualRefundAmount" class="input-box" placeholder="Overwrite refund amount...">
+            </div>
+
             <button class="btn btn-primary" id="commitBtn" onclick="portal.submitStatusResolution()">
                 <span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>
             </button>
         </div>
     </div>
 
-    <!-- INVOICE TEMPLATE (HIDDEN) -->
     <div id="pdfWrapper">
         <div class="pdf-hdr">
             <div>
@@ -248,7 +253,7 @@
                         </div>
                         <div style="text-align:right; flex-shrink:0;">
                             <span style="font-family:var(--font-head); font-size:1rem; font-weight:900; color:var(--accent-green); display:block;">₹${t.amount}</span>
-                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.65rem; margin-top:4px;" onclick="portal.claimTxn('${t.txnId}', '${t.email}', ${t.amount}, '${t.method}', '${t.details}')">SELECT</button>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.65rem; margin-top:4px;" onclick="portal.claimTxn('${t.txnId}', '${t.email}', ${t.amount}, '${t.method}', '${t.details.replace(/'/g, "\\'")}')">SELECT</button>
                         </div>
                     `;
                     area.appendChild(card);
@@ -262,9 +267,12 @@
                 document.getElementById('dispEmail').innerText = email;
                 document.getElementById('dispAmt').innerText = `₹${amount}`;
                 document.getElementById('dispDetails').innerText = details;
+                
+                // Reset inputs
                 document.getElementById('dispatchStatusDropdown').value = "";
+                this.handleStatusChange(); // Hides refund box
 
-                // PERFECT UPI EXTRACTION
+                // 🔥 FLAWLESS UPI INTENT EXTRACTION
                 const payBtn = document.getElementById('payNowBtn');
                 if(method.toLowerCase() === 'upi' || details.includes('@')) {
                     payBtn.classList.remove('hidden');
@@ -274,12 +282,38 @@
                 this.switchView('dispatch');
             },
 
+            handleStatusChange: function() {
+                const val = document.getElementById('dispatchStatusDropdown').value;
+                const refundContainer = document.getElementById('refundAmountContainer');
+                const refundInput = document.getElementById('manualRefundAmount');
+
+                // Toggle visibility with animation
+                if(val === "Refunded") {
+                    refundContainer.classList.add('expanded');
+                    refundInput.value = this.activeTxn.amount; // Auto-fills the exact amount to save time!
+                } else {
+                    refundContainer.classList.remove('expanded');
+                    refundInput.value = "";
+                }
+            },
+
             executeUpiDeepLink: function() {
                 if(!this.activeTxn) return;
                 
-                // Bulletproof regex to scrape just the UPI ID out of the text
-                let upiMatch = this.activeTxn.details.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
-                let cleanUpi = upiMatch ? upiMatch[0] : this.activeTxn.details.replace('A/C:', '').trim();
+                let rawDetails = this.activeTxn.details;
+                let cleanUpi = "";
+
+                // Intelligently scrape the EXACT UPI ID even if it has extra text
+                let upiMatch = rawDetails.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+                if(upiMatch) {
+                    cleanUpi = upiMatch[0]; // Grabs pure "username@ybl"
+                } else {
+                    cleanUpi = rawDetails.replace(/upi|id|:|a\/c|account/gi, '').trim(); // Fallback string cleaner
+                }
+
+                if(!cleanUpi || cleanUpi.includes(' ')) {
+                    return this.toast("Invalid UPI ID format detected.");
+                }
                 
                 let upiUri = `upi://pay?pa=${encodeURIComponent(cleanUpi)}&pn=Tournyx%20Esports&am=${this.activeTxn.amount}&tn=${encodeURIComponent(this.activeTxn.txnId)}&cu=INR`;
                 window.location.href = upiUri;
@@ -289,12 +323,20 @@
                 const val = document.getElementById('dispatchStatusDropdown').value;
                 if(!val) return this.toast("Select Status!");
 
+                // Handle the new Manual Refund Box
+                let manualAmt = 0;
+                if(val === "Refunded") {
+                    manualAmt = parseFloat(document.getElementById('manualRefundAmount').value);
+                    if(isNaN(manualAmt) || manualAmt <= 0) return this.toast("Enter a valid refund amount!");
+                }
+
                 this.btnLoading('commitBtn', true);
                 
                 const res = await this.api('update_status', {
                     txnId: this.activeTxn.txnId,
                     status: val,
-                    agentEmail: this.agent
+                    agentEmail: this.agent,
+                    refundAmount: manualAmt // Sends exact custom amount to backend
                 });
 
                 if(res.success) {
@@ -312,29 +354,26 @@
             },
 
             generateAndUploadPDF: async function() {
-                // Fill PDF
                 document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB');
                 document.getElementById('pdf-txnid').innerText = this.activeTxn.txnId;
                 document.getElementById('pdf-email').innerText = this.activeTxn.email;
                 document.getElementById('pdf-dest').innerText = this.activeTxn.details;
-                document.getElementById('pdf-agent').innerText = this.agent;
+                document.getElementById('pdf-agent').innerText = this.agent.split('@')[0].toUpperCase();
                 document.getElementById('pdf-amount').innerText = `₹${this.activeTxn.amount}`;
 
                 const element = document.getElementById('pdfWrapper');
                 const opt = { margin: 0.2, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
                 
-                // Get Base64 & Upload
                 const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
                 
-                // Show Success Screen instantly
+                // Trigger Visual Success Checkmark
                 const overlay = document.getElementById('successOverlay');
                 overlay.classList.add('active');
                 setTimeout(() => overlay.classList.remove('active'), 2500);
 
-                // Download locally for the agent
-                html2pdf().set(opt).from(element).save();
+                html2pdf().set(opt).from(element).save(); // Download for agent record
 
-                // Send to Drive
+                // Upload to Tournyx Invoices folder silently
                 await this.api('upload_invoice', { txnId: this.activeTxn.txnId, pdfBase64: pdfBase64 });
             },
 
