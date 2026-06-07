@@ -183,15 +183,17 @@
                     });
                     return await res.json();
                 } catch(err) {
-                    this.toast("Server Gateway Connectivity Interrupted.");
-                    return { success: false };
+                    // 🔥 FIX: Properly return a message so the toast doesn't say "undefined"
+                    return { success: false, message: "Server Connection Failed. Check your SYSTEM_URL." };
                 }
             },
 
             login: async function() {
-                const e = document.getElementById('agentEmail').value;
-                const p = document.getElementById('agentPassword').value;
+                const e = document.getElementById('agentEmail').value.trim();
+                const p = document.getElementById('agentPassword').value.trim();
                 if(!e || !p) return this.toast("Complete credentials entry configuration fields.");
+
+                this.toast("Authenticating...");
 
                 const res = await this.api('agent_login', { email: e, password: p });
                 if(res.success) {
@@ -199,8 +201,10 @@
                     document.getElementById('agentTag').innerText = `OPERATOR SESSION: ${this.agent}`;
                     this.switchView('dashboard');
                     this.startLiveQueueSync();
+                    this.toast("Login Successful!");
                 } else {
-                    this.toast(res.message);
+                    // 🔥 FIX: Now it will read the correct error message!
+                    this.toast(res.message || "Authentication Failed.");
                 }
             },
 
