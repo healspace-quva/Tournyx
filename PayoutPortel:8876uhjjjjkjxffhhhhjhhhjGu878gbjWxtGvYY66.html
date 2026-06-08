@@ -11,7 +11,7 @@
 
     <style>
         /* =========================================
-           TOURNYX EXTREME ESPORTS UI ENGINE V3
+           TOURNYX EXTREME ESPORTS UI ENGINE V4
            ========================================= */
         :root {
             --bg-main: #030108; --bg-panel: rgba(12, 5, 25, 0.85);
@@ -31,8 +31,8 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
         .brand-header { text-align: center; margin-bottom: 25px; }
-        .brand-logo { width: 70px; height: 70px; border-radius: 50%; box-shadow: 0 0 20px rgba(189,0,255,0.5); border: 2px solid var(--accent-cyan); margin-bottom: 15px; animation: float 3s ease-in-out infinite;}
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,242,255,0.6); } }
+        .brand-logo { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 0 25px rgba(189,0,255,0.6); border: 2px solid var(--accent-cyan); margin-bottom: 15px; animation: pulseGlow 3s ease-in-out infinite;}
+        @keyframes pulseGlow { 0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(189,0,255,0.6); } 50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0,242,255,0.8); } }
         
         .header-section h1 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; text-transform: uppercase;}
         .header-desc { color: #888; font-size: 0.8rem; text-transform: uppercase; margin-top: 4px; font-weight: 800; letter-spacing: 2px;}
@@ -40,7 +40,7 @@
         .input-box { width: 100%; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 10px; font-family: var(--font-body); font-size: 1rem; font-weight: 700; outline: none; transition: 0.3s; margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
         .input-box:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 0 10px rgba(0,0,0,0.5); }
         select.input-box { appearance: none; cursor: pointer; color: var(--accent-cyan); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f2ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 16px; padding-right: 40px;}
-        select.input-box option { background: #0a0514; color: white; }
+        select.input-box option { background: #0a0514; color: white; font-weight: bold; padding: 10px; }
 
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; letter-spacing: 1px; position: relative; overflow: hidden;}
         .btn::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(255,255,255,0.1); transform: rotate(45deg); transition: 0.3s; opacity: 0; }
@@ -52,7 +52,7 @@
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: inset 0 0 8px rgba(0,242,255,0.1);}
         
         /* SHIMMER SKELETON LOADER */
-        .skeleton { position: relative; overflow: hidden; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .skeleton { position: relative; overflow: hidden; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.02); }
         .skeleton::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%); background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.1) 60%, rgba(255,255,255,0) 100%); animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 100% { transform: translateX(100%); } }
 
@@ -63,7 +63,7 @@
         .info-card label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
         .info-card span { font-size: 1.05rem; font-weight: 700; color: white; word-break: break-all;}
         
-        .copy-btn { position: absolute; right: 10px; top: 15px; background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-head); transition: 0.3s;}
+        .copy-btn { position: absolute; right: 10px; top: 15px; background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; cursor: pointer; font-family: var(--font-head); transition: 0.3s; font-weight: 900; letter-spacing: 1px;}
         .copy-btn:active { background: var(--accent-cyan); color: black; }
 
         /* QR CODE DESKTOP VIEW */
@@ -80,17 +80,22 @@
         .hidden { display: none !important; }
 
         /* =========================================
-           AI INVOICE PRINTING ANIMATION (TIMEPASS)
+           AI INVOICE PRINTING ANIMATION (WATER FILL)
            ========================================= */
-        .print-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(3,1,8,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(10px);}
+        .print-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(3,1,8,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(15px);}
         .print-overlay.active { opacity: 1; pointer-events: all; }
         
-        .blueprint-doc { width: 120px; height: 160px; border: 3px solid rgba(255,255,255,0.1); border-radius: 8px; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 0 30px rgba(0,0,0,0.8); background: rgba(255,255,255,0.02);}
-        .blueprint-doc::before { content:'TX'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-size:3rem; font-weight:900; color:rgba(255,255,255,0.05); }
-        .liquid-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, var(--accent-cyan), var(--accent-purple)); transition: height 2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 20px var(--accent-cyan); opacity: 0.8;}
+        .blueprint-doc { width: 140px; height: 190px; border: 3px solid rgba(0,242,255,0.3); border-radius: 8px; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 0 30px rgba(0,242,255,0.2); background: rgba(255,255,255,0.02); display: flex; flex-direction: column; justify-content: flex-end;}
+        .blueprint-doc::before { content:'TX'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-size:4rem; font-weight:900; color:rgba(255,255,255,0.05); z-index: 1;}
         
-        .print-status { font-family: var(--font-head); color: var(--accent-cyan); font-size: 1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-cyan); text-align: center;}
-        .print-sub { color: #888; font-size: 0.75rem; margin-top: 8px; font-weight: bold; font-family: monospace;}
+        .liquid-fill { width: 100%; height: 0%; background: linear-gradient(180deg, rgba(0,242,255,0.8) 0%, rgba(189,0,255,0.9) 100%); transition: height 0.3s ease; box-shadow: 0 0 25px var(--accent-cyan); position: relative; z-index: 2;}
+        .liquid-fill::after { content: ''; position: absolute; top: -10px; left: -20px; width: 200%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 50%; animation: wave 2s infinite linear; }
+        @keyframes wave { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        
+        .ai-code-text { position: absolute; top: 10px; left: 10px; right: 10px; font-family: monospace; font-size: 0.5rem; color: rgba(255,255,255,0.8); z-index: 3; word-wrap: break-word; line-height: 1.4;}
+
+        .print-status { font-family: var(--font-head); color: var(--accent-cyan); font-size: 1.1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-cyan); text-align: center; margin-bottom: 8px;}
+        .print-sub { color: #aaa; font-size: 0.8rem; font-weight: bold; font-family: var(--font-body); letter-spacing: 1px; text-align: center;}
 
         /* INVOICE ACTUAL PDF ENGINE (HIDDEN) */
         #pdfWrapper { position: absolute; left: -9999px; top: 0; width: 700px; z-index: -9999; background: #05020c; color: white; padding: 40px; box-sizing: border-box; border: 4px solid #00f2ff;}
@@ -104,6 +109,7 @@
 
     <div class="print-overlay" id="printOverlay">
         <div class="blueprint-doc">
+            <div class="ai-code-text" id="aiCodeDisplay"></div>
             <div class="liquid-fill" id="liquidFill"></div>
         </div>
         <div class="print-status" id="printText">INITIALIZING AI COMPILER...</div>
@@ -131,22 +137,22 @@
                 <h1 style="font-size: 1.4rem;">LIVE QUEUE</h1>
                 <p id="agentTag" style="color:var(--accent-cyan); font-weight: 900; font-size: 0.75rem; letter-spacing:1px; text-transform:uppercase;"></p>
             </div>
-            <button class="btn btn-outline" style="width: auto; padding: 8px 12px; font-size: 0.7rem;" onclick="portal.logout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+            <button class="btn btn-outline" style="width: auto; padding: 8px 12px; font-size: 0.7rem; font-weight:900;" onclick="portal.logout()"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
         </div>
         
         <div id="queueLoader" style="display: none;">
-            <div class="queue-item skeleton" style="height: 70px;"></div>
-            <div class="queue-item skeleton" style="height: 70px;"></div>
-            <div class="queue-item skeleton" style="height: 70px;"></div>
+            <div class="queue-item skeleton" style="height: 75px;"></div>
+            <div class="queue-item skeleton" style="height: 75px;"></div>
+            <div class="queue-item skeleton" style="height: 75px;"></div>
         </div>
 
         <div id="transactionQueueArea" style="max-height: 65vh; overflow-y: auto; padding-right: 5px;"></div>
     </div>
 
     <div id="view-dispatch" class="panel-container hidden">
-        <div class="header-section" style="text-align: left; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); margin-bottom: 15px;">
-            <button class="btn btn-outline" style="width:auto; padding: 6px 12px; font-size:0.7rem; margin-bottom:12px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> BACK TO QUEUE</button>
+        <div class="header-section" style="text-align: left; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
             <h1 id="dispatchTitle" style="font-size: 1.3rem;">DISPATCH INTENT</h1>
+            <button class="btn btn-outline" style="width:auto; padding: 6px 12px; font-size:0.7rem; border-radius: 6px;" onclick="portal.switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i> BACK</button>
         </div>
 
         <div class="info-card"><label>Target Player Account</label><span id="dispEmail">-</span></div>
@@ -170,14 +176,14 @@
             <label style="display:block; margin-bottom:8px; font-family:var(--font-head); font-size:0.85rem; color:var(--accent-cyan); font-weight:900;">SETTLEMENT VERDICT</label>
             <select id="dispatchStatusDropdown" class="input-box" onchange="portal.handleStatusChange()">
                 <option value="" disabled selected>Select Status...</option>
-                <option value="Success">Success (Clear Ledger & Upload Invoice)</option>
-                <option value="Failed">Failed (Mark as Failed)</option>
-                <option value="Refunded">Refunded (Custom Amount Return)</option>
+                <option value="Success">Success</option>
+                <option value="Failed">Failed</option>
+                <option value="Refunded">Refunded</option>
             </select>
 
             <div id="refundAmountContainer">
                 <label style="display:block; margin-bottom:6px; font-family:var(--font-head); font-size:0.75rem; color:var(--accent-gold); font-weight:900;"><i class="fa-solid fa-coins"></i> EXACT AMOUNT TO REFUND (₹)</label>
-                <input type="number" id="manualRefundAmount" class="input-box" style="border-color:var(--accent-gold); color:var(--accent-gold);" placeholder="Enter exact ₹ to add to wallet...">
+                <input type="number" id="manualRefundAmount" class="input-box" style="border-color:var(--accent-gold); color:var(--accent-gold); font-size: 1.2rem;" placeholder="Enter exact ₹ to add to wallet...">
             </div>
 
             <button class="btn btn-primary" id="commitBtn" onclick="portal.submitStatusResolution()">
@@ -189,7 +195,7 @@
     <div id="pdfWrapper">
         <div class="pdf-hdr">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="https://tournyx.in/favicon.png" style="width: 50px; height: 50px; border-radius: 50%;">
+                <img src="https://tournyx.in/favicon.png" style="width: 50px; height: 50px; border-radius: 50%;" crossorigin="anonymous">
                 <div>
                     <h1 style="font-size:24px; font-weight:900; letter-spacing:2px; color:#ffffff; margin:0; font-family: 'Orbitron', sans-serif;">TOURNYX ESPORTS</h1>
                     <p style="color:#00f2ff; font-size:11px; margin-top:4px; font-weight: bold; letter-spacing: 1px;">OFFICIAL SECURE SETTLEMENT INVOICE</p>
@@ -204,7 +210,7 @@
             <div><strong>Processed & Verified By:</strong> Tournyx Esports [<span id="pdf-agent" style="color:#00ff7f; font-weight:bold; text-transform: uppercase;">-</span>]</div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,255,127,0.1); padding:20px; border-radius:8px; border:2px solid var(--accent-green);">
-            <span style="font-weight:900; font-size:14px; letter-spacing:1px;">TOTAL NET DISBURSAL</span>
+            <span style="font-weight:900; font-size:14px; letter-spacing:1px; text-transform:uppercase;">TOTAL NET DISBURSAL</span>
             <strong style="font-size:28px; color:var(--accent-green);" id="pdf-amount">₹0</strong>
         </div>
         <div style="margin-top:40px; text-align:center; font-size:11px; color:#555; border-top:1px dashed #333; padding-top:20px; font-weight:bold;">
@@ -221,6 +227,7 @@
             pollingTimer: null,
             activeTxn: null,
             isDesktop: !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+            isFirstLoad: true, // Prevents skeleton flash on every poll
 
             init: function() { 
                 this.initBG(); 
@@ -228,7 +235,7 @@
             },
 
             toast: function(msg) {
-                if(navigator.vibrate) navigator.vibrate(50); // Haptic feedback
+                if(navigator.vibrate) navigator.vibrate(40); // Haptic feedback
                 const t = document.getElementById('toast'); t.innerText = msg;
                 t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
             },
@@ -267,12 +274,11 @@
                         const now = Date.now();
                         const hoursPassed = (now - session.time) / (1000 * 60 * 60);
                         if(hoursPassed < 24) {
-                            // Valid Session
                             this.agent = session.agent;
                             document.getElementById('agentTag').innerText = `OPERATOR: ${this.agent}`;
                             this.switchView('dashboard');
                             this.startLiveQueueSync();
-                            this.toast("Session Restored Automatically.");
+                            this.toast("Session Restored.");
                         } else {
                             localStorage.removeItem('tournyx_agent_session'); // Expired
                         }
@@ -297,6 +303,7 @@
                     localStorage.setItem('tournyx_agent_session', JSON.stringify({ agent: this.agent, time: Date.now() }));
                     
                     this.switchView('dashboard');
+                    this.isFirstLoad = true;
                     this.startLiveQueueSync();
                     this.toast("Gateway Authorized.");
                 } else {
@@ -319,9 +326,14 @@
             },
 
             syncQueue: async function() {
-                document.getElementById('queueLoader').style.display = 'block';
+                if(this.isFirstLoad) document.getElementById('queueLoader').style.display = 'block';
+                
                 const res = await this.api('get_pending');
-                document.getElementById('queueLoader').style.display = 'none';
+                
+                if(this.isFirstLoad) {
+                    document.getElementById('queueLoader').style.display = 'none';
+                    this.isFirstLoad = false;
+                }
                 
                 if(!res.success) return;
 
@@ -339,12 +351,12 @@
                     card.onclick = () => this.claimTxn(t.txnId, t.email, t.amount, t.method, t.details.replace(/'/g, "\\'"));
                     card.innerHTML = `
                         <div style="min-width:0; overflow:hidden;">
-                            <h3 style="font-family:var(--font-head); font-size:0.95rem; color:#fff; margin-bottom:4px;">${t.txnId}</h3>
+                            <h3 style="font-family:var(--font-head); font-size:1rem; color:#fff; margin-bottom:4px; letter-spacing:1px;">${t.txnId}</h3>
                             <p style="font-size:0.75rem; color:#888; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><i class="fa-solid fa-wallet"></i> ${t.details}</p>
                         </div>
                         <div style="text-align:right; flex-shrink:0; pointer-events:none;">
-                            <span style="font-family:var(--font-head); font-size:1.15rem; font-weight:900; color:var(--accent-green); display:block; text-shadow: 0 0 8px rgba(0,230,118,0.3);">₹${t.amount}</span>
-                            <span style="font-size:0.65rem; color:var(--accent-cyan); font-weight:bold; text-transform:uppercase; margin-top:2px; display:block;">DISPATCH <i class="fa-solid fa-chevron-right"></i></span>
+                            <span style="font-family:var(--font-head); font-size:1.25rem; font-weight:900; color:var(--accent-green); display:block; text-shadow: 0 0 8px rgba(0,230,118,0.3);">₹${t.amount}</span>
+                            <span style="font-size:0.7rem; color:var(--accent-cyan); font-weight:900; text-transform:uppercase; margin-top:2px; display:block;">DISPATCH <i class="fa-solid fa-chevron-right"></i></span>
                         </div>
                     `;
                     area.appendChild(card);
@@ -399,6 +411,7 @@
             },
 
             copyDetails: function() {
+                if(navigator.vibrate) navigator.vibrate(30);
                 if(!this.activeTxn) return;
                 let textToCopy = this.extractUpi(this.activeTxn.details);
                 if(!textToCopy) textToCopy = this.activeTxn.details; // Fallback to raw text
@@ -443,7 +456,7 @@
                     if(isNaN(manualAmt) || manualAmt <= 0) return this.toast("Enter a valid refund amount!");
                 }
 
-                this.btnLoading('commitBtn', true);
+                this.btnLoading('commitBtn', true, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                 
                 const res = await this.api('update_status', {
                     txnId: this.activeTxn.txnId,
@@ -454,11 +467,12 @@
 
                 if(res.success) {
                     if(val === "Success") {
-                        await this.triggerPrintAnimationAndUpload(); // 🔥 TIMEPASS ANIMATION CALL
+                        await this.triggerPrintAnimationAndUpload(); // 🔥 TIMEPASS WATER FILL ANIMATION
                     } else {
                         this.toast("Verdict Recorded Successfully.");
                         this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                         this.activeTxn = null;
+                        this.isFirstLoad = true;
                         this.switchView('dashboard');
                     }
                 } else {
@@ -467,17 +481,17 @@
                 }
             },
 
-            // 🔥 THE "WOW FACTOR" AI PRINTING TIMEPASS ANIMATION
+            // 🔥 THE "WOW FACTOR" AI LIQUID WATER FILL PRINTING ANIMATION
             triggerPrintAnimationAndUpload: async function() {
                 const overlay = document.getElementById('printOverlay');
                 const liquid = document.getElementById('liquidFill');
+                const aiCode = document.getElementById('aiCodeDisplay');
                 const txt = document.getElementById('printText');
                 const subTxt = document.getElementById('printSubText');
                 
-                // 1. Show Animation Screen
                 overlay.classList.add('active');
                 
-                // 2. Build the PDF DOM Data
+                // Mount Data to PDF Template
                 document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB') + " " + new Date().toLocaleTimeString('en-GB');
                 document.getElementById('pdf-txnid').innerText = this.activeTxn.txnId;
                 document.getElementById('pdf-email').innerText = this.activeTxn.email;
@@ -487,33 +501,38 @@
 
                 // Sequence 1: Init (0s - 1s)
                 liquid.style.height = "15%";
+                aiCode.innerText = `Connecting: ${this.activeTxn.txnId}...\nAuth: OK\n`;
                 
                 // Sequence 2: PDF Compilation (1s - 2.5s)
                 setTimeout(() => {
                     txt.innerText = "COMPILING LEDGER DATA...";
                     subTxt.innerText = "Extracting vector geometries...";
                     liquid.style.height = "45%";
+                    aiCode.innerText += `Generating Vector PDF...\nAmount: ₹${this.activeTxn.amount}\n`;
                 }, 1000);
 
                 const element = document.getElementById('pdfWrapper');
-                const opt = { margin: 0, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+                const opt = { margin: 0, filename: `Tournyx_${this.activeTxn.txnId}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, backgroundColor: '#05020c', useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
                 
-                // Actually generate the base64 during the animation
+                // Generate base64 during the animation
                 const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
 
                 // Sequence 3: Uploading (2.5s - 4s)
                 txt.innerText = "UPLOADING TO SECURE VAULT...";
                 subTxt.innerText = "Sending cryptographic payload to Drive...";
-                liquid.style.height = "85%";
+                liquid.style.height = "80%";
+                aiCode.innerText += `Encrypting Payload...\nPushing to Drive...\n`;
 
                 // Trigger API Upload
                 await this.api('upload_invoice', { txnId: this.activeTxn.txnId, pdfBase64: pdfBase64 });
 
                 // Sequence 4: Complete & Ask Download (4s+)
                 liquid.style.height = "100%";
+                aiCode.innerText += `UPLOAD SUCCESS.\nDISCONNECTING.`;
                 txt.innerText = "SETTLEMENT COMPLETE";
                 txt.style.color = "var(--accent-green)";
                 subTxt.innerText = "Invoice successfully secured.";
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 
                 setTimeout(() => {
                     overlay.classList.remove('active');
@@ -521,19 +540,23 @@
                     // Reset animation for next time
                     setTimeout(() => { 
                         liquid.style.height = "0%"; 
+                        aiCode.innerText = "";
                         txt.innerText = "INITIALIZING AI COMPILER...";
                         txt.style.color = "var(--accent-cyan)";
                     }, 500);
 
                     // Ask agent if they want a local copy downloaded
-                    if(confirm(`Invoice Saved to Drive Successfully.\n\nDo you want to download a local copy of ${this.activeTxn.txnId} to this device?`)) {
-                        html2pdf().set(opt).from(element).save();
-                    }
+                    setTimeout(() => {
+                        if(confirm(`Invoice Saved to Drive Successfully.\n\nDo you want to download a local copy of ${this.activeTxn.txnId} to this device?`)) {
+                            html2pdf().set(opt).from(element).save();
+                        }
+                    }, 100);
 
                     this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                     this.activeTxn = null;
+                    this.isFirstLoad = true;
                     this.switchView('dashboard');
-                }, 1500);
+                }, 1800);
             },
 
             initBG: function() {
@@ -548,6 +571,7 @@
                 for(let i=0; i<25; i++) arr.push(new Node());
                 function loop(){ ctx.clearRect(0,0,c.width,c.height); arr.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(loop); }
                 loop();
+                window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; });
             }
         };
 
