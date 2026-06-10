@@ -112,14 +112,19 @@
         .print-sub { color: #888; font-size: 0.8rem; margin-top: 10px; font-weight: bold; font-family: monospace; letter-spacing: 1px;}
 
         
-        /* PERFECTED INVOICE ACTUAL PDF ENGINE (FIXED RENDER BUG) */
+        /* 🚀 BULLETPROOF PDF ENGINE (FIXED MOBILE & DESKTOP BLANK BUG) */
         #pdfWrapper { 
-            position: absolute; top: 0; left: 0; width: 800px; 
-            background-color: #05020c; /* Solid background is MANDATORY for canvas */
-            color: white; padding: 50px; box-sizing: border-box; 
+            position: fixed; 
+            top: 0; 
+            left: -9999px; /* 🔥 Keeps it fully rendered in DOM but perfectly invisible */
+            width: 800px; 
+            background-color: #05020c !important; 
+            color: white !important; 
+            padding: 50px; 
+            box-sizing: border-box; 
             border: 2px solid #00f2ff; 
-            display: none; /* Hidden by default */
-            z-index: 1; /* Renders UNDER the animation overlay */
+            display: block !important; /* 🔥 NEVER use display: none */
+            z-index: -9999;
         }
         .pdf-copyright { color: #888; text-align: center; font-size: 12px; margin-top: 50px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 25px; font-weight: 600; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;}
     </style>
@@ -502,7 +507,7 @@
                 }
             },
 
-            // 🔥 UPGRADED AI PRINTING ENGINE (BLANK PDF FIX)
+           // 🚀 ULTIMATE HIGH-SPEED PDF PRINTING ENGINE
             triggerPrintAnimationAndUpload: async function() {
                 const overlay = document.getElementById('printOverlay');
                 const liquid = document.getElementById('liquidFill');
@@ -510,10 +515,10 @@
                 const subTxt = document.getElementById('printSubText');
                 const element = document.getElementById('pdfWrapper');
                 
-                // 1. Show the dark loading overlay (z-index: 10000)
+                // 1. Show the dark loading animation overlay
                 overlay.classList.add('active');
                 
-                // 2. Injecting all data perfectly into the PDF template
+                // 2. Injecting all data perfectly into the off-screen template
                 document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB') + " | " + new Date().toLocaleTimeString('en-GB');
                 document.getElementById('pdf-txnid').innerText = this.activeTxn.txnId;
                 document.getElementById('pdf-email').innerText = this.activeTxn.email;
@@ -524,39 +529,39 @@
                 document.getElementById('pdf-amount').innerText = `₹${this.activeTxn.amount}`;
 
                 liquid.style.height = "15%";
-                
-                // 3. Make the PDF wrapper visible, but it stays hidden BEHIND the overlay!
-                element.style.display = "block";
 
                 setTimeout(() => {
                     txt.innerText = "COMPILING LEDGER DATA...";
                     subTxt.innerText = "Extracting vector geometries...";
                     liquid.style.height = "45%";
-                }, 800);
+                }, 500);
 
-                // Wait slightly for DOM to register the display:block before taking the snapshot
-                await new Promise(resolve => setTimeout(resolve, 1200));
+                // Short 800ms delay to ensure data text renders in the DOM
+                await new Promise(resolve => setTimeout(resolve, 800));
 
                 const opt = { 
                     margin: 0, 
                     filename: `Tournyx_${this.activeTxn.txnId}.pdf`, 
                     image: { type: 'jpeg', quality: 1 }, 
-                    // useCORS is critical to load the favicon image securely
-                    html2canvas: { scale: 2, backgroundColor: '#05020c', useCORS: true, logging: false }, 
+                    html2canvas: { 
+                        scale: 2, 
+                        backgroundColor: '#05020c', 
+                        useCORS: true, 
+                        logging: false,
+                        scrollY: 0,
+                        scrollX: 0
+                    }, 
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
                 };
                 
-                // Generate the Base64 String
+                // 🔥 Generates Base64 flawlessly because layout geometry is perfectly active
                 const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
-
-                // 4. Hide the PDF wrapper again immediately after snapshot
-                element.style.display = "none";
 
                 txt.innerText = "UPLOADING TO SECURE VAULT...";
                 subTxt.innerText = "Sending cryptographic payload to Drive...";
                 liquid.style.height = "85%";
 
-                // 5. Upload to Apps Script
+                // 3. Upload to Apps Script Backend
                 await this.api('upload_invoice', { txnId: this.activeTxn.txnId, pdfBase64: pdfBase64 });
 
                 liquid.style.height = "100%";
@@ -575,19 +580,15 @@
                         txt.style.textShadow = "0 0 15px rgba(0,242,255,0.6)";
                     }, 600);
 
-                    // Ask Agent for Local Copy
+                    // Optional local download prompt for the agent
                     if(confirm(`Invoice Saved to Drive Successfully.\n\nDo you want to download a local copy of ${this.activeTxn.txnId} to this device?`)) {
-                        // Re-show temporarily just for local download
-                        element.style.display = "block";
-                        html2pdf().set(opt).from(element).save().then(() => {
-                            element.style.display = "none";
-                        });
+                        html2pdf().set(opt).from(element).save();
                     }
 
                     this.btnLoading('commitBtn', false, `<span>COMMIT DECISION</span> <i class="fa-solid fa-check-double"></i>`);
                     this.activeTxn = null;
                     this.switchView('dashboard');
-                }, 1800);
+                }, 1500);
             },
             initBG: function() {
                 const c = document.getElementById('bg-canvas'); const ctx = c.getContext('2d');
