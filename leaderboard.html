@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- SEO, AEO & GEO TAGS -->
     <title>Global Tournyx Elite - Live eSports Rankings</title>
     <meta name="description" content="Check the live Global Tournyx Elite Leaderboard. Discover top BGMI and Free Fire players, win rates, and total earnings on the premier Tournyx Esports platform.">
     <meta name="keywords" content="Tournyx, Esports Leaderboard, BGMI rankings, Free Fire top players, gaming tournaments, India esports, play and earn">
@@ -22,7 +21,6 @@
     <link rel="icon" href="https://tournyx.in/favicon.ico" sizes="any">
     <link rel="icon" href="https://tournyx.in/favicon.png" type="image/png" sizes="192x192">
     
-    <!-- React & Babel -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -78,7 +76,7 @@
         }
         
         .header-wrapper { display: flex; width: 100%; align-items: center; justify-content: space-between; }
-        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 12px; flex: 1; }
         
         .back-btn { font-size: 1.2rem; color: white; cursor: pointer; transition: 0.3s; padding: 5px; text-decoration: none;}
         .back-btn:active { color: var(--accent-cyan); transform: scale(0.9); }
@@ -89,7 +87,9 @@
         .live-dot { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); animation: pulseLive 1.5s infinite; }
         @keyframes pulseLive { 0% { opacity: 1; transform:scale(1);} 50% { opacity: 0.3; transform:scale(1.5);} 100% { opacity: 1; transform:scale(1);} }
 
-        .header-profile-img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(0,242,255,0.3);}
+        .header-right { display: flex; justify-content: flex-end; align-items: center; gap: 15px; flex: 1; }
+        .header-profile-img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(0,242,255,0.3);}
+        .header-profile-img:active { transform: scale(0.9); }
 
         /* Desktop Nav */
         .desktop-nav { display: none; gap: 20px; align-items: center; justify-content: center;}
@@ -97,7 +97,8 @@
         .desktop-nav a:hover, .desktop-nav a.active { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
         @media (min-width: 850px) { 
             .bottom-nav { display: none !important; } 
-            .desktop-nav { display: flex; } 
+            .desktop-nav { display: flex; flex: 2; } 
+            .header-left, .header-right { flex: 1; }
         }
 
         /* SEARCH BAR */
@@ -173,42 +174,47 @@
 
         .r-img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent-purple); object-fit: cover; margin: 0 10px 0 0; box-shadow: 0 0 10px rgba(189,0,255,0.3);}
         
-        .r-info { flex: 1; min-width: 0; }
+        .r-info { flex: 1; min-width: 0; overflow: hidden; }
         .r-info h4 { font-family: var(--font-head); font-size: 0.85rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
         .verified-badge { color: var(--accent-cyan); font-size: 0.7rem; filter: drop-shadow(0 0 5px var(--accent-cyan));}
         .clan-tag { color: var(--accent-gold); font-size: 0.55rem; letter-spacing: 1px; border: 1px solid var(--accent-gold); padding: 1px 3px; border-radius: 4px; background: rgba(255,215,0,0.1); }
-        .r-info p { font-size: 0.6rem; color: #bbb; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;}
+        .r-info p { font-size: 0.65rem; color: #bbb; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .r-ping { color: #888; margin-left: 6px; font-weight: bold; }
         
         .r-stats { text-align: right; display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;}
         .r-winrate { font-family: var(--font-head); font-size: 0.95rem; color: var(--accent-green); font-weight: bold; text-shadow: 0 0 10px rgba(0,255,127,0.4); display: flex; align-items: center; gap: 4px; }
         .r-rewards { font-size: 0.55rem; color: #888; margin-top: 2px; font-weight: bold; letter-spacing: 0.5px;}
 
-        /* FF PROGRESS (YOUR RANK) - BLENDED AT BOTTOM */
-        .ff-progress-card { background: linear-gradient(135deg, rgba(5,2,12,0.9), rgba(20,10,35,0.9)); border: 1px solid var(--accent-cyan); border-radius: 14px; padding: 12px 15px; margin: 15px 15px 0; box-shadow: 0 -5px 20px rgba(0,242,255,0.15), inset 0 0 15px rgba(0,0,0,0.5); position: sticky; bottom: calc(75px + env(safe-area-inset-bottom)); z-index: 100; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
+        /* FF PROGRESS (YOUR RANK) - COMPETITOR TARGETING */
+        .ff-progress-card { background: linear-gradient(135deg, rgba(5,2,12,0.9), rgba(20,10,35,0.9)); border: 1px solid var(--accent-cyan); border-radius: 14px; padding: 12px 15px; margin: 15px 15px 0; box-shadow: 0 -5px 20px rgba(0,242,255,0.15), inset 0 0 15px rgba(0,0,0,0.5); position: sticky; bottom: calc(75px + env(safe-area-inset-bottom)); z-index: 100; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); cursor: pointer; transition: 0.3s; }
+        .ff-progress-card:active { transform: scale(0.98); border-color: var(--accent-purple); box-shadow: 0 -5px 25px rgba(189,0,255,0.3), inset 0 0 15px rgba(0,0,0,0.5);}
         .ff-prog-header { display: flex; justify-content: space-between; font-family: var(--font-head); font-weight: bold; font-size: 0.75rem; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         .ff-prog-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); position: relative;}
         .ff-prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); box-shadow: 0 0 10px var(--accent-cyan); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .ff-prog-sub { font-size: 0.65rem; color: #aaa; margin-top: 6px; text-align: center; font-weight: 600; }
+        .ff-prog-sub { font-size: 0.65rem; color: #aaa; margin-top: 6px; text-align: center; font-weight: 600; line-height: 1.3;}
+        .ff-tap-action { color: var(--accent-cyan); text-decoration: underline; font-weight: bold; display: block; margin-top: 2px;}
 
-        /* SKELETON LOADER - COMPACT */
-        .skeleton-wrapper { display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 10px 15px;}
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 12px; height: 55px; border: 1px solid rgba(255,255,255,0.03);}
+        /* SKELETON LOADER - PERFECT PODIUM MOCKUP */
+        .skeleton-wrapper { display: flex; flex-direction: column; width: 100%; padding: 30px 15px 10px;}
+        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border: 1px solid rgba(255,255,255,0.03);}
+        .skel-podium-area { display: flex; justify-content: center; align-items: flex-end; gap: 12px; height: 160px; margin-bottom: 30px; }
+        .skel-podium { border-radius: 12px 12px 0 0; }
+        .skel-list-item { height: 55px; border-radius: 12px; margin-bottom: 8px; }
 
-        /* MODAL - SIZED TO PREVENT OVERFLOW */
+        /* MODAL - SIZED PERFECTLY (NO OVERFLOW) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; transition: 0.4s; padding: 15px; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: rgba(10, 5, 20, 0.95); width: 100%; max-width: 340px; border-radius: 20px; border: 1px solid var(--accent-cyan); box-shadow: 0 15px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 242, 255, 0.15); transform: scale(0.85) translateY(20px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; max-height: 85vh;}
+        .modal-card { background: rgba(10, 5, 20, 0.95); width: 100%; max-width: 340px; border-radius: 20px; border: 1px solid var(--accent-cyan); box-shadow: 0 15px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 242, 255, 0.15); transform: scale(0.85) translateY(20px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; max-height: 85vh; box-sizing: border-box;}
         .modal-overlay.active .modal-card { transform: scale(1) translateY(0); }
         .modal-close { position: absolute; top: 12px; right: 12px; font-size: 1.2rem; color: #888; cursor: pointer; transition: 0.3s; z-index: 10; }
         .modal-close:hover, .modal-close:active { color: var(--accent-cyan); transform: rotate(90deg) scale(1.1); }
         
-        .modal-header { background: linear-gradient(180deg, rgba(0,242,255,0.15) 0%, transparent 100%); padding: 20px 15px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; flex-shrink: 0;}
+        .modal-header { background: linear-gradient(180deg, rgba(0,242,255,0.15) 0%, transparent 100%); padding: 20px 15px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; flex-shrink: 0; box-sizing: border-box;}
         .modal-avatar { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.4); margin: 0 auto 8px; background: #000; position: relative; z-index: 2; }
         .modal-ign { font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; margin-bottom: 2px; color: white; display: flex; justify-content: center; align-items: center; gap: 6px;}
         .modal-name { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         
-        .modal-body { padding: 15px; overflow-y: auto; flex: 1; scrollbar-width: none;}
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; scrollbar-width: none; box-sizing: border-box;}
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .stat-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px 6px; text-align: center; transition: 0.3s; }
         .stat-box i { font-size: 1rem; margin-bottom: 4px; color: var(--accent-cyan); filter: drop-shadow(0 0 8px var(--accent-cyan));}
@@ -217,8 +223,8 @@
         
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 0.75rem; align-items: center;}
         .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .info-lbl { color: #888; font-weight: 600; font-size: 0.7rem; }
-        .info-val { font-weight: bold; font-family: var(--font-head); color: white; letter-spacing: 0.5px; text-align: right; font-size: 0.7rem;}
+        .info-lbl { color: #888; font-weight: 600; font-size: 0.7rem; flex-shrink: 0;}
+        .info-val { font-weight: bold; font-family: var(--font-head); color: white; letter-spacing: 0.5px; text-align: right; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;}
         
         .tier-badge { background: rgba(189,0,255,0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 2px 6px; border-radius: 6px; font-size: 0.6rem; text-transform: uppercase; box-shadow: 0 0 10px rgba(189,0,255,0.3); font-weight: bold;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.05); color: white; font-size: 0.95rem; transition: 0.3s; text-decoration: none;}
@@ -270,13 +276,12 @@
             </nav>
 
             <div class="header-right">
-                <img src="https://tournyx.in/favicon.png" class="header-profile-img" onclick="window.location.href='profile.html'">
+                <img id="headerAvatar" src="https://ui-avatars.com/api/?name=User&background=070311&color=00f2ff&bold=true" class="header-profile-img" onclick="window.location.href='profile.html'">
             </div>
         </div>
     </header>
 
     <div class="container">
-        <!-- SEARCH BAR ALIGNED -->
         <div class="search-container">
             <div class="search-bar-inner">
                 <i class="fa-solid fa-magnifying-glass" style="color: #666;"></i>
@@ -315,14 +320,18 @@
         </div>
 
         <div id="loadingSkeleton" class="skeleton-wrapper">
-            <div class="skeleton" style="height: 180px; width: 80%; margin: 0 auto; border-radius: 20px;"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
+            <div class="skel-podium-area">
+                <div class="skeleton skel-podium" style="width: 70px; height: 90px;"></div>
+                <div class="skeleton skel-podium" style="width: 95px; height: 120px;"></div>
+                <div class="skeleton skel-podium" style="width: 60px; height: 75px;"></div>
+            </div>
+            <div class="skeleton skel-list-item"></div>
+            <div class="skeleton skel-list-item"></div>
+            <div class="skeleton skel-list-item"></div>
+            <div class="skeleton skel-list-item"></div>
         </div>
 
         <div id="leaderboardContent" style="display:none;">
-            <!-- PODIUM ARENA WITH ANIMATED MEDALS -->
             <div class="podium-arena" id="podiumArena">
                 <div class="podium-step rank-2" onclick="openProfile(1)">
                     <i class="fa-solid fa-medal medal-badge medal-2"></i>
@@ -352,7 +361,6 @@
 
             <h2 id="rankings-label" style="font-family:var(--font-head);font-size:0.75rem;letter-spacing:3px;color:#888;text-align:center;padding:10px 15px;position:relative;z-index:1;">GLOBAL ELITE LIST</h2>
 
-            <!-- REACT LIST MOUNT POINT -->
             <div id="react-list-container"></div>
         </div>
         
@@ -363,16 +371,14 @@
         </div>
     </div>
 
-    <!-- PLAYER PROFILE MODAL -->
     <div class="modal-overlay" id="playerModal">
         <div class="modal-card">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeProfile()"></i>
+            <i class="fa-solid fa-xmark modal-close" onclick="closeProfileBtn()"></i>
             <div class="modal-header">
                 <img src="" id="modalAvatar" class="modal-avatar">
                 <div class="modal-ign" id="modalIGN">IGN NAME</div>
                 <div class="modal-name" id="modalFullName">Real Name</div>
                 
-                <!-- Social Buttons injected dynamically -->
                 <div id="modalSocials" style="display:flex; gap:8px; justify-content:center; margin-top:10px;"></div>
             </div>
             <div class="modal-body">
@@ -413,7 +419,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-lbl">Location</span>
-                    <span class="info-val" id="modalRegion" style="max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Unknown</span>
+                    <span class="info-val" id="modalRegion">Unknown</span>
                 </div>
                 <div class="info-row">
                     <span class="info-lbl">Role</span>
@@ -427,7 +433,6 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <a class="nav-item" href="index.html">
             <i class="fa-solid fa-house"></i><span>Home</span>
@@ -458,13 +463,10 @@
         </a>
     </nav>
 
-    <!-- ==========================================
-         REACT.JS ENGINE (LIST & SMART PROGRESS UI)
-         ========================================== -->
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        const LeaderboardList = ({ list, fullDataset, openModal }) => {
+        const LeaderboardList = ({ list, fullDataset, openModal, currentUser }) => {
             if (list.length <= 3 && fullDataset.length > 0) {
                 return <div className="status-msg" style={{padding: '30px 20px', color: '#666', fontFamily: 'var(--font-head)', letterSpacing: '1px'}}>NO MORE ELITES IN THIS CATEGORY</div>;
             }
@@ -472,26 +474,43 @@
             const listData = list.slice(3, 100);
 
             // DYNAMIC PROGRESS BAR ENGINE (Defeat Next Rank Logic)
-            // Mocking current user rank for demonstration (Using rank 45 to show the logic)
-            const myRank = 45; 
-            const me = fullDataset[myRank - 1]; 
-            const myPoints = me ? (parseInt(me.points) || 0) : 420;
+            let myRank = -1;
+            let me = null;
+            let myPoints = 0;
 
-            let targetText, targetPoints, progressPercent;
+            if (currentUser && fullDataset.length > 0) {
+                // Find exactly where the current user stands in the globally sorted dataset
+                myRank = fullDataset.findIndex(p => 
+                    (currentUser.uid && p.uid == currentUser.uid) || 
+                    (currentUser.email && p.email == currentUser.email) ||
+                    (currentUser.ign && p.ign == currentUser.ign)
+                ) + 1;
+                
+                if (myRank > 0) {
+                    me = fullDataset[myRank - 1];
+                    myPoints = parseInt(me.points) || 0;
+                }
+            }
 
-            if (myRank > 100) {
+            // Calculations
+            let targetText = "", targetPoints = 0, progressPercent = 0, targetIdx = -1;
+
+            if (myRank > 100 || myRank === -1) {
                 // Goal: Reach Top 100
-                const targetIdx = Math.min(99, fullDataset.length - 1);
+                targetIdx = Math.min(99, fullDataset.length - 1);
                 const targetPlayer = fullDataset[targetIdx];
                 targetPoints = targetPlayer ? (parseInt(targetPlayer.points) || 500) : 500;
-                targetText = `to enter the Elite Top ${targetIdx + 1} Leaderboard!`;
+                targetText = targetPlayer ? `to enter the Top 100 Leaderboard!` : `to rank up!`;
             } else if (myRank > 1) {
                 // Goal: Defeat Player Above
-                const targetPlayer = fullDataset[myRank - 2]; 
+                targetIdx = myRank - 2; 
+                const targetPlayer = fullDataset[targetIdx]; 
                 targetPoints = targetPlayer ? (parseInt(targetPlayer.points) || myPoints + 50) : myPoints + 50;
                 let targetName = targetPlayer ? (targetPlayer.ign || targetPlayer.username || 'above player') : 'above player';
+                // Strip clan tag for UI
+                if(targetName.includes('.')) targetName = targetName.substring(targetName.indexOf('.') + 1);
                 targetText = `to defeat ${targetName} and rank up!`;
-            } else {
+            } else if (myRank === 1) {
                 targetPoints = myPoints;
                 targetText = `You are the #1 Champion! Keep dominating.`;
             }
@@ -499,12 +518,16 @@
             const ptsNeeded = Math.max(0, targetPoints - myPoints);
             progressPercent = targetPoints === 0 ? 100 : Math.min(100, Math.floor((myPoints / targetPoints) * 100));
             if(myRank === 1) progressPercent = 100;
+            
+            let displayName = me ? (me.ign || me.username || "You") : "Log in to track rank";
+            if(displayName.includes('.')) displayName = displayName.substring(displayName.indexOf('.') + 1);
 
             return (
                 <React.Fragment>
                     <div className="list-container">
                         {listData.map((p, idx) => {
                             const rank = idx + 4;
+                            const globalIdx = fullDataset.indexOf(p);
                             
                             const matches = parseInt(p.matches_played) || parseInt(p.matches) || 0;
                             const points = parseInt(p.points) || 0;
@@ -528,7 +551,7 @@
 
                             const isClan = ign.includes('.');
                             const clanTag = isClan ? ign.split('.')[0].toUpperCase() : '';
-                            const displayName = isClan ? ign.substring(ign.indexOf('.') + 1) : ign;
+                            const cleanName = isClan ? ign.substring(ign.indexOf('.') + 1) : ign;
 
                             const isPremium = p.premium === true || String(p.premium).toLowerCase() === 'true';
                             
@@ -536,7 +559,7 @@
                                               (isPremium ? {border: '1px solid rgba(255,215,0,0.4)', boxShadow: '0 0 10px rgba(255,215,0,0.1)'} : {});
 
                             return (
-                                <div key={idx} className="player-row" onClick={() => openModal(idx + 3)} style={cardStyle}>
+                                <div key={idx} className="player-row" onClick={() => openModal(globalIdx)} style={cardStyle}>
                                     <div className="r-num" style={isMythic ? {color:'#FFD700'} : {}}>
                                         {rank}
                                         <span className="r-trend"><i className={`fa-solid ${trendIcon}`}></i></span>
@@ -545,10 +568,9 @@
                                     <div className="r-info">
                                         <h4 style={isMythic ? {color:'#FFD700'} : (isPremium ? {color:'#FFD700'} : {color:'white'})}>
                                             {clanTag && <span className="clan-tag">{clanTag}</span>}
-                                            {displayName}
+                                            {cleanName}
                                             {rank <= 10 && <span className="verified-badge"><i className="fa-solid fa-circle-check"></i></span>}
                                             {isMythic && <span style={{background:'linear-gradient(135deg,#FFF0A0,#FFD700,#FF8C00)',color:'#000',fontSize:'0.45rem',fontFamily:'var(--font-head)',padding:'1px 6px',borderRadius:'5px',letterSpacing:'1px',marginLeft:'4px',verticalAlign:'middle',fontWeight:'bold'}}>MYTHIC</span>}
-                                            {isPremium && !isMythic && <span style={{marginLeft:'4px', fontSize:'0.65rem', filter:'drop-shadow(0 0 3px #FFD700)'}}>👑</span>}
                                         </h4>
                                         <p>{region} <span className="r-ping"><i className="fa-solid fa-signal" style={{color: pingColor}}></i> {ping}ms</span></p>
                                     </div>
@@ -561,36 +583,34 @@
                         })}
                     </div>
 
-                    {fullDataset.length > 5 && listData.length > 2 && (
-                        <div className="ff-progress-card">
+                    {/* DYNAMIC YOUR RANK BAR */}
+                    {fullDataset.length > 5 && me && (
+                        <div className="ff-progress-card" onClick={() => { if(targetIdx >= 0) openModal(targetIdx); }}>
                             <div className="ff-prog-header">
-                                <span><i className="fa-solid fa-crosshairs" style={{color:'var(--accent-cyan)'}}></i> Your Rank: #{myRank}</span>
+                                <span><i className="fa-solid fa-user" style={{color:'var(--accent-cyan)'}}></i> {displayName} (Rank: #{myRank})</span>
                                 <span>{progressPercent}% <i className="fa-solid fa-bolt" style={{color:'var(--accent-purple)'}}></i></span>
                             </div>
                             <div className="ff-prog-bar">
                                 <div className="ff-prog-fill" style={{width: `${progressPercent}%`}}></div>
                             </div>
-                            <p className="ff-prog-sub">You need <b style={{color:'white'}}>{ptsNeeded} more points</b> {targetText}</p>
+                            <p className="ff-prog-sub">You need <b style={{color:'white'}}>{ptsNeeded} more points</b> {targetText} <br/><span className="ff-tap-action">Tap to view competitor!</span></p>
                         </div>
                     )}
                 </React.Fragment>
             );
         };
 
-        window.renderReactList = (filteredList, fullDataset) => {
+        window.renderReactList = (filteredList, fullDataset, currentUser) => {
             const rootContainer = document.getElementById('react-list-container');
             if(window.reactRoot) {
-                window.reactRoot.render(<LeaderboardList list={filteredList} fullDataset={fullDataset} openModal={window.openProfile} />);
+                window.reactRoot.render(<LeaderboardList list={filteredList} fullDataset={fullDataset} openModal={window.openProfile} currentUser={currentUser} />);
             } else {
                 window.reactRoot = ReactDOM.createRoot(rootContainer);
-                window.reactRoot.render(<LeaderboardList list={filteredList} fullDataset={fullDataset} openModal={window.openProfile} />);
+                window.reactRoot.render(<LeaderboardList list={filteredList} fullDataset={fullDataset} openModal={window.openProfile} currentUser={currentUser} />);
             }
         };
     </script>
 
-    <!-- ==========================================
-         VANILLA JS BACKEND ENGINE & LOGIC
-         ========================================== -->
     <script>
         // BACKGROUND PARTICLES
         const canvas = document.getElementById('particles-canvas');
@@ -631,6 +651,24 @@
         let currentTimeframe = 'Weekly';
         let currentGame = 'All';
         let copyUidText = "";
+        let loggedInUser = null;
+
+        // Extract Current Logged-In User from LocalStorage seamlessly
+        function getStoredUser() {
+            try {
+                const keys = ['tournyx_userData', 'tournyx_user', 'user_data', 'userData', 'userSession'];
+                for(let key of keys) {
+                    let data = localStorage.getItem(key);
+                    if(data) {
+                        let parsed = JSON.parse(data);
+                        if(parsed.uid || parsed.ign || parsed.email) return parsed;
+                    }
+                }
+                let email = localStorage.getItem('userEmail') || localStorage.getItem('email') || localStorage.getItem('tournyx_email');
+                if(email) return { email: email };
+            } catch(e) {}
+            return null;
+        }
 
         // Avatar Fallback logic to High-Quality Anime Style
         window.formatImageUrl = function(url, fallbackName) {
@@ -716,6 +754,20 @@
                         p.matches_played = parseInt(p.matches_played) || 0;
                     });
 
+                    // Match logged-in user from LocalStorage
+                    let stored = getStoredUser();
+                    if(stored) {
+                        let match = rawLeaderboardData.find(p => 
+                            (stored.uid && p.uid == stored.uid) || 
+                            (stored.email && p.email == stored.email) || 
+                            (stored.ign && p.ign == stored.ign)
+                        );
+                        if(match) {
+                            loggedInUser = match;
+                            document.getElementById('headerAvatar').src = window.formatImageUrl(match.avatar, match.ign || match.username);
+                        }
+                    }
+
                     applyFilters();
                 } else { throw new Error("API Error"); }
             } catch (err) {
@@ -768,7 +820,7 @@
 
             document.getElementById('leaderboardContent').style.display = 'block';
             renderPodium();
-            if(window.renderReactList) window.renderReactList(filteredData, rawLeaderboardData);
+            if(window.renderReactList) window.renderReactList(filteredData, filteredData, loggedInUser);
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
@@ -808,8 +860,8 @@
                         elName.style.webkitTextFillColor = 'transparent';
                         elRate.style.color = '#FFD700';
                         pillar.style.background = 'linear-gradient(170deg,#0d0800 0%,#1f1000 35%,#2e1800 65%,#0d0800 100%)';
-                        pillar.style.border = '1px solid rgba(255,200,0,1)';
-                        elImg.style.border = '2px solid #FFD700';
+                        pillar.style.border = '1.5px solid rgba(255,200,0,1)';
+                        elImg.style.border = '3px solid #FFD700';
                     } else if (isPremium) {
                         elName.style.color = '#FFD700';
                         elRate.style.color = '#FFA500';
@@ -833,7 +885,9 @@
             updatePodiumSlot(3, getSafe(2)); 
         }
 
-        // --- PLAYER PROFILE MODAL ---
+        // --- PLAYER PROFILE MODAL WITH HISTORY STATE API ---
+        let isModalOpen = false;
+
         window.openProfile = function(index) {
             if(navigator.vibrate) navigator.vibrate(20); 
             // Accurately targeting the passed index
@@ -865,26 +919,25 @@
             const header  = overlay.querySelector('.modal-header');
             const avatar  = document.getElementById('modalAvatar');
 
+            // Apply Proper Box Constraints to All Overlays
             if (isMythic) {
-                card.style.cssText   = `background:linear-gradient(170deg,#0d0800 0%,#1f1000 40%,#2a1800 70%,#0d0800 100%);border:1.5px solid rgba(255,200,0,0.9);box-shadow:0 0 40px rgba(255,185,0,0.4),0 15px 50px rgba(0,0,0,0.9),inset 0 0 40px rgba(255,185,0,0.08);border-radius:24px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh;`;
-                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.18) 0%,transparent 100%);padding:25px 15px 10px;text-align:center;border-bottom:1px solid rgba(255,185,0,0.2);flex-shrink:0;`;
+                card.style.cssText   = `background:linear-gradient(170deg,#0d0800 0%,#1f1000 40%,#2a1800 70%,#0d0800 100%);border:1.5px solid rgba(255,200,0,0.9);box-shadow:0 0 40px rgba(255,185,0,0.4),0 15px 50px rgba(0,0,0,0.9),inset 0 0 40px rgba(255,185,0,0.08);border-radius:20px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box;`;
+                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.18) 0%,transparent 100%);padding:20px 15px 10px;text-align:center;border-bottom:1px solid rgba(255,185,0,0.2);flex-shrink:0; box-sizing:border-box;`;
                 avatar.style.cssText = `width:75px;height:75px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 20px rgba(255,185,0,0.8);margin:0 auto 8px;background:#000;position:relative;z-index:2;`;
             } else if (isPremium) {
-                // 🔥 NEW: Premium Golden Glow Effect
-                card.style.cssText   = `background:linear-gradient(170deg,#1c1000 0%,#2a1800 40%,#1a0d00 100%);border:1px solid rgba(255,185,0,0.8);box-shadow:0 0 25px rgba(255,185,0,0.25),0 15px 50px rgba(0,0,0,0.9);border-radius:24px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh;`;
-                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.12) 0%,transparent 100%);padding:25px 15px 10px;text-align:center;border-bottom:1px dashed rgba(255,185,0,0.2);flex-shrink:0;`;
+                card.style.cssText   = `background:linear-gradient(170deg,#1c1000 0%,#2a1800 40%,#1a0d00 100%);border:1px solid rgba(255,185,0,0.8);box-shadow:0 0 25px rgba(255,185,0,0.25),0 15px 50px rgba(0,0,0,0.9);border-radius:20px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box;`;
+                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.12) 0%,transparent 100%);padding:20px 15px 10px;text-align:center;border-bottom:1px dashed rgba(255,185,0,0.2);flex-shrink:0; box-sizing:border-box;`;
                 avatar.style.cssText = `width:75px;height:75px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 15px rgba(255,185,0,0.5);margin:0 auto 8px;background:#000;position:relative;z-index:2;`;
             } else {
                 card.style.cssText = ``; header.style.cssText = ``; avatar.style.cssText = ``;
             }
 
-            avatar.src = formatImageUrl(player.avatar, safeName);
+            avatar.src = window.formatImageUrl(player.avatar, safeName);
             
-            const premiumBadge = isPremium ? ' <span style="font-size:0.75rem; filter:drop-shadow(0 0 5px #FFD700); margin-left:4px;">👑</span>' : '';
             const mythicBadge = isMythic ? ' <span style="background:linear-gradient(135deg,#FFF0A0,#FFD700,#FF8C00);color:#000;font-size:0.5rem;font-family:var(--font-head);padding:2px 6px;border-radius:6px;letter-spacing:1px;margin-left:4px;vertical-align:middle;font-weight:bold">✦ MYTHIC</span>' : '';
             const ignStyle = isMythic ? 'background:linear-gradient(135deg,#FFF0A0,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;' : (isPremium ? 'color:#FFD700;' : '');
             
-            document.getElementById('modalIGN').innerHTML = `<span style="${ignStyle}">${safeName}</span> <i class="fa-solid fa-circle-check" style="color:${isMythic?'#FFD700':'var(--accent-cyan)'}; font-size:0.8rem;"></i>${isMythic ? mythicBadge : premiumBadge}`;
+            document.getElementById('modalIGN').innerHTML = `<span style="${ignStyle}">${safeName}</span> <i class="fa-solid fa-circle-check" style="color:${isMythic?'#FFD700':'var(--accent-cyan)'}; font-size:0.8rem;"></i>${isMythic ? mythicBadge : ''}`;
             
             document.getElementById('modalFullName').innerText = player.username || player.ign || "Classified Elite";
             document.getElementById('modalFullName').style.color = isMythic ? '#b87800' : '';
@@ -927,6 +980,12 @@
             tierBadge.style.boxShadow = `0 0 10px ${mt.glow}`;
 
             overlay.classList.add('active');
+            
+            // App History API Push for Mobile Back Button
+            if(!isModalOpen) {
+                history.pushState({modal: 'open'}, '', window.location.pathname + '#playerProfile');
+                isModalOpen = true;
+            }
         }
 
         window.copyUID = function() {
@@ -939,13 +998,27 @@
             }, 2000);
         }
 
-        window.closeProfile = function() {
+        // Internal button close (triggers history back to keep state clean)
+        window.closeProfileBtn = function() {
             if(navigator.vibrate) navigator.vibrate(20);
-            document.getElementById('playerModal').classList.remove('active');
+            if(isModalOpen) {
+                history.back(); // This naturally fires the popstate event
+            } else {
+                document.getElementById('playerModal').classList.remove('active');
+            }
         }
 
+        // Native Hardware / Swipe Back Event Listener
+        window.addEventListener('popstate', (e) => {
+            if(isModalOpen) {
+                document.getElementById('playerModal').classList.remove('active');
+                isModalOpen = false;
+            }
+        });
+
+        // Click outside to close
         document.getElementById('playerModal').addEventListener('click', function(e) {
-            if(e.target === this) closeProfile();
+            if(e.target === this) closeProfileBtn();
         });
 
         window.onload = () => {
