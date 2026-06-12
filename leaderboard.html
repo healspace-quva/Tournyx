@@ -76,14 +76,14 @@
         }
         
         .header-wrapper { display: flex; width: 100%; align-items: center; justify-content: space-between; }
-        .header-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+       .header-left { display: flex; align-items: center; gap: 15px; flex: 1; }
         
         .back-btn { font-size: 1.2rem; color: white; cursor: pointer; transition: 0.3s; padding: 5px; text-decoration: none;}
         .back-btn:active { color: var(--accent-cyan); transform: scale(0.9); }
         
-        .header-title-box { display: flex; flex-direction: column; }
-        .header-lb-title { font-family: var(--font-head); font-size: 1.15rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin: 0; line-height: 1.1;}
-        .header-lb-sub { font-size: 0.55rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-top: 2px;}
+       .header-title-box { display: flex; flex-direction: column; justify-content: center; padding-top: 2px; }
+        .header-lb-title { font-family: var(--font-head); font-size: 1.25rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin: 0; line-height: 1; }
+        .header-lb-sub { font-size: 0.6rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-top: 3px; }
         .live-dot { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); animation: pulseLive 1.5s infinite; }
         @keyframes pulseLive { 0% { opacity: 1; transform:scale(1);} 50% { opacity: 0.3; transform:scale(1.5);} 100% { opacity: 1; transform:scale(1);} }
 
@@ -196,7 +196,8 @@
 
         /* SKELETON LOADER - PERFECT PODIUM MOCKUP */
         .skeleton-wrapper { display: flex; flex-direction: column; width: 100%; padding: 30px 15px 10px;}
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border: 1px solid rgba(255,255,255,0.03);}
+        /* BRIGHTER SKELETON LOADER FIX */
+        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border: 1px solid rgba(255,255,255,0.15); }
         .skel-podium-area { display: flex; justify-content: center; align-items: flex-end; gap: 12px; height: 160px; margin-bottom: 30px; }
         .skel-podium { border-radius: 12px 12px 0 0; }
         .skel-list-item { height: 55px; border-radius: 12px; margin-bottom: 8px; }
@@ -919,15 +920,15 @@
             const header  = overlay.querySelector('.modal-header');
             const avatar  = document.getElementById('modalAvatar');
 
-            // Apply Proper Box Constraints to All Overlays
+            // Apply Proper Color Constraints ONLY (CSS handles identical sizing now!)
             if (isMythic) {
-                card.style.cssText   = `background:linear-gradient(170deg,#0d0800 0%,#1f1000 40%,#2a1800 70%,#0d0800 100%);border:1.5px solid rgba(255,200,0,0.9);box-shadow:0 0 40px rgba(255,185,0,0.4),0 15px 50px rgba(0,0,0,0.9),inset 0 0 40px rgba(255,185,0,0.08);border-radius:20px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box;`;
-                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.18) 0%,transparent 100%);padding:20px 15px 10px;text-align:center;border-bottom:1px solid rgba(255,185,0,0.2);flex-shrink:0; box-sizing:border-box;`;
-                avatar.style.cssText = `width:75px;height:75px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 20px rgba(255,185,0,0.8);margin:0 auto 8px;background:#000;position:relative;z-index:2;`;
+                card.style.cssText   = `background:linear-gradient(170deg,#0d0800 0%,#1f1000 40%,#2a1800 70%,#0d0800 100%); border:1.5px solid rgba(255,200,0,0.9); box-shadow:0 0 40px rgba(255,185,0,0.4),0 15px 50px rgba(0,0,0,0.9),inset 0 0 40px rgba(255,185,0,0.08);`;
+                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.18) 0%,transparent 100%); border-bottom:1px solid rgba(255,185,0,0.2);`;
+                avatar.style.cssText = `border:2px solid #FFD700; box-shadow:0 0 20px rgba(255,185,0,0.8);`;
             } else if (isPremium) {
-                card.style.cssText   = `background:linear-gradient(170deg,#1c1000 0%,#2a1800 40%,#1a0d00 100%);border:1px solid rgba(255,185,0,0.8);box-shadow:0 0 25px rgba(255,185,0,0.25),0 15px 50px rgba(0,0,0,0.9);border-radius:20px;transform:scale(0.85) translateY(20px);transition:0.4s cubic-bezier(0.175,0.885,0.32,1.275); display:flex; flex-direction:column; max-height:85vh; box-sizing:border-box;`;
-                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.12) 0%,transparent 100%);padding:20px 15px 10px;text-align:center;border-bottom:1px dashed rgba(255,185,0,0.2);flex-shrink:0; box-sizing:border-box;`;
-                avatar.style.cssText = `width:75px;height:75px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;box-shadow:0 0 15px rgba(255,185,0,0.5);margin:0 auto 8px;background:#000;position:relative;z-index:2;`;
+                card.style.cssText   = `background:linear-gradient(170deg,#1c1000 0%,#2a1800 40%,#1a0d00 100%); border:1px solid rgba(255,185,0,0.8); box-shadow:0 0 25px rgba(255,185,0,0.25),0 15px 50px rgba(0,0,0,0.9);`;
+                header.style.cssText = `background:linear-gradient(180deg,rgba(255,185,0,0.12) 0%,transparent 100%); border-bottom:1px dashed rgba(255,185,0,0.2);`;
+                avatar.style.cssText = `border:2px solid #FFD700; box-shadow:0 0 15px rgba(255,185,0,0.5);`;
             } else {
                 card.style.cssText = ``; header.style.cssText = ``; avatar.style.cssText = ``;
             }
