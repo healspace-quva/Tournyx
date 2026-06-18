@@ -1759,47 +1759,42 @@
     });
 </script>
     <script>
-// =========================================================================
-// TOURNYX OFFICIAL ONESIGNAL PWA INTEGRATION (v16)
-// =========================================================================
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-OneSignalDeferred.push(async function(OneSignal) {
-    // 1. Initialize the App
-    await OneSignal.init({
-        appId: "15a8e2b2-248c-4547-929e-797d7170e988", // ⚠️ PASTE YOUR APP ID HERE
-        notifyButton: {
-            enable: false, // Set to true if you want the visual bell icon
-        },
-        allowLocalhostAsSecureOrigin: true
-    });
-
-    // 2. Fetch logged-in user securely from Quva/Tournyx LocalStorage
-    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    
-    if (user && user.email) {
-        let cleanEmail = user.email.toLowerCase().trim();
-
-        // 3. TARGETING LOCK: Assign External ID (Email)
-        // This makes sure your Google Apps Script backend can find THIS exact device!
-        await OneSignal.login(cleanEmail);
-
-        // 4. Set Organizational Tags
-        OneSignal.User.addTags({
-            "user_email": cleanEmail,
-            "user_status": "active",
-            "platform": "pwa"
-        });
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
         
-        // 5. Prompt for Permission (if not already granted)
+        // 1. Initialize the Web Push SDK
+        await OneSignal.init({
+            appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
+            allowLocalhostAsSecureOrigin: true
+        });
+
+        // 2. Fetch logged-in user securely from LocalStorage
+        let user = JSON.parse(localStorage.getItem('tournyx_user'));
+        
+        if (user && user.email) {
+            let cleanEmail = String(user.email).toLowerCase().trim();
+
+            // 3. TARGETING LOCK: Assign External ID
+            // This natively binds the browser to the 'external_id' alias for the backend
+            await OneSignal.login(cleanEmail);
+
+            // 4. Set Organizational Tags as a backup
+            OneSignal.User.addTags({
+                "user_email": cleanEmail,
+                "user_status": "active",
+                "platform": "pwa"
+            });
+        }
+
+        // 5. Native PWA Permission Prompt
         if (OneSignal.Notifications.permission !== "granted") {
-            // Optional: Delay the prompt slightly so it feels natural
             setTimeout(() => {
                 OneSignal.Notifications.requestPermission();
-            }, 3000);
+            }, 2500); 
         }
-    }
-});
+    });
 </script>
     
 </body>
