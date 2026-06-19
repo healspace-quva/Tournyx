@@ -60,6 +60,27 @@
             --font-body: 'Rajdhani', sans-serif;
         }
 
+        /* PREMIUM ESPORTS SHIMMER ANIMATION */
+        .shimmer-text {
+            font-family: var(--font-head);
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, rgba(0,242,255,0.6), #fff, rgba(189,0,255,0.6), #fff, rgba(0,242,255,0.6));
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: textShine 2s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(0,242,255,0.4));
+            margin-bottom: 10px;
+        }
+        html.theme-vip .shimmer-text {
+            background: linear-gradient(90deg, rgba(255,215,0,0.6), #fff, rgba(255,140,0,0.6), #fff, rgba(255,215,0,0.6));
+            -webkit-background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(255,215,0,0.4));
+        }
+        @keyframes textShine { to { background-position: 200% center; } }
         html.theme-vip {
             --accent-cyan: #FFD700;
             --accent-purple: #FFA500;
@@ -919,13 +940,16 @@
     </div>
 
     <!-- TRANSACTION PROCESSING HOOK -->
+   <!-- UPDATED: SLEEK PROFESSIONAL ESPORTS LOADER -->
     <div id="securePaymentLoader">
-        <div style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-cyan)); animation: pulse 1.5s infinite;">
+        <div id="regAnimLogoBox" style="font-size: 3.5rem; color: var(--accent-cyan); margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-cyan)); animation: pulse 1.5s infinite; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
             <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <h2 class="glitch-text" id="loaderTxtHead" data-text="SECURING SLOT" style="font-family: var(--font-head); font-size: 1.5rem;">SECURING SLOT</h2>
-        <div class="cyber-bar-container" style="width: 220px; height: 6px;"><div class="cyber-bar-fill" id="secureLoaderBar"></div></div>
-        <p id="loaderTxt" style="color:#888; font-family:var(--font-body); margin-top:15px; font-size:0.85rem; text-transform:uppercase; letter-spacing: 2px;">Encrypting Registration Data...</p>
+        <h2 class="shimmer-text" id="loaderTxtHead">SECURING SLOT</h2>
+        <div class="cyber-bar-container" style="width: 220px; height: 6px; background: rgba(255,255,255,0.1); border:none;">
+            <div class="cyber-bar-fill" id="secureLoaderBar" style="background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+        </div>
+        <p id="loaderTxt" style="color:#aaa; font-family:var(--font-body); margin-top:15px; font-size:0.85rem; text-transform:uppercase; letter-spacing: 2px; transition: opacity 0.2s;">Encrypting Registration Data...</p>
     </div>
 
     <!-- ROSTER CHOOSER OVERLAY[cite: 3] -->
@@ -2987,22 +3011,41 @@
             const t = activeTournament;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
 
+            // --- 🎫 TICKET EXTRACTION ENGINE ---
+            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
+            let usedTicketId = "FREE-ENTRY";
+            
+            if (cost > 0) {
+                if (method === 'points') {
+                    usedTicketId = "PTS-" + Math.floor(Math.random() * 1000000);
+                } else {
+                    // Find a valid pass purchase in the user's history
+                    let validTicket = txns.find(x => String(x.type).toLowerCase() === "credit" && (String(x.title).toLowerCase().includes("pass") || String(x.category).toLowerCase().includes("purchase")));
+                    // Use that exact Ticket ID, or generate a fallback if history was cleared
+                    usedTicketId = (validTicket && (validTicket.id || validTicket.txn_id)) ? (validTicket.id || validTicket.txn_id) : ("TX-" + Math.floor(Math.random() * 1000000));
+                }
+            }
+
             let entryPaidPts = method === 'points' ? cost : 0;
 
+            // 🚀 FIRING PAYLOAD TO BACKEND
             secureFetch({
                 action: "join", match_id: t.id || t.title, game: t.game, title: t.title,
                 date: t.date, prize: t.prize, email: user.email, username: user.username, phone: user.phone, 
                 clan: clanName, entry_paid: method !== 'points' ? cost : 0, entry_paid_pts: entryPaidPts, method: method,
-                org_email: t.org_email || t.email || ""
-            }).then(() => {
+                org_email: t.org_email || t.email || "",
+                ticket_id: usedTicketId // <-- Sent directly to your Google Sheet!
+            }).then((response) => {
                 
+                // If backend throws an error message (like "Already joined"), trigger the catch block!
+                if(response.status === 'error') throw new Error(response.message);
+
                 if(cost > 0) {
                     secureFetch({ action: 'update_wallet', email: user.email, rupees: user.rupees, points: user.points }).catch(()=>{});
                     
-                    let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
                     let dateStr = getISTDateTime();
                     let newTxn = { 
-                        id: (method === 'points' ? "ENTRY-PTS-" : "ENTRY-") + Math.floor(Math.random() * 1000000), 
+                        id: usedTicketId + "-USED", 
                         title: "Joined: " + (t.title || "Tournament"), 
                         amount: method === 'points' ? (cost + " PTS") : cost, 
                         type: "Debit", 
@@ -3015,56 +3058,73 @@
                 }
                 
                 userLiveMatches.push({ tournament_title: t.title, match_id: t.id || t.title });
-                
                 playGunshotSound();
                 
+                // 🟢 SUCCESS ANIMATION
                 bar.style.width = "100%"; 
-                bar.classList.add('blast');
                 bar.style.background = "#00ff7f";
-                logoBox.style.filter = "drop-shadow(0 0 40px #00ff7f)";
-                logoBox.style.transform = "scale(1.15)"; 
-                head.setAttribute('data-text', 'BATTLE READY'); head.innerText = "BATTLE READY"; 
+                bar.style.boxShadow = "0 0 15px #00ff7f";
+                logoBox.style.color = "#00ff7f";
+                logoBox.style.filter = "drop-shadow(0 0 25px #00ff7f)";
+                logoBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                
+                head.innerText = "BATTLE READY"; 
                 txt.style.opacity = '0';
-                setTimeout(() => { txt.innerText = "Slot Secured. GLHF!"; txt.style.opacity = '1'; }, 100); 
-                txt.style.color = "#00ff7f";
+                setTimeout(() => { txt.innerText = "Slot Secured. GLHF!"; txt.style.color = "#00ff7f"; txt.style.opacity = '1'; }, 100); 
                 
                 setTimeout(() => {
                     let loaderOverlay = document.getElementById('securePaymentLoader');
                     loaderOverlay.classList.remove('active');
                     setTimeout(() => loaderOverlay.style.display = 'none', 500); 
                     
-                    logoBox.style.transform = "scale(1)"; 
+                    // Reset UI for next time
+                    logoBox.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                    logoBox.style.color = "var(--accent-cyan)";
                     closeRegistrationFlow();
                     showToast(cost > 0 ? "Entry successful! Welcome to the Arena." : "Registration Confirmed! GLHF.");
                     
                     let btn = document.getElementById('masterJoinBtn');
                     btn.innerHTML = "<i class='fa-solid fa-plus'></i> ADD ANOTHER CLAN";
-                    btn.style.fontSize = "0.75rem";
-                    btn.style.padding = "8px 15px";
                     btn.disabled = false;
                     
                     let currentFilled = parseInt(t.filled_slots) || 0;
-                    let newFilled = currentFilled + 1;
-                    let totalSlots = parseInt(t.slots) || 48;
-                    t.filled_slots = newFilled; 
-                    
-                    let dtRegs = document.getElementById('dtRegistrations');
-                    if (dtRegs) { dtRegs.innerText = `${newFilled}/${totalSlots}`; }
+                    t.filled_slots = currentFilled + 1; 
                     
                     renderRoomTabDynamic(t, true);
                     setTimeout(fetchLiveTeams, 1500);
-                }, 1800);
+                }, 2000);
+                
             }).catch(e => {
+                // 🔴 FAILURE ANIMATION (Prevents infinite loading)
                 txt.style.opacity = '0';
-                setTimeout(() => { txt.innerText = "Connection Failed! Try Again."; txt.style.opacity = '1'; }, 100);
+                setTimeout(() => { 
+                    txt.innerText = (e.message && e.message !== "[object Object]") ? e.message : "Connection Failed! Try Again."; 
+                    txt.style.opacity = '1'; 
+                }, 100);
                 txt.style.color = "#ff4d4d";
                 bar.style.background = "#ff4d4d";
+                bar.style.boxShadow = "0 0 15px #ff4d4d";
+                logoBox.style.color = "#ff4d4d";
                 logoBox.style.filter = "drop-shadow(0 0 15px #ff4d4d)";
+                logoBox.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                head.innerText = "ERROR";
+
+                document.getElementById('finalSubmitBtn').disabled = false;
+                document.getElementById('finalSubmitBtn').innerHTML = "Proceed";
+
                 setTimeout(() => { 
                     let loaderOverlay = document.getElementById('securePaymentLoader');
                     loaderOverlay.classList.remove('active');
-                    setTimeout(() => loaderOverlay.style.display = 'none', 500); 
-                }, 2500);
+                    setTimeout(() => {
+                        loaderOverlay.style.display = 'none';
+                        // Reset loader UI for next try
+                        logoBox.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                        logoBox.style.color = "var(--accent-cyan)";
+                        logoBox.style.filter = "drop-shadow(0 0 15px var(--accent-cyan))";
+                        txt.style.color = "#aaa";
+                        bar.style.background = "var(--accent-cyan)";
+                    }, 500); 
+                }, 3000);
             });
         }
 
