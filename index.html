@@ -1,6 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Put this right inside your <head> section -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+        // 🛡️ BULLETPROOF ANTI-BUG ENGINE: Force clear old native wrapper service workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    // If an old service worker isn't explicitly named OneSignal, wipe it out
+                    if (!registration.active || !registration.active.scriptURL.includes('OneSignalSDKWorker')) {
+                        registration.unregister().then(function(boolean) {
+                            console.log('🧹 Purged stale app worker cache:', boolean);
+                        });
+                    }
+                }
+            });
+        }
+
+        // 2. Initialize Core Web Push Engine
+        OneSignalDeferred.push(async function(OneSignal) {
+            console.log("⚡ Initializing Tournyx PWA Notification Matrix...");
+            
+            const scopePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+
+            await OneSignal.init({
+                appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
+                allowLocalhostAsSecureOrigin: true,
+                serviceWorkerPath: scopePath + "OneSignalSDKWorker.js",
+                serviceWorkerParam: { scope: scopePath }
+            });
+
+            // 3. Match user session to backend routing alias
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            if (user && user.email) {
+                let cleanEmail = String(user.email).toLowerCase().trim();
+                
+                await OneSignal.login(cleanEmail);
+                await OneSignal.User.addTags({
+                    "user_email": cleanEmail,
+                    "user_status": "active",
+                    "platform": "pwa"
+                });
+            }
+
+            // 4. Fallback Trigger: Auto-request if browser allows, otherwise button clicks handle it
+            if (OneSignal.Notifications.permission !== "granted") {
+                setTimeout(async () => {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                    } catch(e) {
+                        console.log("Browser requires physical tap to display prompt.");
+                    }
+                }, 3000);
+            }
+        });
+
+        // 🚀 HARDWARE INTERACTION TRIGGER (Bound to Login/Register button clicks)
+        async function triggerNotificationPrompt() {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    if (OneSignal.Notifications.permission !== "granted") {
+                        await OneSignal.Notifications.requestPermission();
+                    }
+                } catch (err) {
+                    console.error("Web Push prompt execution failed:", err);
+                }
+            });
+        }
+    </script>
+</head>
     <meta name="google-site-verification" content="CFLJqmA-JGjUO9F5DKlbZTGSZ3S9k-qNcA2liz-nvH8" />
     <meta name="google-adsense-account" content="ca-pub-2610280925070403">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2610280925070403" crossorigin="anonymous"></script>
@@ -1692,70 +1764,6 @@
             container.innerHTML = html;
         }
     </script>
-<!-- ==========================================
-     OFFICIAL ONESIGNAL PWA INTEGRATION (V16)
-     ========================================== -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-        console.log("⚡ [Tournyx Core] Initializing OneSignal PWA Framework...");
-        
-        // Clear subdirectory pathing scope for GitHub Pages environments
-        const currentPath = window.location.pathname;
-        const repoScope = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
 
-        try {
-            // 1. Initialize the Web Push Core Engine
-            await OneSignal.init({
-                appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-                allowLocalhostAsSecureOrigin: true,
-                serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
-                serviceWorkerParam: { scope: repoScope }
-            });
-            console.log("✅ [Tournyx Core] OneSignal handshake secured successfully.");
-
-            // 2. Fetch logged-in user profile from local cache storage
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            
-            if (user && user.email) {
-                let cleanEmail = String(user.email).toLowerCase().trim();
-                console.log("🔒 [Tournyx Core] Mapping active session to Alias ID: " + cleanEmail);
-
-                // 3. TARGETING LOCK: Pair browser push token to their verified email alias
-                await OneSignal.login(cleanEmail);
-
-                // 4. Set Organizational Synchronization Profile Tags
-                await OneSignal.User.addTags({
-                    "user_email": cleanEmail,
-                    "user_status": "active",
-                    "platform": "pwa"
-                });
-                console.log("🎯 [Tournyx Core] User database tags synchronized cleanly.");
-            }
-        } catch (error) {
-            console.error("❌ [Tournyx Core] Critical initialization block:", error);
-        }
-    });
-
-    // 🚀 HARDWARE INTERACTION ROUTER (Bypasses Browser Security Barriers)
-    async function triggerNotificationPrompt() {
-        console.log("touch interaction detected. Verifying security clearance...");
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            try {
-                const currentPermission = OneSignal.Notifications.permission;
-                console.log("Current authorization status:", currentPermission);
-                
-                if (currentPermission !== "granted") {
-                    // Safe execution running directly inside a hardware user click handler
-                    await OneSignal.Notifications.requestPermission();
-                }
-            } catch (err) {
-                console.error("Browser denied manual request call:", err);
-            }
-        });
-    }
-</script>
 </body>
 </html>
