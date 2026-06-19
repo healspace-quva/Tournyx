@@ -45,17 +45,18 @@
 
     <style>
         /* --- GLOBAL VARIABLES --- */
+       /* --- UPGRADED LOOT DROPS THEME VARIABLES --- */
         :root {
-            --primary-bg: #070311;
-            --secondary-bg: #0d061e;
-            --card-bg: rgba(20, 10, 35, 0.4);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --accent-cyan: #00f2ff;
-            --accent-purple: #bd00ff;
+            --primary-bg: #04010A; /* Deeper, richer space background */
+            --secondary-bg: #0a0415;
+            --card-bg: rgba(15, 8, 25, 0.65);
+            --card-border: rgba(0, 242, 255, 0.25);
+            --accent-cyan: #00e5ff;
+            --accent-purple: #b026ff;
             --accent-orange: #ff9900;
-            --accent-green: #00ff7f;
+            --accent-green: #00e676;
             --accent-red: #ff4d4d;
-            --accent-gradient: linear-gradient(90deg, #7b2cbf, #bd00ff, #00f2ff);
+            --accent-gradient: linear-gradient(135deg, #b026ff, #00e5ff);
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
         }
@@ -335,8 +336,13 @@
         .clan-item { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 16px; margin-bottom: 10px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; cursor: pointer; overflow: hidden; will-change: max-height, transform;}
         .clan-item.my-clan { border: 1px solid rgb(var(--dynamic-t-color)); background: rgba(var(--dynamic-t-color), 0.1); box-shadow: 0 0 15px rgba(var(--dynamic-t-color), 0.2); }
         
-        .clan-item.vip-solo { border: 1px solid #FFD700; background: rgba(255,215,0,0.05); box-shadow: 0 0 15px rgba(255,215,0,0.3); }
-        .clan-item.vip-solo .clan-item-icon { border-color: #FFD700; box-shadow: 0 0 10px rgba(255,215,0,0.4); }
+        /* Enhanced VIP Clan Glow */
+        .clan-item.vip-solo { 
+            border: 1px solid #FFD700 !important; 
+            background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,140,0,0.05)) !important; 
+            box-shadow: 0 0 20px rgba(255,215,0,0.4) !important; 
+        }
+        .clan-item.vip-solo .clan-item-name { text-shadow: 0 0 10px rgba(255,215,0,0.6); }
 
         .clan-item-header { display: flex; align-items: center; width: 100%; gap: 12px; word-wrap: break-word;}
         .clan-item-icon { width: 35px; height: 35px; border-radius: 50px; background: rgba(var(--dynamic-t-color), 0.1); color: rgb(var(--dynamic-t-color)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;}
@@ -475,14 +481,22 @@
             .tourney-list { flex-direction: row; flex-wrap: wrap; gap: 20px; }
             .bottom-nav { display: none !important; }
             
-            .detail-modal { align-items: center; justify-content: center; background: rgba(0,0,0,0.85) !important; }
-            .dm-container { width: 800px !important; height: 90vh !important; background: var(--primary-bg); border-radius: 20px; box-shadow: 0 10px 50px rgba(0,0,0,0.8); border: 1px solid rgba(var(--dynamic-t-color), 0.3); }
-            .dm-header { border-radius: 20px 20px 0 0; }
-            .locked-footer { border-radius: 0 0 20px 20px; position: absolute; bottom: 0; width: 100%; box-sizing: border-box; }
-            .dm-scroll-area { padding-bottom: 90px; }
+            /* 1. FULL SCREEN TOURNAMENT DETAILS FIX */
+            .detail-modal { align-items: flex-start; justify-content: center; background: var(--primary-bg) !important; padding: 0 !important; }
+            .dm-container { width: 100vw !important; height: 100vh !important; max-width: 100% !important; background: var(--primary-bg); border-radius: 0; border: none; box-shadow: none; }
+            .dm-header { border-radius: 0; padding-top: 15px; }
+            .dm-scroll-area { padding-bottom: 90px; max-width: 1000px; margin: 0 auto; width: 100%; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); }
+            .locked-footer { border-radius: 0; position: fixed; bottom: 0; width: 100%; max-width: 100vw; justify-content: center; left: 0; padding-left: 20%; padding-right: 20%; z-index: 10000; background: rgba(4,1,10,0.95);}
+
+            /* 2. CENTERED REGISTRATION & PAYMENT MODULES */
+            .bottom-sheet-overlay { align-items: center; justify-content: center; }
+            .bottom-sheet { border-radius: 20px !important; max-width: 450px; width: 90%; transform: translate(-50%, 50%) scale(0.9); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: absolute; top: 50%; left: 50%; bottom: auto; margin: 0; }
+            .bottom-sheet-overlay.active .bottom-sheet { transform: translate(-50%, -50%) scale(1) !important; opacity: 1; }
             
+            /* Single Page Mode Failsafes */
             .single-page-mode .detail-modal { background: var(--primary-bg) !important; }
-            .single-page-mode .dm-container { height: 100vh !important; border-radius: 0; border: none; width: 1000px !important; }
+            .single-page-mode .dm-container { height: 100vh !important; border-radius: 0; border: none; width: 1000px !important; margin: 0 auto; }
+        
             .single-page-mode .dm-header { border-radius: 0; }
             .single-page-mode .locked-footer { border-radius: 0; position: fixed; }
 
@@ -655,18 +669,51 @@
                 <div class="dm-tab-content active" id="dtTabOverview">
                     <div id="dynamicBadgesArea" style="margin-bottom: 10px;"></div>
                 
-                    <h2 id="dtTitle" class="t-title" style="font-size: 1.4rem !important; white-space: normal; word-wrap: break-word; margin-bottom: 5px;">Tournament Title</h2>
+                    <h2 id="dtTitle" class="t-title" style="font-size: 1.5rem !important; white-space: normal; word-wrap: break-word; margin-bottom: 15px;">Tournament Title</h2>
                     
-                    <div class="dm-section" style="padding:12px 15px; margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; border-color: var(--accent-cyan) !important; cursor:pointer;" onclick="openHostProfile()">
-                        <div style="flex:1;">
-                            <div style="color: #a0a0b0; font-size: 0.7rem; text-transform: uppercase;">Organized by</div>
-                            <div style="color:white; font-weight:bold; font-size:1.1rem; font-family:var(--font-head); display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
-                                <span id="dtOrgName">Verified Organizer</span>
+                    <!-- NEW: GAME, PLATFORM, FORMAT SENSOR PILLS AT TOP -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px;">
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 12px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                            <i class="fa-solid fa-gamepad" style="color: var(--accent-cyan); font-size: 1.1rem;"></i>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.6rem; color: #888; text-transform: uppercase; font-family: var(--font-head);">Game</span>
+                                <span id="dtGame" style="font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white;">Loading...</span>
                             </div>
                         </div>
-                        <div style="text-align:right;">
-                            <div id="dtOrgSuccessRate" style="color:var(--accent-green); font-size:0.75rem; font-weight:bold;"><i class="fa-solid fa-check-double"></i> 100%</div>
-                            <div id="dtOrgStats" style="font-size:0.75rem; color:#ccc;"><i class="fa-solid fa-star" style="color:#FFD700;"></i> Hosted: ...</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 12px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                            <i class="fa-solid fa-mobile-screen" style="color: var(--accent-purple); font-size: 1.1rem;"></i>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.6rem; color: #888; text-transform: uppercase; font-family: var(--font-head);">Platform</span>
+                                <span id="dtPlatformText" style="font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white;">Mobile</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 12px; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                            <i class="fa-solid fa-sitemap" style="color: var(--accent-green); font-size: 1.1rem;"></i>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.6rem; color: #888; text-transform: uppercase; font-family: var(--font-head);">Format</span>
+                                <span id="dtFormat" style="font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white;">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPGRADED ORGANIZER PROFILE CARD -->
+                    <div class="dm-section" style="padding:15px; margin-bottom: 20px; background: linear-gradient(135deg, rgba(0,242,255,0.05), rgba(189,0,255,0.05)); border: 1px solid var(--accent-cyan); border-radius: 16px; cursor:pointer; position: relative; overflow: hidden;" onclick="openHostProfile()">
+                        <div style="position: absolute; top: -20px; right: -20px; font-size: 6rem; color: rgba(255,255,255,0.02); pointer-events: none;"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div style="display:flex; align-items:center; gap: 15px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-bg); border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); flex-shrink:0;">
+                                <i class="fa-solid fa-crown"></i>
+                            </div>
+                            <div style="flex:1;">
+                                <div style="color: var(--accent-cyan); font-size: 0.65rem; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 2px;">Hosted By</div>
+                                <div style="color:white; font-weight:bold; font-size:1.1rem; font-family:var(--font-head); display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-bottom: 4px;">
+                                    <span id="dtOrgName">Verified Organizer</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; font-size: 0.75rem;">
+                                    <span id="dtOrgSuccessRate" style="color:var(--accent-green); font-weight:bold;"><i class="fa-solid fa-check-double"></i> 100% Success</span>
+                                    <span id="dtOrgStats" style="color:#FFD700;"><i class="fa-solid fa-star"></i> Hosted: ...</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     
@@ -727,10 +774,6 @@
                     <div class="dm-section">
                         <div class="dm-sec-title"><i class="fa-solid fa-layer-group"></i> About Tournament</div>
                         <div style="font-size: 0.9rem; color: #ccc; line-height: 1.6; margin-bottom: 15px; word-wrap: break-word;" id="dtDescription"></div>
-                        <div class="t-details-grid" style="margin: 0; grid-template-columns: 1fr;">
-                            <div class="t-detail-item"><i class="fa-solid fa-gamepad"></i> Game: <span id="dtGame" style="color:white; font-weight:bold; margin-left: 5px;">Loading...</span></div>
-                            <div class="t-detail-item"><i class="fa-solid fa-mobile-screen"></i> Platform: <span id="dtPlatformText" style="color:white; font-weight:bold; margin-left: 5px;">Mobile</span></div>
-                            <div class="t-detail-item"><i class="fa-solid fa-sitemap"></i> Format: <span id="dtFormat" style="color:white; font-weight:bold; margin-left: 5px;">Loading...</span></div>
                         </div>
                     </div>
 
@@ -2185,9 +2228,10 @@
             }
         }
 
-        function openHostProfile() {
+     function openHostProfile() {
             triggerHaptic();
-            showToast("Opening Organizer Profile...");
+            // Removed the disruptive Toast Notification.
+            // Add future routing here, e.g., window.location.href = 'organizer_profile.html';
         }
 
         function toggleTeamDropdown(el) {
@@ -2278,16 +2322,16 @@
 
                     let initials = pName.substring(0, 2).toUpperCase();
 
-                    html += `
-                        <div style="display:flex; align-items:center; gap:15px; background:rgba(255,255,255,0.02); padding:14px 18px; border-radius:14px; border:1px solid rgba(255,255,255,0.04); opacity:0; animation:slideUpRoster 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${delay}s;">
-                            <div style="width:45px; height:45px; border-radius:10px; background:rgba(0,242,255,0.05); border:1px solid var(--accent-cyan); display:flex; align-items:center; justify-content:center; color:var(--accent-cyan); font-family:var(--font-head); font-weight:900; font-size:1.2rem; flex-shrink:0; box-shadow: 0 0 10px rgba(0,242,255,0.2);">
+                   html += `
+                        <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); opacity:0; animation:slideUpRoster 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${delay}s;">
+                            <div style="width:38px; height:38px; border-radius:10px; background:rgba(0,242,255,0.05); border:1px solid var(--accent-cyan); display:flex; align-items:center; justify-content:center; color:var(--accent-cyan); font-family:var(--font-head); font-weight:900; font-size:0.95rem; flex-shrink:0; box-shadow: 0 0 8px rgba(0,242,255,0.2);">
                                 ${initials}
                             </div>
                             <div style="flex:1; overflow:hidden;">
-                                <div style="font-family:var(--font-head); color:white; font-weight:bold; font-size:1.15rem; display:flex; align-items:center; gap:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    ${pName} <span style="color:${roleColor}; font-size:0.75rem; text-transform:uppercase;">(${pRole})</span>
+                                <div style="font-family:var(--font-head); color:white; font-weight:bold; font-size:0.95rem; display:flex; align-items:center; gap:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${pName} <span style="color:${roleColor}; font-size:0.65rem; text-transform:uppercase;">(${pRole})</span>
                                 </div>
-                                <div style="font-size:0.8rem; color:#888; margin-top:4px;">
+                                <div style="font-size:0.75rem; color:#888; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     IGN: <span style="color:var(--accent-cyan); font-weight:bold;">${p.gameName || p.ign || pName}</span> <span style="color:#555; margin:0 4px;">|</span> UID: <span style="color:white; font-family:monospace;">${pUid}</span>
                                 </div>
                             </div>
