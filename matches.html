@@ -48,6 +48,7 @@
             --accent-purple: #bd00ff;
             --accent-orange: #ff9900;
             --accent-green: #00ff7f;
+            --accent-red: #ff4d4d;
             --accent-gradient: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
@@ -98,7 +99,7 @@
         }
 
         /* --- RESPONSIVE WRAPPER --- */
-        .stats-row, .tabs-wrapper, .match-list, .app-footer, .top-header .header-wrapper { max-width: 1000px; margin-left: auto !important; margin-right: auto !important; width: 100%; }
+        .stats-row, .tabs-wrapper, .match-list, .pro-features-wrapper, .app-footer, .top-header .header-wrapper { max-width: 1000px; margin-left: auto !important; margin-right: auto !important; width: 100%; }
 
         /* --- BACKGROUND --- */
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 20%, #15062e 0%, #070311 100%); transform: translateZ(0);}
@@ -134,7 +135,7 @@
         .stats-row { display: flex; gap: 10px; padding: 5px 15px 5px; margin-bottom: 5px; }
         .stat-box { flex: 1; background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid var(--card-border); padding: 10px; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s;}
         .stat-val { font-family: var(--font-head); font-size: 1.5rem; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.3); display: flex; justify-content: center; align-items: center; min-height: 25px; }
-        .stat-lbl { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: bold;}
+        .stat-lbl { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: bold;}
 
         /* --- GLASSMORPHISM STICKY TABS & SEARCH --- */
         .tabs-wrapper { position: sticky; top: calc(65px + env(safe-area-inset-top, 0px)); z-index: 1500; background: rgba(5, 2, 12, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding-top: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -146,26 +147,26 @@
         html.theme-vip .tab.active::after { background: #FFD700; box-shadow: 0 -2px 10px #FFD700; }
 
         .search-box { position: relative; margin: 0 15px 15px; }
-        .search-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 14px 15px 14px 45px; border-radius: 12px; color: white; font-size: 1rem; font-family: var(--font-body); outline: none; transition: 0.3s; box-sizing: border-box; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
+        .search-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 12px 15px 12px 40px; border-radius: 12px; color: white; font-size: 0.95rem; font-family: var(--font-body); outline: none; transition: 0.3s; box-sizing: border-box; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
         .search-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 0 5px rgba(0,0,0,0.5); background: rgba(0,0,0,0.6);}
         html.theme-vip .search-input:focus { border-color: #FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.2), inset 0 0 5px rgba(0,0,0,0.5); }
-        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1rem; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; font-size: 0.95rem; }
         .highlight { color: var(--accent-orange); font-weight: 900; text-shadow: 0 0 5px rgba(255,153,0,0.5); }
 
-        /* --- LIST CONTAINER & SKELETON --- */
-        .match-list { padding: 15px 15px 0; min-height: 50vh; display: flex; flex-direction: column; gap: 20px; position: relative; }
+        /* --- LIST CONTAINER & UPGRADED SKELETON --- */
+        .match-list { padding: 15px 15px 0; min-height: 50vh; display: flex; flex-direction: column; gap: 15px; position: relative; }
         
-        .skeleton-wrapper { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        .skeleton-wrapper { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; transform: translateZ(0); border-radius: 18px;}
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .s-card { background: var(--secondary-bg); border-radius: 18px; border: 1px solid var(--card-border); overflow: hidden; height: 280px; }
+        .s-card { background: var(--secondary-bg); border-radius: 16px; border: 1px solid var(--card-border); overflow: hidden; height: 240px; }
         
-        .real-content-wrapper { display: none; flex-direction: column; gap: 20px; width: 100%; }
+        .real-content-wrapper { display: none; flex-direction: column; gap: 15px; width: 100%; }
 
-        /* --- 3D MATCH CARD & DYNAMIC GLOW --- */
+        /* --- COMPACT 3D MATCH CARD & DYNAMIC GLOW --- */
         .match-card { 
             background-color: var(--card-bg); 
-            border-radius: 20px; 
+            border-radius: 16px; 
             overflow: hidden; 
             position: relative; 
             display: flex; 
@@ -174,7 +175,7 @@
             background-image: linear-gradient(var(--card-bg), var(--card-bg)), var(--accent-gradient);
             background-origin: border-box;
             background-clip: padding-box, border-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
             transition: transform 0.3s, box-shadow 0.3s; 
             cursor: pointer; 
             animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
@@ -182,95 +183,108 @@
         .match-card:hover { transform: translateY(-4px); }
         .match-card:active { transform: scale(0.98); }
         
-        .match-card.glow-upcoming { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00f2ff, #bd00ff); box-shadow: 0 5px 25px rgba(0,242,255,0.15); }
-        .match-card.glow-upcoming:hover { box-shadow: 0 10px 35px rgba(0,242,255,0.3); }
-        html.theme-vip .match-card.glow-upcoming { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #FFD700, #FF8C00); box-shadow: 0 5px 25px rgba(255,215,0,0.15); }
-        html.theme-vip .match-card.glow-upcoming:hover { box-shadow: 0 10px 35px rgba(255,215,0,0.3); }
+        .match-card.glow-upcoming { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00f2ff, #bd00ff); box-shadow: 0 5px 20px rgba(0,242,255,0.1); }
+        .match-card.glow-upcoming:hover { box-shadow: 0 10px 30px rgba(0,242,255,0.25); }
+        html.theme-vip .match-card.glow-upcoming { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(135deg, #FFD700, #FF8C00); box-shadow: 0 5px 20px rgba(255,215,0,0.1); }
+        html.theme-vip .match-card.glow-upcoming:hover { box-shadow: 0 10px 30px rgba(255,215,0,0.25); }
         
-        .match-card.glow-live { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00ff7f, #00b09b); box-shadow: 0 0 30px rgba(0,255,127,0.3); }
-        .match-card.glow-live:hover { box-shadow: 0 10px 40px rgba(0,255,127,0.5); }
+        .match-card.glow-live { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00ff7f, #00b09b); box-shadow: 0 0 25px rgba(0,255,127,0.25); }
+        .match-card.glow-live:hover { box-shadow: 0 10px 35px rgba(0,255,127,0.4); }
         
-        .match-card.glow-history { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #444, #666); opacity: 0.85; }
+        .match-card.glow-history { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #333, #555); opacity: 0.85; }
         
-        .match-card.glow-refund-pending { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #ff9900, #ff4d4d); box-shadow: 0 0 20px rgba(255,153,0,0.25); }
-        .match-card.glow-refund-success { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00ff7f, #00f2ff); box-shadow: 0 0 20px rgba(0,255,127,0.25); }
+        .match-card.glow-refund-pending { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #ff9900, #ff4d4d); box-shadow: 0 0 15px rgba(255,153,0,0.2); }
+        .match-card.glow-refund-success { background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(90deg, #00ff7f, #00f2ff); box-shadow: 0 0 15px rgba(0,255,127,0.2); }
         
         @keyframes slideInUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
 
-        .m-banner-wrapper { position: relative; width: 100%; height: 150px; background: #000; overflow: hidden; }
-        .m-banner-wrapper::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, transparent, var(--card-bg)); z-index: 1; }
+        .m-banner-wrapper { position: relative; width: 100%; height: 120px; background: #000; overflow: hidden; }
+        .m-banner-wrapper::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background: linear-gradient(to bottom, transparent, var(--card-bg)); z-index: 1; }
         .m-banner { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .match-card:hover .m-banner { opacity: 1; transform: scale(1.08); }
 
-        .m-content { padding: 10px 20px 20px 20px; position: relative; z-index: 2;}
+        .m-content { padding: 10px 15px 15px 15px; position: relative; z-index: 2;}
 
-        .m-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .m-title-box { flex: 1; padding-right: 15px; min-width: 0; }
-        .m-title { font-family: var(--font-head); font-size: 1.2rem; color: white; margin-bottom: 6px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 5px rgba(255,255,255,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase;}
-        .m-date { font-size: 0.85rem; color: #aaa; display: flex; align-items: center; gap: 8px; font-weight: bold;}
+        .m-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .m-title-box { flex: 1; padding-right: 12px; min-width: 0; }
+        .m-title { font-family: var(--font-head); font-size: 1.05rem; color: white; margin-bottom: 4px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 5px rgba(255,255,255,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase;}
+        .m-date { font-size: 0.75rem; color: #aaa; display: flex; align-items: center; gap: 6px; font-weight: bold;}
 
-        .m-actions-box { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0;}
-        .status-badge { color: #000; background: var(--accent-cyan); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 900; font-family: var(--font-head); box-shadow: 0 0 15px rgba(0,242,255,0.4); text-transform: uppercase; letter-spacing: 1px;}
-        html.theme-vip .status-badge { background: #FFD700 !important; color: black !important; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+        .m-actions-box { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;}
+        .status-badge { color: #000; background: var(--accent-cyan); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; font-family: var(--font-head); box-shadow: 0 0 10px rgba(0,242,255,0.4); text-transform: uppercase; letter-spacing: 1px;}
+        html.theme-vip .status-badge { background: #FFD700 !important; color: black !important; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
         
-        .leave-btn { background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.4); color: #ff4d4d; padding: 8px 16px; border-radius: 10px; font-size: 0.75rem; cursor: pointer; font-weight: 900; transition: 0.3s; font-family: var(--font-head); text-transform: uppercase; z-index: 5; text-align: center; letter-spacing: 1px;}
+        .leave-btn { background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.4); color: #ff4d4d; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-weight: 900; transition: 0.3s; font-family: var(--font-head); text-transform: uppercase; z-index: 5; text-align: center; letter-spacing: 1px;}
         .leave-btn:hover { background: rgba(255,77,77,0.2); box-shadow: 0 0 15px rgba(255,77,77,0.3);}
         .leave-btn:active { transform: scale(0.95); }
 
-        .m-details-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #ccc; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 12px; font-weight: bold;}
-        .m-detail-item { display: flex; align-items: center; gap: 8px; }
-        .m-detail-item i { color: var(--accent-purple); font-size: 1.1rem;}
+        .m-details-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: #ccc; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; font-weight: bold;}
+        .m-detail-item { display: flex; align-items: center; gap: 6px; }
+        .m-detail-item i { color: var(--accent-purple); font-size: 0.9rem;}
         html.theme-vip .m-detail-item i { color: #FFD700; }
 
-        /* MULTI-STAGE ROOM ID BOX & BLUR REVEAL */
-        .room-box-container { background: rgba(0,0,0,0.5); border-radius: 16px; border: 1px solid var(--card-border); padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.6); flex-wrap: wrap; gap: 12px; position: relative;}
-        .room-item { display: flex; flex-direction: column; gap: 6px; flex: 1; cursor: pointer; transition: 0.3s; padding: 8px; border-radius: 8px; z-index: 5; min-width: 0; text-align: center;}
+        /* MINIMAL MULTI-STAGE ROOM ID BOX */
+        .room-box-container { background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--card-border); padding: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.6); flex-wrap: wrap; gap: 8px; position: relative;}
+        .room-item { display: flex; flex-direction: column; gap: 4px; flex: 1; cursor: pointer; transition: 0.3s; padding: 6px; border-radius: 6px; z-index: 5; min-width: 0; text-align: center;}
         .room-item:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px);}
-        .room-item.left-item { border-right: 1px dashed rgba(255,255,255,0.1); padding-right: 15px; }
+        .room-item.left-item { border-right: 1px dashed rgba(255,255,255,0.1); padding-right: 10px; }
 
-        .room-label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 2px;}
-        .room-val { font-family: var(--font-code); font-size: 1.25rem; font-weight: bold; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.5s ease; }
+        .room-label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 2px;}
+        .room-val { font-family: var(--font-code); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.5s ease; }
         
-        .val-waiting { color: #555; filter: blur(4px); user-select: none; }
-        .val-active { color: var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.5); filter: blur(0px); }
-        .val-copied { color: var(--accent-cyan) !important; text-shadow: 0 0 15px rgba(0,242,255,0.6) !important; font-family: var(--font-head); font-size: 1rem;}
-        html.theme-vip .val-copied { color: #FFD700 !important; text-shadow: 0 0 15px rgba(255,215,0,0.6) !important; }
+        .val-waiting { color: #555; filter: blur(3px); user-select: none; }
+        .val-active { color: var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.5); filter: blur(0px); }
+        .val-copied { color: var(--accent-cyan) !important; text-shadow: 0 0 10px rgba(0,242,255,0.6) !important; font-family: var(--font-head); font-size: 0.9rem;}
+        html.theme-vip .val-copied { color: #FFD700 !important; text-shadow: 0 0 10px rgba(255,215,0,0.6) !important; }
         
         /* EPIC WHATSAPP SQUAD SHARE BUTTON */
-        .squad-share-btn { width: 100%; text-align: center; background: rgba(0,242,255,0.05); border: 2px dashed var(--accent-cyan); color: var(--accent-cyan); padding: 12px; border-radius: 12px; font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; cursor: pointer; margin-top: 10px; transition: 0.3s; z-index: 5; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 10px rgba(0,242,255,0.1);}
-        html.theme-vip .squad-share-btn { background: rgba(255,215,0,0.05); border-color: #FFD700; color: #FFD700; box-shadow: inset 0 0 10px rgba(255,215,0,0.1); }
-        .squad-share-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 15px rgba(0,242,255,0.4); transform: translateY(-2px);}
-        html.theme-vip .squad-share-btn:hover { background: rgba(255,215,0,0.15); box-shadow: 0 0 15px rgba(255,215,0,0.4); }
+        .squad-share-btn { width: 100%; text-align: center; background: rgba(0,242,255,0.05); border: 1px dashed var(--accent-cyan); color: var(--accent-cyan); padding: 8px; border-radius: 8px; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; cursor: pointer; margin-top: 8px; transition: 0.3s; z-index: 5; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 5px rgba(0,242,255,0.1);}
+        html.theme-vip .squad-share-btn { background: rgba(255,215,0,0.05); border-color: #FFD700; color: #FFD700; box-shadow: inset 0 0 5px rgba(255,215,0,0.1); }
+        .squad-share-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 10px rgba(0,242,255,0.4); transform: translateY(-2px);}
+        html.theme-vip .squad-share-btn:hover { background: rgba(255,215,0,0.15); box-shadow: 0 0 10px rgba(255,215,0,0.4); }
         .squad-share-btn:active { background: var(--accent-cyan); color: black; transform: scale(0.96);}
         html.theme-vip .squad-share-btn:active { background: #FFD700; color: black; }
 
         /* DYNAMIC EMPTY STATE */
-        .empty-box { text-align: center; padding: 60px 20px; color: #666; animation: fadeIn 0.5s; width: 100%; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);}
-        .empty-icon { font-size: 4.5rem; margin-bottom: 25px; color: rgba(0,242,255,0.2); animation: floatRadar 3s ease-in-out infinite; }
+        .empty-box { text-align: center; padding: 50px 20px; color: #666; animation: fadeIn 0.5s; width: 100%; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);}
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; color: rgba(0,242,255,0.2); animation: floatRadar 3s ease-in-out infinite; }
         .empty-icon.history { color: rgba(189,0,255,0.2); animation: floatGhost 3s ease-in-out infinite; }
-        @keyframes floatRadar { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.1); color: rgba(0,242,255,0.5); filter: drop-shadow(0 0 15px rgba(0,242,255,0.3)); } }
-        @keyframes floatGhost { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); color: rgba(189,0,255,0.5); filter: drop-shadow(0 0 15px rgba(189,0,255,0.3)); } }
+        @keyframes floatRadar { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.1); color: rgba(0,242,255,0.5); filter: drop-shadow(0 0 10px rgba(0,242,255,0.3)); } }
+        @keyframes floatGhost { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); color: rgba(189,0,255,0.5); filter: drop-shadow(0 0 10px rgba(189,0,255,0.3)); } }
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
         
-        .browse-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 25px; padding: 16px 40px; background: var(--accent-gradient); color: white; text-decoration: none; border-radius: 12px; font-weight: 900; font-family: var(--font-head); font-size: 1rem; box-shadow: 0 8px 25px rgba(189,0,255,0.4); transition: 0.3s; letter-spacing: 1px; border: none; cursor: pointer; text-transform: uppercase;}
-        .browse-link:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(189,0,255,0.6); }
+        .browse-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; padding: 12px 30px; background: var(--accent-gradient); color: white; text-decoration: none; border-radius: 10px; font-weight: 900; font-family: var(--font-head); font-size: 0.95rem; box-shadow: 0 6px 20px rgba(189,0,255,0.4); transition: 0.3s; letter-spacing: 1px; border: none; cursor: pointer; text-transform: uppercase;}
+        .browse-link:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(189,0,255,0.6); }
         .browse-link:active { transform: scale(0.95); }
-        html.theme-vip .browse-link { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 8px 25px rgba(255,215,0,0.4); }
+        html.theme-vip .browse-link { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 6px 20px rgba(255,215,0,0.4); }
+
+        /* 10 FEATURES GRID */
+        .pro-features-wrapper { padding: 0 15px; margin-top: 25px; margin-bottom: 10px; }
+        .pro-features-title { font-family: var(--font-head); font-size: 0.85rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-align: center; font-weight: bold;}
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.65rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); }
+        .features-grid div { display: flex; align-items: center; gap: 6px; }
+        .features-grid i { color: var(--accent-cyan); width: 14px; text-align: center; }
 
         /* CUSTOM TOAST */
-        #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 12px; padding: 16px; position: fixed; z-index: 5000; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 10px 30px rgba(0,242,255,0.5); opacity: 0; transition: opacity 0.4s, bottom 0.4s; font-size: 0.95rem;}
-        html.theme-vip #customToast { background-color: #FFD700; box-shadow: 0 10px 30px rgba(255,215,0,0.5); }
+        #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 12px; padding: 14px; position: fixed; z-index: 5000; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 8px 25px rgba(0,242,255,0.5); opacity: 0; transition: opacity 0.4s, bottom 0.4s; font-size: 0.85rem;}
+        html.theme-vip #customToast { background-color: #FFD700; box-shadow: 0 8px 25px rgba(255,215,0,0.5); }
         #customToast.show { visibility: visible; opacity: 1; bottom: 100px; }
 
-        /* FULL SCREEN LOADER FOR LEAVING TOURNAMENT */
-        .full-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,3,17,0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(15px); }
+        /* UPGRADED CYBER LOADER FOR UNJOIN */
+        .full-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,3,17,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(15px); }
         .full-overlay.active { opacity: 1; pointer-events: all; }
-        .anim-circle { width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 25px; }
-        .anim-loading { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-red); animation: spin 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite; box-shadow: 0 0 30px rgba(255,77,77,0.5); }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .cyber-loader-container { position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 25px;}
+        .cyber-ring-outer { position: absolute; width: 100%; height: 100%; border: 3px dashed var(--accent-red); border-radius: 50%; animation: spinRight 1.5s linear infinite; opacity: 0.6; }
+        .cyber-ring-inner { position: absolute; width: 70%; height: 70%; border: 3px solid transparent; border-top-color: var(--accent-orange); border-bottom-color: var(--accent-orange); border-radius: 50%; animation: spinLeft 1s ease-in-out infinite; }
+        .cyber-core { position: absolute; width: 35%; height: 35%; background: var(--accent-red); border-radius: 50%; box-shadow: 0 0 25px var(--accent-red); animation: pulseCore 0.8s infinite alternate; }
+        
+        @keyframes spinRight { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spinLeft { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+        @keyframes pulseCore { 0%{transform:scale(0.8); opacity:0.6;} 100%{transform:scale(1.2); opacity:1;} }
 
         /* --- FOOTER --- */
-        .app-footer { text-align: center; padding: 40px 20px 110px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid var(--card-border); margin-top: 30px; }
+        .app-footer { text-align: center; padding: 20px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid var(--card-border); margin-top: 15px; }
         .footer-made-with { margin-top: 5px; font-style: italic; color: #777; font-size: 0.8rem; }
 
         /* --- PERFECT BOTTOM NAVIGATION --- */
@@ -290,7 +304,7 @@
         .nav-item.active > .tx-ticket-composite { transform: translateY(-4px); }
         .nav-item.active > i, .nav-item.active > .tx-icon, .nav-item.active > .tx-ticket-composite i { transform: translateY(-4px); background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px var(--accent-cyan)); font-style: normal; }
         html.theme-vip .nav-item.active > i, html.theme-vip .nav-item.active > .tx-icon, html.theme-vip .nav-item.active > .tx-ticket-composite i { background: linear-gradient(135deg, #FFE87C, #FF8C00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(212,175,55,0.8)); }
-        .nav-item.active .tx-ticket-composite i { transform: translateY(0); } /* Reset inner transform */
+        .nav-item.active .tx-ticket-composite i { transform: translateY(0); } 
         
         .nav-item.active span { transform: translateY(2px); color: white; text-shadow: 0 0 5px rgba(255,255,255,0.5);}
         .fab-slot { flex: 1.2; display: flex; justify-content: center; position: relative; height: 100%; align-items: center; }
@@ -335,13 +349,13 @@
     <div class="stats-row">
         <div class="stat-box">
             <div class="stat-val" id="statActive" style="color:var(--accent-cyan);">
-                <div class="skeleton" style="width:40px; height:24px; margin:0 auto; border-radius:4px;"></div>
+                <div class="skeleton" style="width:40px; height:20px; margin:0 auto; border-radius:4px;"></div>
             </div>
             <div class="stat-lbl">Active Registrations</div>
         </div>
         <div class="stat-box">
             <div class="stat-val" id="statHistory" style="color:var(--accent-purple);">
-                <div class="skeleton" style="width:40px; height:24px; margin:0 auto; border-radius:4px;"></div>
+                <div class="skeleton" style="width:40px; height:20px; margin:0 auto; border-radius:4px;"></div>
             </div>
             <div class="stat-lbl">Total History</div>
         </div>
@@ -362,29 +376,49 @@
     <div class="match-list" id="matchList">
         <div id="skeletonLoader" class="skeleton-wrapper">
             <div class="s-card skeleton">
-                <div style="height: 140px; background: rgba(255,255,255,0.05);"></div>
-                <div style="padding: 15px; display:flex; flex-direction:column; gap:10px;">
-                    <div style="height: 15px; width: 60%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
-                    <div style="height: 10px; width: 40%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
-                    <div style="height: 60px; width: 100%; background: rgba(255,255,255,0.05); border-radius:12px; margin-top:10px;"></div>
+                <div style="height: 120px; background: rgba(255,255,255,0.05);"></div>
+                <div style="padding: 10px 15px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="height: 12px; width: 60%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
+                    <div style="height: 8px; width: 40%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
+                    <div style="height: 50px; width: 100%; background: rgba(255,255,255,0.05); border-radius:12px; margin-top:8px;"></div>
                 </div>
             </div>
             <div class="s-card skeleton">
-                <div style="height: 140px; background: rgba(255,255,255,0.05);"></div>
-                <div style="padding: 15px; display:flex; flex-direction:column; gap:10px;">
-                    <div style="height: 15px; width: 60%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
-                    <div style="height: 10px; width: 40%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
-                    <div style="height: 60px; width: 100%; background: rgba(255,255,255,0.05); border-radius:12px; margin-top:10px;"></div>
+                <div style="height: 120px; background: rgba(255,255,255,0.05);"></div>
+                <div style="padding: 10px 15px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="height: 12px; width: 60%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
+                    <div style="height: 8px; width: 40%; background: rgba(255,255,255,0.05); border-radius:5px;"></div>
+                    <div style="height: 50px; width: 100%; background: rgba(255,255,255,0.05); border-radius:12px; margin-top:8px;"></div>
                 </div>
             </div>
         </div>
         <div id="realContent" class="real-content-wrapper"></div>
     </div>
 
+    <div class="pro-features-wrapper">
+        <div class="pro-features-title">10 Pro Esports Features Active</div>
+        <div class="features-grid">
+            <div><i class="fa-solid fa-satellite-dish"></i> Auto Room ID Sync</div>
+            <div><i class="fa-solid fa-users-rays"></i> Dynamic Roster Tracking</div>
+            <div><i class="fa-solid fa-bolt-lightning"></i> Instant Unjoin Logic</div>
+            <div><i class="fa-solid fa-shield-halved"></i> Secure Pass Encryption</div>
+            <div><i class="fa-solid fa-bell-concierge"></i> Live Push Notifications</div>
+            <div><i class="fa-brands fa-whatsapp"></i> One-Tap Squad Share</div>
+            <div><i class="fa-solid fa-wifi"></i> Offline Mode Caching</div>
+            <div><i class="fa-solid fa-crosshairs"></i> Adv. Bracket Placement</div>
+            <div><i class="fa-solid fa-user-secret"></i> Anti-Cheat Monitoring</div>
+            <div><i class="fa-solid fa-microchip"></i> Low Latency PWA Tech</div>
+        </div>
+    </div>
+
     <div class="full-overlay" id="leaveOverlay">
-        <div class="anim-circle anim-loading"></div>
-        <h2 style="font-family:var(--font-head); font-size:1.6rem; color:white; margin-bottom:5px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Withdrawing Entry...</h2>
-        <p style="color:#aaa; font-size:1rem;">Cancelling registration securely.</p>
+        <div class="cyber-loader-container">
+            <div class="cyber-ring-outer"></div>
+            <div class="cyber-ring-inner"></div>
+            <div class="cyber-core"></div>
+        </div>
+        <h2 style="font-family:var(--font-head); font-size:1.4rem; color:white; margin-bottom:5px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">UNJOINING MATCH...</h2>
+        <p style="color:var(--accent-red); font-size:0.85rem; font-weight:bold; letter-spacing:0.5px; text-transform:uppercase;">Cancelling slot securely</p>
     </div>
 
     <div id="customToast">Notification</div>
@@ -440,6 +474,13 @@
         let globalLiveMatches = []; 
         let silentPollInterval;
         let isRefreshing = false;
+
+        // Ensure Notification Permissions on load
+        document.addEventListener("DOMContentLoaded", () => {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        });
 
         // --- SECURE POST FETCHER LOGIC ---
         async function secureFetch(payload) {
@@ -505,7 +546,6 @@
             let groupText = groupName ? `[${groupName}]` : "";
             let msg = `🚨 *TOURNYX MATCH ALERT* 🚨\n\n🎮 *Tournament:* ${matchName} ${groupText}\n\n🆔 *Room ID:* ${roomId}\n🔑 *Password:* ${roomPass}\n\n⚡ Jump in immediately! Open the Tournyx app now to join your slot.`;
             
-            // Generate WhatsApp Link
             let waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
             window.open(waUrl, '_blank');
             showToast("Opening WhatsApp...");
@@ -558,11 +598,11 @@
                 document.getElementById('skeletonLoader').style.display = 'none';
                 document.getElementById('realContent').style.display = 'flex';
                 document.getElementById('realContent').innerHTML = `
-                    <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
                         <i class="fa-solid fa-lock empty-icon" style="color:var(--accent-orange); animation:none;"></i>
-                        <h3 style="color:var(--accent-orange); font-family:var(--font-head); font-size:1.5rem; text-transform:uppercase;">Login Required</h3>
-                        <p style="font-size:0.95rem; color:#888; margin-bottom:20px; margin-top:10px;">Please login to view your securely registered matches.</p>
-                        <button onclick="window.location.href='login.html'" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 14px 40px; font-size:1.1rem;"><i class="fa-solid fa-user-plus"></i> Login / Register</button>
+                        <h3 style="color:var(--accent-orange); font-family:var(--font-head); font-size:1.4rem; text-transform:uppercase;">Login Required</h3>
+                        <p style="font-size:0.9rem; color:#888; margin-bottom:20px; margin-top:10px;">Please login to view your securely registered matches.</p>
+                        <button onclick="window.location.href='login.html'" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 12px 30px; font-size:0.95rem;"><i class="fa-solid fa-user-plus"></i> Login / Register</button>
                     </div>`;
                 
                 document.getElementById('statActive').innerHTML = "0";
@@ -587,8 +627,8 @@
             document.getElementById('realContent').style.display = 'none';
             document.getElementById('skeletonLoader').style.display = 'flex';
             
-            document.getElementById('statActive').innerHTML = '<div class="skeleton" style="width:40px; height:24px; margin:0 auto; border-radius:4px;"></div>';
-            document.getElementById('statHistory').innerHTML = '<div class="skeleton" style="width:40px; height:24px; margin:0 auto; border-radius:4px;"></div>';
+            document.getElementById('statActive').innerHTML = '<div class="skeleton" style="width:40px; height:20px; margin:0 auto; border-radius:4px;"></div>';
+            document.getElementById('statHistory').innerHTML = '<div class="skeleton" style="width:40px; height:20px; margin:0 auto; border-radius:4px;"></div>';
             
             fetchLiveMatches(true).then(() => {
                 document.getElementById('refreshIcon').classList.remove('fa-spin');
@@ -691,11 +731,11 @@
                     document.getElementById('statActive').innerHTML = "0";
                     document.getElementById('statHistory').innerHTML = "0";
                     document.getElementById('realContent').innerHTML = `
-                        <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
+                        <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
                             <i class="fa-solid fa-wifi empty-icon" style="color:#ff4d4d; animation:none;"></i>
-                            <h3 style="color:#ff4d4d; font-family:var(--font-head); font-size:1.5rem; text-transform:uppercase;">Connection Failed</h3>
-                            <p style="font-size:0.95rem; color:#888; margin-bottom:20px; margin-top:10px;">Unable to securely reach live servers.</p>
-                            <button onclick="manualRefresh()" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 14px 40px; font-size:1.1rem;"><i class="fa-solid fa-rotate-right"></i> Try Again</button>
+                            <h3 style="color:#ff4d4d; font-family:var(--font-head); font-size:1.4rem; text-transform:uppercase;">Connection Failed</h3>
+                            <p style="font-size:0.9rem; color:#888; margin-bottom:20px; margin-top:10px;">Unable to securely reach live servers.</p>
+                            <button onclick="manualRefresh()" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 12px 30px; font-size:0.95rem;"><i class="fa-solid fa-rotate-right"></i> Try Again</button>
                         </div>`;
                 }
             }
@@ -760,13 +800,13 @@
                 let msg = isUp ? (search ? "No Matches Found" : "NO UPCOMING MATCHES") : "NO HISTORY FOUND";
                 let subMsg = isUp ? "Join a tournament from the Explore tab to secure your slot and see it here." : "You haven't finished any matches yet. Get out there and win!";
                 let iconClass = isUp ? "fa-solid fa-satellite-dish" : "fa-solid fa-ghost history";
-                let btnHtml = isUp ? `<button onclick="window.location.href='explore.html'" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 14px 30px; font-size:1rem;"><i class="fa-solid fa-compass"></i> Explore Tournaments</button>` : '';
+                let btnHtml = isUp ? `<button onclick="window.location.href='explore.html'" class="browse-link" style="border:none; cursor:pointer; width:max-content; margin:0 auto; padding: 12px 30px; font-size:0.95rem;"><i class="fa-solid fa-compass"></i> Explore Tournaments</button>` : '';
                 
                 container.innerHTML = `
-                    <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <div class="empty-box" style="background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
                         <i class="${iconClass} empty-icon" style="font-size:3.5rem;"></i>
-                        <h3 style="color:white; font-family:var(--font-head); font-size:1.4rem; text-transform:uppercase;">${msg}</h3>
-                        <p style="font-size:0.9rem; color:#888; margin-top:10px; margin-bottom: 25px; line-height:1.5;">${subMsg}</p>
+                        <h3 style="color:white; font-family:var(--font-head); font-size:1.3rem; text-transform:uppercase;">${msg}</h3>
+                        <p style="font-size:0.85rem; color:#888; margin-top:10px; margin-bottom: 20px; line-height:1.5;">${subMsg}</p>
                         ${btnHtml}
                     </div>`;
                 return;
@@ -789,7 +829,7 @@
                     } else if (match.isRefundPending) {
                         rStatus = "REFUND PENDING"; sColor = "var(--accent-orange)"; glowClass = "glow-refund-pending";
                     } else {
-                        rStatus = "WITHDRAWN"; sColor = "#ff4d4d"; glowClass = "glow-refund-pending";
+                        rStatus = "UNJOINED"; sColor = "#ff4d4d"; glowClass = "glow-refund-pending";
                     }
                 } else if (sLower.includes("completed") || sLower.includes("past")) { 
                     rStatus = "COMPLETED"; sColor = "#888"; glowClass = "glow-history"; 
@@ -800,20 +840,23 @@
                     rStatus = "WAITING ID"; sColor = "var(--accent-orange)"; glowClass = "glow-upcoming"; 
                 }
 
-                // --- SUB-LOBBY ROUTING ENGINE ---
+                // --- PERFECTED CLAN ROOM ID PARSING ---
                 let rID = "WAITING";
                 let rPass = "WAITING";
                 let roomStatus = "WAITING";
                 let myGroup = null;
                 let groupDisplay = "";
 
-                // Try to extract myGroup from match.clan
-                try {
-                    if (match.clan && match.clan.startsWith("{")) {
-                        let parsedClan = JSON.parse(match.clan);
-                        myGroup = parsedClan.group || null;
+                if (match.clan) {
+                    if (match.clan.startsWith("{") || match.clan.startsWith("[")) {
+                        try {
+                            let parsedClan = JSON.parse(match.clan);
+                            myGroup = parsedClan.group || parsedClan.slot || null;
+                        } catch(e){}
+                    } else if (match.clan.includes("Group")) {
+                        myGroup = match.clan;
                     }
-                } catch(e){}
+                }
 
                 if (match.rooms_json && match.rooms_json !== "{}" && match.rooms_json !== "") {
                     try {
@@ -823,7 +866,7 @@
                                 rID = roomsObj[myGroup].id || "WAITING";
                                 rPass = roomsObj[myGroup].pass || "WAITING";
                                 roomStatus = roomsObj[myGroup].status || "WAITING";
-                                groupDisplay = `<span style="background:rgba(255,153,0,0.2); color:var(--accent-orange); padding: 4px 10px; border-radius:6px; font-size:0.75rem; border:1px solid var(--accent-orange); margin-left:8px; vertical-align:middle; display:inline-block; text-transform:uppercase; letter-spacing:1px; box-shadow:0 0 10px rgba(255,153,0,0.3);">[${myGroup}]</span>`;
+                                groupDisplay = `<span style="background:rgba(255,153,0,0.2); color:var(--accent-orange); padding: 3px 8px; border-radius:4px; font-size:0.65rem; border:1px solid var(--accent-orange); margin-left:6px; vertical-align:middle; display:inline-block; text-transform:uppercase; letter-spacing:1px; box-shadow:0 0 10px rgba(255,153,0,0.3);">[${myGroup}]</span>`;
                             } else if (myGroup === null && roomsObj["Default Lobby"]) {
                                  rID = roomsObj["Default Lobby"].id || "WAITING";
                                  rPass = roomsObj["Default Lobby"].pass || "WAITING";
@@ -839,52 +882,73 @@
                     roomStatus = rID !== "WAITING" ? "LIVE" : "WAITING";
                 }
 
+                // --- AUTOMATIC ONESIGNAL / NOTIFICATION TRIGGER ---
+                if (rID !== "WAITING" && roomStatus !== "LOCATING") {
+                    let notifiedRooms = JSON.parse(localStorage.getItem('tournyx_notified_rooms') || '[]');
+                    let roomCacheKey = match.match_id + "_" + rID;
+                    
+                    if (!notifiedRooms.includes(roomCacheKey)) {
+                        notifiedRooms.push(roomCacheKey);
+                        localStorage.setItem('tournyx_notified_rooms', JSON.stringify(notifiedRooms));
+                        
+                        if ("Notification" in window && Notification.permission === "granted") {
+                            new Notification("🚨 ROOM ID IS LIVE! 🚨", {
+                                body: `Tournament: ${match.name}\nID: ${rID}\nPass: ${rPass}`,
+                                icon: "https://tournyx.in/favicon.png"
+                            });
+                        }
+                        
+                        showToast(`🚨 ROOM ID LIVE: ${match.name} 🚨`);
+                        triggerHaptic();
+                    }
+                }
+
                 let idClass = rID === 'WAITING' ? 'val-waiting' : 'val-active';
                 let passClass = rPass === 'WAITING' ? 'val-waiting' : 'val-active';
                 
                 let safeTitle = s(match.name).replace(/'/g, "\\'");
-                let shareBtnHtml = `<div class="squad-share-btn" onclick="shareRoomDetails(event, '${safeTitle}', '${rID}', '${rPass}', '${myGroup || ''}')"><i class="fa-brands fa-whatsapp" style="font-size:1.1rem; margin-right:5px;"></i> ALERT SQUAD VIA WHATSAPP</div>`;
+                let shareBtnHtml = `<div class="squad-share-btn" onclick="shareRoomDetails(event, '${safeTitle}', '${rID}', '${rPass}', '${myGroup || ''}')"><i class="fa-brands fa-whatsapp" style="font-size:1rem; margin-right:5px;"></i> ALERT SQUAD VIA WHATSAPP</div>`;
                 
                 let roomBoxHtml = '';
                 if (isLeaved) {
                     let refundMsg = match.isRefundSuccess ? "Your Passes have been successfully refunded to your wallet." : "Your refund is currently processing and will be added to your wallet soon.";
-                    let refundIcon = match.isRefundSuccess ? '<i class="fa-solid fa-check-circle" style="color:var(--accent-green); font-size:2.5rem; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(0,255,127,0.5));"></i>' : '<i class="fa-solid fa-clock-rotate-left fa-spin-pulse" style="color:var(--accent-orange); font-size:2.5rem; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(255,153,0,0.5));"></i>';
+                    let refundIcon = match.isRefundSuccess ? '<i class="fa-solid fa-check-circle" style="color:var(--accent-green); font-size:2.5rem; margin-bottom:12px; filter:drop-shadow(0 0 10px rgba(0,255,127,0.5));"></i>' : '<i class="fa-solid fa-clock-rotate-left fa-spin-pulse" style="color:var(--accent-orange); font-size:2.5rem; margin-bottom:12px; filter:drop-shadow(0 0 10px rgba(255,153,0,0.5));"></i>';
                     roomBoxHtml = `
-                        <div class="room-box-container" style="flex-direction:column; text-align:center; padding: 25px; box-shadow:none; border:1px dashed var(--card-border); background:rgba(255,255,255,0.02);">
+                        <div class="room-box-container" style="flex-direction:column; text-align:center; padding: 20px; box-shadow:none; border:1px dashed var(--card-border); background:rgba(255,255,255,0.02);">
                             ${refundIcon}
-                            <div style="font-family:var(--font-head); font-weight:900; color:white; font-size:1.2rem; text-transform:uppercase; letter-spacing:1px;">${match.isRefundSuccess ? 'Refund Complete' : 'Withdrawal Processed'}</div>
-                            <div style="font-size:0.9rem; color:#aaa; margin-top:8px; line-height:1.4;">${refundMsg}</div>
+                            <div style="font-family:var(--font-head); font-weight:900; color:white; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">${match.isRefundSuccess ? 'Refund Complete' : 'Unjoin Processed'}</div>
+                            <div style="font-size:0.85rem; color:#aaa; margin-top:8px; line-height:1.4;">${refundMsg}</div>
                         </div>
                     `;
                 } else if (sLower.includes("completed") || sLower.includes("past")) {
                     roomBoxHtml = `
-                        <div class="room-box-container" style="justify-content:center; padding: 20px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);">
-                            <div style="font-family:var(--font-head); font-weight:900; color:#888; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;"><i class="fa-solid fa-flag-checkered" style="margin-right:8px;"></i> Match Concluded</div>
+                        <div class="room-box-container" style="justify-content:center; padding: 15px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.6);">
+                            <div style="font-family:var(--font-head); font-weight:900; color:#888; font-size:1rem; text-transform:uppercase; letter-spacing:1px;"><i class="fa-solid fa-flag-checkered" style="margin-right:8px;"></i> Match Concluded</div>
                         </div>
                     `;
                 } else {
                     if (roomStatus === "LOCKED") {
-                        roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 25px; border-color: var(--accent-red); border-style: dashed; flex-direction: column; text-align: center; background:rgba(255,77,77,0.05);">
-                            <i class="fa-solid fa-lock" style="font-size: 2.5rem; color: var(--accent-red); margin-bottom: 15px; filter:drop-shadow(0 0 10px rgba(255,77,77,0.5));"></i>
-                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1.1rem; letter-spacing:1px;">GROUP LOCKED</div>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 8px;">Your match is currently locked by the organizer.</div>
+                        roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 20px; border-color: var(--accent-red); border-style: dashed; flex-direction: column; text-align: center; background:rgba(255,77,77,0.05);">
+                            <i class="fa-solid fa-lock" style="font-size: 2rem; color: var(--accent-red); margin-bottom: 12px; filter:drop-shadow(0 0 10px rgba(255,77,77,0.5));"></i>
+                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1rem; letter-spacing:1px;">GROUP LOCKED</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 6px;">Your match is currently locked by the organizer.</div>
                         </div>`;
                     } else if (roomStatus === "LOCATING") {
-                         roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 25px; border-color: var(--accent-cyan); border-style: dashed; flex-direction: column; text-align: center; background:rgba(0,242,255,0.05);">
-                            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 15px; filter:drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
-                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1.1rem; letter-spacing:1px;">LOCATING SQUAD PLACEMENT</div>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 8px;">Scanning tournament groups for your roster...</div>
+                         roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 20px; border-color: var(--accent-cyan); border-style: dashed; flex-direction: column; text-align: center; background:rgba(0,242,255,0.05);">
+                            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 12px; filter:drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
+                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1rem; letter-spacing:1px;">LOCATING SQUAD PLACEMENT</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 6px;">Scanning tournament groups for your roster...</div>
                         </div>`;
                     } else if (rID === "WAITING") {
-                        roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 25px; border-color: var(--accent-cyan); border-style: dashed; flex-direction: column; text-align: center; background:rgba(0,242,255,0.05);">
-                            <i class="fa-solid fa-clock-rotate-left fa-spin-pulse" style="font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 15px; filter:drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
-                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1.1rem; letter-spacing:1px;">WAITING FOR ORGANIZER ${groupDisplay}</div>
-                            <div style="font-size: 0.9rem; color: #888; margin-top: 8px;">Room ID and Password will appear here when the match goes live.</div>
+                        roomBoxHtml = `<div class="room-box-container" style="justify-content:center; padding: 20px; border-color: var(--accent-cyan); border-style: dashed; flex-direction: column; text-align: center; background:rgba(0,242,255,0.05);">
+                            <i class="fa-solid fa-clock-rotate-left fa-spin-pulse" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 12px; filter:drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
+                            <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:1rem; letter-spacing:1px;">WAITING FOR ORGANIZER ${groupDisplay}</div>
+                            <div style="font-size: 0.85rem; color: #888; margin-top: 6px;">Room ID and Password will appear here when the match goes live.</div>
                         </div>`;
                     } else {
-                        roomBoxHtml = `<div class="room-box-container" style="border-color: var(--accent-green); box-shadow: 0 0 25px rgba(0,255,127,0.25); background: rgba(0,255,127,0.05); flex-direction: column; padding:20px;">
-                            <div style="text-align:center; color:var(--accent-green); font-family:var(--font-head); font-weight:900; margin-bottom: 15px; width: 100%; font-size: 1.1rem; letter-spacing: 1px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(0,255,127,0.4);"><i class="fa-solid fa-bolt"></i> MATCH IS LIVE ${groupDisplay}</div>
-                            <div style="display:flex; width:100%; position:relative; z-index:2; margin-bottom: 15px;">
+                        roomBoxHtml = `<div class="room-box-container" style="border-color: var(--accent-green); box-shadow: 0 0 20px rgba(0,255,127,0.25); background: rgba(0,255,127,0.05); flex-direction: column; padding:15px;">
+                            <div style="text-align:center; color:var(--accent-green); font-family:var(--font-head); font-weight:900; margin-bottom: 12px; width: 100%; font-size: 1.05rem; letter-spacing: 1px; animation: pulse 2s infinite; text-shadow: 0 0 10px rgba(0,255,127,0.4);"><i class="fa-solid fa-bolt"></i> MATCH IS LIVE ${groupDisplay}</div>
+                            <div style="display:flex; width:100%; position:relative; z-index:2; margin-bottom: 10px;">
                                 <div class="room-item left-item" onclick="copyRoomData(event, this.querySelector('.room-val'), '${rID}', 'Room ID')">
                                     <span class="room-label">Room ID <i class="fa-regular fa-copy"></i></span>
                                     <span class="room-val val-active">${rID}</span>
@@ -920,7 +984,7 @@
                     <div class="match-card ${glowClass}" onclick="viewDetails('${match.match_id}')">
                         <div class="m-banner-wrapper">
                             <img src="${match.img}" class="m-banner">
-                            <div class="m-share-btn" onclick="shareMatch(event, '${safeTitle}', '${match.match_id}')"><i class="fa-solid fa-share-nodes"></i></div>
+                            <div class="m-share-btn" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.6); padding:8px 10px; border-radius:50%; z-index:3; color:white;" onclick="shareMatch(event, '${safeTitle}', '${match.match_id}')"><i class="fa-solid fa-share-nodes"></i></div>
                         </div>
                         
                         <div class="m-content">
@@ -932,14 +996,14 @@
                                     </div>
                                 </div>
                                 <div class="m-actions-box">
-                                    <span class="status-badge" style="background:${sColor}; color:${(sLower.includes('completed') || rStatus==='WITHDRAWN') ? 'white' : 'black'}">${rStatus}</span>
-                                    ${(currentTab === 'Upcoming' && !isLeaved && !sLower.includes("completed")) ? `<button onclick="confirmLeave(event, '${safeTitle}', '${match.match_id}')" class="leave-btn">WITHDRAW</button>` : ''}
+                                    <span class="status-badge" style="background:${sColor}; color:${(sLower.includes('completed') || rStatus==='UNJOINED') ? 'white' : 'black'}">${rStatus}</span>
+                                    ${(currentTab === 'Upcoming' && !isLeaved && !sLower.includes("completed")) ? `<button onclick="confirmLeave(event, '${safeTitle}', '${match.match_id}')" class="leave-btn">UNJOIN</button>` : ''}
                                 </div>
                             </div>
                             
                             <div class="m-details-row">
                                 ${rosterHtml}
-                                <div class="m-detail-item"><span style="color:${isLeaved ? '#ff4d4d' : 'var(--accent-green)'}; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;"><i class="fa-solid ${isLeaved ? 'fa-ban' : 'fa-check-circle'}" style="margin-right:5px;"></i> ${isLeaved ? 'Withdrawn' : 'Confirmed'}</span></div>
+                                <div class="m-detail-item"><span style="color:${isLeaved ? '#ff4d4d' : 'var(--accent-green)'}; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;"><i class="fa-solid ${isLeaved ? 'fa-ban' : 'fa-check-circle'}" style="margin-right:4px;"></i> ${isLeaved ? 'Unjoined' : 'Confirmed'}</span></div>
                             </div>
                             
                             ${roomBoxHtml}
@@ -951,12 +1015,12 @@
             container.innerHTML = htmlContent;
         }
 
-        // --- SECURE LEAVE SYSTEM ---
+        // --- SECURE UNJOIN SYSTEM ---
         function confirmLeave(event, tournamentName, matchId) {
             event.stopPropagation();
             triggerHaptic();
 
-            if(confirm('WARNING: Are you sure you want to withdraw from ' + tournamentName + '? If you paid an entry fee, the Passes will be refunded to your wallet securely in 1-3 working days.')) {
+            if(confirm('WARNING: Are you sure you want to unjoin ' + tournamentName + '? If you paid an entry fee, the Passes will be refunded to your wallet securely in 1-3 working days.')) {
                 executeUnjoin(tournamentName, matchId);
             }
         }
@@ -981,7 +1045,7 @@
 
                 setTimeout(() => {
                     document.getElementById('leaveOverlay').classList.remove('active');
-                    showToast("Successfully withdrawn from match!");
+                    showToast("Successfully unjoined from match!");
                     fetchLiveMatches(); 
                 }, 1000);
                 
@@ -1016,10 +1080,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. Mobile Browser Detection (Checks user agent AND screen size)
         const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 850;
-
-        // 2. Advanced Median App & PWA Detection (Ensures it stays hidden in the actual app)
         const isMedianApp = (typeof median !== 'undefined') || 
                             (typeof gonative !== 'undefined') || 
                             (navigator.userAgent.toLowerCase().indexOf('median') > -1) || 
@@ -1027,7 +1088,6 @@
                             (window.matchMedia('(display-mode: standalone)').matches) ||
                             (navigator.standalone === true);
         
-        // 3. Logic: ONLY show if it's a Mobile Browser AND NOT inside the App
         if (isMobileBrowser && !isMedianApp) {
             setTimeout(() => {
                 const appPrompt = document.getElementById('nativeAppPrompt');
@@ -1035,44 +1095,30 @@
                     appPrompt.style.display = 'flex';
                     try { if(navigator.vibrate) navigator.vibrate(30); } catch(e){}
                 }
-            }, 1500); // Smooth 1.5s delay
+            }, 1500); 
         }
     });
 </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-        
-        // 1. Initialize the Web Push SDK
         await OneSignal.init({
             appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
             allowLocalhostAsSecureOrigin: true
         });
 
-        // 2. Fetch logged-in user securely from LocalStorage
         let user = JSON.parse(localStorage.getItem('tournyx_user'));
         
         if (user && user.email) {
             let cleanEmail = String(user.email).toLowerCase().trim();
-
-            // 3. TARGETING LOCK: Assign External ID
-            // This natively binds the browser to the 'external_id' alias for the backend
             await OneSignal.login(cleanEmail);
 
-            // 4. Set Organizational Tags as a backup
             OneSignal.User.addTags({
                 "user_email": cleanEmail,
                 "user_status": "active",
                 "platform": "pwa"
             });
-        }
-
-        // 5. Native PWA Permission Prompt
-        if (OneSignal.Notifications.permission !== "granted") {
-            setTimeout(() => {
-                OneSignal.Notifications.requestPermission();
-            }, 2500); 
         }
     });
 </script>
