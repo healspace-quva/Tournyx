@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -46,7 +46,6 @@
             padding-top: calc(75px + env(safe-area-inset-top)); 
         }
 
-        /* --- TOURNYX TX ICON --- */
         .tx-icon {
             font-family: var(--font-head); font-weight: 900; font-style: italic; letter-spacing: -1px;
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
@@ -70,7 +69,6 @@
         @keyframes slideUpGlow { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
         .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .delay-3 { animation-delay: 0.3s; } .delay-4 { animation-delay: 0.4s; }
 
-        /* --- SKELETON LOADER --- */
         .skeleton-box { background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 12px; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         #skeletonLoader { position: fixed; top: calc(65px + env(safe-area-inset-top)); bottom: calc(60px + env(safe-area-inset-bottom)); left: 0; width: 100%; background: var(--primary-bg); z-index: 990; padding: 15px; transition: opacity 0.3s ease, visibility 0.3s ease; backdrop-filter: blur(10px); overflow: hidden;}
@@ -81,7 +79,6 @@
         .skel-list { display: flex; flex-direction: column; gap: 10px; }
         .skel-item { height: 65px; border-radius: 12px; }
 
-        /* --- RESPONSIVE HEADER --- */
         .top-header { position: fixed; top: 0; left: 0; width: 100%; padding: calc(10px + env(safe-area-inset-top)) 10px 10px; background: rgba(5, 2, 12, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; z-index: 2000; box-shadow: 0 4px 30px rgba(0,0,0,0.6); transform: translateZ(0); }
         .header-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 5px;}
         .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
@@ -104,7 +101,6 @@
 
         .container { padding: 15px; margin-top: 0; }
 
-        /* --- TICKET BALANCE CARD --- */
         .wallet-card { background: linear-gradient(135deg, rgba(20,10,35,0.9) 0%, rgba(5,2,12,0.95) 100%); border: 1px solid var(--accent-cyan); border-radius: 20px; padding: 20px 15px; position: relative; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,242,255,0.1); margin-bottom: 20px; animation: slideUpGlow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; backdrop-filter: blur(15px);}
         html.theme-vip .wallet-card { background: linear-gradient(135deg, rgba(30,25,5,0.9) 0%, rgba(10,8,0,0.95) 100%); border-color: #FFD700; box-shadow: 0 8px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,215,0,0.15);}
         
@@ -127,34 +123,35 @@
         .vip-progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 15px; overflow:hidden; box-shadow: inset 0 0 5px rgba(0,0,0,0.8);}
         .vip-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-orange), #FFD700); box-shadow: 0 0 10px var(--accent-orange); transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
 
-        /* --- VISUAL TICKET STUB INVENTORY THEMES --- */
         .tkt-theme-FF { --glow-color: #ff9900; --glow-border: #ff4d4d; }
         .tkt-theme-BGM { --glow-color: #00ff7f; --glow-border: #00b09b; }
-        .tkt-theme-UNI { --glow-color: #FFD700; --glow-border: #FFD700; background: linear-gradient(135deg, rgba(40,30,0,0.95), rgba(20,15,0,0.95)) !important; }
+        .tkt-theme-UNI { --glow-color: #FFD700; --glow-border: #FFD700; background: linear-gradient(135deg, #0b0b0f, #1a1200) !important; border: 1px solid rgba(255, 215, 0, 0.45); box-shadow: 0 0 30px rgba(255, 215, 0, 0.25), inset 0 0 18px rgba(255, 215, 0, 0.12); position: relative; overflow: hidden; }
+        .tkt-theme-UNI::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at top left, rgba(255,215,0,0.15), transparent 60%); pointer-events: none;}
+        .uni-title {font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,215,0,0.6);}
 
-        .tournyx-ticket { background: linear-gradient(135deg, rgba(20,10,35,0.9), rgba(5,2,12,0.95)); border: 1px solid var(--glow-border, var(--accent-cyan)); border-radius: 15px; display: flex; align-items: center; padding: 12px 15px; margin-bottom: 12px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3), 0 0 10px var(--glow-color, rgba(0,242,255,0.1)); overflow: hidden; animation: fadeIn 0.5s ease; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px);}
+        .tournyx-ticket { background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); border: 1px solid var(--glow-border, var(--accent-cyan)); border-radius: 20px; display: flex; align-items: center; padding: 12px 15px; margin-bottom: 12px; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 12px rgba(0,242,255,0.12); overflow: hidden; animation: fadeIn 0.5s ease; cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px);}
         .tournyx-ticket:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px var(--glow-color, rgba(0,242,255,0.2)); }
         .tournyx-ticket:active { transform: scale(0.97); }
         .tournyx-ticket::before { content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: var(--primary-bg); border-radius: 50%; border-right: 1px solid var(--glow-border, var(--accent-cyan)); z-index: 5; box-shadow: inset -4px 0 8px rgba(0,0,0,0.5);}
         .tournyx-ticket::after { content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: var(--primary-bg); border-radius: 50%; border-left: 1px solid var(--glow-border, var(--accent-cyan)); z-index: 5; box-shadow: inset 4px 0 8px rgba(0,0,0,0.5);}
         
-        .tkt-logo { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; border: 1px solid var(--glow-border, var(--accent-purple)); box-shadow: 0 0 15px var(--glow-color, rgba(189,0,255,0.4)); z-index: 2;}
+        .tkt-logo { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; border: 1px solid var(--glow-border, var(--accent-purple)); box-shadow: 0 0 15px var(--glow-color, rgba(189,0,255,0.4)); z-index: 2;}
         .tkt-logo-fallback { width: 45px; height: 45px; border-radius: 10px; background: rgba(189,0,255,0.2); border: 1px solid var(--glow-border, var(--accent-purple)); box-shadow: 0 0 15px var(--glow-color, rgba(189,0,255,0.4)); z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; display: none; }
         
         .tkt-details { flex: 1; margin-left: 12px; z-index: 2;}
         .tkt-game { font-family: var(--font-head); color: white; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; text-shadow: 0 0 5px rgba(255,255,255,0.2);}
-        .tkt-id { font-size: 0.65rem; color: var(--accent-cyan); font-family: monospace; font-weight: bold; margin-top: 2px;}
+        .tkt-id { font-size: 0.65rem; color: rgba(255,255,255,0.5); font-family: monospace; font-weight: bold; margin-top: 2px;}
         html.theme-vip .tkt-id { color: #FFD700; }
         .tkt-count { font-family: var(--font-head); font-size: 1.5rem; color: var(--glow-color, var(--accent-green)); font-weight: 900; text-shadow: 0 0 10px var(--glow-color, rgba(0,255,127,0.4)); padding-left: 12px; border-left: 1px dashed rgba(255,255,255,0.1); z-index: 2;}
         .tkt-tournyx-stamp { position: absolute; top: 6px; right: 20px; font-size: 0.55rem; color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 2px; font-family: var(--font-head); font-weight:900; z-index: 1;}
 
-        /* --- QUICK ACTIONS --- */
-        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .action-btn { background: linear-gradient(180deg, rgba(20,10,35,0.8) 0%, rgba(10,5,20,0.9) 100%); backdrop-filter: blur(10px); border: 1px solid var(--card-border); border-radius: 15px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 5px 15px rgba(0,0,0,0.4); text-decoration: none; color: white; position: relative; overflow: hidden;}
+        /* --- QUICK ACTIONS FIXED FOR MOBILE --- */
+        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; margin-bottom: 25px; justify-content: center; align-items: center; }
+        .action-btn { background: linear-gradient(180deg, rgba(20,10,35,0.8) 0%, rgba(10,5,20,0.9) 100%); backdrop-filter: blur(10px); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 8px; min-height: 85px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 5px 15px rgba(0,0,0,0.4); text-decoration: none; color: white; position: relative; overflow: hidden;}
         .action-btn::before { content:''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent); pointer-events: none;}
         .action-btn:active { transform: scale(0.95); }
-        .action-btn i { font-size: 1.8rem; }
-        .action-btn span { font-family: var(--font-head); font-size: clamp(0.7rem, 2.5vw, 0.85rem); text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;}
+        .action-btn i { font-size: 1.4rem; }
+        .action-btn span { font-family: var(--font-head); font-size: clamp(0.7rem, 2.5vw, 0.85rem); text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1;}
         
         .btn-add { border-color: rgba(189,0,255,0.3); } .btn-add i, .btn-add .tx-icon { color: var(--accent-purple); filter: drop-shadow(0 0 10px rgba(189,0,255,0.5)); } .btn-add:hover { background: rgba(189,0,255,0.1); border-color: var(--accent-purple); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(189,0,255,0.2);}
         .btn-redeem { border-color: rgba(0,242,255,0.3); } .btn-redeem i { color: var(--accent-cyan); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)); } .btn-redeem:hover { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,242,255,0.2);}
@@ -162,37 +159,44 @@
         html.theme-vip .btn-add { border-color: rgba(255,215,0,0.3); } html.theme-vip .btn-add i, html.theme-vip .btn-add .tx-icon { color: #FFD700; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); } html.theme-vip .btn-add:hover { background: rgba(255,215,0,0.1); border-color: #FFD700; box-shadow: 0 8px 20px rgba(255,215,0,0.2);}
         html.theme-vip .btn-redeem { border-color: rgba(255,140,0,0.3); } html.theme-vip .btn-redeem i { color: #FF8C00; filter: drop-shadow(0 0 10px rgba(255,140,0,0.5)); } html.theme-vip .btn-redeem:hover { background: rgba(255,140,0,0.1); border-color: #FF8C00; box-shadow: 0 8px 20px rgba(255,140,0,0.2);}
 
-        /* --- TRANSACTION HISTORY --- */
-        .section-title { font-family: var(--font-head); font-size: 1.1rem; color: white; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-shadow: 0 0 5px rgba(255,255,255,0.2); font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;}
-        .section-title span { font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; padding: 4px 10px; border-radius: 6px; transition: 0.3s; border: 1px solid rgba(0,242,255,0.2); background: rgba(0,242,255,0.05); font-weight: bold;}
+        /*--- TRANSACTION HISTORY (REDUCED SIZES FOR OVERFLOW FIX) ---*/
+        .section-title { font-family: var(--font-head); font-size: 1.1rem; color: white; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: nowrap; text-shadow: 0 0 5px rgba(255,255,255,0.2); font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;}
+        .section-title > div { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+        .section-title span { font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; padding: 4px 10px; border-radius: 6px; transition: 0.3s; border: 1px solid rgba(0,242,255,0.2); background: rgba(0,242,255,0.05); font-weight: bold; white-space: nowrap; }
         html.theme-vip .section-title span { color: #FFD700; border-color: rgba(255,215,0,0.2); background: rgba(255,215,0,0.05); }
         .section-title span:active { transform: scale(0.9); }
         
-        .txn-list { background: rgba(10,5,20,0.6); backdrop-filter: blur(10px); border: 1px solid var(--card-border); border-radius: 15px; padding: 12px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
-        .txn-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; animation: slideInUp 0.3s ease both;}
+        .txn-list { background: rgba(10,5,20,0.6); backdrop-filter: blur(10px); border: 1px solid var(--card-border); border-radius: 15px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .txn-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; animation: slideInUp 0.3s ease both;}
         .txn-item:active { background: rgba(255,255,255,0.06); border-color: var(--accent-cyan); transform: scale(0.97); }
         html.theme-vip .txn-item:active { border-color: #FFD700; }
         
-        .txn-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; padding-right: 10px; }
-        .txn-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
+        .txn-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; padding-right: 8px; }
+        .txn-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
         .icon-credit { background: rgba(0,255,127,0.1); color: var(--accent-green); border: 1px solid rgba(0,255,127,0.3); text-shadow: 0 0 8px rgba(0,255,127,0.4);}
         .icon-debit { background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.3); text-shadow: 0 0 8px rgba(255,77,77,0.4);}
         
         .txn-info { display: flex; flex-direction: column; min-width: 0; width: 100%; }
-        .txn-info h4 { font-family: var(--font-head); font-size: 0.9rem; color: white; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; }
-        .txn-info p { font-size: 0.7rem; color: #aaa; display:flex; flex-wrap: wrap; gap:6px; align-items:center; line-height: 1.2; font-weight: bold;}
-        .cat-tag { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; background:rgba(255,255,255,0.05); text-transform:uppercase; border: 1px solid rgba(255,255,255,0.1); color: white;}
+        .txn-info h4 { font-family: var(--font-head); font-size: 0.82rem; color: white; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; }
+        .txn-info p { font-size: 0.65rem; color: #aaa; display:flex; flex-wrap: wrap; gap:5px; align-items:center; line-height: 1.2; font-weight: bold;}
+        .cat-tag { font-size: 0.55rem; padding: 2px 4px; border-radius: 4px; background:rgba(255,255,255,0.05); text-transform:uppercase; border: 1px solid rgba(255,255,255,0.1); color: white;}
         
-        .txn-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; min-width: 75px; }
-        .in-out-label { font-size: 0.6rem; text-transform: uppercase; font-family: var(--font-head); font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .txn-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; min-width: 65px; }
+        .in-out-label { font-size: 0.55rem; text-transform: uppercase; font-family: var(--font-head); font-weight: 900; padding: 2px 4px; border-radius: 4px; margin-bottom: 4px; letter-spacing: 0.5px; }
         .in-label { background: rgba(0,255,127,0.15); color: var(--accent-green); border: 1px solid rgba(0,255,127,0.3); }
         .out-label { background: rgba(255,77,77,0.15); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.3); }
-        .txn-amt { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; white-space: nowrap; }
+        .txn-amt { font-family: var(--font-head); font-size: 0.95rem; font-weight: 900; white-space: nowrap; }
         .amt-credit { color: var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.3); }
         .amt-debit { color: var(--accent-red); text-shadow: 0 0 10px rgba(255,77,77,0.3); }
-        .txn-status { font-size: 0.65rem; color: #ccc; text-transform: uppercase; margin-top: 4px; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 6px; display: inline-block; font-weight:bold; border: 1px solid rgba(255,255,255,0.08);}
+        .txn-status { font-size: 0.6rem; color: #ccc; text-transform: uppercase; margin-top: 4px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 6px; display: inline-block; font-weight:bold; border: 1px solid rgba(255,255,255,0.08);}
 
-        /* --- ADD TICKETS & MODALS --- */
+        .txn-summary-card{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:18px; }
+        .summary-box{background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:15px; text-align:center; backdrop-filter:blur(8px); transition:0.3s; }
+        .summary-box:hover{ transform:translateY(-2px); border-color:rgba(0,242,255,0.3); }
+        .summary-label{ font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; font-weight:bold; }
+        .summary-value{ font-size:1.2rem; font-weight:900; color:white; font-family:var(--font-head); }
+        html.theme-vip .summary-box{ border-color:rgba(255,215,0,0.15); }
+
         .bottom-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(8px); opacity: 0; transition: 0.3s; }
         .bottom-sheet-overlay.active { display: flex; opacity: 1; }
         .bottom-sheet { width: 100%; max-width: 450px; background: rgba(10,5,20,0.95); border-radius: 25px 25px 0 0; border-top: 1px solid var(--card-border); border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); padding: 25px 20px calc(20px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); backdrop-filter: blur(20px);}
@@ -209,7 +213,6 @@
         .close-sheet { color: #888; font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.3s; }
         .close-sheet:hover { color: white; transform: rotate(90deg) scale(1.1); }
         
-        /* --- GAME SELECTOR --- */
         .game-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .game-card { background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 8px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.6);}
         .game-card.active { border-color: var(--accent-purple); background: rgba(189,0,255,0.15); box-shadow: 0 5px 15px rgba(189,0,255,0.2), inset 0 0 10px rgba(189,0,255,0.1); transform: scale(1.02); }
@@ -237,26 +240,27 @@
         
         .rzp-secure-badge { display: flex; align-items: center; justify-content: center; gap: 6px; color: #888; font-size: 0.75rem; margin-top: 12px; font-family: var(--font-body); font-weight: bold;}
         .rzp-secure-badge i { color: #3395ff; font-size: 1rem; }
+        
+        /* 10 Advanced Security Features Grid */
+        .security-features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.65rem; color: #aaa; margin-top: 20px; text-align: left; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); }
+        .security-features-list div { display: flex; align-items: center; gap: 5px; }
+        .security-features-list i { color: var(--accent-cyan); width: 14px; text-align: center; }
 
-        /* FULL LEDGER MODAL */
         .ledger-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 4000; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; overflow: hidden; }
         .ledger-modal.active { transform: translateX(0); }
         .lm-header { padding: calc(12px + env(safe-area-inset-top)) 15px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); background: rgba(7,3,17,0.95); backdrop-filter: blur(15px); z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.4);}
         .lm-title { font-family: var(--font-head); font-size: 1.1rem; color: white; font-weight: 900; flex: 1; text-align: center; text-transform: uppercase; letter-spacing: 1px;}
         .lm-scroll-area { flex: 1; overflow-y: auto; padding: 12px; }
 
-        /* RECEIPT MODAL */
         #receiptContent { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(0,0,0,0.4);}
         .rcpt-icon { width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
         .rcpt-amt { text-align: center; font-family: var(--font-head); font-size: clamp(1.5rem, 6vw, 2.2rem); font-weight: 900; margin-bottom: 5px; word-break: break-word; text-shadow: 0 0 10px currentColor;}
         .rcpt-title { text-align: center; color: #aaa; font-size: 0.95rem; margin-bottom: 25px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;}
         .rcpt-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; font-weight: bold;}
 
-        /* TXN FAIL/SUCCESS MODALS */
         .txn-fail-icon { font-size: 4rem; color: var(--accent-red); margin-bottom: 15px; text-shadow: 0 0 20px rgba(255,77,77,0.6); animation: shake 0.4s ease; }
         .txn-success-icon { font-size: 4rem; color: var(--accent-green); margin-bottom: 15px; text-shadow: 0 0 20px rgba(0,255,127,0.6); }
 
-        /* UPGRADED CYBER SCANNER LOADER */
         .cyber-scanner-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:0.3s; backdrop-filter:blur(10px);}
         .cyber-scanner-overlay.active { opacity:1; pointer-events:all; }
         
@@ -283,7 +287,6 @@
 
         .app-footer { text-align: center; padding: 20px 20px 100px 20px; color: #555; font-size: 0.75rem; font-family: var(--font-body); letter-spacing: 1px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 15px;}
         
-        /* --- BOTTOM NAVIGATION --- */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: calc(65px + env(safe-area-inset-bottom, 0px)); background: rgba(5, 2, 12, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 2px env(safe-area-inset-bottom, 0px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); transform: translateZ(0);}
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; color: #666; text-decoration: none; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; flex: 1; transition: 0.3s; position: relative; padding: 0 2px; text-align: center;}
         .nav-item span { margin-top: 4px; transition: 0.3s; letter-spacing: -0.3px;}
@@ -315,12 +318,13 @@
     <div class="bg-gradient"></div>
     <canvas id="particles-canvas"></canvas>
 
-    <div id="pdfWrapper" style="position: fixed; left: -9999px; top: 0; width: 800px; background:#070311; z-index: -9999; opacity: 0; pointer-events: none;">
-        <div id="pdfTemplate" style="background:#070311; color:#ffffff; padding:40px; font-family:'Helvetica Neue', Arial, sans-serif; width:800px; box-sizing:border-box;">
+    <div id="pdfWrapper" style="position: fixed; left: 0; top: 0; width: 100%; opacity: 0; display: flex; background:#070311; z-index: -9999; opacity: 0; pointer-events: none; justify-content:center; ">
+        <div id="pdfTemplate" style="background:#070311; color:#ffffff; padding:40px; font-family:'Helvetica Neue', Arial, sans-serif; width:760px; box-sizing:border-box;">
             <div style="text-align:center; border-bottom:2px solid #1a0a3a; padding-bottom:30px; margin-bottom:30px;">
-                <div style="background: linear-gradient(90deg, #bd00ff, #00f2ff); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: inline-block; width: 100%;">
-                    <h1 style="margin:0; font-size: 26px; font-weight: 900; color: #ffffff; text-transform:uppercase; letter-spacing: 2px;">Tournyx Esports</h1>
-                </div>
+                <div style="position: relative; background-color: #1a0a3a; padding: 18px; border-radius: 8px; margin-bottom: 10px; overflow: hidden; width: 100%; display: block;">
+    <div style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(90deg, #bd00ff, #00f2ff); z-index: 1;"></div>
+    <h1 style="position: relative; z-index: 2; margin: 0; font-size: 26px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Tournyx Esports</h1>
+</div>
                 <p style="color:#a0a0b0; margin:8px 0 0 0; font-size:13px; letter-spacing: 1px; text-transform: uppercase;">Official Transaction Ledger</p>
             </div>
             
@@ -413,21 +417,54 @@
             </div>
 
         <div class="quick-actions animate-section delay-2">
-            <div class="action-btn btn-add" onclick="if(isGuest) return showLoginModal(); openAddMoney(); triggerHaptic();">
+            <div id="primaryActionBtn" class="action-btn btn-add" onclick="if(isGuest) return showLoginModal(); openAddMoney(); triggerHaptic();">
                 <span class="tx-icon" style="font-size: 1.8rem; filter:drop-shadow(0 0 10px var(--accent-purple));">TX</span>
-                <span>Buy Pass</span>
+                <span id="primaryActionText">Buy Pass</span>
             </div>
             <a href="redeem.html" class="action-btn btn-redeem" onclick="return handleProtectedAction(event, 'redeem.html')">
                 <i class="fa-solid fa-qrcode" style="font-size: 1.8rem; filter:drop-shadow(0 0 10px var(--accent-cyan));"></i>
                 <span>Redeem</span>
             </a>
+            <div id="creditActionBtn" class="action-btn btn-add" style="display:none;" onclick="openCreditsModal(); triggerHaptic();">
+                <i class="fa-solid fa-coins" style="font-size:1.8rem;"> </i>
+                <span>Add Credits</span>
+            </div>
         </div>
 
+        <div class="txn-summary-card animate-section delay-3">
+
+            <div class="summary-box">
+                <div class="summary-label">Money In</div>
+                <div class="summary-value" id="moneyInTotal">0</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">Money Out</div>
+                <div class="summary-value" id="moneyOutTotal">0</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">This Week</div>
+                <div class="summary-value" id="weeklyTotal">0</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">This Month</div>
+                <div class="summary-value" id="monthlyTotal">0</div>
+            </div>
+
+        </div>
+        
         <div class="section-title animate-section delay-4">
             Transaction Ledger 
             <div>
                 <i class="fa-solid fa-download header-action-icon" onclick="if(isGuest) return showLoginModal(); downloadAllTxnsPDF(); triggerHaptic();" style="color:var(--accent-cyan); margin-right:12px; font-size:1.1rem; cursor:pointer; transition:0.3s;"></i>
-                <span onclick="if(isGuest) return showLoginModal(); openAllTxns(); triggerHaptic();">View All <i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-left:3px;"></i></span>
+                <span 
+                    onclick="if(isGuest) return showLoginModal(); openAllTxns(); triggerHaptic();"
+                    style="white-space: nowrap;"
+                >
+                    View All <i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-left:3px;"></i>
+                </span>
             </div>
         </div>
         
@@ -490,6 +527,19 @@
                 SECURE CHECKOUT <i class="fa-solid fa-lock"></i>
             </button>
             <div class="rzp-secure-badge"><i class="fa-solid fa-shield-check"></i> 100% Secure Payments by Razorpay</div>
+            
+            <div class="security-features-list">
+                <div><i class="fa-solid fa-shield"></i> 256-bit SSL Encryption</div>
+                <div><i class="fa-solid fa-check-double"></i> PCI DSS Compliant</div>
+                <div><i class="fa-solid fa-eye"></i> Fraud Detection Active</div>
+                <div><i class="fa-solid fa-clock-rotate-left"></i> Real-time Monitoring</div>
+                <div><i class="fa-solid fa-key"></i> Secure Tokenization</div>
+                <div><i class="fa-solid fa-user-shield"></i> Anti-Phishing Tech</div>
+                <div><i class="fa-solid fa-fingerprint"></i> Device Fingerprinting</div>
+                <div><i class="fa-solid fa-robot"></i> Advanced Bot Protection</div>
+                <div><i class="fa-solid fa-calculator"></i> Dynamic Fee Calculation</div>
+                <div><i class="fa-solid fa-money-bill-transfer"></i> Instant Refund Guarantee</div>
+            </div>
         </div>
     </div>
 
@@ -550,6 +600,46 @@
         </div>
     </div>
 
+    <div class="bottom-sheet-overlay" id="creditsOverlay">
+        <div class="bottom-sheet">
+            <div class="sheet-header">
+                <div class="sheet-title">Credits Wallet</div>
+                <i class="fa-solid fa-xmark close-sheet" onclick="closeCreditsModal()"></i>
+            </div>
+
+            <div style="text-align:center; padding:10px 30px;">
+                <div style="font-size:2rem; font-weight:bold; color:var(--accent-cyan);">
+                    <span id="creditsCount">0</span>
+                </div>
+                <div style="font-size:0.85rem; color:#aaa; margin-bottom: 20px;">
+                    Available Organizer Credits
+                </div>
+            </div>
+
+            <div class="amt-input-wrapper">
+                <div class="amt-currency">₹</div>
+                <input type="number" id="addCreditInput" class="amt-input" placeholder="Amount (Max 20,000)">
+            </div>
+            
+            <button class="pay-btn" onclick="triggerCreditRazorpay(); triggerHaptic();">
+                SECURE CHECKOUT <i class="fa-solid fa-lock"></i>
+            </button>
+            
+            <div class="security-features-list">
+                <div><i class="fa-solid fa-shield"></i> 256-bit SSL Encryption</div>
+                <div><i class="fa-solid fa-check-double"></i> PCI DSS Compliant</div>
+                <div><i class="fa-solid fa-eye"></i> Fraud Detection Active</div>
+                <div><i class="fa-solid fa-clock-rotate-left"></i> Real-time Monitoring</div>
+                <div><i class="fa-solid fa-key"></i> Secure Tokenization</div>
+                <div><i class="fa-solid fa-user-shield"></i> Anti-Phishing Tech</div>
+                <div><i class="fa-solid fa-fingerprint"></i> Device Fingerprinting</div>
+                <div><i class="fa-solid fa-robot"></i> Advanced Bot Protection</div>
+                <div><i class="fa-solid fa-calculator"></i> Dynamic Fee Calculation</div>
+                <div><i class="fa-solid fa-money-bill-transfer"></i> Instant Refund Guarantee</div>
+            </div>
+        </div>
+    </div>
+
     <div class="cyber-scanner-overlay" id="cyberScanner">
         <div class="cyber-loader-container">
             <div class="cyber-ring-outer"></div>
@@ -594,7 +684,7 @@
         // ==========================================
         // 🔑 YOUR RAZORPAY KEY (PASTE IT HERE!)
         // ==========================================
-        const RAZORPAY_KEY = "rzp_live_SZepeOt5YOqG07"; 
+           const RAZORPAY_KEY = "rzp_live_SZepeOt5YOqG07";
         // ==========================================
 
         const API_URL = 'https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec';
@@ -606,7 +696,6 @@
         let activeReceiptId = "";
         let activeReceiptData = null;
         
-        // Cache DOM updates to prevent blinking
         let lastTxnHtml = "";
         let lastLedgerHtml = "";
         let lastInvHtml = "";
@@ -615,7 +704,61 @@
         const TICKET_OFFERS = [1, 5, 10, 20]; 
         let selectedGameName = "Free Fire"; 
 
-        // --- SECURE POST FETCHER LOGIC ---
+        // ==========================================
+        // 🚀 SMART MODAL & HARDWARE BACK BUTTON LOGIC
+        // ==========================================
+        (function() {
+            let activeModals = 0;
+            
+            // 1. Observer dynamically syncs Modals with Browser History
+            const modalObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        const target = mutation.target;
+                        const isActive = target.classList.contains('active');
+                        const wasActive = mutation.oldValue && mutation.oldValue.includes('active');
+
+                        if (isActive && !wasActive) {
+                            // Modal Opened -> Push to phone history
+                            activeModals++;
+                            window.history.pushState({ modalId: target.id }, '', '');
+                        } else if (!isActive && wasActive) {
+                            // Modal Closed (via X button) -> Pop from history
+                            activeModals--;
+                            if (activeModals < 0) activeModals = 0;
+                            if (window.history.state && window.history.state.modalId === target.id) {
+                                window.history.back();
+                            }
+                        }
+                    }
+                });
+            });
+
+            document.addEventListener("DOMContentLoaded", () => {
+                // Attach observer to all popups
+                document.querySelectorAll('.bottom-sheet-overlay, .ledger-modal').forEach(el => {
+                    modalObserver.observe(el, { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
+                });
+                
+                // 2. Desktop/Touch "Tap Outside" to Close
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('bottom-sheet-overlay')) {
+                        e.target.classList.remove('active'); 
+                    }
+                });
+            });
+
+            // 3. Android/iOS Hardware Back Button Listener
+            window.addEventListener('popstate', function(e) {
+                if (activeModals > 0) {
+                    document.querySelectorAll('.bottom-sheet-overlay.active, .ledger-modal.active').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                }
+            });
+        })();
+        // ==========================================
+
         async function secureFetch(payload) {
             try {
                 const response = await fetch(API_URL, {
@@ -630,7 +773,6 @@
             }
         }
 
-        // Perfect IST Date & Time Formatter
         function getISTDateTime(dateInput) {
             let d = (dateInput && String(dateInput).trim() !== "") ? new Date(dateInput) : new Date();
             if (isNaN(d.getTime())) d = new Date(); 
@@ -638,19 +780,17 @@
             return d.toLocaleString('en-IN', options).toUpperCase();
         }
 
-        // Failsafe normalizer (UPGRADED SMART DETECTION)
         function normalizeTxn(t) {
             let norm = { ...t };
             
-            // 1. Force Amount to be a clean number (strips out any accidental text)
             let rawAmt = String(t.amount || t.type || "0").replace(/[^0-9.-]+/g, "");
             norm.amount = parseFloat(rawAmt) || 0;
             
-            // 2. Smart Type Detection (Aggressively scan all fields for the word "Credit")
             let rawType = String(t.type || "").toLowerCase();
             let rawTitle = String(t.title || "").toLowerCase();
             let rawAmountStr = String(t.amount || "").toLowerCase();
             let rawStatus = String(t.status || "").toLowerCase();
+            let rawCat = String(t.category || "").toLowerCase();
             
             if (rawType.includes("credit") || rawTitle.includes("credit") || rawAmountStr.includes("credit") || rawStatus.includes("credit")) {
                 norm.type = "Credit";
@@ -658,12 +798,17 @@
                 norm.type = "Debit";
             }
             
-            // 3. Fix Title if it accidentally just says "Credit"
+            // SMART REFERRAL BONUS IDENTIFICATION
+            if (rawTitle.includes("referral") || rawCat.includes("referral")) {
+                norm.title = "Referral Bonus";
+                norm.category = "Reward Points";
+                norm.currency = "POINTS";
+            }
+
             if (rawTitle === "credit" || rawTitle === "debit") {
                 norm.title = "Wallet Deposit"; 
             }
             
-            // 4. Clean up Status (If it says "Approved" or is scrambled, map it to "Success")
             if (rawStatus === "pending" || rawType === "pending" || rawTitle.includes("pending")) {
                 norm.status = "Pending";
             } else if (rawStatus === "failed" || rawType === "failed") {
@@ -672,7 +817,6 @@
                 norm.status = "Success"; 
             }
 
-            // 5. Restore Date if it got pushed to a different column
             if (!norm.date || norm.date === "") {
                 norm.date = t.status && String(t.status).includes("202") ? t.status : new Date().toISOString();
             }
@@ -785,17 +929,27 @@
             
             let isOrg = currentUser.role === 'organizer';
             let isVip = document.documentElement.classList.contains('theme-vip');
+
+            const primaryActionText = document.getElementById('primaryActionText');
             
             if (isOrg) {
                 document.getElementById('displayTickets').innerText = "₹" + formatNum(totalRupees);
                 document.getElementById('mainBalanceTxIcon').style.display = 'none';
                 document.getElementById('balanceLabelText').innerHTML = 'Total Wallet Earnings <i class="fa-solid fa-eye" id="eyeIcon" onclick="if(isGuest) return showLoginModal(); togglePrivacy(); triggerHaptic();" style="margin-left:8px; cursor: pointer; color:#888; font-size:1.05rem; transition:0.3s;"></i>';
                 document.getElementById('pdfUserBal').innerText = "₹" + formatNum(totalRupees);
+                document.getElementById('creditActionBtn').style.display = 'flex';
+                if (primaryActionText) primaryActionText.innerText = "Buy Pass";
+
             } else {
+                let quickActions = document.querySelector('.quick-actions');
+                if (quickActions) quickActions.style.display = 'grid';
+
                 animateValue(document.getElementById('displayTickets'), 0, totalTickets, 1000);
                 document.getElementById('mainBalanceTxIcon').style.display = 'inline-flex';
                 document.getElementById('balanceLabelText').innerHTML = 'Total Available Pass <i class="fa-solid fa-eye" id="eyeIcon" onclick="if(isGuest) return showLoginModal(); togglePrivacy(); triggerHaptic();" style="margin-left:8px; cursor: pointer; color:#888; font-size:1.05rem; transition:0.3s;"></i>';
                 document.getElementById('pdfUserBal').innerText = totalTickets + " Passes";
+                document.getElementById('creditActionBtn').style.display = 'none';
+                if (primaryActionText) primaryActionText.innerText = "Buy Pass";
             }
             
             animateValue(document.getElementById('displayPoints'), 0, pts, 1000);
@@ -857,6 +1011,8 @@
         }
 
         function renderInventory(baseTickets, goldenTickets) {
+
+            // Organizer inventory has been unhidden intentionally for seamless pass tracking
             const inv = document.getElementById('ticketInventoryList');
             let totalTickets = baseTickets + goldenTickets;
 
@@ -907,8 +1063,14 @@
                 let gameColor = "white";
                 
                 if (prefix === 'UNI') {
-                    logoHtml = `<div class="tkt-logo" style="background: linear-gradient(135deg, #FFD700, #FF8C00); display:flex; align-items:center; justify-content:center; border: 2px solid #fff; box-shadow: 0 0 15px rgba(255,215,0,0.6);"><span class="tx-icon" style="color:#000; -webkit-text-fill-color:#000; filter:none; font-size:1.5rem; margin:0;">TX</span></div>`;
-                    stampColor = "rgba(255,215,0,0.3)";
+                    logoHtml = `
+                        <img
+                            src="https://tournyx.in/favicon.png"
+                            class="tkt-logo"
+                            style="background:linear-gradient(135deg,#FFD700,#FF8C00); border:2px solid #FFD700; box-shadow:0 0 20px rgba(255,215,0,0.8); padding:4px;"
+                        >
+                    `;
+                    stampColor = "rgba(255, 215, 0, 0.5)";
                     gameColor = "#FFD700";
                 }
 
@@ -917,7 +1079,7 @@
                         <div class="tkt-tournyx-stamp" style="color:${stampColor};">${prefix === 'UNI' ? 'TX VIP SECURE' : 'TOURNYX SECURE'}</div>
                         ${logoHtml}
                         <div class="tkt-details">
-                            <div class="tkt-game" style="color:${gameColor}; ${prefix === 'UNI' ? 'text-shadow: 0 0 10px rgba(255,215,0,0.5);' : ''}">${game} PASS</div>
+                            <div class="tkt-game ${prefix === 'UNI' ? 'uni-title' : ''}" style="color:${gameColor}">${game} PASS</div>
                             <div class="tkt-id">ID: ${tid}</div>
                         </div>
                         <div class="tkt-count">x${count}</div>
@@ -935,34 +1097,17 @@
             }
         }
 
-        // ==========================================
-        // 💳 RAZORPAY INTEGRATION LOGIC (UPGRADED DYNAMIC FEE)
-        // ==========================================
-
         function renderQuickAmts() {
             const grid = document.getElementById('quickAmtGrid');
             grid.innerHTML = "";
             TICKET_OFFERS.forEach(amt => { grid.innerHTML += `<div class="quick-amt-btn" onclick="setAmt(${amt}); triggerHaptic();">+${amt} Pass</div>`; });
         }
 
-        function openAddMoney() { 
-            document.getElementById('addMoneyOverlay').classList.add('active'); 
-        }
-        
-        function closeAddMoney() { 
-            document.getElementById('addMoneyOverlay').classList.remove('active'); 
-            document.getElementById('addAmtInput').value = ""; 
-            updateRazorpayAmount();
-        }
+        function openAddMoney() { document.getElementById('addMoneyOverlay').classList.add('active'); }
+        function closeAddMoney() { document.getElementById('addMoneyOverlay').classList.remove('active'); document.getElementById('addAmtInput').value = ""; updateRazorpayAmount(); }
+        function closeSuccessModal() { document.getElementById('txnSuccessOverlay').classList.remove('active'); }
 
-        function closeSuccessModal() {
-            document.getElementById('txnSuccessOverlay').classList.remove('active');
-        }
-
-        function setAmt(val) { 
-            document.getElementById('addAmtInput').value = val; 
-            updateRazorpayAmount(); 
-        }
+        function setAmt(val) { document.getElementById('addAmtInput').value = val; updateRazorpayAmount(); }
         
         function updateRazorpayAmount() {
             let ticketCount = parseInt(document.getElementById('addAmtInput').value);
@@ -977,34 +1122,20 @@
         function triggerRazorpay() {
             let ticketCount = parseInt(document.getElementById('addAmtInput').value);
             if(isNaN(ticketCount) || ticketCount < 1) { 
-                triggerError('addAmtInput'); 
-                showToast("Please enter at least 1 Pass to buy.", true); 
-                return; 
+                triggerError('addAmtInput'); showToast("Please enter at least 1 Pass to buy.", true); return; 
             }
             
             let baseAmt = ticketCount * TICKET_PRICE;
-            
-            // --- ADVANCED BACKGROUND DYNAMIC PLATFORM FEE ALGORITHM ---
             let platformFee = 0;
-            if (baseAmt === 10) {
-                platformFee = 1.56;
-            } else if (baseAmt <= 200) {
-                platformFee = 1.20 + (ticketCount * 0.50);
-            } else if (baseAmt <= 500) {
-                platformFee = 2.36 + (ticketCount * 0.50);
-            } else if (baseAmt <= 1000) {
-                platformFee = 3.79 + (ticketCount * 0.50);
-            } else {
-                platformFee = 5.85 + (ticketCount * 0.50);
-            }
+            if (baseAmt === 10) platformFee = 1.56;
+            else if (baseAmt <= 200) platformFee = 1.20 + (ticketCount * 0.50);
+            else if (baseAmt <= 500) platformFee = 2.36 + (ticketCount * 0.50);
+            else if (baseAmt <= 1000) platformFee = 3.79 + (ticketCount * 0.50);
+            else platformFee = 5.85 + (ticketCount * 0.50);
 
-            // Lock limit to exactly 50 Rupees maximum
             platformFee = Math.min(platformFee, 50);
-
-            // Total amount sent to Razorpay includes the hidden platform fee
             let totalAmtToPay = baseAmt + platformFee;
             
-            // --- ENVIRONMENT SECURITY CHECK ---
             let isMedianApp = (typeof median !== 'undefined') || (navigator.userAgent.toLowerCase().indexOf('median') > -1);
             let isSecureEnv = window.isSecureContext || isMedianApp || window.location.hostname === 'localhost';
             
@@ -1012,43 +1143,81 @@
 
             var options = {
                 "key": RAZORPAY_KEY,
-                "amount": Math.round(totalAmtToPay * 100), // Razorpay amount in paise
+                "amount": Math.round(totalAmtToPay * 100),
                 "currency": "INR",
                 "name": "Tournyx Esports",
                 "description": ticketCount + " " + selectedGameName + " Pass(es)",
                 "image": "https://tournyx.in/favicon.png",
                 "handler": function (response) {
-                    // SECURE PAYLOAD: Pass ONLY the `baseAmt` to the backend so user gets exactly what they requested, absorbing the fee.
                     processSuccessfulPayment(response.razorpay_payment_id, ticketCount, baseAmt);
                 },
-                "prefill": {
-                    "name": currentUser.username,
-                    "email": currentUser.email
-                },
-                "theme": {
-                    "color": document.documentElement.classList.contains('theme-vip') ? "#FFD700" : "#bd00ff"
-                },
-                "modal": {
-                    "ondismiss": function(){
-                        showTransactionFailed("You cancelled the payment process.");
-                    }
-                }
+                "prefill": { "name": currentUser.username, "email": currentUser.email },
+                "theme": { "color": document.documentElement.classList.contains('theme-vip') ? "#FFD700" : "#bd00ff" },
+                "modal": { "ondismiss": function(){ showTransactionFailed("You cancelled the payment process."); } }
             };
             
             try {
-                if (!isSecureEnv) {
-                    showToast("Unsecure browser detected. Payment might fail.", true);
-                }
+                if (!isSecureEnv) showToast("Unsecure browser detected. Payment might fail.", true);
                 var rzp1 = new Razorpay(options);
-                
-                rzp1.on('payment.failed', function (response){
-                    showTransactionFailed(response.error.description);
-                });
-                
+                rzp1.on('payment.failed', function (response){ showTransactionFailed(response.error.description); });
                 rzp1.open();
             } catch(e) {
-                // If Razorpay fails to load (dev mode), simulate success
                 processSuccessfulPayment("sim_txn_" + Math.floor(Math.random()*100000), ticketCount, baseAmt);
+            }
+        }
+
+        // --- ORGANIZER CREDIT ADD WITH 24HR LIMIT ---
+        function checkCreditLimit(amount) {
+            let today = new Date().toDateString();
+            let usageStr = localStorage.getItem('tx_credit_usage');
+            let usage = usageStr ? JSON.parse(usageStr) : { date: today, amount: 0 };
+            
+            if (usage.date !== today) { usage = { date: today, amount: 0 }; }
+            
+            if (usage.amount + amount > 20000) {
+                showToast(`Daily limit exceeded! You can add up to ₹${20000 - usage.amount} more today.`, true);
+                return false;
+            }
+            return { valid: true, usage: usage };
+        }
+
+        function triggerCreditRazorpay() {
+            let amount = parseInt(document.getElementById('addCreditInput').value);
+            if(isNaN(amount) || amount < 1) { 
+                triggerError('addCreditInput'); showToast("Please enter a valid amount to add.", true); return; 
+            }
+
+            let check = checkCreditLimit(amount);
+            if (!check.valid) return;
+
+            let totalAmtToPay = amount; 
+            closeCreditsModal();
+
+            var options = {
+                "key": RAZORPAY_KEY,
+                "amount": Math.round(totalAmtToPay * 100),
+                "currency": "INR",
+                "name": "Tournyx Organizer",
+                "description": "Add " + amount + " Credits",
+                "image": "https://tournyx.in/favicon.png",
+                "handler": function (response) {
+                    check.usage.amount += amount;
+                    localStorage.setItem('tx_credit_usage', JSON.stringify(check.usage));
+                    processSuccessfulPayment(response.razorpay_payment_id, amount, amount, true);
+                },
+                "prefill": { "name": currentUser.username, "email": currentUser.email },
+                "theme": { "color": "#00f2ff" },
+                "modal": { "ondismiss": function(){ showTransactionFailed("You cancelled the payment process."); } }
+            };
+            
+            try {
+                var rzpCredit = new Razorpay(options);
+                rzpCredit.on('payment.failed', function (response){ showTransactionFailed(response.error.description); });
+                rzpCredit.open();
+            } catch(e) {
+                check.usage.amount += amount;
+                localStorage.setItem('tx_credit_usage', JSON.stringify(check.usage));
+                processSuccessfulPayment("sim_cred_" + Math.floor(Math.random()*100000), amount, amount, true);
             }
         }
 
@@ -1059,8 +1228,7 @@
             triggerHaptic();
         }
 
-        function processSuccessfulPayment(paymentId, count, baseAmount) {
-            // Show Cyber Scanner
+        function processSuccessfulPayment(paymentId, count, baseAmount, isCreditAdd = false) {
             let scanner = document.getElementById('cyberScanner'); 
             let sText = document.getElementById('scannerText'); 
             let sDesc = document.getElementById('scannerDesc'); 
@@ -1069,13 +1237,12 @@
             sText.innerText = "VERIFYING PAYMENT SECURELY..."; 
             sDesc.innerText = "Encrypting transaction block with Razorpay..."; 
             
-            // SECURE POST CALL
             let payload = { 
                 action: "razorpay_success", 
                 email: currentUser.email, 
                 amount: baseAmount, 
                 payment_id: paymentId, 
-                gameName: selectedGameName 
+                gameName: isCreditAdd ? "Credits" : selectedGameName 
             };
 
             secureFetch(payload)
@@ -1083,7 +1250,7 @@
                 scanner.classList.remove('active');
                 if(data.status === "success") {
                     document.getElementById('txnSuccessOverlay').classList.add('active');
-                    syncLiveTransactions(); // Force immediate sync to update UI
+                    syncLiveTransactions(); 
                 } else {
                     showTransactionFailed("Server Error: " + data.data);
                 }
@@ -1093,12 +1260,10 @@
                 showTransactionFailed("Network Error. If money was deducted, it will be refunded or credited shortly.");
             });
         }
-        // ==========================================
 
 
         async function syncLiveTransactions() {
             try {
-                // SECURE POST CALLS INSTEAD OF GET
                 let [userDataObj, txnDataObj] = await Promise.all([
                     secureFetch({ action: 'sync_user', email: currentUser.email }),
                     secureFetch({ action: 'get_transactions', email: currentUser.email })
@@ -1125,7 +1290,10 @@
                 }
 
                 if(txnDataObj.status === 'success' && txnDataObj.data && Array.isArray(txnDataObj.data)) {
-                    transactionsData = txnDataObj.data;
+                    transactionsData = txnDataObj.data.filter(t => {const title = String(t.title || "").toLowerCase();
+                    return (!title.includes("withdraw") && !title.includes("withdrawl"));});
+                
+                    updateTransactionSummary();
                     renderTransactions();
                     if(document.getElementById('ledgerModal').classList.contains('active')) {
                         renderLedger();
@@ -1153,11 +1321,59 @@
             }
         }
 
-        function openAllTxns() {
-            document.getElementById('ledgerModal').classList.add('active');
-            renderLedger();
+        function updateTransactionSummary() {
+            if (!Array.isArray(transactionsData)) return;
+
+            let moneyIn = 0; let moneyOut = 0; let weekly = 0; let monthly = 0;
+            let now = new Date();
+
+            transactionsData.forEach(rawT => {
+                let t = normalizeTxn(rawT);
+                if (String(t.status).toLowerCase() === "failed") return;
+
+                let amount = Number(t.amount) || 0;
+                let txnDate = new Date(t.date);
+                let diffDays =  (now - txnDate) / (1000 * 60 * 60 * 24);
+                let value = currentUser.role === 'organizer' ? amount : Math.floor(amount / TICKET_PRICE);
+
+                if (String(t.type).toLowerCase() === "credit") moneyIn += value;
+                else moneyOut += value;
+
+                if (diffDays <= 7) weekly += value;
+
+                if (txnDate.getMonth() === now.getMonth() && txnDate.getFullYear() === now.getFullYear()) {
+                    monthly += value;
+                }
+            });
+
+            if (currentUser.role === 'organizer') {
+                document.getElementById('moneyInTotal').innerText = `₹${formatNum(moneyIn)}`;
+                document.getElementById('moneyOutTotal').innerText = `₹${formatNum(moneyOut)}`;
+                document.getElementById('weeklyTotal').innerText = `₹${formatNum(weekly)}`;
+                document.getElementById('monthlyTotal').innerText = `₹${formatNum(monthly)}`;
+            } else {
+                document.getElementById('moneyInTotal').innerText = `${moneyIn} Pass`;
+                document.getElementById('moneyOutTotal').innerText = `${moneyOut} Pass`;
+                document.getElementById('weeklyTotal').innerText = `${weekly} Pass`;
+                document.getElementById('monthlyTotal').innerText = `${monthly} Pass`;
+            }
         }
-        
+
+        function openCreditsModal() {
+            let raw = String(currentUser.earnings || currentUser.rupees || "0");
+            let credits = 0;
+            if (raw.includes('+')) {
+                let parts = raw.split('+');
+                credits = (parseFloat(parts[0]) || 0) + (parseFloat(parts[1]) || 0);
+            } else {
+                credits = parseFloat(raw) || 0;
+            }
+            document.getElementById('creditsCount').innerText = credits;
+            document.getElementById('creditsOverlay').classList.add('active');
+        }
+
+        function closeCreditsModal() { document.getElementById('creditsOverlay').classList.remove('active'); document.getElementById('addCreditInput').value = ""; }
+        function openAllTxns() { document.getElementById('ledgerModal').classList.add('active'); renderLedger(); }
         function closeAllTxns() { document.getElementById('ledgerModal').classList.remove('active'); }
 
         function renderLedger() {
@@ -1184,6 +1400,7 @@
             else if(cat === "Prize Won") { catIcon = "fa-trophy"; iconClass = "icon-credit"; mainIcon = "fa-trophy"; }
             else if(cat === "Refund") { catIcon = "fa-rotate-left"; iconClass = "icon-credit"; mainIcon = "fa-rotate-left"; }
             else if(cat === "Donation") { catIcon = "fa-heart"; iconClass = "icon-debit"; mainIcon = "fa-heart"; }
+            else if(cat === "Reward Points") { catIcon = "fa-coins"; iconClass = "icon-credit"; mainIcon = "fa-star"; } // Specific to Referral/Points
             
             if(isPending) { iconClass = "icon-debit"; mainIcon = "fa-clock"; }
             if(isFailed) { mainIcon = "fa-xmark"; iconClass = "icon-debit"; }
@@ -1193,12 +1410,18 @@
             let inOutLabel = isCredit ? `<div class="in-out-label in-label">PASSES IN</div>` : `<div class="in-out-label out-label">PASSES OUT</div>`;
             
             let displayDate = getISTDateTime(t.date);
-            
             let ticketVal = Math.floor(t.amount / TICKET_PRICE) || 0;
             if(ticketVal === 0 && t.amount > 0 && (String(t.title).includes("Pass") || String(t.title).includes("Ticket"))) ticketVal = t.amount;
 
-            let amtHTML = t.amount > 0 ? `${isCredit?'+':'-'} ${ticketVal} <span class="tx-icon" style="font-size:0.8rem; margin-left:3px; vertical-align:baseline; filter:none; -webkit-text-fill-color:currentColor;">TX</span>` : `---`;
-            if (currentUser.role === 'organizer') {
+            // SMART REFERRAL/POINTS OVERRIDE
+            let isPoints = String(t.currency || "").toUpperCase() === "POINTS" || cat === "Reward Points";
+            
+            let amtHTML = t.amount > 0 ? `${isCredit?'+':'-'} ${ticketVal} <span class="tx-icon" style="font-size:0.7rem; margin-left:2px; vertical-align:baseline; filter:none; -webkit-text-fill-color:currentColor;">TX</span>` : `---`;
+            
+            if (isPoints) {
+                inOutLabel = isCredit ? `<div class="in-out-label in-label">POINTS IN</div>` : `<div class="in-out-label out-label">POINTS OUT</div>`;
+                amtHTML = t.amount > 0 ? `${isCredit?'+':'-'} ${t.amount} PTS` : `---`;
+            } else if (currentUser.role === 'organizer') {
                 inOutLabel = isCredit ? `<div class="in-out-label in-label">EARNINGS IN</div>` : `<div class="in-out-label out-label">WITHDRAWAL</div>`;
                 amtHTML = t.amount > 0 ? `${isCredit?'+':'-'} ₹${t.amount}` : `---`;
             }
@@ -1239,8 +1462,12 @@
             iconEl.innerHTML = `<i class="fa-solid ${mainIcon}"></i>`;
             iconEl.className = `rcpt-icon ${isPending ? 'icon-debit' : (isCredit ? 'icon-credit' : 'icon-debit')}`;
             
+            let isPoints = String(t.currency || "").toUpperCase() === "POINTS" || String(t.category || "") === "Reward Points";
+            
             let amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ${ticketVal} Pass` : `Review Pending`;
-            if (currentUser.role === 'organizer') {
+            if (isPoints) {
+                amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ${t.amount} PTS` : `Review Pending`;
+            } else if (currentUser.role === 'organizer') {
                 amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ₹${t.amount}` : `Review Pending`;
             }
 
@@ -1265,12 +1492,12 @@
             document.getElementById('pdfDynamicContentArea').innerHTML = `
                 <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px; margin-top: 15px;">
                     <tr style="border-bottom:1px solid #1a0a3a;">
-                        <td style="padding:15px 0; color:#888;">Pass ID</td>
+                        <td style="padding:15px 0; color:#888;">Transaction ID</td>
                         <td style="padding:15px 0; text-align:right; font-weight:bold; color:#ffffff;">${activeReceiptId}</td>
                     </tr>
                     <tr style="border-bottom:1px solid #1a0a3a;">
-                        <td style="padding:15px 0; color:#888;">Game Category</td>
-                        <td style="padding:15px 0; text-align:right; font-weight:bold; color:#00f2ff;">${selectedGameName || "Esports"}</td>
+                        <td style="padding:15px 0; color:#888;">Type / Category</td>
+                        <td style="padding:15px 0; text-align:right; font-weight:bold; color:#00f2ff;">${cat}</td>
                     </tr>
                     <tr style="border-bottom:1px solid #1a0a3a;">
                         <td style="padding:15px 0; color:#888;">Status</td>
@@ -1287,7 +1514,7 @@
         }
         
         function closeReceipt() { document.getElementById('receiptOverlay').classList.remove('active'); }
-        function copyTxnId() { navigator.clipboard.writeText(activeReceiptId); showToast("Pass ID Copied!"); }
+        function copyTxnId() { navigator.clipboard.writeText(activeReceiptId); showToast("Transaction ID Copied!"); }
 
         function contactWhatsAppSupport() {
             let id = activeReceiptId;
@@ -1295,28 +1522,30 @@
             let amt = document.getElementById('rcptAmt').innerText;
             let status = document.getElementById('rcptStatusVal').innerText.replace(/[^a-zA-Z]/g, '').trim();
             
-            let msg = `Hello Tournyx Support,\nI need help with my ticket.\n\n*Transaction ID:* ${id}\n*Details:* ${title}\n*Amount:* ${amt}\n*Status:* ${status}\n\nPlease check this.`;
+            let msg = `Hello Tournyx Support,\nI need help with my transaction.\n\n*Transaction ID:* ${id}\n*Details:* ${title}\n*Amount:* ${amt}\n*Status:* ${status}\n\nPlease check this.`;
             window.open(`https://wa.me/918608159825?text=${encodeURIComponent(msg)}`, '_blank');
         }
         
-        // --- PERFECTED PDF GENERATOR ---
+        // --- PERFECTED PDF GENERATOR FIX (NO OVERFLOW) ---
         function downloadReceiptPDF() {
             triggerHaptic();
             showToast("Downloading Secure Pass PDF...");
             let wrapper = document.getElementById('pdfWrapper');
-            // Bring wrapper into view safely (opacity 0 ensures it's invisible but renderable)
             wrapper.style.left = '0';
             wrapper.style.zIndex = '-9999';
             
             setTimeout(() => {
+                document.getElementById('pdfTemplate').scrollLeft = 0;
+                window.scrollTo(0, 0);
+
                 html2pdf().set({ 
-                    margin: [0.5, 0.5, 0.5, 0.5], 
+                    margin: [0.3, 0.3, 0.3, 0.3], 
                     filename: `Tournyx_Receipt_${activeReceiptId}.pdf`, 
-                    image: { type: 'jpeg', quality: 1 }, 
+                    image: { type: 'jpeg', quality: 0.98 }, 
                     html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#070311', windowWidth: 800 }, 
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                    pagebreak: { mode: ['css', 'legacy'] } 
                 }).from(document.getElementById('pdfTemplate')).save().then(() => {
-                    // Hide again
                     wrapper.style.left = '-9999px';
                 });
             }, 300);
@@ -1352,13 +1581,18 @@
                 let ticketVal = Math.floor(t.amount / TICKET_PRICE) || 0;
                 if(ticketVal === 0 && t.amount > 0 && (String(t.title).includes("Pass") || String(t.title).includes("Ticket"))) ticketVal = t.amount;
                 
+                let isPoints = String(t.currency || "").toUpperCase() === "POINTS" || String(t.category || "") === "Reward Points";
+                
                 let amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ${ticketVal} Pass` : `0`;
-                if (currentUser.role === 'organizer') {
+                if (isPoints) {
+                    amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ${t.amount} PTS` : `0`;
+                } else if (currentUser.role === 'organizer') {
                     amtDisplay = t.amount > 0 ? `${isCredit?'+':'-'} ₹${t.amount}` : `0`;
                 }
 
+                // Added page-break-inside: avoid; to prevent clipping across pages
                 tableHTML += `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); page-break-inside: avoid;">
                         <td style="padding:15px 12px; color:#aaa;">${getISTDateTime(t.date)}</td>
                         <td style="padding:15px 12px; font-family:monospace; color:#00f2ff;">${t.id || "SYS_TXN"}</td>
                         <td style="padding:15px 12px; color:#fff; font-weight: bold;">${t.title}</td>
@@ -1375,11 +1609,12 @@
             document.getElementById('pdfDynamicContentArea').innerHTML = tableHTML;
             
             const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5],
+                margin: [0.3, 0.3, 0.3, 0.3],
                 filename: `Tournyx_Tickets_Ledger_${currentUser.username.replace(/\s+/g, '_')}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
+                image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#070311', windowWidth: 800 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
             };
             
             let wrapper = document.getElementById('pdfWrapper');
@@ -1387,28 +1622,15 @@
             wrapper.style.zIndex = '-9999';
             
             setTimeout(() => {
+                document.getElementById('pdfTemplate').scrollLeft = 0;
+                window.scrollTo(0, 0);
+
                 html2pdf().set(opt).from(document.getElementById('pdfTemplate')).save().then(() => {
                     wrapper.style.left = '-9999px';
                 });
             }, 300);
         }
     </script>
-
-    <div id="nativeAppPrompt" style="display: none; position: fixed; top: calc(15px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(10, 5, 20, 0.95); border: 1px solid var(--accent-cyan); border-radius: 16px; padding: 10px 15px; z-index: 9999; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(0, 242, 255, 0.2); align-items: center; justify-content: space-between; animation: slideDownAppPrompt 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
-            <i class="fa-solid fa-xmark" style="color: #888; font-size: 1.2rem; cursor: pointer; padding: 5px 10px 5px 0; transition: 0.3s;" onclick="document.getElementById('nativeAppPrompt').style.display='none'" onmouseover="this.style.color='white'"></i>
-            
-            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: pointer;" onclick="window.location.href='download.html'">
-                <img src="https://tournyx.in/favicon.png" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--accent-purple); box-shadow: 0 0 10px rgba(189,0,255,0.4);">
-                <div style="flex: 1; min-width: 0;">
-                    <div style="font-family: var(--font-head); font-size: 0.9rem; color: white; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tournyx Esports</div>
-                    <div style="font-family: var(--font-body); font-size: 0.75rem; color: #aaa; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Zero lag. Native experience.</div>
-                </div>
-            </div>
-        </div>
-        
-        <button onclick="window.location.href='download.html'" style="background: var(--accent-gradient); border: none; color: black; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem; padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,242,255,0.4); text-transform: uppercase; margin-left: 10px;">OPEN</button>
-    </div>
 
     <style>
         @keyframes slideDownAppPrompt { 
@@ -1417,68 +1639,5 @@
         }
     </style>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const isMobileBrowser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 850;
-            const isMedianApp = (typeof median !== 'undefined') || 
-                                (typeof gonative !== 'undefined') || 
-                                (navigator.userAgent.toLowerCase().indexOf('median') > -1) || 
-                                (navigator.userAgent.toLowerCase().indexOf('gonative') > -1) ||
-                                (window.matchMedia('(display-mode: standalone)').matches) ||
-                                (navigator.standalone === true);
-            
-            if (isMobileBrowser && !isMedianApp) {
-                setTimeout(() => {
-                    const appPrompt = document.getElementById('nativeAppPrompt');
-                    if(appPrompt) {
-                        appPrompt.style.display = 'flex';
-                        try { if(navigator.vibrate) navigator.vibrate(30); } catch(e){}
-                    }
-                }, 1500); 
-            }
-        });
-    </script>
-    <script>
-function tournyxOneSignalSetup() {
-    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    
-    if (user && user.email && typeof median !== 'undefined' && median.onesignal) {
-        let cleanEmail = user.email.toLowerCase().trim();
-
-        // 1. THE MODERN LOGIN: Uses proper Objects for Median V5
-        if (median.onesignal.login) {
-            // Bind External ID
-            median.onesignal.login({ externalId: cleanEmail });
-            
-            // NEW: Bind Email so it shows up in the OneSignal Dashboard!
-            if (median.onesignal.user && median.onesignal.user.addEmail) {
-                median.onesignal.user.addEmail({ email: cleanEmail });
-            }
-        } else if (median.onesignal.setExternalUserId) {
-            // Fallback for older Median builds
-            median.onesignal.setExternalUserId({ externalId: cleanEmail });
-            if (median.onesignal.setEmail) {
-                median.onesignal.setEmail({ email: cleanEmail });
-            }
-        }
-
-        // 2. SET TAGS PERFECTLY (We will use this to target them!)
-        let tagData = { 
-            "user_email": cleanEmail, 
-            "user_status": "active" 
-        };
-        
-        if (median.onesignal.tags && median.onesignal.tags.set) {
-            median.onesignal.tags.set(tagData);
-        } else if (median.onesignal.sendTags) {
-            median.onesignal.sendTags(tagData);
-        }
-    }
-}
-
-// Fire securely when the Median native app bridge is fully loaded
-document.addEventListener("median_library_ready", tournyxOneSignalSetup);
-document.addEventListener("DOMContentLoaded", tournyxOneSignalSetup);
-</script>
 </body>
 </html>
