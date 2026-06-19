@@ -1699,47 +1699,60 @@
 <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
+        console.log("⚡ [Tournyx Core] Initializing OneSignal PWA Framework...");
         
-        // Auto-calculates subdirectory context paths if hosted on Github sub-pages
-        const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        // Clear subdirectory pathing scope for GitHub Pages environments
+        const currentPath = window.location.pathname;
+        const repoScope = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
 
-        // 1. Initialize the Web Push SDK
-        await OneSignal.init({
-            appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-            allowLocalhostAsSecureOrigin: true,
-            serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
-            serviceWorkerParam: { scope: repoScope }
-        });
-
-        // 2. Extract user data safely from local browser storage
-        let user = JSON.parse(localStorage.getItem('tournyx_user'));
-        
-        if (user && user.email) {
-            let cleanEmail = String(user.email).toLowerCase().trim();
-
-            // 3. TARGETING LOCK: Map browser token to the user email alias
-            await OneSignal.login(cleanEmail);
-
-            // 4. Set Organizational Subscriptions Profile Tags
-            OneSignal.User.addTags({
-                "user_email": cleanEmail,
-                "user_status": "active",
-                "platform": "pwa"
+        try {
+            // 1. Initialize the Web Push Core Engine
+            await OneSignal.init({
+                appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
+                allowLocalhostAsSecureOrigin: true,
+                serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
+                serviceWorkerParam: { scope: repoScope }
             });
+            console.log("✅ [Tournyx Core] OneSignal handshake secured successfully.");
+
+            // 2. Fetch logged-in user profile from local cache storage
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            
+            if (user && user.email) {
+                let cleanEmail = String(user.email).toLowerCase().trim();
+                console.log("🔒 [Tournyx Core] Mapping active session to Alias ID: " + cleanEmail);
+
+                // 3. TARGETING LOCK: Pair browser push token to their verified email alias
+                await OneSignal.login(cleanEmail);
+
+                // 4. Set Organizational Synchronization Profile Tags
+                await OneSignal.User.addTags({
+                    "user_email": cleanEmail,
+                    "user_status": "active",
+                    "platform": "pwa"
+                });
+                console.log("🎯 [Tournyx Core] User database tags synchronized cleanly.");
+            }
+        } catch (error) {
+            console.error("❌ [Tournyx Core] Critical initialization block:", error);
         }
     });
 
-    // 🚀 ULTRA-PREMIUM PROMPT TRIGGER (Invoked on Button Interaction)
+    // 🚀 HARDWARE INTERACTION ROUTER (Bypasses Browser Security Barriers)
     async function triggerNotificationPrompt() {
+        console.log("touch interaction detected. Verifying security clearance...");
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
-            if (OneSignal.Notifications.permission !== "granted") {
-                try {
-                    // Safe from strict browser permission blockers
+            try {
+                const currentPermission = OneSignal.Notifications.permission;
+                console.log("Current authorization status:", currentPermission);
+                
+                if (currentPermission !== "granted") {
+                    // Safe execution running directly inside a hardware user click handler
                     await OneSignal.Notifications.requestPermission();
-                } catch (err) {
-                    console.error("Notification prompt generation failed:", err);
                 }
+            } catch (err) {
+                console.error("Browser denied manual request call:", err);
             }
         });
     }
