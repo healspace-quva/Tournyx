@@ -2958,6 +2958,7 @@
             }
         }
 
+        // 1. THE ANIMATION CONTROLLER
         function triggerSecureLoader(clanName, cost, method) {
             let loaderOverlay = document.getElementById('securePaymentLoader');
             loaderOverlay.style.display = 'flex';
@@ -2968,21 +2969,21 @@
             let bar = document.getElementById('secureLoaderBar');
             let logoBox = document.getElementById('regAnimLogoBox');
             
+            // Reset state cleanly
             bar.classList.remove('blast');
             bar.style.width = "0%";
             bar.style.background = "var(--accent-cyan)";
+            bar.style.boxShadow = "none";
             logoBox.style.filter = "drop-shadow(0 0 15px var(--accent-cyan))";
             logoBox.style.transform = "scale(1)";
+            logoBox.style.color = "var(--accent-cyan)";
+            logoBox.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
             
             head.setAttribute('data-text', 'GEARING UP');
             head.innerText = "GEARING UP";
-            
+            txt.style.color = "#aaa";
             txt.style.opacity = '0';
-            setTimeout(() => {
-                txt.innerText = "Equipping armor & loadout...";
-                txt.style.color = "var(--accent-cyan)";
-                txt.style.opacity = '1';
-            }, 100);
+            setTimeout(() => { txt.innerText = "Equipping armor & loadout..."; txt.style.opacity = '1'; }, 100);
             
             setTimeout(() => { 
                 head.setAttribute('data-text', 'TACTICAL SYNC'); head.innerText = "TACTICAL SYNC"; 
@@ -3002,14 +3003,58 @@
                 setTimeout(() => { txt.innerText = "Securing your drop zone..."; txt.style.opacity = '1'; }, 100);
                 bar.style.width = "90%"; bar.style.background = "var(--accent-orange)"; logoBox.style.filter = "drop-shadow(0 0 15px var(--accent-orange))"; 
             }, 900);
+            
+            // 🛡️ THE FIX: Wrap the submission in a Try/Catch to prevent silent freezing!
             setTimeout(() => { 
-                submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox);
+                try {
+                    submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox);
+                } catch (e) {
+                    forceLoaderError(e.message, bar, txt, head, logoBox);
+                }
             }, 1200);
         }
 
+        // 2. THE HARD-CRASH CATCHER (Prevents infinite loading screens)
+        function forceLoaderError(errMsg, bar, txt, head, logoBox) {
+            txt.style.opacity = '0';
+            setTimeout(() => { 
+                txt.innerText = errMsg || "System Error! Please try again."; 
+                txt.style.opacity = '1'; 
+            }, 100);
+            txt.style.color = "#ff4d4d";
+            bar.style.background = "#ff4d4d";
+            bar.style.boxShadow = "0 0 15px #ff4d4d";
+            logoBox.style.color = "#ff4d4d";
+            logoBox.style.filter = "drop-shadow(0 0 15px #ff4d4d)";
+            logoBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            head.setAttribute('data-text', 'ERROR');
+            head.innerText = "ERROR";
+
+            let finalBtn = document.getElementById('finalSubmitBtn');
+            if(finalBtn) {
+                finalBtn.disabled = false;
+                finalBtn.innerHTML = "Proceed";
+            }
+
+            // Auto-close loader after showing error so user isn't stuck
+            setTimeout(() => { 
+                let loaderOverlay = document.getElementById('securePaymentLoader');
+                if(loaderOverlay) {
+                    loaderOverlay.classList.remove('active');
+                    setTimeout(() => { loaderOverlay.style.display = 'none'; }, 500); 
+                }
+            }, 3500);
+        }
+
+        // 3. THE TICKET EXTRACTION & REGISTRATION ENGINE
         function submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox) {
             const t = activeTournament;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
+
+            if (!t || !user) {
+                forceLoaderError("Session missing! Please reload.", bar, txt, head, logoBox);
+                return;
+            }
 
             // --- 🎫 TICKET EXTRACTION ENGINE ---
             let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
@@ -3022,7 +3067,7 @@
                     // Find a valid pass purchase in the user's history
                     let validTicket = txns.find(x => String(x.type).toLowerCase() === "credit" && (String(x.title).toLowerCase().includes("pass") || String(x.category).toLowerCase().includes("purchase")));
                     // Use that exact Ticket ID, or generate a fallback if history was cleared
-                    usedTicketId = (validTicket && (validTicket.id || validTicket.txn_id)) ? (validTicket.id || validTicket.txn_id) : ("TX-" + Math.floor(Math.random() * 1000000));
+                    usedTicketId = (validTicket && (validTicket.id || validTicket.txn_id)) ? String(validTicket.id || validTicket.txn_id) : ("TX-" + Math.floor(Math.random() * 1000000));
                 }
             }
 
@@ -3038,7 +3083,10 @@
             }).then((response) => {
                 
                 // If backend throws an error message (like "Already joined"), trigger the catch block!
-                if(response.status === 'error') throw new Error(response.message);
+                if(response.status === 'error') {
+                    forceLoaderError(response.message, bar, txt, head, logoBox);
+                    return;
+                }
 
                 if(cost > 0) {
                     secureFetch({ action: 'update_wallet', email: user.email, rupees: user.rupees, points: user.points }).catch(()=>{});
@@ -3062,12 +3110,14 @@
                 
                 // 🟢 SUCCESS ANIMATION
                 bar.style.width = "100%"; 
+                bar.classList.add('blast');
                 bar.style.background = "#00ff7f";
                 bar.style.boxShadow = "0 0 15px #00ff7f";
                 logoBox.style.color = "#00ff7f";
                 logoBox.style.filter = "drop-shadow(0 0 25px #00ff7f)";
                 logoBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
                 
+                head.setAttribute('data-text', 'BATTLE READY');
                 head.innerText = "BATTLE READY"; 
                 txt.style.opacity = '0';
                 setTimeout(() => { txt.innerText = "Slot Secured. GLHF!"; txt.style.color = "#00ff7f"; txt.style.opacity = '1'; }, 100); 
@@ -3077,15 +3127,14 @@
                     loaderOverlay.classList.remove('active');
                     setTimeout(() => loaderOverlay.style.display = 'none', 500); 
                     
-                    // Reset UI for next time
-                    logoBox.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
-                    logoBox.style.color = "var(--accent-cyan)";
                     closeRegistrationFlow();
                     showToast(cost > 0 ? "Entry successful! Welcome to the Arena." : "Registration Confirmed! GLHF.");
                     
                     let btn = document.getElementById('masterJoinBtn');
-                    btn.innerHTML = "<i class='fa-solid fa-plus'></i> ADD ANOTHER CLAN";
-                    btn.disabled = false;
+                    if(btn) {
+                        btn.innerHTML = "<i class='fa-solid fa-plus'></i> ADD ANOTHER CLAN";
+                        btn.disabled = false;
+                    }
                     
                     let currentFilled = parseInt(t.filled_slots) || 0;
                     t.filled_slots = currentFilled + 1; 
@@ -3095,6 +3144,9 @@
                 }, 2000);
                 
             }).catch(e => {
+                forceLoaderError("Network Error. Check connection.", bar, txt, head, logoBox);
+            });
+        }
                 // 🔴 FAILURE ANIMATION (Prevents infinite loading)
                 txt.style.opacity = '0';
                 setTimeout(() => { 
