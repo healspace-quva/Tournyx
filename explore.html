@@ -3171,42 +3171,57 @@
             });
         }
     </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <!-- ==========================================
+     OFFICIAL ONESIGNAL PWA INTEGRATION (V16)
+     ========================================== -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
         
+        // Auto-calculates subdirectory context paths if hosted on Github sub-pages
+        const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+
         // 1. Initialize the Web Push SDK
         await OneSignal.init({
             appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-            allowLocalhostAsSecureOrigin: true
+            allowLocalhostAsSecureOrigin: true,
+            serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
+            serviceWorkerParam: { scope: repoScope }
         });
 
-        // 2. Fetch logged-in user securely from LocalStorage
+        // 2. Extract user data safely from local browser storage
         let user = JSON.parse(localStorage.getItem('tournyx_user'));
         
         if (user && user.email) {
             let cleanEmail = String(user.email).toLowerCase().trim();
 
-            // 3. TARGETING LOCK: Assign External ID
-            // This natively binds the browser to the 'external_id' alias for the backend
+            // 3. TARGETING LOCK: Map browser token to the user email alias
             await OneSignal.login(cleanEmail);
 
-            // 4. Set Organizational Tags as a backup
+            // 4. Set Organizational Subscriptions Profile Tags
             OneSignal.User.addTags({
                 "user_email": cleanEmail,
                 "user_status": "active",
                 "platform": "pwa"
             });
         }
-
-        // 5. Native PWA Permission Prompt
-        if (OneSignal.Notifications.permission !== "granted") {
-            setTimeout(() => {
-                OneSignal.Notifications.requestPermission();
-            }, 2500); 
-        }
     });
+
+    // 🚀 ULTRA-PREMIUM PROMPT TRIGGER (Invoked on Button Interaction)
+    async function triggerNotificationPrompt() {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            if (OneSignal.Notifications.permission !== "granted") {
+                try {
+                    // Safe from strict browser permission blockers
+                    await OneSignal.Notifications.requestPermission();
+                } catch (err) {
+                    console.error("Notification prompt generation failed:", err);
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
