@@ -3027,7 +3027,8 @@
             }, 3500);
         }
 
-        function submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox) {
+       // --- 🚀 ASYNC LIVE-FETCH TICKETING ENGINE ---
+        async function submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox) {
             const t = activeTournament;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
 
@@ -3036,28 +3037,60 @@
                 return;
             }
 
-            let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
-            let usedTicketId = "FREE-ENTRY";
-            
-            if (cost > 0) {
-                if (method === 'points') {
-                    usedTicketId = "PTS-" + Math.floor(Math.random() * 1000000);
-                } else {
-                    let validTicket = txns.find(x => String(x.type).toLowerCase() === "credit" && (String(x.title).toLowerCase().includes("pass") || String(x.category).toLowerCase().includes("purchase")));
-                    usedTicketId = (validTicket && (validTicket.id || validTicket.txn_id)) ? String(validTicket.id || validTicket.txn_id) : ("TX-" + Math.floor(Math.random() * 1000000));
+            try {
+                let usedTicketId = "FREE-ENTRY";
+                let entryPaidPts = method === 'points' ? cost : 0;
+
+                // 🎫 LIVE TICKET EXTRACTION (Bypasses Local Storage entirely)
+                if (cost > 0) {
+                    if (method === 'points') {
+                        usedTicketId = "PTS-" + Date.now().toString().slice(-6);
+                    } else {
+                        // 1. Update the Loader UI so the user knows we are verifying the server
+                        txt.style.opacity = '0';
+                        setTimeout(() => { txt.innerText = "Verifying Live Ticket Inventory..."; txt.style.opacity = '1'; }, 100);
+                        
+                        // 2. FETCH DIRECTLY FROM BACKEND SHEETS
+                        let liveTxnsRes = await secureFetch({ action: 'get_transactions', email: user.email });
+                        let liveTxns = (liveTxnsRes.status === 'success' && liveTxnsRes.data) ? liveTxnsRes.data : [];
+                        
+                        if (liveTxns.length > 0) {
+                            // Automatically heal the local cache so other pages are updated!
+                            localStorage.setItem('tournyx_txns', JSON.stringify(liveTxns));
+                            
+                            let validTicket = liveTxns.find(x => 
+                                String(x.type).toLowerCase() === "credit" || 
+                                String(x.amount).includes("+") || 
+                                String(x.category).toLowerCase().includes("purchase") || 
+                                String(x.title).toLowerCase().includes("pass")
+                            );
+                            
+                            if (validTicket && (validTicket.id || validTicket.txn_id)) {
+                                usedTicketId = String(validTicket.id || validTicket.txn_id) + "-USED";
+                            } else {
+                                let safeName = String(user.username).replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+                                usedTicketId = "PASS-" + safeName + "-" + Date.now().toString().slice(-5);
+                            }
+                        } else {
+                            let safeName = String(user.username).replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+                            usedTicketId = "PASS-" + safeName + "-" + Date.now().toString().slice(-5);
+                        }
+                    }
                 }
-            }
 
-            let entryPaidPts = method === 'points' ? cost : 0;
+                // UI Update for Final Transmission
+                txt.style.opacity = '0';
+                setTimeout(() => { txt.innerText = "Transmitting to Server..."; txt.style.opacity = '1'; }, 100);
 
-            secureFetch({
-                action: "join", match_id: t.id || t.title, game: t.game, title: t.title,
-                date: t.date, prize: t.prize, email: user.email, username: user.username, phone: user.phone, 
-                clan: clanName, entry_paid: method !== 'points' ? cost : 0, entry_paid_pts: entryPaidPts, method: method,
-                org_email: t.org_email || t.email || "",
-                ticket_id: usedTicketId 
-            }).then((response) => {
-                
+                // 🚀 FIRING PAYLOAD TO BACKEND WITH REAL TICKET ID
+                let response = await secureFetch({
+                    action: "join", match_id: t.id || t.title, game: t.game, title: t.title,
+                    date: t.date, prize: t.prize, email: user.email, username: user.username, phone: user.phone, 
+                    clan: clanName, entry_paid: method !== 'points' ? cost : 0, entry_paid_pts: entryPaidPts, method: method,
+                    org_email: t.org_email || t.email || "",
+                    ticket_id: usedTicketId // <-- Sent directly to your Google Sheet!
+                });
+
                 if(response.status === 'error') {
                     forceLoaderError(response.message, bar, txt, head, logoBox);
                     return;
@@ -3066,9 +3099,11 @@
                 if(cost > 0) {
                     secureFetch({ action: 'update_wallet', email: user.email, rupees: user.rupees, points: user.points }).catch(()=>{});
                     
+                    // Add the "USED" ticket to the local cache so it displays cleanly in the UI history immediately
+                    let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
                     let dateStr = getISTDateTime();
                     let newTxn = { 
-                        id: usedTicketId + "-USED", 
+                        id: usedTicketId, 
                         title: "Joined: " + (t.title || "Tournament"), 
                         amount: method === 'points' ? (cost + " PTS") : cost, 
                         type: "Debit", 
@@ -3083,6 +3118,7 @@
                 userLiveMatches.push({ tournament_title: t.title, match_id: t.id || t.title });
                 playGunshotSound();
                 
+                // 🟢 SUCCESS ANIMATION
                 bar.style.width = "100%"; 
                 bar.classList.add('blast');
                 bar.style.background = "#00ff7f";
@@ -3116,10 +3152,11 @@
                     renderRoomTabDynamic(t, true);
                     setTimeout(fetchLiveTeams, 1500);
                 }, 2000);
-                
-            }).catch(e => {
+
+            } catch (e) {
+                // If anything fails (Network drop, Google Sheet timeout), it cleanly errors out instead of freezing
                 forceLoaderError("Network Error. Check connection.", bar, txt, head, logoBox);
-            });
+            }
         }
 
         function openContributeModal() {
