@@ -721,27 +721,27 @@
                     </div>
                     
                     <div class="dm-stat-grid">
-                        <div class="stat-box">
-                            <i class="fa-solid fa-trophy"></i>
-                            <div class="val" id="dtPrize">0 Rs.</div>
-                            <div class="lbl">Prize Pool</div>
-                        </div>
-                        <div class="stat-box" style="border-color: rgba(255, 153, 0, 0.4) !important;">
-                            <div class="tx-badge" style="font-size: 1.5rem; margin-bottom: 8px;">TX</div>
-                            <div class="val" id="dtFee">Free</div>
-                            <div class="lbl">Entry Fee</div>
-                        </div>
-                        <div class="stat-box">
-                            <i class="fa-solid fa-users"></i>
-                            <div class="val" id="dtRegistrations">Loading...</div>
-                            <div class="lbl">Registered</div>
-                        </div>
-                        <div class="stat-box">
-                            <i class="fa-solid fa-stopwatch"></i>
-                            <div class="val" style="color:var(--accent-cyan);" id="dtTimeLeft">Upcoming</div>
-                            <div class="lbl">Status</div>
-                        </div>
-                    </div>
+    <div class="stat-box" onclick="document.querySelector('.dm-nav-item[data-tab=\'dtTabPrizes\']').click(); triggerHaptic();" style="cursor: pointer;">
+        <i class="fa-solid fa-trophy"></i>
+        <div class="val" id="dtPrize">0 Rs.</div>
+        <div class="lbl">Prize Pool</div>
+    </div>
+    <div class="stat-box" onclick="document.querySelector('.dm-nav-item[data-tab=\'dtTabRules\']').click(); triggerHaptic();" style="border-color: rgba(255, 153, 0, 0.4) !important; cursor: pointer;">
+        <div class="tx-badge" style="font-size: 1.5rem; margin-bottom: 8px;">TX</div>
+        <div class="val" id="dtFee">Free</div>
+        <div class="lbl">Entry Fee</div>
+    </div>
+    <div class="stat-box" onclick="document.querySelector('.dm-nav-item[data-tab=\'dtTabTeams\']').click(); triggerHaptic();" style="cursor: pointer;">
+        <i class="fa-solid fa-users"></i>
+        <div class="val" id="dtRegistrations">Loading...</div>
+        <div class="lbl">Registered</div>
+    </div>
+    <div class="stat-box" onclick="document.querySelector('.dm-nav-item[data-tab=\'dtTabMatches\']').click(); triggerHaptic();" style="cursor: pointer;">
+        <i class="fa-solid fa-stopwatch"></i>
+        <div class="val" style="color:var(--accent-cyan);" id="dtTimeLeft">Upcoming</div>
+        <div class="lbl">Status</div>
+    </div>
+</div>
 
                     <div class="dm-section" id="dtStreamSection" style="display:none; border-color:rgba(255,0,0,0.5) !important;">
                         <div class="dm-sec-title" style="color:#FF0000;"><i class="fa-solid fa-tv"></i> Live Stream Preview</div>
@@ -920,15 +920,12 @@
 
     <!-- TRANSACTION PROCESSING HOOK -->
     <div id="securePaymentLoader">
-        <div class="cycle-logos" id="regAnimLogoBox">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3MKUI87mMK4_3DltS3LQgqfrK1sESUIMMqlENdi0dPRtOFkeDbvPsTbSaCRaJOb17QZ5s9OO5dR6kFCYiCkgUCF2zBWwvGFSb3T-9Nz51XuIzMvIiOuqwcLzyzeFmn1orKbiETP4LrlaG-RidnWAAzBwUA3aL5_z62HP4_F7R02lAK_WSYdH0U_Gn7Es/s250/1000094211.jpg">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJvPTY_y_XU-0Lwbnjwm7961lCDkSlQh2MtCWHunFVX6WS7WCprCtkPyB334BU_-4vGsP0NseDQf4NPBEOIxqjk7VZQqZUHpnLb4Bw-c1UeXQy2M9DzNrNdYt_aL0GEb1AlTPupC5zEjJiP3Ci0Oxk-wdg5TF5cs8_UNSe3uTT1BE884je3iXr8QlMjx8/s240/1000094210.jpg">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg8vsDFFkLAXTA234WJzc3OqsLbmB3HBlKaXhiJo-JFVcTtYmMUI2DVdk5ljTPvGPKj-vtcejjFAxZO0sapDafr6xqN7VpHLGCcxqYWWY2LIZszXhrnnO1gcXFeJzY2EclP6G1bLoea5bshOtT7Dl3p4F_l0pGDuz1j5KJ78dEnI7cQixwAeDC1vKG89N4/s460/1000094209.jpg">
+        <div style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--accent-cyan)); animation: pulse 1.5s infinite;">
+            <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <h2 class="glitch-text" id="loaderTxtHead" data-text="GEARING UP" style="font-family: var(--font-head);">GEARING UP</h2>
-        <div class="cyber-bar-container"><div class="cyber-bar-fill" id="secureLoaderBar"></div></div>
-        <p id="loaderTxt" style="color:var(--accent-cyan); font-family:var(--font-head); margin-top:15px; font-size:1rem; font-weight:bold; text-transform:uppercase; transition: opacity 0.2s;">Equipping loadout...</p>
+        <h2 class="glitch-text" id="loaderTxtHead" data-text="SECURING SLOT" style="font-family: var(--font-head); font-size: 1.5rem;">SECURING SLOT</h2>
+        <div class="cyber-bar-container" style="width: 220px; height: 6px;"><div class="cyber-bar-fill" id="secureLoaderBar"></div></div>
+        <p id="loaderTxt" style="color:#888; font-family:var(--font-body); margin-top:15px; font-size:0.85rem; text-transform:uppercase; letter-spacing: 2px;">Encrypting Registration Data...</p>
     </div>
 
     <!-- ROSTER CHOOSER OVERLAY[cite: 3] -->
@@ -1766,7 +1763,7 @@
                         let entryTxt = getSmartEntryText(reqTickets, pFee);
                         
                         let isLiked = likesArr.includes(tIdSafe);
-                        let baseLikeCount = (Math.abs(tIdSafe.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)) % 150) + 12;
+                        let baseLikeCount = parseInt(t.likes) || 0;
                         let displayLikes = isLiked ? baseLikeCount + 1 : baseLikeCount;
 
                         let isVerifiedPremium = (String(t.is_premium).toLowerCase() === 'true' || String(t.is_verified).toLowerCase() === 'true' || String(t.is_official).toLowerCase() === 'true') ? '<i class="fa-solid fa-circle-check verified-badge"></i>' : '';
@@ -2269,93 +2266,84 @@
             }
         }
 
-     // --- ELITE ROSTER POPUP ENGINE (PREMIUM UI FIX) ---
-        function openRosterPopup(e, dataEncoded, isPremium) {
-            if(e) e.stopPropagation(); // Stops the click from opening the tournament card behind it
+    function openRosterPopup(e, dataEncoded, isPremium) {
+            if(e) e.stopPropagation(); 
             triggerHaptic();
 
             let teamData = {};
-            try {
-                teamData = JSON.parse(decodeURIComponent(atob(dataEncoded)));
-            } catch(err) {
-                showToast("Failed to load roster data.", true); return;
-            }
+            try { teamData = JSON.parse(decodeURIComponent(atob(dataEncoded))); } 
+            catch(err) { showToast("Failed to load roster data.", true); return; }
 
             let cName = teamData.name || teamData.username || teamData.clan_name || teamData[1] || "Clan Roster";
-            
-            // Map strictly to Col E (Logo) and Col F (Banner)
-            let cLogo = teamData.logo || teamData.Logo || teamData[4] || `https://ui-avatars.com/api/?name=${encodeURIComponent(cName)}&background=070311&color=00f2ff&bold=true`;
-            let cBanner = teamData.banner || teamData.Banner || teamData[5] || (activeTournament && activeTournament.banner) || "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJvPTY_y_XU-0Lwbnjwm7961lCDkSlQh2MtCWHunFVX6WS7WCprCtkPyB334BU_-4vGsP0NseDQf4NPBEOIxqjk7VZQqZUHpnLb4Bw-c1UeXQy2M9DzNrNdYt_aL0GEb1AlTPupC5zEjJiP3Ci0Oxk-wdg5TF5cs8_UNSe3uTT1BE884je3iXr8QlMjx8/s240/1000094210.jpg";
+            let cLogo = teamData.logo || teamData.Logo || teamData[4] || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cName)}&colors=cyan,purple,gold`;
+            let cBanner = teamData.banner || teamData.Banner || teamData[5] || (activeTournament && activeTournament.banner) || "https://via.placeholder.com/600x300";
 
-            // Extract the real roster array from team_json (Col H / Index 7)
             let rosterArray = [];
             let tJson = teamData.team_json || teamData[7];
-            if (tJson) {
-                try { rosterArray = typeof tJson === 'string' ? JSON.parse(tJson).roster || [] : tJson.roster || []; } catch(err){}
-            }
-            if (rosterArray.length === 0) {
-                rosterArray = teamData.players || teamData.roster || [teamData]; 
-            }
+            if (tJson) { try { rosterArray = typeof tJson === 'string' ? JSON.parse(tJson).roster || [] : tJson.roster || []; } catch(err){} }
+            if (rosterArray.length === 0) { rosterArray = teamData.players || teamData.roster || [teamData]; }
 
-            // Elite Squad Ribbon overlay
-            let ribbon = isPremium ? `<div style="position:absolute; top:25px; right:-40px; background:#FFD700; color:black; font-family:var(--font-head); font-weight:900; font-size:0.75rem; padding:6px 45px; transform:rotate(45deg); box-shadow:0 0 15px rgba(255,215,0,0.8); z-index:10; letter-spacing:1px;">ELITE SQUAD</div>` : '';
+            // VIP GOLDEN LOGIC FOR POPUP
             let glowColor = isPremium ? '#FFD700' : 'var(--accent-cyan)';
+            let boxBorder = isPremium ? '1px solid #FFD700' : '1px solid var(--accent-cyan)';
+            let boxGlow = isPremium ? '0 15px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(255,215,0,0.2)' : '0 15px 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,242,255,0.15)';
+            let ribbon = isPremium ? `<div style="position:absolute; top:25px; right:-40px; background:#FFD700; color:black; font-family:var(--font-head); font-weight:900; font-size:0.75rem; padding:6px 45px; transform:rotate(45deg); box-shadow:0 0 15px rgba(255,215,0,0.8); z-index:10; letter-spacing:1px;">ELITE SQUAD</div>` : '';
 
-            // Build Header with Banner and Overlapping Logo
+            // Apply styling to the modal container directly
+            let popupContainer = document.querySelector('#rosterPopupModal .modal-box');
+            popupContainer.style.border = boxBorder;
+            popupContainer.style.boxShadow = boxGlow;
+
             let html = `
-                <div style="position:relative; width:100%; height:150px; background:#000;">
+                <div style="position:relative; width:100%; height:130px; background:#000;">
                     <img src="${formatImageUrl(cBanner)}" style="width:100%; height:100%; object-fit:cover; opacity:0.6;">
                     <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(to bottom, transparent, rgba(10,5,20,1));"></div>
                     ${ribbon}
-                    <div style="position:absolute; bottom:-35px; left:25px; width:85px; height:85px; border-radius:18px; border:2px solid ${glowColor}; box-shadow:0 0 25px ${glowColor}; background:var(--primary-bg); z-index:5; overflow:hidden; padding:2px;">
-                        <img src="${formatImageUrl(cLogo)}" style="width:100%; height:100%; object-fit:cover; border-radius:14px;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(cName)}&background=070311&color=00f2ff&bold=true'">
+                    <div style="position:absolute; bottom:-25px; left:20px; width:70px; height:70px; border-radius:14px; border:2px solid ${glowColor}; box-shadow:0 0 25px ${glowColor}; background:var(--primary-bg); z-index:5; overflow:hidden; padding:2px;">
+                        <img src="${formatImageUrl(cLogo)}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cName)}&colors=cyan'">
                     </div>
                 </div>
-                <div style="padding: 45px 25px 25px 25px; text-align: left;">
-                    <div style="display:flex; align-items:flex-end; gap:10px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom:12px;">
-                        <h2 style="font-family:var(--font-head); color:white; font-size:1.6rem; margin:0;">Roster</h2>
-                        <span style="color:#888; font-size:0.8rem; margin-bottom:4px;">(Secured View)</span>
+                <div style="padding: 35px 20px 20px 20px; text-align: left;">
+                    <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                        <h2 style="font-family:var(--font-head); color:${glowColor}; font-size:1.3rem; margin:0; text-shadow: 0 0 10px ${glowColor};">Roster</h2>
+                        <span style="color:#888; font-size:0.75rem; margin-bottom:2px;">(Secured)</span>
                     </div>
-                    <div style="display:flex; flex-direction:column; gap:12px; max-height: 45vh; overflow-y:auto; padding-right:5px; scrollbar-width:none;">
+                    <div style="display:flex; flex-direction:column; gap:10px; max-height: 40vh; overflow-y:auto; padding-right:5px; scrollbar-width:none;">
             `;
 
-            // Build Player Cards
             if (rosterArray.length === 0 || !rosterArray[0].name) {
-                html += `<div style="color:#888; text-align:center; padding:20px;">Roster details hidden or not configured.</div>`;
+                html += `<div style="color:#888; text-align:center; padding:20px; font-size:0.85rem;">Roster details hidden or not configured.</div>`;
             } else {
                 rosterArray.forEach((p, index) => {
                     let pName = p.name || p.ign || p.username || p.gameName || 'Player';
                     let pUid = p.uid || p.id || 'N/A';
                     let pRole = p.pos || p.role || 'PLAYER';
-                    let delay = (index * 0.08); // Cascading drop-in animation
+                    let delay = (index * 0.05); 
 
-                    // Exact Color matching from your image
                     let roleColor = 'var(--text-main)';
                     let roleText = pRole.toUpperCase();
-                    if(roleText.includes('OWNER') || roleText.includes('ADMIN') || roleText.includes('LEADER')) roleColor = '#ff9900'; // Orange/Gold
-                    else if(roleText.includes('PLAYER')) roleColor = '#aaa'; // Grey
-                    else roleColor = 'var(--accent-cyan)'; // Cyan default
+                    if(roleText.includes('OWNER') || roleText.includes('ADMIN') || roleText.includes('LEADER')) roleColor = '#ff9900'; 
+                    else if(roleText.includes('PLAYER')) roleColor = '#aaa'; 
+                    else roleColor = glowColor; 
 
-                    let initials = pName.substring(0, 2).toUpperCase();
+                    // GAMER AVATAR FETCH LOGIC
+                    let pAvatarUrl = p.avatar || p.logo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(pName)}&colors=cyan,purple,gold`;
 
-                   html += `
+                    html += `
                         <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); opacity:0; animation:slideUpRoster 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${delay}s;">
-                            <div style="width:38px; height:38px; border-radius:10px; background:rgba(0,242,255,0.05); border:1px solid var(--accent-cyan); display:flex; align-items:center; justify-content:center; color:var(--accent-cyan); font-family:var(--font-head); font-weight:900; font-size:0.95rem; flex-shrink:0; box-shadow: 0 0 8px rgba(0,242,255,0.2);">
-                                ${initials}
-                            </div>
+                            <img src="${formatImageUrl(pAvatarUrl)}" style="width:38px; height:38px; border-radius:10px; object-fit:cover; border:1px solid ${roleColor}; flex-shrink:0; box-shadow: 0 0 8px rgba(0,0,0,0.5);">
                             <div style="flex:1; overflow:hidden;">
                                 <div style="font-family:var(--font-head); color:white; font-weight:bold; font-size:0.95rem; display:flex; align-items:center; gap:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${pName} <span style="color:${roleColor}; font-size:0.65rem; text-transform:uppercase;">(${pRole})</span>
                                 </div>
                                 <div style="font-size:0.75rem; color:#888; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    IGN: <span style="color:var(--accent-cyan); font-weight:bold;">${p.gameName || p.ign || pName}</span> <span style="color:#555; margin:0 4px;">|</span> UID: <span style="color:white; font-family:monospace;">${pUid}</span>
+                                    IGN: <span style="color:${glowColor}; font-weight:bold;">${p.gameName || p.ign || pName}</span> <span style="color:#555; margin:0 4px;">|</span> UID: <span style="color:white; font-family:monospace;">${pUid}</span>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
             }
-
             html += `</div></div>`;
             document.getElementById('rosterPopupContent').innerHTML = html;
             document.getElementById('rosterPopupModal').classList.add('active');
