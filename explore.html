@@ -1355,43 +1355,41 @@
             let limit15 = start + (15 * 60 * 1000);
             let limit30 = start + (30 * 60 * 1000);
 
-            // --- SUB-LOBBY ROUTING ENGINE (UNIFIED) ---
-        let roomIdToShow = t.room_id;
-        let roomPassToShow = t.room_pass;
-        let roomStatus = "WAITING";
-        let groupDisplay = "";
-        let hasGroups = false;
+            let roomIdToShow = t.room_id;
+            let roomPassToShow = t.room_pass;
+            let roomStatus = "WAITING";
+            let groupDisplay = "";
+            let hasGroups = false;
 
-        let rawBracket = t.bracket_json || t.bracket_image || t.bracket || "[]";
+            let rawBracket = t.bracket_json || t.bracket_image || t.bracket || "[]";
 
-        if (rawBracket !== "[]" && rawBracket !== "") {
-            try {
-                let scheduleArr = JSON.parse(rawBracket);
-                if (scheduleArr.length > 0) hasGroups = true;
+            if (rawBracket !== "[]" && rawBracket !== "") {
+                try {
+                    let scheduleArr = JSON.parse(rawBracket);
+                    if (scheduleArr.length > 0) hasGroups = true;
 
-                if (hasGroups) {
-                    if (myGroup === null) {
-                        roomArea.innerHTML = `
-                            <div class="dm-section" style="border-style: dashed !important; border-color: var(--accent-cyan) !important; text-align: center;">
-                                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px;"></i>
-                                <div style="font-family: var(--font-head); font-weight: bold; color: white; margin-bottom: 5px;">Locating Squad Placement...</div>
-                                <div style="font-size: 0.85rem; color: #ccc;">Scanning tournament groups...</div>
-                            </div>`;
-                        return;
+                    if (hasGroups) {
+                        if (myGroup === null) {
+                            roomArea.innerHTML = `
+                                <div class="dm-section" style="border-style: dashed !important; border-color: var(--accent-cyan) !important; text-align: center;">
+                                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px;"></i>
+                                    <div style="font-family: var(--font-head); font-weight: bold; color: white; margin-bottom: 5px;">Locating Squad Placement...</div>
+                                    <div style="font-size: 0.85rem; color: #ccc;">Scanning tournament groups...</div>
+                                </div>`;
+                            return;
+                        }
+
+                        let myMatchBlock = scheduleArr.find(match => String(match.title).toLowerCase().trim() === String(myGroup).toLowerCase().trim());
+                        
+                        if (myMatchBlock) {
+                            roomIdToShow = myMatchBlock.roomId || "";
+                            roomPassToShow = myMatchBlock.roomPass || "";
+                            roomStatus = myMatchBlock.status || "WAITING";
+                            groupDisplay = ` <span style="background:rgba(255,153,0,0.2); color:var(--accent-orange); padding: 2px 8px; border-radius:4px; font-size:0.7rem; border:1px solid var(--accent-orange); margin-left:8px; vertical-align:middle; display:inline-block;">[${myGroup}]</span>`;
+                        }
                     }
-
-                    // Find the specific schedule block that matches the player's assigned group!
-                    let myMatchBlock = scheduleArr.find(match => String(match.title).toLowerCase().trim() === String(myGroup).toLowerCase().trim());
-                    
-                    if (myMatchBlock) {
-                        roomIdToShow = myMatchBlock.roomId || "";
-                        roomPassToShow = myMatchBlock.roomPass || "";
-                        roomStatus = myMatchBlock.status || "WAITING";
-                        groupDisplay = ` <span style="background:rgba(255,153,0,0.2); color:var(--accent-orange); padding: 2px 8px; border-radius:4px; font-size:0.7rem; border:1px solid var(--accent-orange); margin-left:8px; vertical-align:middle; display:inline-block;">[${myGroup}]</span>`;
-                    }
-                }
-            } catch(e) {}
-        }
+                } catch(e) {}
+            }
 
             if (roomStatus === "LOCKED") {
                 roomArea.innerHTML = `
@@ -1408,7 +1406,7 @@
                     <div class="dm-section" style="border-style: dashed !important; text-align: center;">
                         <i class="fa-solid fa-clock-rotate-left" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px;"></i>
                         <div style="font-family: var(--font-head); font-weight: bold; color: white; margin-bottom: 5px;">Waiting for Organizer</div>
-                        <div style="font-size: 0.85rem; color: #ccc;">You are successfully registered! Room ID and Password will be fetched securely from the server once the match timer begins.</div>
+                        <div style="font-size: 0.85rem; color: #ccc;">You are successfully registered! Room ID and Password will be fetched securely once the match window opens.</div>
                     </div>`;
             } else if (now >= start && now < limit15) {
                 if (roomIdToShow != null && String(roomIdToShow).trim() !== "") {
@@ -1435,7 +1433,7 @@
                         <div class="dm-section" style="border-style: dashed !important; border-color: var(--accent-cyan) !important; text-align: center;">
                             <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px;"></i>
                             <div style="font-family: var(--font-head); font-weight: bold; color: white; margin-bottom: 5px;">Fetching Room Details...</div>
-                            <div style="font-size: 0.85rem; color: #ccc;">The match is starting! Waiting for organizer to post Room details to the server.</div>
+                            <div style="font-size: 0.85rem; color: #ccc;">The match is starting! Waiting for organizer to post Room credentials.</div>
                         </div>`;
                 }
             } else if (now >= limit15 && now < limit30) {
@@ -1443,14 +1441,14 @@
                     <div class="dm-section" style="background: rgba(0,255,127,0.05); border-color: var(--accent-green) !important; text-align: center;">
                         <i class="fa-solid fa-gamepad" style="font-size: 2.5rem; color: var(--accent-green); margin-bottom: 10px;"></i>
                         <div style="font-family: var(--font-head); font-size: 1.3rem; font-weight: bold; color: white; margin-bottom: 5px;">MATCH STARTED</div>
-                        <div style="font-size: 0.85rem; color: #ccc;">The battle is live! Good luck on the battleground.</div>
+                        <div style="font-size: 0.85rem; color: #ccc;">The battle is live! Good luck on the drop zone.</div>
                     </div>`;
             } else {
                 roomArea.innerHTML = `
                     <div class="dm-section" style="background: rgba(255,255,255,0.02); border-color: #ff4d4d !important; text-align: center;">
                         <i class="fa-solid fa-flag-checkered" style="font-size: 2.5rem; color: #ff4d4d; margin-bottom: 10px;"></i>
                         <div style="font-family: var(--font-head); font-size: 1.3rem; font-weight: bold; color: white; margin-bottom: 5px;">MATCH COMPLETED</div>
-                        <div style="font-size: 0.85rem; color: #ccc;">The room has been closed and the match has concluded.</div>
+                        <div style="font-size: 0.85rem; color: #ccc;">The tournament round has concluded.</div>
                     </div>`;
             }
         }
@@ -1565,7 +1563,6 @@
             return strUrl; 
         }
 
-        /* --- ADSTERRA AND BOOST FEATURE INJECTOR (NATIVE TOGGLE SYSTEM) --- */
         function renderSponsorAdSlots(currentTourneyId) {
             let wrappers = [document.getElementById('overviewAdSlotWrapper'), document.getElementById('prizeAdSlotWrapper')];
             let sponsorDivs = [document.getElementById('overviewSponsorContent'), document.getElementById('prizeSponsorContent')];
@@ -1609,6 +1606,7 @@
             });
         }
 
+        // --- 1. CRASH FIX: DOMContentLoaded Initializer ---
         document.addEventListener("DOMContentLoaded", () => {
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             const urlParams = new URLSearchParams(window.location.search);
@@ -1616,32 +1614,34 @@
 
             if(targetTourneyId) {
                 document.body.classList.add('single-page-mode');
-                document.getElementById('dmBackButton').onclick = function() { window.location.href = 'explore.html'; };
-                document.getElementById('shareLoader').style.display = 'flex';
+                let backBtn = document.getElementById('dmBackButton');
+                if(backBtn) backBtn.onclick = function() { window.location.href = 'explore.html'; };
+                let sLoader = document.getElementById('shareLoader');
+                if(sLoader) sLoader.style.display = 'flex';
             }
 
             if(!user || !user.email) { 
                 isGuestMode = true;
-                document.getElementById('headerProfilePic').style.display = 'none';
+                let pic = document.getElementById('headerProfilePic');
+                if(pic) pic.style.display = 'none';
             } else {
-                if(user.avatar) document.getElementById('headerProfilePic').src = formatImageUrl(user.avatar);
+                let pic = document.getElementById('headerProfilePic');
+                if(pic && user.avatar) pic.src = formatImageUrl(user.avatar);
                 
-                // SECURE POST CALL INSTEAD OF GET
                 secureFetch({ action: 'get_matches', email: user.email })
                 .then(data => { 
-                    if(data.status === 'success') {
+                    if(data.status === 'success' && Array.isArray(data.data)) {
                         userLiveMatches = data.data.filter(m => {
-                            let isLeaved = Object.values(m).some(v => String(v).toLowerCase().includes('leaved') || String(v).toLowerCase() === 'leave');
-                            return !isLeaved;
+                            if(!m) return false;
+                            return !Object.values(m).some(v => String(v).toLowerCase().includes('leaved') || String(v).toLowerCase() === 'leave');
                         });
                     } 
-                });
+                }).catch(e => console.log("Silent matches fetch error ignored."));
                 
-                // SECURE POST CALL INSTEAD OF GET
                 secureFetch({ action: 'get_my_clans', username: user.username })
                 .then(data => { 
                     if(data.status === 'success') localStorage.setItem('tournyx_my_clans_cache', JSON.stringify(data.data)); 
-                });
+                }).catch(e => console.log("Silent clans fetch error ignored."));
             }
             
             localStorage.removeItem('myMatches');
@@ -1679,15 +1679,19 @@
             loadLiveTournaments(null); 
         }
 
+        // --- 2. CRASH FIX: Bulletproof Feed Loader ---
         function loadLiveTournaments(autoOpenId) {
-            // SECURE POST CALL INSTEAD OF GET
             secureFetch({ action: 'get_tournaments' })
             .then(data => {
-                if (data.status === "success") {
-                    data.data.sort((a, b) => {
+                const feed = document.getElementById('tournamentContainer');
+                
+                if (data.status === "success" && Array.isArray(data.data)) {
+                    let validTournaments = data.data.filter(t => t && (t.title || t.id));
+                    
+                    validTournaments.sort((a, b) => {
                         let now = new Date().getTime();
-                        let dA = new Date(a.date).getTime() - now;
-                        let dB = new Date(b.date).getTime() - now;
+                        let dA = new Date(a.date || 0).getTime() - now;
+                        let dB = new Date(b.date || 0).getTime() - now;
 
                         let aEndingSoon = dA > 0 && dA < (24 * 60 * 60 * 1000);
                         let bEndingSoon = dB > 0 && dB < (24 * 60 * 60 * 1000);
@@ -1701,15 +1705,23 @@
                         return dB - dA;
                     });
 
-                    localTournamentsData = data.data; 
-                    const feed = document.getElementById('tournamentContainer');
+                    localTournamentsData = validTournaments; 
                     
-                    if(autoOpenId) {
-                        let targetMatch = data.data.find(t => String(t.id || t.title).trim() === autoOpenId || t.title.replace(/\s+/g, '') === autoOpenId);
+                    if(autoOpenId && autoOpenId.trim() !== "") {
+                        let targetMatch = validTournaments.find(t => {
+                            let safeId = String(t.id || "").trim();
+                            let safeTitle = String(t.title || "").trim();
+                            let safeTitleNoSpace = safeTitle.replace(/\s+/g, '');
+                            return safeId === autoOpenId || safeTitle === autoOpenId || safeTitleNoSpace === autoOpenId;
+                        });
+                        
                         if(targetMatch) {
                             setTimeout(() => {
-                                document.getElementById('shareLoader').style.opacity = '0';
-                                setTimeout(() => document.getElementById('shareLoader').style.display = 'none', 400);
+                                let sLoader = document.getElementById('shareLoader');
+                                if(sLoader) {
+                                    sLoader.style.opacity = '0';
+                                    setTimeout(() => sLoader.style.display = 'none', 400);
+                                }
                                 openTournamentDetails(encodeURIComponent(JSON.stringify(targetMatch)));
                             }, 500);
                             return;
@@ -1719,30 +1731,31 @@
                     feed.innerHTML = "";
                     let likesArr = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
                     
-                    data.data.forEach(t => {
+                    if(validTournaments.length === 0) {
+                        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#888;"><i class="fa-solid fa-ghost" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i><br>No tournaments currently available.</div>`;
+                    }
+
+                    validTournaments.forEach(t => {
                         let dbStatus = String(t.db_status || t.col_u || t.status || "").toLowerCase();
                         if(dbStatus === "deleted") return;
 
-                        let targetDate = new Date(t.date).getTime();
+                        let targetDate = new Date(t.date || 0).getTime();
                         let now = new Date().getTime();
-                        if(!isNaN(targetDate) && (now > targetDate + (24 * 60 * 60 * 1000))) {
+                        if(!isNaN(targetDate) && targetDate > 0 && (now > targetDate + (24 * 60 * 60 * 1000))) {
                             secureFetch({ action: "auto_delete_tournament", match_id: String(t.id || t.title).trim() }).catch(()=>{});
                             return; 
                         }
 
                         const card = document.createElement('div');
-                        let tIdSafe = String(t.id || t.title).trim();
+                        let tTitleSafe = t.title ? String(t.title) : "Tournament";
+                        let tIdSafe = String(t.id || tTitleSafe).trim();
                         
                         let feeJson = {};
                         try { if(t.fee_json) feeJson = JSON.parse(t.fee_json); } catch(e){}
                         let rFee = feeJson.rupees !== undefined ? parseInt(feeJson.rupees) : (parseInt(t.fee) || 0);
                         let pFee = feeJson.points !== undefined ? parseInt(feeJson.points) : (parseInt(t.fee_pts) || 0);
                         
-                        let reqTickets = rFee;
-                        if (rFee >= 10 && rFee % 10 === 0) {
-                            reqTickets = rFee / 10;
-                        }
-                        
+                        let reqTickets = (rFee >= 10 && rFee % 10 === 0) ? rFee / 10 : rFee; 
                         let plat = t.platform || "Mobile";
                         
                         const totalSlots = parseInt(t.slots) || 48;
@@ -1755,7 +1768,7 @@
                         else if (fillPct >= 60) progColorClass = "filling";
 
                         let timeData = calculateTimeRemaining(t.date);
-                        let sLower = (t.status || "Upcoming").toLowerCase();
+                        let sLower = String(t.status || "Upcoming").toLowerCase();
                         let isCancelled = sLower.includes("cancel");
                         let isRegClosed = timeData.isClosed;
                         
@@ -1763,16 +1776,14 @@
                         let isMega = parseInt(t.prize) >= 5000;
                         
                         let cardClasses = ['tourney-card'];
-                        if (applyBlur) {
-                            cardClasses.push('is-full');
-                        } else {
+                        if (applyBlur) cardClasses.push('is-full');
+                        else {
                             if (isMega) cardClasses.push('mega-event');
                             else if (sLower.includes("live")) cardClasses.push('live-glow');
                             else cardClasses.push('upcoming-glow');
                         }
                         
                         card.className = cardClasses.join(' ');
-                        
                         card.setAttribute('data-id', tIdSafe);
                         card.setAttribute('data-game', t.game || "All");
                         card.setAttribute('data-mode', t.format || "All"); 
@@ -1792,21 +1803,21 @@
 
                         let isVerifiedPremium = (String(t.is_premium).toLowerCase() === 'true' || String(t.is_verified).toLowerCase() === 'true' || String(t.is_official).toLowerCase() === 'true') ? '<i class="fa-solid fa-circle-check verified-badge"></i>' : '';
 
-                        let isJoined = userLiveMatches.some(m => m.tournament_title === t.title || m.match_id === tIdSafe);
+                        let isJoined = userLiveMatches.some(m => m.tournament_title === tTitleSafe || m.match_id === tIdSafe);
                         let actionBtnHTML = isJoined 
                             ? `<button class="join-btn-card" style="background: rgba(0,255,127,0.1); border-color: var(--accent-green); color: var(--accent-green);"><i class="fa-solid fa-check"></i> JOINED</button>`
                             : `<button class="join-btn-card">REGISTER</button>`;
 
                         card.innerHTML = `
                             <div class="t-banner-wrapper">
-                                <img src="${bg}" class="t-banner-img img-loading" onload="this.classList.remove('img-loading'); this.classList.add('img-loaded');">
+                                <img src="${bg}" class="t-banner-img img-loading" onload="this.classList.remove('img-loading'); this.classList.add('img-loaded');" onerror="this.src='https://via.placeholder.com/600x300'; this.classList.remove('img-loading');">
                                 ${getStatusBadgeHtml(t.status, isFull, isRegClosed, isCancelled)} 
                                 <div class="t-timer-badge ${timeData.isEndingSoon ? 'ending-soon' : ''}"><i class="fa-regular fa-clock"></i> ${timeData.text}</div>
                                 <div class="t-like ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${tIdSafe}', ${baseLikeCount})"><i class="fa-solid fa-heart"></i> <span>${displayLikes}</span></div>
                                 <div class="t-plat-badge"><i class="fa-solid ${plat==='PC' ? 'fa-desktop' : 'fa-mobile-screen'}"></i> ${plat}</div>
                             </div>
                             <div class="t-info-box">
-                                <div class="t-title">${t.title || "Tournament"} ${isVerifiedPremium}</div>
+                                <div class="t-title">${tTitleSafe} ${isVerifiedPremium}</div>
                                 
                                 <div class="t-details-grid">
                                     <div class="t-detail-item"><i class="fa-solid fa-gamepad"></i> <span>${t.game || "Esports"} (${t.format || "Any"})</span></div>
@@ -1831,15 +1842,27 @@
                         feed.appendChild(card);
                     });
                     
-                    document.getElementById('shareLoader').style.opacity = '0';
-                    setTimeout(() => document.getElementById('shareLoader').style.display = 'none', 400);
+                    let sLoader = document.getElementById('shareLoader');
+                    if(sLoader) {
+                        sLoader.style.opacity = '0';
+                        setTimeout(() => sLoader.style.display = 'none', 400);
+                    }
                     applyFilter(); 
+                } else {
+                    feed.innerHTML = `<div style="text-align:center; padding:40px; color:#ff4d4d;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem; margin-bottom:10px;"></i><br>Failed to load data. Format error from server.</div>`;
                 }
-                document.getElementById('refreshIcon').classList.remove('fa-spin');
+                let rIcon = document.getElementById('refreshIcon');
+                if(rIcon) rIcon.classList.remove('fa-spin');
             })
             .catch(err => {
-                document.getElementById('refreshIcon').classList.remove('fa-spin');
-                document.getElementById('shareLoader').style.display = 'none';
+                const feed = document.getElementById('tournamentContainer');
+                if(feed) feed.innerHTML = `<div style="text-align:center; padding:40px; color:#ff4d4d;"><i class="fa-solid fa-wifi" style="font-size:2rem; margin-bottom:10px; opacity:0.6;"></i><br>Network Error. Please check your connection.</div>`;
+                
+                let rIcon = document.getElementById('refreshIcon');
+                if(rIcon) rIcon.classList.remove('fa-spin');
+                
+                let sLoader = document.getElementById('shareLoader');
+                if(sLoader) sLoader.style.display = 'none';
             });
         }
 
@@ -1929,7 +1952,7 @@
                     
                     let likesArr = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
                     let isLiked = likesArr.includes(tIdSafe);
-                    let baseLikeCount = (Math.abs(tIdSafe.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)) % 150) + 12;
+                    let baseLikeCount = parseInt(t.likes) || 0;
                     let displayLikes = isLiked ? baseLikeCount + 1 : baseLikeCount;
                     
                     let isVerifiedPremium = (String(t.is_premium).toLowerCase() === 'true' || String(t.is_verified).toLowerCase() === 'true' || String(t.is_official).toLowerCase() === 'true') ? '<i class="fa-solid fa-circle-check verified-badge"></i>' : '';
@@ -2230,10 +2253,11 @@
 
             document.getElementById('dtTimeLeft').innerText = t.status || "Upcoming";
             
-            let viewCount = t.views ? parseInt(t.views) : (Math.floor((t.title.length * 7) + ((parseInt(t.id) || 12) * 3)) % 300) + 12;
+            // CRASH FIX 4: Safe View Count Generation
+            let safeTitleStr = String(t.title || "Tournament");
+            let viewCount = t.views ? parseInt(t.views) : (Math.floor((safeTitleStr.length * 7) + ((parseInt(t.id) || 12) * 3)) % 300) + 12;
             document.getElementById('realViewerCount').innerText = viewCount;
             
-            // SECURE POST CALL INSTEAD OF GET
             secureFetch({ action: 'increment_view', match_id: t.id || t.title }).catch(()=>{});
 
             loadOtherTournaments(orgId, t.id || t.title);
@@ -2242,7 +2266,6 @@
             document.querySelector('.dm-scroll-area').scrollTo(0,0);
             document.querySelector('.dm-nav-item[data-tab="dtTabOverview"]').click();
             modalEl.classList.add('active');
-            
         }
 
         function closeDetailModal() { 
@@ -2265,10 +2288,8 @@
             }
         }
 
-     function openHostProfile() {
+        function openHostProfile() {
             triggerHaptic();
-            // Removed the disruptive Toast Notification.
-            // Add future routing here, e.g., window.location.href = 'organizer_profile.html';
         }
 
         function toggleTeamDropdown(el) {
@@ -2290,7 +2311,7 @@
             }
         }
 
-    function openRosterPopup(e, dataEncoded, isPremium) {
+        function openRosterPopup(e, dataEncoded, isPremium) {
             if(e) e.stopPropagation(); 
             triggerHaptic();
 
@@ -2307,16 +2328,16 @@
             if (tJson) { try { rosterArray = typeof tJson === 'string' ? JSON.parse(tJson).roster || [] : tJson.roster || []; } catch(err){} }
             if (rosterArray.length === 0) { rosterArray = teamData.players || teamData.roster || [teamData]; }
 
-            // VIP GOLDEN LOGIC FOR POPUP
             let glowColor = isPremium ? '#FFD700' : 'var(--accent-cyan)';
             let boxBorder = isPremium ? '1px solid #FFD700' : '1px solid var(--accent-cyan)';
             let boxGlow = isPremium ? '0 15px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(255,215,0,0.2)' : '0 15px 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,242,255,0.15)';
             let ribbon = isPremium ? `<div style="position:absolute; top:25px; right:-40px; background:#FFD700; color:black; font-family:var(--font-head); font-weight:900; font-size:0.75rem; padding:6px 45px; transform:rotate(45deg); box-shadow:0 0 15px rgba(255,215,0,0.8); z-index:10; letter-spacing:1px;">ELITE SQUAD</div>` : '';
 
-            // Apply styling to the modal container directly
             let popupContainer = document.querySelector('#rosterPopupModal .modal-box');
-            popupContainer.style.border = boxBorder;
-            popupContainer.style.boxShadow = boxGlow;
+            if(popupContainer) {
+                popupContainer.style.border = boxBorder;
+                popupContainer.style.boxShadow = boxGlow;
+            }
 
             let html = `
                 <div style="position:relative; width:100%; height:130px; background:#000;">
@@ -2350,7 +2371,6 @@
                     else if(roleText.includes('PLAYER')) roleColor = '#aaa'; 
                     else roleColor = glowColor; 
 
-                    // GAMER AVATAR FETCH LOGIC
                     let pAvatarUrl = p.avatar || p.logo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(pName)}&colors=cyan,purple,gold`;
 
                     html += `
@@ -2377,7 +2397,8 @@
             triggerHaptic();
             document.getElementById('rosterPopupModal').classList.remove('active');
         }
-         function fetchLiveTeams() {
+
+        function fetchLiveTeams() {
             if(!activeTournament.title) return;
             const container = document.getElementById('liveTeamsList');
             container.innerHTML = `<div style="text-align:center; color:var(--accent-cyan); padding:40px;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching roster...</div>`;
@@ -2395,7 +2416,7 @@
                 
                 let clanMap = {};
                 let clanStateMap = {};
-                let clanFullDataMap = {}; // NEW: Stores the entire row from the Clans sheet
+                let clanFullDataMap = {}; 
 
                 if (clansData.status === 'success' && clansData.data) {
                     clansData.data.forEach(c => {
@@ -2407,7 +2428,7 @@
                             let safeName = String(cName).toLowerCase().trim();
                             if(rawLogo) clanMap[safeName] = rawLogo;
                             if(cState) clanStateMap[safeName] = cState;
-                            clanFullDataMap[safeName] = c; // Save full clan object (including Banner & team_json)
+                            clanFullDataMap[safeName] = c; 
                         }
                     });
                 }
@@ -2426,7 +2447,6 @@
                     });
                     
                     let activeTeams = Array.from(uniqueTeamsMap.values());
-                    
                     let liveCount = activeTeams.length;
                     let totalSlots = parseInt(activeTournament.slots) || 48;
                     document.getElementById('dtRegistrations').innerText = `${liveCount}/${totalSlots}`;
@@ -2461,7 +2481,7 @@
                         }
                     }
 
-                    let myGroup = null; // Track group for Sub-Lobby Routing
+                    let myGroup = null; 
 
                     if(activeTeams.length > 0) {
                         activeTeams.forEach((team, i) => {
@@ -2487,11 +2507,8 @@
                             }
 
                             if (isSolo) {
-                                // Extract Player Info directly from the match data
                                 let playerName = team.username || displayClanName;
                                 let safePlayerName = encodeURIComponent(playerName);
-                                
-                                // AGGRESSIVE FETCHING: Avatar (Col F), State (Col U), City (Col V)
                                 let rawAvatar = team.avatar || team.Avatar || team[5] || null;
                                 let fallbackAvatar = rawAvatar ? formatImageUrl(rawAvatar) : `https://ui-avatars.com/api/?name=${safePlayerName}&background=070311&color=00f2ff&bold=true`;
                                 
@@ -2500,24 +2517,15 @@
                                 let locationText = rawCity ? (rawState ? `${rawCity}, ${rawState}` : rawCity) : rawState;
                                 let stateBadge = locationText ? `<span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:3px 8px; border-radius:6px; font-size:0.65rem; color:#ccc; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-location-dot" style="color:var(--accent-cyan);"></i> ${locationText}</span>` : '';
 
-                                // PREMIUM / VIP CHECK (Col X)
                                 let isPremiumSolo = (isMyClan && isUserPremium) || 
                                                     (String(team.is_premium).toLowerCase() === 'true') || 
-                                                    (String(team[23]).toLowerCase() === 'true'); // Col X is index 23
+                                                    (String(team[23]).toLowerCase() === 'true'); 
 
                                 let highlightClass = isMyClan ? "my-clan" : "";
                                 if(isPremiumSolo) highlightClass += " vip-solo";
                                 
                                 let premiumBadge = isPremiumSolo ? '<span style="background:linear-gradient(135deg, #FFD700, #FFA500); color:black; padding:3px 8px; border-radius:6px; font-size:0.65rem; font-family:var(--font-head); font-weight:900; box-shadow:0 0 10px rgba(255,215,0,0.5); display:inline-flex; align-items:center; gap:4px; letter-spacing:0.5px; margin-left:6px;"><i class="fa-solid fa-crown"></i> ELITE</span>' : '';
                                 
-                                // 🚨 INDESTRUCTIBLE ENCODING (Matches the Clan block fix)
-                                let safeTeamData = "";
-                                try {
-                                    safeTeamData = btoa(encodeURIComponent(JSON.stringify(team)));
-                                } catch(e) {
-                                    safeTeamData = btoa(encodeURIComponent(JSON.stringify({username: playerName})));
-                                }
-
                                 container.innerHTML += `
                                     <div class="clan-item ${highlightClass}" style="padding: 15px;">
                                         <div class="clan-item-header" style="align-items: center; display: flex; gap: 15px;">
@@ -2538,27 +2546,14 @@
                                         </div>
                                     </div>
                                 `;
-                                
-                                secureFetch({ action: 'get_avatar', username: playerName })
-                                .then(d => {
-                                    if(d.status === 'success' && (d.data || d.avatar)) {
-                                        let imgEl = document.getElementById(`solo-avatar-${i}`);
-                                        if (imgEl) imgEl.src = formatImageUrl(d.data || d.avatar);
-                                    }
-                                }).catch(e => {});
                             } else {
                                 let highlightClass = isMyClan ? "my-clan" : "";
-
-                                // Connect Match data with Full Clan Sheet data for the popup
                                 let fullClanObj = clanFullDataMap[String(displayClanName).toLowerCase().trim()] || parsedClanObj || team;
                                 
-                                // 1. AGGRESSIVE LOGO FETCHING
                                 let mappedLogo = clanMap[String(displayClanName).toLowerCase().trim()];
                                 let rawLogo = mappedLogo || (fullClanObj ? (fullClanObj.logo || fullClanObj.Logo || fullClanObj[4]) : null) || team.logo || team.clan_logo;
                                 let clanLogo = rawLogo ? formatImageUrl(rawLogo) : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayClanName)}&background=070311&color=00ff7f&bold=true`;
 
-                                // 2. BULLETPROOF ELITE SQUAD / VIP BADGE CHECK
-                                // Checks Match sheet, JSON parsed object, and the exact Clan sheet row
                                 let checkPremiumFlags = [
                                     team.is_premium, team.vip_badge, team.vip, team[23],
                                     parsedClanObj ? parsedClanObj.is_premium : null, 
@@ -2569,24 +2564,22 @@
                                     fullClanObj ? fullClanObj[23] : null
                                 ];
                                 
-                                // If any of the flags return 'true', activate the Elite Status
                                 let isClanPremium = (isMyClan && isUserPremium) || checkPremiumFlags.some(val => String(val).toLowerCase() === 'true' || val === true);
-                                                    
-                                if (isClanPremium) highlightClass += " vip-solo"; // Adds the golden glow outline
+                                if (isClanPremium) highlightClass += " vip-solo"; 
                                 
                                 let premiumBadge = isClanPremium ? 
                                     `<span style="background:linear-gradient(135deg, #FFD700, #FFA500); color:black; padding:3px 8px; border-radius:6px; font-size:0.65rem; font-family:var(--font-head); font-weight:900; box-shadow:0 0 10px rgba(255,215,0,0.5); display:inline-flex; align-items:center; gap:4px; letter-spacing:0.5px;"><i class="fa-solid fa-crown"></i> ELITE</span>` : '';
 
-                                // 3. LOCATION FETCHING (State / City)
                                 let mappedState = clanStateMap[String(displayClanName).toLowerCase().trim()];
                                 let rawLocation = mappedState || (fullClanObj ? (fullClanObj.state || fullClanObj.city || fullClanObj.location) : null) || team.state || team.city || "";
                                 let stateBadge = rawLocation ? `<span style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:3px 8px; border-radius:6px; font-size:0.65rem; color:#ccc; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-location-dot" style="color:var(--accent-cyan);"></i> ${rawLocation}</span>` : '';
 
-                                // Level badge has been safely removed here!
-
-                                // Safely encode data to Base64 to prevent HTML quoting errors
-                                let rawJsonStr = JSON.stringify(fullClanObj);
-                                let safeTeamData = btoa(encodeURIComponent(rawJsonStr));
+                                let safeTeamData = "";
+                                try {
+                                    safeTeamData = btoa(encodeURIComponent(JSON.stringify(fullClanObj)));
+                                } catch(e) {
+                                    safeTeamData = btoa(encodeURIComponent(JSON.stringify(team)));
+                                }
 
                                 container.innerHTML += `
                                     <div class="clan-item ${highlightClass}" ${hasRoster ? `onclick="openRosterPopup(event, '${safeTeamData}', ${isClanPremium})"` : ''} style="padding: 15px;">
@@ -2614,12 +2607,10 @@
                         container.innerHTML = `<div style="text-align:center; color:#888; padding:40px;">No entries registered yet. Be the first!</div>`;
                     }
                     
-                    // Render Room Tab with Sub-Lobby Routing Engine
                     renderRoomTabDynamic(activeTournament, true, myGroup);
-                    
                 } else {
                     container.innerHTML = `<div style="text-align:center; color:#888; padding:40px;">No entries registered yet. Be the first!</div>`;
-                    renderRoomTabDynamic(activeTournament, true, null); // Pass null if failed
+                    renderRoomTabDynamic(activeTournament, true, null); 
                 }
             }).catch(() => {
                 container.innerHTML = `<div style="text-align:center; color:#ff4d4d; padding:20px;">Failed to load teams.</div>`;
@@ -2765,7 +2756,6 @@
             clanSelectionArea.innerHTML = `<div style="text-align:center; padding:20px; color:var(--accent-cyan);"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem; margin-bottom:10px;"></i><br>Validating Roster...</div>`;
             btnArea.style.display = 'none';
             
-            // SECURE POST CALLS INSTEAD OF GET
             Promise.all([
                 secureFetch({ action: 'get_my_clans', username: user.username }),
                 secureFetch({ action: 'get_tournament_details', match_id: activeTournament.id || activeTournament.title })
@@ -2781,7 +2771,6 @@
                 if(detailsData.status === 'success') {
                     registeredTeams = detailsData.data.map(t => {
                         let cName = String(t.clan);
-                        // Extract the real clan name out of the JSON string
                         if (cName.startsWith("{")) {
                             try {
                                 let parsed = JSON.parse(cName);
@@ -2835,9 +2824,7 @@
                     
                     const select = document.getElementById('formSelectClan');
                     availableClans.forEach(c => { 
-                        // 1. Ensure we have a valid JSON string
                         let payload = c.team_json ? c.team_json : JSON.stringify(c);
-                        // 2. Safely encode it so quotes don't break the HTML dropdown!
                         let safePayload = encodeURIComponent(payload);
                         select.innerHTML += `<option value="${safePayload}">${c.name} (${c.game})</option>`; 
                     });
@@ -2918,7 +2905,6 @@
             let rawValue = document.getElementById('formSelectClan').value;
             let clanNameStr = "";
             
-            // Decode the safely passed JSON string
             try { clanNameStr = decodeURIComponent(rawValue); } 
             catch(e) { clanNameStr = rawValue; }
             
@@ -2926,7 +2912,6 @@
             if (!isSolo) {
                 try {
                     let parsedClan = JSON.parse(clanNameStr);
-                    // Support both 'roster' (new system) OR 'players' (old system)
                     let rosterArray = parsedClan.roster || parsedClan.players || [];
                     
                     if (rosterArray.length < 4 || rosterArray.length > 6) {
@@ -2958,7 +2943,7 @@
             }
         }
 
-        // 1. THE ANIMATION CONTROLLER
+        // --- 4. CRASH FIX: Fail-Safe Try/Catch Animation Engine ---
         function triggerSecureLoader(clanName, cost, method) {
             let loaderOverlay = document.getElementById('securePaymentLoader');
             loaderOverlay.style.display = 'flex';
@@ -2969,7 +2954,6 @@
             let bar = document.getElementById('secureLoaderBar');
             let logoBox = document.getElementById('regAnimLogoBox');
             
-            // Reset state cleanly
             bar.classList.remove('blast');
             bar.style.width = "0%";
             bar.style.background = "var(--accent-cyan)";
@@ -3004,7 +2988,6 @@
                 bar.style.width = "90%"; bar.style.background = "var(--accent-orange)"; logoBox.style.filter = "drop-shadow(0 0 15px var(--accent-orange))"; 
             }, 900);
             
-            // 🛡️ THE FIX: Wrap the submission in a Try/Catch to prevent silent freezing!
             setTimeout(() => { 
                 try {
                     submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox);
@@ -3014,7 +2997,6 @@
             }, 1200);
         }
 
-        // 2. THE HARD-CRASH CATCHER (Prevents infinite loading screens)
         function forceLoaderError(errMsg, bar, txt, head, logoBox) {
             txt.style.opacity = '0';
             setTimeout(() => { 
@@ -3036,7 +3018,6 @@
                 finalBtn.innerHTML = "Proceed";
             }
 
-            // Auto-close loader after showing error so user isn't stuck
             setTimeout(() => { 
                 let loaderOverlay = document.getElementById('securePaymentLoader');
                 if(loaderOverlay) {
@@ -3046,7 +3027,6 @@
             }, 3500);
         }
 
-        // 3. THE TICKET EXTRACTION & REGISTRATION ENGINE
         function submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox) {
             const t = activeTournament;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
@@ -3056,7 +3036,6 @@
                 return;
             }
 
-            // --- 🎫 TICKET EXTRACTION ENGINE ---
             let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
             let usedTicketId = "FREE-ENTRY";
             
@@ -3064,25 +3043,21 @@
                 if (method === 'points') {
                     usedTicketId = "PTS-" + Math.floor(Math.random() * 1000000);
                 } else {
-                    // Find a valid pass purchase in the user's history
                     let validTicket = txns.find(x => String(x.type).toLowerCase() === "credit" && (String(x.title).toLowerCase().includes("pass") || String(x.category).toLowerCase().includes("purchase")));
-                    // Use that exact Ticket ID, or generate a fallback if history was cleared
                     usedTicketId = (validTicket && (validTicket.id || validTicket.txn_id)) ? String(validTicket.id || validTicket.txn_id) : ("TX-" + Math.floor(Math.random() * 1000000));
                 }
             }
 
             let entryPaidPts = method === 'points' ? cost : 0;
 
-            // 🚀 FIRING PAYLOAD TO BACKEND
             secureFetch({
                 action: "join", match_id: t.id || t.title, game: t.game, title: t.title,
                 date: t.date, prize: t.prize, email: user.email, username: user.username, phone: user.phone, 
                 clan: clanName, entry_paid: method !== 'points' ? cost : 0, entry_paid_pts: entryPaidPts, method: method,
                 org_email: t.org_email || t.email || "",
-                ticket_id: usedTicketId // <-- Sent directly to your Google Sheet!
+                ticket_id: usedTicketId 
             }).then((response) => {
                 
-                // If backend throws an error message (like "Already joined"), trigger the catch block!
                 if(response.status === 'error') {
                     forceLoaderError(response.message, bar, txt, head, logoBox);
                     return;
@@ -3108,7 +3083,6 @@
                 userLiveMatches.push({ tournament_title: t.title, match_id: t.id || t.title });
                 playGunshotSound();
                 
-                // 🟢 SUCCESS ANIMATION
                 bar.style.width = "100%"; 
                 bar.classList.add('blast');
                 bar.style.background = "#00ff7f";
@@ -3145,38 +3119,6 @@
                 
             }).catch(e => {
                 forceLoaderError("Network Error. Check connection.", bar, txt, head, logoBox);
-            });
-        }
-                // 🔴 FAILURE ANIMATION (Prevents infinite loading)
-                txt.style.opacity = '0';
-                setTimeout(() => { 
-                    txt.innerText = (e.message && e.message !== "[object Object]") ? e.message : "Connection Failed! Try Again."; 
-                    txt.style.opacity = '1'; 
-                }, 100);
-                txt.style.color = "#ff4d4d";
-                bar.style.background = "#ff4d4d";
-                bar.style.boxShadow = "0 0 15px #ff4d4d";
-                logoBox.style.color = "#ff4d4d";
-                logoBox.style.filter = "drop-shadow(0 0 15px #ff4d4d)";
-                logoBox.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
-                head.innerText = "ERROR";
-
-                document.getElementById('finalSubmitBtn').disabled = false;
-                document.getElementById('finalSubmitBtn').innerHTML = "Proceed";
-
-                setTimeout(() => { 
-                    let loaderOverlay = document.getElementById('securePaymentLoader');
-                    loaderOverlay.classList.remove('active');
-                    setTimeout(() => {
-                        loaderOverlay.style.display = 'none';
-                        // Reset loader UI for next try
-                        logoBox.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
-                        logoBox.style.color = "var(--accent-cyan)";
-                        logoBox.style.filter = "drop-shadow(0 0 15px var(--accent-cyan))";
-                        txt.style.color = "#aaa";
-                        bar.style.background = "var(--accent-cyan)";
-                    }, 500); 
-                }, 3000);
             });
         }
 
@@ -3331,57 +3273,42 @@
             });
         }
     </script>
-    <!-- ==========================================
-     OFFICIAL ONESIGNAL PWA INTEGRATION (V16)
-     ========================================== -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-        
-        // Auto-calculates subdirectory context paths if hosted on Github sub-pages
-        const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-
-        // 1. Initialize the Web Push SDK
-        await OneSignal.init({
-            appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-            allowLocalhostAsSecureOrigin: true,
-            serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
-            serviceWorkerParam: { scope: repoScope }
-        });
-
-        // 2. Extract user data safely from local browser storage
-        let user = JSON.parse(localStorage.getItem('tournyx_user'));
-        
-        if (user && user.email) {
-            let cleanEmail = String(user.email).toLowerCase().trim();
-
-            // 3. TARGETING LOCK: Map browser token to the user email alias
-            await OneSignal.login(cleanEmail);
-
-            // 4. Set Organizational Subscriptions Profile Tags
-            OneSignal.User.addTags({
-                "user_email": cleanEmail,
-                "user_status": "active",
-                "platform": "pwa"
-            });
-        }
-    });
-
-    // 🚀 ULTRA-PREMIUM PROMPT TRIGGER (Invoked on Button Interaction)
-    async function triggerNotificationPrompt() {
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
-            if (OneSignal.Notifications.permission !== "granted") {
-                try {
-                    // Safe from strict browser permission blockers
-                    await OneSignal.Notifications.requestPermission();
-                } catch (err) {
-                    console.error("Notification prompt generation failed:", err);
-                }
+            const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+            await OneSignal.init({
+                appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
+                allowLocalhostAsSecureOrigin: true,
+                serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
+                serviceWorkerParam: { scope: repoScope }
+            });
+
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            if (user && user.email) {
+                let cleanEmail = String(user.email).toLowerCase().trim();
+                await OneSignal.login(cleanEmail);
+                OneSignal.User.addTags({
+                    "user_email": cleanEmail,
+                    "user_status": "active",
+                    "platform": "pwa"
+                });
             }
         });
-    }
-</script>
+
+        async function triggerNotificationPrompt() {
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+                if (OneSignal.Notifications.permission !== "granted") {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                    } catch (err) {
+                        console.error("Notification prompt generation failed:", err);
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
