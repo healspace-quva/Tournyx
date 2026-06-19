@@ -2630,39 +2630,57 @@
         }
     
 
-        function tournyxOneSignalSetup() {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            
-            if (user && user.email && typeof median !== 'undefined' && median.onesignal) {
-                let cleanEmail = user.email.toLowerCase().trim();
+        <!-- ==========================================
+     OFFICIAL ONESIGNAL PWA INTEGRATION (V16)
+     ========================================== -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+        
+        // Auto-calculates subdirectory context paths if hosted on Github sub-pages
+        const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 
-                if (median.onesignal.login) {
-                    median.onesignal.login({ externalId: cleanEmail });
-                    if (median.onesignal.user && median.onesignal.user.addEmail) {
-                        median.onesignal.user.addEmail({ email: cleanEmail });
-                    }
-                } else if (median.onesignal.setExternalUserId) {
-                    median.onesignal.setExternalUserId({ externalId: cleanEmail });
-                    if (median.onesignal.setEmail) {
-                        median.onesignal.setEmail({ email: cleanEmail });
-                    }
-                }
+        // 1. Initialize the Web Push SDK
+        await OneSignal.init({
+            appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
+            allowLocalhostAsSecureOrigin: true,
+            serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
+            serviceWorkerParam: { scope: repoScope }
+        });
 
-                let tagData = { 
-                    "user_email": cleanEmail, 
-                    "user_status": "active" 
-                };
-                
-                if (median.onesignal.tags && median.onesignal.tags.set) {
-                    median.onesignal.tags.set(tagData);
-                } else if (median.onesignal.sendTags) {
-                    median.onesignal.sendTags(tagData);
+        // 2. Extract user data safely from local browser storage
+        let user = JSON.parse(localStorage.getItem('tournyx_user'));
+        
+        if (user && user.email) {
+            let cleanEmail = String(user.email).toLowerCase().trim();
+
+            // 3. TARGETING LOCK: Map browser token to the user email alias
+            await OneSignal.login(cleanEmail);
+
+            // 4. Set Organizational Subscriptions Profile Tags
+            OneSignal.User.addTags({
+                "user_email": cleanEmail,
+                "user_status": "active",
+                "platform": "pwa"
+            });
+        }
+    });
+
+    // 🚀 ULTRA-PREMIUM PROMPT TRIGGER (Invoked on Button Interaction)
+    async function triggerNotificationPrompt() {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            if (OneSignal.Notifications.permission !== "granted") {
+                try {
+                    // Safe from strict browser permission blockers
+                    await OneSignal.Notifications.requestPermission();
+                } catch (err) {
+                    console.error("Notification prompt generation failed:", err);
                 }
             }
-        }
-
-        document.addEventListener("median_library_ready", tournyxOneSignalSetup);
-        document.addEventListener("DOMContentLoaded", tournyxOneSignalSetup);
-    </script>
+        });
+    }
+</script>
 </body>
 </html>
