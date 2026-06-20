@@ -2278,9 +2278,92 @@
 
         function closeDetailModal() { 
             triggerHaptic(); 
-            document.title = "Explore Tournaments - Tournyx";
-            const metaTitle = document.querySelector('meta[property="og:title"]');
-            if (metaTitle) metaTitle.setAttribute("content", "Explore Tournaments - Tournyx");
+            // ==========================================
+            // 🚀 TOURNYX DYNAMIC SEO & GEO MATRIX ENGINE
+            // ==========================================
+            
+            // 1. Extract clean variables for the Search Engines
+            let tIdSafe = String(t.id || t.title).replace(/\s+/g, '');
+            let gameSafe = t.game || "Esports";
+            let prizeSafe = getPrizeText(t.prize, t.prize_pts);
+            let urlSafe = window.location.href.split('?')[0] + "?tournament=" + encodeURIComponent(tIdSafe);
+            let descSafe = `Register for ${t.title}, an exclusive ${gameSafe} tournament on Tournyx. Prize Pool: ${prizeSafe}. Secure your slot before it fills up!`;
+
+            // 2. STANDARD SEO & BROWSER TITLE
+            document.title = `${t.title} | ${gameSafe} Tournament - Tournyx`;
+            
+            let descTag = document.querySelector('meta[name="description"]');
+            if(descTag) descTag.setAttribute("content", descSafe);
+
+            // 3. OPEN GRAPH (For WhatsApp, Discord, Twitter Previews)
+            const setMeta = (property, content) => {
+                let tag = document.querySelector(`meta[property="${property}"]`);
+                if(!tag) {
+                    tag = document.createElement('meta');
+                    tag.setAttribute('property', property);
+                    document.head.appendChild(tag);
+                }
+                tag.setAttribute("content", content);
+            };
+            
+            setMeta("og:title", `${t.title} | Tournyx ${gameSafe}`);
+            setMeta("og:description", descSafe);
+            setMeta("og:image", formatImageUrl(t.banner));
+            setMeta("og:url", urlSafe);
+            setMeta("og:type", "website");
+
+            // 4. AEO & GEO STRUCTURED DATA (Google AI & Rich Snippets)
+            // This injects invisible code that tells Google SGE and ChatGPT exactly what this event is.
+            let schemaId = "tournyx-schema-" + tIdSafe;
+            let existingSchema = document.getElementById('dynamic-schema');
+            if(existingSchema) existingSchema.remove();
+
+            let isoDate = new Date().toISOString();
+            try { 
+                let d = new Date(t.date); 
+                if(!isNaN(d.getTime())) isoDate = d.toISOString(); 
+            } catch(e) {}
+
+            let isFullGeo = parseInt(t.filled_slots) >= parseInt(t.slots);
+
+            let schemaData = {
+                "@context": "https://schema.org",
+                "@type": "SportsEvent",
+                "name": t.title,
+                "description": descSafe,
+                "startDate": isoDate,
+                "sport": "Esports",
+                "competitor": {
+                    "@type": "SportsTeam",
+                    "name": gameSafe
+                },
+                "location": {
+                    "@type": "VirtualLocation",
+                    "url": urlSafe
+                },
+                "image": [ formatImageUrl(t.banner) ],
+                "organizer": {
+                    "@type": "Organization",
+                    "name": t.org_username || "Tournyx Verified Organizer",
+                    "url": "https://tournyx.in"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "url": urlSafe,
+                    "price": "0", // Handled internally via Tournyx Wallet
+                    "priceCurrency": "INR",
+                    "availability": isFullGeo ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+                    "validFrom": new Date().toISOString()
+                }
+            };
+
+            let scriptTag = document.createElement('script');
+            scriptTag.id = 'dynamic-schema';
+            scriptTag.type = "application/ld+json";
+            scriptTag.text = JSON.stringify(schemaData);
+            document.head.appendChild(scriptTag);
+            
+            // ==========================================
             
             let modal = document.getElementById('tourneyDetailModal');
             if(document.body.classList.contains('single-page-mode')) {
