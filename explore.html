@@ -167,12 +167,22 @@
         }
         .tourney-card:active { transform: scale(0.98); }
         
-        .tourney-card.upcoming-glow { border-color: rgba(0, 242, 255, 0.4); }
-        .tourney-card.live-glow { border-color: rgba(0, 255, 127, 0.6); animation: cardPulseLive 2s infinite alternate ease-in-out; }
-        @keyframes cardPulseLive { 0% { box-shadow: 0 0 5px rgba(0,255,127,0.2); } 100% { box-shadow: 0 0 20px rgba(0,255,127,0.4); } }
-        .tourney-card.mega-event { border-color: rgba(255, 215, 0, 0.6); animation: cardPulseMega 2s infinite alternate ease-in-out; }
-        @keyframes cardPulseMega { 0% { box-shadow: 0 0 5px rgba(255,215,0,0.2); } 100% { box-shadow: 0 0 25px rgba(255,215,0,0.5); } }
-        .tourney-card.is-full { opacity: 0.65; filter: grayscale(70%); background: rgba(30, 30, 30, 0.5) !important; border-color: rgba(255, 255, 255, 0.1) !important; box-shadow: none !important; animation: none !important;}
+        /* HIGH PERFORMANCE GLOW ENGINE (ZERO CPU LAG) */
+        .tourney-card.upcoming-glow { 
+            border-color: var(--accent-cyan); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 12px rgba(0,242,255,0.2), inset 0 0 10px rgba(0,242,255,0.05); 
+        }
+        .tourney-card.live-glow { 
+            border-color: var(--accent-green); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px rgba(0,255,127,0.25), inset 0 0 10px rgba(0,255,127,0.1); 
+        }
+        .tourney-card.mega-event { 
+            border-color: #FFD700; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 18px rgba(255,215,0,0.3), inset 0 0 12px rgba(255,215,0,0.1); 
+        }
+        .tourney-card.is-full { 
+            opacity: 0.65; filter: grayscale(70%); background: rgba(30, 30, 30, 0.5) !important; border-color: rgba(255, 255, 255, 0.1) !important; box-shadow: none !important;
+        }
 
         .t-banner-wrapper { position: relative; height: 135px; width: 100%; background: #000; overflow: hidden; }
         .t-banner-wrapper::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: linear-gradient(to bottom, transparent, rgba(15, 7, 25, 0.8)); z-index: 1; }
@@ -1731,9 +1741,7 @@
                     feed.innerHTML = "";
                     let likesArr = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
                     
-                    if(validTournaments.length === 0) {
-                        feed.innerHTML = `<div style="text-align:center; padding:40px; color:#888;"><i class="fa-solid fa-ghost" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i><br>No tournaments currently available.</div>`;
-                    }
+                   
 
                     validTournaments.forEach(t => {
                         let dbStatus = String(t.db_status || t.col_u || t.status || "").toLowerCase();
@@ -3275,7 +3283,47 @@
             activeGame = game; 
             applyFilter(); 
         }
-        
+          // --- DYNAMIC ESPORTS EMPTY STATE ENGINE ---
+        function checkEmptyState() {
+            const feed = document.getElementById('tournamentContainer');
+            const visibleCards = feed.querySelectorAll('.tourney-card');
+            let hasVisible = false;
+            
+            visibleCards.forEach(card => {
+                if (card.style.display !== 'none') hasVisible = true;
+            });
+            
+            // Remove existing empty message if it's there
+            let existingEmpty = document.getElementById('emptyStateMessage');
+            if (existingEmpty) existingEmpty.remove();
+
+            if (!hasVisible) {
+                let user = JSON.parse(localStorage.getItem('tournyx_user')) || {};
+                let isOrg = user.role === 'organizer';
+                let isVip = String(user.is_premium).toLowerCase() === 'true';
+                
+                let color = isVip ? '#FFD700' : 'var(--accent-cyan)';
+                let icon = isOrg ? 'fa-plus-circle' : 'fa-ghost';
+                let title = isOrg ? 'ARENA IS EMPTY' : 'NO DROPS FOUND';
+                let desc = isOrg 
+                    ? 'You haven\'t hosted any matches for this filter yet. Create a tournament and invite players!' 
+                    : 'The battleground is quiet for this category. Adjust your filters or check back later!';
+                
+                let btnHtml = isOrg 
+                    ? `<button class="btn-primary" style="margin-top:20px; width:auto; padding: 12px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="window.location.href='tournament.html'"><i class="fa-solid fa-bolt"></i> HOST MATCH</button>`
+                    : `<button class="btn-secondary" style="margin-top:20px; width:auto; padding: 12px 30px;" onclick="resetFilters()"><i class="fa-solid fa-rotate"></i> CLEAR FILTERS</button>`;
+
+                let emptyHtml = `
+                    <div id="emptyStateMessage" style="text-align:center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); margin-top: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <i class="fa-solid ${icon}" style="font-size: 4rem; color: ${color}; margin-bottom: 20px; filter: drop-shadow(0 0 15px ${color}); opacity:0.9;"></i>
+                        <h3 style="font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 10px; font-weight: 900; letter-spacing: 1px; text-transform:uppercase;">${title}</h3>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.5; max-width: 320px; margin: 0 auto;">${desc}</p>
+                        <div style="display:flex; justify-content:center;">${btnHtml}</div>
+                    </div>
+                `;
+                feed.insertAdjacentHTML('beforeend', emptyHtml);
+            }
+        }
         function applyFilter() {
             let s = document.getElementById('fltStatus').value; 
             let p = document.getElementById('fltPlatform').value; 
@@ -3308,44 +3356,9 @@
 
                 card.style.display = show ? 'block' : 'none';
             });
+            checkEmptyState();
         }
     </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-            await OneSignal.init({
-                appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-                allowLocalhostAsSecureOrigin: true,
-                serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
-                serviceWorkerParam: { scope: repoScope }
-            });
-
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            if (user && user.email) {
-                let cleanEmail = String(user.email).toLowerCase().trim();
-                await OneSignal.login(cleanEmail);
-                OneSignal.User.addTags({
-                    "user_email": cleanEmail,
-                    "user_status": "active",
-                    "platform": "pwa"
-                });
-            }
-        });
-
-        async function triggerNotificationPrompt() {
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-            OneSignalDeferred.push(async function(OneSignal) {
-                if (OneSignal.Notifications.permission !== "granted") {
-                    try {
-                        await OneSignal.Notifications.requestPermission();
-                    } catch (err) {
-                        console.error("Notification prompt generation failed:", err);
-                    }
-                }
-            });
-        }
-    </script>
+   
 </body>
 </html>
