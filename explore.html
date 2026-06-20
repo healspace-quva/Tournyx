@@ -1239,9 +1239,24 @@
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3500);
         }
 
-        function toggleLike(e, tId, baseCount) {
+       function toggleLike(e, tId, baseCount) {
             e.stopPropagation();
             triggerHaptic();
+
+            // 1. GUEST BLOCKER: Prevent empty emails in backend
+            if (isGuestMode) {
+                let guestModal = document.getElementById('guestLoginModal');
+                if(guestModal) guestModal.classList.add('active');
+                return;
+            }
+
+            // 2. EXTRACT EXACT USER EMAIL
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            if (!user || !user.email) {
+                showToast("Please log in to like tournaments.", true);
+                return;
+            }
+
             let likes = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
             let idx = likes.indexOf(tId);
             let iconContainer = e.currentTarget;
@@ -1249,17 +1264,35 @@
             let currentCount = parseInt(countSpan.innerText) || baseCount;
 
             if(idx > -1) {
+                // REMOVE LIKE
                 likes.splice(idx, 1);
                 iconContainer.classList.remove('liked');
-                countSpan.innerText = currentCount - 1;
-                secureFetch({ action: "like_tournament", match_id: tId, mode: "remove" }).catch(()=>{});
+                countSpan.innerText = currentCount > 0 ? currentCount - 1 : 0;
+                
+                // Secure Payload WITH Email
+                secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "remove" })
+                .then(res => { 
+                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
+                        countSpan.innerText = res.data.likes; // Sync true server count
+                    }
+                }).catch(()=>{});
+
             } else {
+                // ADD LIKE
                 likes.push(tId);
                 iconContainer.classList.add('liked');
                 countSpan.innerText = currentCount + 1;
                 playSuccessSound();
-                secureFetch({ action: "like_tournament", match_id: tId, mode: "add" }).catch(()=>{});
+                
+                // Secure Payload WITH Email
+                secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "add" })
+                .then(res => { 
+                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
+                        countSpan.innerText = res.data.likes; // Sync true server count
+                    }
+                }).catch(()=>{});
             }
+            
             localStorage.setItem('tournyx_liked_matches', JSON.stringify(likes));
         }
 
