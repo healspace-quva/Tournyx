@@ -161,7 +161,7 @@
         /* CROPPER MODAL (MOBILE OVERFLOW FIX) */
         .crop-modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; 
-            height: 100dvh; /* Dynamic Viewport Height fixes the bottom cut-off! */
+            height: 100dvh; 
             background: rgba(7, 3, 17, 0.98); z-index: 6000; 
             display: flex; flex-direction: column; opacity: 0; pointer-events: none; 
             transition: 0.3s; backdrop-filter: blur(10px);
@@ -171,12 +171,12 @@
         .crop-container-box { 
             flex: 1; width: 100%; padding: 15px; 
             display: flex; align-items: center; justify-content: center; 
-            min-height: 0; /* Prevents flexbox stretching */
+            min-height: 0; 
         }
-        .crop-container-box img { max-width: 100%; max-height: 55vh; display: block; } /* Reduced to 55vh to leave room for buttons */
+        .crop-container-box img { max-width: 100%; max-height: 55vh; display: block; } 
         
         .crop-controls { 
-            padding: 15px 15px calc(25px + env(safe-area-inset-bottom)); /* Pushes buttons above the iPhone/Android home bar */
+            padding: 15px 15px calc(25px + env(safe-area-inset-bottom)); 
             background: rgba(0,0,0,0.95); border-top: 1px solid var(--accent-cyan); 
             display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; 
             width: 100%; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
@@ -187,7 +187,7 @@
             padding: 12px 15px; border-radius: 10px; font-family: var(--font-head); 
             font-weight: bold; font-size: 0.9rem; cursor: pointer; border: none; 
             transition: 0.3s; color: white; display:flex; align-items:center; justify-content:center; gap:8px;
-            flex: 1; min-width: 100px; /* Makes buttons size evenly */
+            flex: 1; min-width: 100px; 
         }
         .crop-btn.cancel { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
         .crop-btn.rotate { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
@@ -195,11 +195,11 @@
         
         .crop-btn.confirm { 
             background: var(--accent-gradient); box-shadow: 0 0 15px rgba(189,0,255,0.5); color: white;
-            flex: 100%; /* Forces the main Save button to take up the whole bottom row! */
+            flex: 100%; 
             padding: 15px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
         }
         html.theme-vip .crop-btn.confirm { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
-        .crop-btn:active { transform: scale(0.95); }}
+        .crop-btn:active { transform: scale(0.95); }
 
         /* --- DYNAMIC PRIZE BUILDER WITH CUSTOM DROPDOWN --- */
         .prize-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; animation: slideUp 0.3s ease; width: 100%;}
@@ -586,32 +586,15 @@
                     <div class="input-sublabel" style="margin-bottom: 10px; color: #ccc;">Allow Premium Users & Content Creators to register earlier.</div>
                     
                     <div id="vipEarlyAccessDateContainer" style="display: none; margin-top: 15px; border-top: 1px dashed rgba(255,215,0,0.2); padding-top: 15px;">
-                        <div class="row" style="margin-bottom: 0;">
-                            <div class="col">
-                                <label class="input-label" style="color:white; font-size:0.75rem;">Early Access Start Date *</label>
-                                <input type="date" id="inpVipStart" class="form-control" style="border-color: rgba(255,215,0,0.3); padding:10px;" onclick="if(this.showPicker) this.showPicker();" onchange="validateDates()">
-                            </div>
-                            <div class="col">
-                                <label class="input-label" style="color:white; font-size:0.75rem;">Early Access End Date *</label>
-                                <input type="date" id="inpVipEnd" class="form-control" style="border-color: rgba(255,215,0,0.3); padding:10px;" onclick="if(this.showPicker) this.showPicker();" onchange="validateDates()">
-                            </div>
-                        </div>
+                        <label class="input-label" style="color:white;">Early Access Start Time *</label>
+                        <input type="datetime-local" id="inpVipRegDate" class="form-control" style="border-color: rgba(255,215,0,0.3);" onchange="validateDates()">
                     </div>
                 </div>
 
                 <div class="input-group" style="margin-top: 25px;">
                     <label class="input-label">Tournament Date *</label>
-                    <div class="row" style="margin-bottom: 0;">
-                        <div class="col">
-                            <label class="input-sublabel" style="margin-top:0;">Start Date</label>
-                            <input type="date" id="inpMatchStart" class="form-control" style="padding:10px;" required onclick="if(this.showPicker) this.showPicker();" onchange="calculateProgress()">
-                        </div>
-                        <div class="col">
-                            <label class="input-sublabel" style="margin-top:0;">End Date</label>
-                            <input type="date" id="inpMatchEnd" class="form-control" style="padding:10px;" required onclick="if(this.showPicker) this.showPicker();" onchange="calculateProgress()">
-                        </div>
-                    </div>
-                    <input type="hidden" name="match_period" id="finalMatchPeriod">
+                    <input type="date" name="match_period" class="form-control" required onclick="if(this.showPicker) this.showPicker();">
+                    <div class="input-sublabel">Shows exactly when the matches will take place.</div>
                 </div>
 
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
@@ -731,20 +714,15 @@
 
         function toggleVipEarlyAccess() {
             const container = document.getElementById('vipEarlyAccessDateContainer');
-            const inpStart = document.getElementById('inpVipStart');
-            const inpEnd = document.getElementById('inpVipEnd');
+            const inp = document.getElementById('inpVipRegDate');
             if(document.getElementById('vipEarlyAccessToggle').checked) {
                 container.style.display = 'block';
-                inpStart.required = true;
-                inpEnd.required = true;
+                inp.required = true;
             } else {
                 container.style.display = 'none';
-                inpStart.required = false;
-                inpEnd.required = false;
-                inpStart.value = '';
-                inpEnd.value = '';
-                inpStart.classList.remove('error');
-                inpEnd.classList.remove('error');
+                inp.required = false;
+                inp.value = '';
+                inp.classList.remove('error');
             }
             calculateProgress();
         }
@@ -809,7 +787,6 @@
             customPrizeCount++;
             let id = Date.now() + Math.floor(Math.random() * 1000);
             
-            // Notice how the Title and Value now have their own wrappers!
             let html = `
                 <div class="prize-row" id="prz-${id}">
                     <div class="prize-title-wrapper">
@@ -959,14 +936,14 @@
             }
             
             if(document.getElementById('vipEarlyAccessToggle').checked) {
-                let vipStartStr = document.getElementById('inpVipStart').value;
+                let vipStartStr = document.getElementById('inpVipRegDate').value;
                 if(vipStartStr) {
                     let vipStartDate = new Date(vipStartStr).getTime();
                     if (vipStartDate >= regDate) {
-                        document.getElementById('inpVipStart').classList.add('error');
+                        document.getElementById('inpVipRegDate').classList.add('error');
                         showToast("Early Access must start BEFORE the regular deadline.", true);
                     } else {
-                        document.getElementById('inpVipStart').classList.remove('error');
+                        document.getElementById('inpVipRegDate').classList.remove('error');
                     }
                 }
             }
@@ -1107,7 +1084,6 @@
             confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
             confirmBtn.style.pointerEvents = 'none';
 
-            // Get Cropped Canvas and Compress
             const canvas = cropper.getCroppedCanvas({
                 width: 1280,
                 imageSmoothingEnabled: true,
@@ -1141,7 +1117,6 @@
                 }
             })
             .catch(error => {
-                // Fallback to local Base64 if API fails
                 document.getElementById('bannerBase64').value = compressedBase64;
                 document.getElementById('bannerPreview').src = compressedBase64;
                 
@@ -1191,13 +1166,6 @@
             const form = document.getElementById('createForm');
             
             document.getElementById('hiddenRules').value = document.getElementById('editor').innerHTML;
-            
-            // Format Tournament Dates
-            const matchStart = document.getElementById('inpMatchStart').value;
-            const matchEnd = document.getElementById('inpMatchEnd').value;
-            if(matchStart && matchEnd) {
-                document.getElementById('finalMatchPeriod').value = `${matchStart} to ${matchEnd}`;
-            }
 
             let prizeJson = {};
             document.querySelectorAll('.prize-row').forEach(row => {
@@ -1266,14 +1234,6 @@
             const formData = new FormData(form);
             const rawData = Object.fromEntries(formData);
 
-            // Format VIP Dates
-            let vipDatesFormatted = "";
-            if (document.getElementById('vipEarlyAccessToggle').checked) {
-                const vStart = document.getElementById('inpVipStart').value;
-                const vEnd = document.getElementById('inpVipEnd').value;
-                if(vStart && vEnd) vipDatesFormatted = `${vStart} to ${vEnd}`;
-            }
-
             const payload = {
                 action: 'create_tournament',
                 organizer_email: currentUser.email, 
@@ -1294,7 +1254,7 @@
                 }),
                 
                 is_vip_early_access: document.getElementById('vipEarlyAccessToggle').checked ? "true" : "false",
-                vip_early_access_date: vipDatesFormatted,
+                vip_early_access_date: document.getElementById('vipEarlyAccessToggle').checked ? document.getElementById('inpVipRegDate').value : "",
 
                 prize: rawData.prize_pool,
                 rules: rawData.rules, 
@@ -1360,15 +1320,17 @@
             let secondsSpan = document.getElementById('redirectSeconds');
             timerText.style.display = 'block';
             
-            let countdown = 3;
+            let countdown = 2; // Reduced to 2 seconds for a snappier feel
             secondsSpan.innerText = countdown;
 
             let timerInterval = setInterval(() => {
                 countdown--;
-                secondsSpan.innerText = countdown;
-                if (countdown <= 0) {
+                if(countdown > 0) {
+                    secondsSpan.innerText = countdown;
+                } else {
                     clearInterval(timerInterval);
-                    window.location.href = 'explore.html'; 
+                    timerText.innerText = "Loading Dashboard..."; // Text stays visible so it doesn't blank out
+                    window.location.replace('explore.html'); // Replace skips the back-button trap
                 }
             }, 1000);
         }
