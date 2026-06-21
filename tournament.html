@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- CROPPER.JS FOR 16:9 IMAGE EDITING -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <script>
         (function() {
             try {
@@ -22,6 +26,10 @@
                     document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
                     document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
                     document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(90deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
+                }
+                let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                if (user && String(user.is_premium).toLowerCase() === 'true') {
+                    document.documentElement.classList.add('theme-vip');
                 }
             } catch(e) {
                 console.log("Theme setting bypassed - strict browser settings.");
@@ -46,7 +54,13 @@
             --font-body: 'Rajdhani', sans-serif;
         }
         
-        /* ULTIMATE SCROLLBAR & OVERFLOW KILLER */
+        html.theme-vip {
+            --accent-cyan: #FFD700;
+            --accent-purple: #FFA500;
+            --accent-gradient: linear-gradient(135deg, #FFE87C, #D4AF37, #FF8C00);
+            --card-border: rgba(212, 175, 55, 0.3);
+        }
+        
         * { -ms-overflow-style: none !important; scrollbar-width: none !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
 
@@ -55,7 +69,7 @@
 
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #15062e 0%, #070311 100%); }
 
-        /* --- TOP PROGRESS BAR (UPGRADED GLOW) --- */
+        /* --- TOP PROGRESS BAR --- */
         .top-progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1); z-index: 3000; }
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-cyan)); background-size: 200% 100%; transition: width 0.4s ease; box-shadow: 0 0 15px var(--accent-cyan), 0 0 5px var(--accent-purple); animation: glowFlow 2s linear infinite; }
         @keyframes glowFlow { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
@@ -76,9 +90,10 @@
         /* --- FORM CONTAINER --- */
         .form-container { padding: 20px 15px 150px 15px; max-width: 800px; margin: 0 auto; width: 100%; }
 
-        /* Form Sections */
         .form-section { background: var(--secondary-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 25px 20px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); animation: slideUp 0.5s ease both; transition: border-color 0.3s; overflow: hidden; backdrop-filter: blur(10px); }
         .form-section:focus-within { border-color: rgba(189,0,255,0.6); box-shadow: 0 0 20px rgba(189,0,255,0.25); }
+        html.theme-vip .form-section:focus-within { border-color: rgba(255,215,0,0.6); box-shadow: 0 0 20px rgba(255,215,0,0.25); }
+        
         .form-section.collapsed .section-content { display: none; }
         .form-section:nth-child(1) { animation-delay: 0.1s; } .form-section:nth-child(2) { animation-delay: 0.2s; } .form-section:nth-child(3) { animation-delay: 0.3s; } .form-section:nth-child(4) { animation-delay: 0.4s; } .form-section:nth-child(5) { animation-delay: 0.5s; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -86,80 +101,135 @@
         .section-header { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; color: white; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; user-select: none; }
         .sh-left { display: flex; align-items: center; gap: 10px; }
         .sh-left i { color: var(--accent-purple); font-size: 1.3rem; text-shadow: 0 0 10px rgba(189,0,255,0.4); }
+        html.theme-vip .sh-left i { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); }
+        
         .collapse-icon { font-size: 0.9rem; color: #888; transition: 0.3s; }
         .form-section.collapsed .collapse-icon { transform: rotate(-90deg); }
 
-        /* --- INPUT GROUPS (PREMIUM OVERHAUL & ANTI-OVERFLOW) --- */
+        /* --- INPUT GROUPS --- */
         .input-group { margin-bottom: 20px; width: 100%; position: relative; min-width: 0; }
         .row { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; width: 100%; }
         .col { flex: 1 1 calc(50% - 15px); min-width: 140px; }
         
         .input-label { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; color: white; margin-bottom: 8px; font-family: var(--font-head); font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .tooltip-icon { font-size: 0.8rem; color: var(--accent-cyan); cursor: pointer; }
+        html.theme-vip .tooltip-icon { color: #FFD700; }
         .input-sublabel { font-size: 0.75rem; color: #888; margin-top: 5px; font-style: italic; display: flex; justify-content: space-between; }
         
         .form-control { width: 100%; background: var(--input-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 15px; color: white; font-family: var(--font-body); font-size: 0.95rem; outline: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: inset 0 3px 6px rgba(0,0,0,0.5); box-sizing: border-box; }
-        /* Fix native calendar clickability */
         input[type="date"]::-webkit-calendar-picker-indicator, input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(1); opacity: 0.6; transition: 0.2s; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover, input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
         
         .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 4px rgba(0,0,0,0.4); transform: translateY(-1px); }
+        html.theme-vip .form-control:focus { border-color: #FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        
         .form-control.error { border-color: var(--accent-red); box-shadow: 0 0 10px rgba(255,77,77,0.2); animation: shake 0.4s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         
         select.form-control { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 20px; }
 
-        /* Quick Presets */
         .preset-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
         .preset-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #ccc; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-weight: bold; font-family: var(--font-head); white-space: nowrap; }
         .preset-badge:active { background: var(--accent-cyan); color: black; border-color: var(--accent-cyan); transform: scale(0.95); }
+        html.theme-vip .preset-badge:active { background: #FFD700; color: black; border-color: #FFD700; }
 
-        /* VIP Toggle Switch CSS */
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.1); transition: .4s; border-radius: 20px; }
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #FFD700; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        input:checked + .slider { background-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        html.theme-vip input:checked + .slider { background-color: #FFD700; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
         input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
-        /* Image Uploader */
+        /* --- CROPPER & UPLOADER --- */
         .upload-box-wrapper { border: 2px dashed rgba(189,0,255,0.3); border-radius: 15px; padding: 30px 15px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; background: rgba(0,0,0,0.3); transition: 0.3s; cursor: pointer; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5); }
+        html.theme-vip .upload-box-wrapper { border-color: rgba(255,215,0,0.3); }
         .upload-box-wrapper:hover { border-color: var(--accent-cyan); background: rgba(0,242,255,0.05); }
+        html.theme-vip .upload-box-wrapper:hover { border-color: #FFD700; background: rgba(255,215,0,0.05); }
         .upload-box-wrapper.error { border-color: var(--accent-red); animation: shake 0.4s; }
+        
         .upload-icon-circle { width: 50px; height: 50px; background: var(--accent-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: white; margin: 0 auto 10px; box-shadow: 0 5px 15px rgba(189,0,255,0.4); pointer-events: none;}
+        html.theme-vip .upload-icon-circle { box-shadow: 0 5px 15px rgba(255,215,0,0.4); }
+        
         .upload-title { font-family: var(--font-head); font-weight: bold; color: white; font-size: 0.95rem; margin-bottom: 5px; pointer-events: none;}
         .upload-desc { font-size: 0.75rem; color: #888; pointer-events: none;}
         .file-input { display: none; }
-        .preview-img { width: 100%; height: 160px; object-fit: contain; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,242,255,0.2); background: #000; }
+        .preview-img { width: 100%; height: auto; aspect-ratio: 16/9; object-fit: contain; border-radius: 12px; display: none; margin-top: 10px; border: 1px solid var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,242,255,0.2); background: #000; }
+        html.theme-vip .preview-img { border-color: #FFD700; box-shadow: 0 5px 15px rgba(255,215,0,0.2); }
         .remove-img { background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.3); padding: 8px 15px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; display: none; margin: 15px auto 0; text-align: center; font-weight: bold; width: max-content; transition: 0.3s; }
 
-        /* --- DYNAMIC PRIZE BUILDER --- */
+        /* CROPPER MODAL */
+        .crop-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 3, 17, 0.98); z-index: 5000; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(10px);}
+        .crop-modal-overlay.active { opacity: 1; pointer-events: all; }
+        .crop-container-box { flex: 1; width: 100%; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .crop-container-box img { max-width: 100%; max-height: 70vh; display: block; }
+        .crop-controls { padding: 20px; background: rgba(0,0,0,0.8); border-top: 1px solid var(--accent-cyan); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
+        html.theme-vip .crop-controls { border-top-color: #FFD700; }
+        .crop-btn { padding: 10px 20px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; font-size: 0.9rem; cursor: pointer; border: none; transition: 0.3s; color: white; display:flex; align-items:center; gap:8px;}
+        .crop-btn.cancel { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .crop-btn.rotate { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        html.theme-vip .crop-btn.rotate { background: rgba(255,215,0,0.1); border-color: #FFD700; color: #FFD700; }
+        .crop-btn.confirm { background: var(--accent-gradient); box-shadow: 0 0 15px rgba(189,0,255,0.5); color: white;}
+        html.theme-vip .crop-btn.confirm { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+        .crop-btn:active { transform: scale(0.95); }
+
+        /* --- DYNAMIC PRIZE BUILDER WITH CUSTOM DROPDOWN --- */
         .prize-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; animation: slideUp 0.3s ease; width: 100%;}
-        .prize-row input { flex: 1; min-width: 0; }
+        .prize-row > div { flex: 1; min-width: 0; position: relative; } /* Wrapper for custom dropdown */
+        .prize-row input { width: 100%; }
         .prize-remove { background: rgba(255,77,77,0.05); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-        .prize-remove:active { transform: scale(0.9); background: var(--accent-red); color: white; box-shadow: 0 0 10px rgba(255,77,77,0.5); }
+        .prize-remove:active { transform: scale(0.9); }
+        
         .add-prize-btn { background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); width: 100%; padding: 10px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.85rem;}
-        .add-prize-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+        html.theme-vip .add-prize-btn { background: rgba(255,215,0,0.05); color: #FFD700; border-color: #FFD700; }
+        .add-prize-btn:hover { background: rgba(0,242,255,0.15); }
+        html.theme-vip .add-prize-btn:hover { background: rgba(255,215,0,0.15); }
         .add-prize-btn:active { transform: scale(0.98); }
 
-        /* --- SCHEDULE BUILDER (COMPACT & OVERFLOW SAFE) --- */
+        /* Custom Autocomplete Dropdown */
+        .custom-dropdown { position: absolute; top: 100%; left: 0; width: 100%; max-height: 180px; overflow-y: auto; background: var(--secondary-bg); border: 1px solid var(--accent-cyan); border-radius: 0 0 12px 12px; z-index: 100; box-shadow: 0 10px 20px rgba(0,0,0,0.8); display: none; flex-direction: column; }
+        html.theme-vip .custom-dropdown { border-color: #FFD700; }
+        .dropdown-item { padding: 10px 15px; color: white; font-size: 0.85rem; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover, .dropdown-item:active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); }
+        html.theme-vip .dropdown-item:hover, html.theme-vip .dropdown-item:active { background: rgba(255,215,0,0.15); color: #FFD700; }
+
+        /* --- SCHEDULE BUILDER --- */
         .sch-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; margin-bottom: 15px; position: relative; transition: 0.3s; box-shadow: inset 0 3px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; }
         .sch-block:focus-within { border-color: var(--accent-cyan); box-shadow: inset 0 0 15px rgba(0,242,255,0.1); }
+        html.theme-vip .sch-block:focus-within { border-color: #FFD700; box-shadow: inset 0 0 15px rgba(255,215,0,0.1); }
+        
         .sch-remove { position: absolute; top: -8px; right: -8px; background: var(--accent-red); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.7rem; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 5; transition: 0.3s; }
         .sch-remove:active { transform: scale(0.8); }
         .sch-inner-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
         .sch-inner-col { flex: 1 1 calc(50% - 8px); min-width: 0; }
 
-        /* --- NATIVE RICH TEXT EDITOR --- */
+        /* --- ESPORTS RICH TEXT EDITOR --- */
         .rich-text-wrapper { border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--input-bg); overflow: hidden; transition: 0.3s; width: 100%; box-shadow: inset 0 3px 6px rgba(0,0,0,0.5); }
         .rich-text-wrapper:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 4px rgba(0,0,0,0.4); }
+        html.theme-vip .rich-text-wrapper:focus-within { border-color: #FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.3), inset 0 2px 4px rgba(0,0,0,0.4); }
         .rich-text-wrapper.error { border-color: var(--accent-red); box-shadow: 0 0 10px rgba(255,77,77,0.2); animation: shake 0.4s; }
-        .rt-toolbar { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; color: #888; font-size: 1rem; background: rgba(0,0,0,0.4); overflow-x: auto; }
-        .rt-toolbar i { cursor: pointer; transition: 0.2s; padding: 4px 6px; border-radius: 6px; }
-        .rt-toolbar i:active { color: white; background: rgba(189,0,255,0.4); transform:scale(0.9);}
         
+        .rt-toolbar { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; color: #888; font-size: 1rem; background: rgba(0,0,0,0.4); overflow-x: auto; align-items: center;}
+        .rt-toolbar i { cursor: pointer; transition: 0.2s; padding: 6px 8px; border-radius: 6px; }
+        .rt-toolbar i:hover { color: var(--accent-cyan); background: rgba(0,242,255,0.1); }
+        html.theme-vip .rt-toolbar i:hover { color: #FFD700; background: rgba(255,215,0,0.1); }
+        .rt-toolbar i:active { color: white; background: var(--accent-cyan); transform:scale(0.9);}
+        html.theme-vip .rt-toolbar i:active { background: #FFD700; }
+        .rt-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.1); margin: 0 5px; }
+
         .rt-textarea { width: 100%; background: transparent; border: none; color: white; padding: 12px; font-family: var(--font-body); font-size: 0.95rem; outline: none; min-height: 120px; line-height: 1.5; overflow-y: auto; }
         .rt-textarea:empty:before { content: attr(data-placeholder); color: #666; pointer-events: none; display: block; animation: pulsePlaceholder 4s infinite; }
+        
+        /* Esports styling inside Editor */
+        .rt-textarea ul { padding-left: 20px; list-style-type: none; margin-bottom: 10px;}
+        .rt-textarea ul li { position: relative; margin-bottom: 5px; }
+        .rt-textarea ul li::before { content: "»"; position: absolute; left: -15px; color: var(--accent-cyan); font-weight: bold; font-family: var(--font-head); font-size: 0.8em; top: 2px;}
+        html.theme-vip .rt-textarea ul li::before { color: #FFD700; }
+        .rt-textarea ol { padding-left: 20px; margin-bottom: 10px; color: var(--accent-purple);}
+        html.theme-vip .rt-textarea ol { color: #FF8C00; }
+        .rt-textarea ol li span { color: white; }
+
         @keyframes pulsePlaceholder { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
         /* Selection Cards */
@@ -170,8 +240,12 @@
         .sel-card.active { border-color: var(--accent-cyan); background: rgba(0,242,255,0.1); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 0 0 transparent; transform: translateY(-2px); }
         .sel-card.active i { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.4); }
         .sel-card.active span { color: white; }
+        html.theme-vip .sel-card.active { border-color: #FFD700; background: rgba(255,215,0,0.1); box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        html.theme-vip .sel-card.active i { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.4); }
 
-        /* Modified Game Grid (Mobile + PC Unified) */
+        .platform-grid { grid-template-columns: 1fr 1fr 1fr; margin-top: 15px; }
+
+        /* Modified Game Grid */
         .search-game-box { position: relative; margin-bottom: 15px; width: 100%; }
         .search-game-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; width: 100%; }
@@ -180,37 +254,37 @@
         .game-card.active { border-color: var(--accent-orange); box-shadow: 0 0 15px rgba(255,153,0,0.5); transform: scale(1.05); z-index: 2; }
         .game-card.active img { opacity: 1; filter: brightness(1.2); }
         .game-label { position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; font-family: var(--font-head); font-weight: bold; font-size: 0.75rem; padding: 25px 2px 6px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); z-index: 2; pointer-events: none; white-space: nowrap; overflow:hidden; text-overflow:ellipsis;}
-        .platform-tag { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; color: var(--accent-cyan); border: 1px solid rgba(0,242,255,0.3); backdrop-filter: blur(5px); }
 
         /* Live Calculator */
         .calc-box { background: rgba(0,242,255,0.05); border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 12px 15px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%; transition: 0.3s; box-shadow: inset 0 0 15px rgba(0,242,255,0.05); }
+        html.theme-vip .calc-box { background: rgba(255,215,0,0.05); border-color: #FFD700; box-shadow: inset 0 0 15px rgba(255,215,0,0.05); }
         .calc-lbl { font-size: 0.75rem; color: #ccc; font-family: var(--font-head); text-transform: uppercase;}
         .calc-val { font-size: 1.2rem; font-weight: bold; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        html.theme-vip .calc-val { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
         /* --- SUBMIT BUTTON --- */
         .submit-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: rgba(7,3,17,0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--card-border); z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .submit-btn { width: 100%; max-width: 800px; margin: 0 auto; padding: 14px; background: var(--accent-gradient); border: none; border-radius: 10px; color: white; font-family: var(--font-head); font-size: 1.05rem; font-weight: bold; text-transform: uppercase; cursor: pointer; box-shadow: 0 5px 20px rgba(189, 0, 255, 0.4); transition: 0.3s; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; overflow: hidden; }
+        html.theme-vip .submit-btn { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
         .submit-btn:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(189, 0, 255, 0.4); }
         .submit-btn:disabled { background: #2a2a3a; color: #888; box-shadow: none; cursor: default; transform: none; border: 1px solid #444;}
         
-        /* Ripple Effect */
         .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: ripple-anim 0.6s linear; background-color: rgba(255, 255, 255, 0.4); }
         @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
         /* --- ULTIMATE ESPORTS SUCCESS OVERLAY --- */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4000; opacity: 0; pointer-events: none; transition: 0.4s ease-out; backdrop-filter: blur(15px);}
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 6000; opacity: 0; pointer-events: none; transition: 0.4s ease-out; backdrop-filter: blur(15px);}
         .loading-overlay.active { opacity: 1; pointer-events: auto; }
         
         .loader-ring { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent-cyan); border-radius: 50%; animation: spin 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite; margin-bottom: 20px; box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+        html.theme-vip .loader-ring { border-top-color: #FFD700; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Success Animation Elements */
         .success-icon-anim { display: none; font-size: 5rem; color: var(--accent-green); margin-bottom: 15px; filter: drop-shadow(0 0 30px rgba(0,255,127,0.8)); animation: popScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popScale { 0% { transform: scale(0) rotate(-45deg); opacity: 0; } 60% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
         
         .status-msg { font-family: var(--font-head); font-size: 1.3rem; text-transform: uppercase; color: white; letter-spacing: 1px; text-shadow: 0 0 10px rgba(255,255,255,0.3); transition: 0.3s; text-align: center;}
         
-        /* Professional Shimmer for Loader Text */
         .shimmer-text { background: linear-gradient(90deg, rgba(255,255,255,0.4) 20%, #fff 50%, rgba(255,255,255,0.4) 80%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shimmerText 1.5s linear infinite; }
         @keyframes shimmerText { to { background-position: 200% center; } }
         
@@ -219,21 +293,21 @@
         
         .status-sub { font-size: 0.9rem; color: #aaa; text-align: center; max-width: 80%; margin-top: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
         .status-sub.success-sub { color: var(--accent-cyan); animation: slideUpText 0.8s ease-out forwards; opacity: 0;}
+        html.theme-vip .status-sub.success-sub { color: #FFD700; }
 
         #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 10px; padding: 12px; position: fixed; z-index: 9999; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; transition: 0.4s; box-shadow: 0 5px 25px rgba(0,242,255,0.5); font-size:0.85rem;}
+        html.theme-vip #customToast { background-color: #FFD700; box-shadow: 0 5px 25px rgba(255,215,0,0.5); }
         #customToast.show { visibility: visible; bottom: 80px; }
 
-        /* Stream Badge */
         .stream-status { position: absolute; right: 15px; top: 40px; font-size: 1.1rem; display: none; }
         .stream-status.valid { display: block; color: var(--accent-green); animation: popIn 0.3s; }
         .stream-status.invalid { display: block; color: var(--accent-red); animation: shake 0.3s; }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Mobile specific squish */
         @media (max-width: 768px) {
             .form-section { padding: 18px 15px; }
             .row { gap: 10px; }
-            .col { flex: 1 1 100%; min-width: 100%; } /* Stack completely on mobile */
+            .col { flex: 1 1 100%; min-width: 100%; } 
             .input-label { font-size: 0.75rem; }
             .form-control { padding: 12px; font-size: 0.9rem; }
         }
@@ -275,7 +349,7 @@
                 </div>
                 <img src="" id="bannerPreview" class="preview-img">
                 <div id="removeBanner" class="remove-img" onclick="removeImage('bannerInput', 'bannerBase64', 'bannerArea', 'bannerPreview', 'removeBanner'); triggerHaptic();"><i class="fa-solid fa-trash"></i> Remove Banner</div>
-                <input type="file" id="bannerInput" class="file-input" accept="image/*" onchange="uploadDirectToImgBB(event)">
+                <input type="file" id="bannerInput" class="file-input" accept="image/*" onchange="openCropper(event)">
                 <input type="hidden" name="banner_base64" id="bannerBase64" required>
             </div>
         </div>
@@ -296,9 +370,15 @@
                     <label class="input-label">Tournament Rules & Info *</label>
                     <div class="rich-text-wrapper" id="rtContainer">
                         <div class="rt-toolbar">
-                            <i class="fa-solid fa-bold" onclick="formatText('bold'); triggerHaptic();" title="Bold"></i>
-                            <i class="fa-solid fa-italic" onclick="formatText('italic'); triggerHaptic();" title="Italic"></i>
-                            <i class="fa-solid fa-list-ul" onclick="formatText('insertUnorderedList'); triggerHaptic();" title="Bullet List"></i>
+                            <i class="fa-solid fa-bold" onmousedown="event.preventDefault();" onclick="formatText('bold'); triggerHaptic();" title="Bold"></i>
+                            <i class="fa-solid fa-italic" onmousedown="event.preventDefault();" onclick="formatText('italic'); triggerHaptic();" title="Italic"></i>
+                            <i class="fa-solid fa-underline" onmousedown="event.preventDefault();" onclick="formatText('underline'); triggerHaptic();" title="Underline"></i>
+                            <i class="fa-solid fa-strikethrough" onmousedown="event.preventDefault();" onclick="formatText('strikeThrough'); triggerHaptic();" title="Strikethrough"></i>
+                            <div class="rt-divider"></div>
+                            <i class="fa-solid fa-list-ul" onmousedown="event.preventDefault();" onclick="formatText('insertUnorderedList'); triggerHaptic();" title="Bullet List"></i>
+                            <i class="fa-solid fa-list-ol" onmousedown="event.preventDefault();" onclick="formatText('insertOrderedList'); triggerHaptic();" title="Numbered List"></i>
+                            <div class="rt-divider"></div>
+                            <i class="fa-solid fa-align-center" onmousedown="event.preventDefault();" onclick="formatText('justifyCenter'); triggerHaptic();" title="Center Text"></i>
                         </div>
                         <div class="rt-textarea" id="editor" contenteditable="true" data-placeholder="Detail the rules, format, and requirements here..." oninput="updateWordCount()"></div>
                         <input type="hidden" name="rules" id="hiddenRules" required>
@@ -324,22 +404,36 @@
                 <div class="game-grid" id="gameGrid">
                     <div class="game-card active" data-name="bgmi" onclick="selectGame('BGMI', this)">
                         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3MKUI87mMK4_3DltS3LQgqfrK1sESUIMMqlENdi0dPRtOFkeDbvPsTbSaCRaJOb17QZ5s9OO5dR6kFCYiCkgUCF2zBWwvGFSb3T-9Nz51XuIzMvIiOuqwcLzyzeFmn1orKbiETP4LrlaG-RidnWAAzBwUA3aL5_z62HP4_F7R02lAK_WSYdH0U_Gn7Es/s250/1000094211.jpg">
-                        <div class="platform-tag">MOBILE & PC</div>
                         <div class="game-label">BGMI</div>
                     </div>
                     <div class="game-card" data-name="free fire" onclick="selectGame('Free Fire', this)">
                         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJvPTY_y_XU-0Lwbnjwm7961lCDkSlQh2MtCWHunFVX6WS7WCprCtkPyB334BU_-4vGsP0NseDQf4NPBEOIxqjk7VZQqZUHpnLb4Bw-c1UeXQy2M9DzNrNdYt_aL0GEb1AlTPupC5zEjJiP3Ci0Oxk-wdg5TF5cs8_UNSe3uTT1BE884je3iXr8QlMjx8/s240/1000094210.jpg">
-                        <div class="platform-tag">MOBILE & PC</div>
                         <div class="game-label">Free Fire</div>
                     </div>
                     <div class="game-card" data-name="cod call of duty" onclick="selectGame('COD Mobile', this)">
                         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg8vsDFFkLAXTA234WJzc3OqsLbmB3HBlKaXhiJo-JFVcTtYmMUI2DVdk5ljTPvGPKj-vtcejjFAxZO0sapDafr6xqN7VpHLGCcxqYWWY2LIZszXhrnnO1gcXFeJzY2EclP6G1bLoea5bshOtT7Dl3p4F_l0pGDuz1j5KJ78dEnI7cQixwAeDC1vKG89N4/s460/1000094209.jpg">
-                        <div class="platform-tag">MOBILE & PC</div>
                         <div class="game-label">COD Mobile</div>
                     </div>
                 </div>
+
+                <div class="input-group" style="margin-top: 25px;">
+                    <label class="input-label">Select Platform *</label>
+                    <div class="selection-grid platform-grid">
+                        <div class="sel-card active" onclick="selectPlatform('Mobile', this)">
+                            <i class="fa-solid fa-mobile-screen"></i><span>Mobile</span>
+                        </div>
+                        <div class="sel-card" onclick="selectPlatform('PC', this)">
+                            <i class="fa-solid fa-desktop"></i><span>PC</span>
+                        </div>
+                        <div class="sel-card" onclick="selectPlatform('Mobile & PC', this)">
+                            <i class="fa-solid fa-mobile-button"></i><i class="fa-solid fa-desktop" style="font-size: 0.8rem; margin-top:-5px;"></i><span>Both</span>
+                        </div>
+                    </div>
+                </div>
+
                 <input type="hidden" id="selectedGame" value="BGMI">
-                <input type="hidden" name="game" id="finalGamePayload" value="BGMI [Mobile & PC]">
+                <input type="hidden" id="selectedPlatform" value="Mobile">
+                <input type="hidden" name="game" id="finalGamePayload" value="BGMI [Mobile]">
 
                 <div class="input-group" style="margin-top: 25px;">
                     <label class="input-label">Participation Format *</label>
@@ -425,9 +519,9 @@
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                         <label class="input-label" style="margin:0;">Custom Prize Distribution</label>
-                        <span style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: bold;" id="prizeCountLabel">0/10</span>
+                        <span style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: bold;" id="prizeCountLabel">0/20</span>
                     </div>
-                    <div class="input-sublabel" style="margin-bottom: 15px;">Add up to 10 unique rewards. Click the input to see common suggestions.</div>
+                    <div class="input-sublabel" style="margin-bottom: 15px;">Add up to 20 unique rewards. Click the input to see common suggestions.</div>
                     
                     <div id="customPrizesContainer">
                         </div>
@@ -510,18 +604,6 @@
                 </div>
             </div>
         </div>
-
-        <datalist id="prizeSuggestions">
-            <option value="1st Place"></option>
-            <option value="2nd Place"></option>
-            <option value="3rd Place"></option>
-            <option value="4th Place"></option>
-            <option value="MVP"></option>
-            <option value="Most Kills"></option>
-            <option value="Top Fragger"></option>
-            <option value="Booyah"></option>
-            <option value="Winner Winner"></option>
-        </datalist>
     </form>
 
     <div class="submit-wrapper">
@@ -530,6 +612,22 @@
         </button>
     </div>
 
+    <!-- ULTIMATE CROPPER MODAL -->
+    <div class="crop-modal-overlay" id="cropModalOverlay">
+        <div style="text-align:center; padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--accent-cyan); font-family:var(--font-head); font-weight:bold; letter-spacing:1px;">
+            <i class="fa-solid fa-crop-simple" style="color:var(--accent-cyan);"></i> ADJUST BANNER
+        </div>
+        <div class="crop-container-box">
+            <img id="cropImage" src="">
+        </div>
+        <div class="crop-controls">
+            <button type="button" class="crop-btn cancel" onclick="cancelCrop()">Cancel</button>
+            <button type="button" class="crop-btn rotate" onclick="rotateCrop()"><i class="fa-solid fa-rotate-right"></i> Rotate</button>
+            <button type="button" class="crop-btn confirm" id="cropConfirmBtn" onclick="applyCrop()"><i class="fa-solid fa-check"></i> Save & Compress</button>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loader-ring" id="spinnerEl"></div>
         <i class="fa-solid fa-circle-check success-icon-anim" id="successIcon"></i>
@@ -575,6 +673,12 @@
             addCustomPrize("1st Place", "");
             addCustomPrize("2nd Place", "");
             addCustomPrize("3rd Place", "");
+
+            document.addEventListener('click', function(e) {
+                if(!e.target.classList.contains('prz-title')) {
+                    document.querySelectorAll('.custom-dropdown').forEach(d => d.style.display = 'none');
+                }
+            });
         });
 
         // --- 2. ADVANCED UI FEATURES ---
@@ -583,7 +687,7 @@
         function showToast(msg, isError = false) {
             var x = document.getElementById("customToast");
             x.innerText = msg;
-            x.style.backgroundColor = isError ? "#ff4d4d" : "var(--accent-cyan)";
+            x.style.backgroundColor = isError ? "#ff4d4d" : (document.documentElement.classList.contains('theme-vip') ? "#FFD700" : "var(--accent-cyan)");
             x.style.color = isError ? "white" : "#000";
             x.className = "show";
             triggerHaptic();
@@ -658,35 +762,78 @@
             });
         });
 
-        // --- 3. DYNAMIC PRIZE BUILDER ---
+        // --- 3. DYNAMIC PRIZE BUILDER WITH CUSTOM 50 SUGGESTIONS ---
+        const prizeSuggestionsArr = [
+            "1st Place", "2nd Place", "3rd Place", "4th Place", "5th Place", "6th Place", "7th Place", "8th Place", "9th Place", "10th Place",
+            "MVP", "Top Fragger", "Most Kills", "Booyah", "Winner Winner", "Best IGL", "Best Sniper", "Best Assaulter", "Best Support", "First Blood", 
+            "Survival Master", "Most Damage", "Headshot King", "Clutch God", "Highest Score", "Match 1 Winner", "Match 2 Winner", "Match 3 Winner", "Match 4 Winner", "Match 5 Winner", 
+            "Match 6 Winner", "Day 1 MVP", "Day 2 MVP", "Week 1 Champion", "Group A Winner", "Group B Winner", "Group C Winner", "Group D Winner", "Semi-Finalist", "Runner Up", 
+            "2nd Runner Up", "3rd Runner Up", "4th Runner Up", "Consolation Prize", "Lucky Draw", "Highest K/D", "Most Assists", "Most Revives", "Longest Kill", "Best Grenadier", 
+            "Most Vehicles Destroyed", "Tournament MVP", "Fan Favorite", "Best Underdog", "Fastest Booyah", "Perfect Win", "Flawless"
+        ];
+
         let customPrizeCount = 0;
         function addCustomPrize(title = "", val = "") {
-            if(customPrizeCount >= 10) { showToast("Max 10 prize tiers allowed.", true); return; }
+            if(customPrizeCount >= 20) { showToast("Max 20 prize tiers allowed.", true); return; }
             triggerHaptic();
             customPrizeCount++;
             let id = Date.now() + Math.floor(Math.random() * 1000);
             let html = `
                 <div class="prize-row" id="prz-${id}">
-                    <input type="text" list="prizeSuggestions" class="form-control prz-title" placeholder="Title (e.g. 1st Place)" value="${title}" required oninput="calculateProgress()" style="padding:10px; font-size:0.85rem;">
+                    <div>
+                        <input type="text" class="form-control prz-title" placeholder="Title (e.g. MVP)" value="${title}" required onfocus="showSuggestions(this)" oninput="filterSuggestions(this); calculateProgress();" style="padding:10px; font-size:0.85rem;">
+                        <div class="custom-dropdown"></div>
+                    </div>
                     <input type="text" class="form-control prz-val" placeholder="Amount" value="${val}" required oninput="calculateProgress()" style="padding:10px; font-size:0.85rem;">
                     <div class="prize-remove" onclick="removePrize('prz-${id}')"><i class="fa-solid fa-trash"></i></div>
                 </div>
             `;
             document.getElementById('customPrizesContainer').insertAdjacentHTML('beforeend', html);
-            document.getElementById('prizeCountLabel').innerText = `${customPrizeCount}/10`;
+            document.getElementById('prizeCountLabel').innerText = `${customPrizeCount}/20`;
             calculateProgress();
         }
 
         function removePrize(id) {
             document.getElementById(id).remove();
             customPrizeCount--;
-            document.getElementById('prizeCountLabel').innerText = `${customPrizeCount}/10`;
+            document.getElementById('prizeCountLabel').innerText = `${customPrizeCount}/20`;
             calculateProgress();
             triggerHaptic();
         }
 
+        function showSuggestions(inputEl) {
+            document.querySelectorAll('.custom-dropdown').forEach(d => d.style.display = 'none');
+            let dropdown = inputEl.nextElementSibling;
+            renderDropdown(dropdown, prizeSuggestionsArr, inputEl);
+            dropdown.style.display = 'flex';
+        }
 
-        // --- 4. PLATFORM & GAME SELECTION (Unified Mobile & PC) ---
+        function filterSuggestions(inputEl) {
+            let val = inputEl.value.toLowerCase();
+            let filtered = prizeSuggestionsArr.filter(item => item.toLowerCase().includes(val));
+            let dropdown = inputEl.nextElementSibling;
+            renderDropdown(dropdown, filtered, inputEl);
+            dropdown.style.display = filtered.length > 0 ? 'flex' : 'none';
+        }
+
+        function renderDropdown(dropdownEl, arr, inputEl) {
+            dropdownEl.innerHTML = '';
+            arr.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerText = item;
+                div.onmousedown = function(e) { e.preventDefault(); } 
+                div.onclick = function() {
+                    inputEl.value = item;
+                    dropdownEl.style.display = 'none';
+                    calculateProgress();
+                    triggerHaptic();
+                };
+                dropdownEl.appendChild(div);
+            });
+        }
+
+        // --- 4. PLATFORM & GAME SELECTION (SPLIT LOGIC) ---
         function toggleSelCard(el, groupClass, inputId, val) {
             let siblings = el.parentElement.children;
             for(let i=0; i<siblings.length; i++) { siblings[i].classList.remove('active'); }
@@ -699,10 +846,23 @@
             document.querySelectorAll('.game-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('selectedGame').value = game;
-            
-            // Fixed single platform tag for the backend
-            document.getElementById('finalGamePayload').value = `${game} [Mobile & PC]`;
+            updateGamePayload();
             triggerHaptic();
+        }
+
+        function selectPlatform(platform, el) {
+            let siblings = el.parentElement.children;
+            for(let i=0; i<siblings.length; i++) { siblings[i].classList.remove('active'); }
+            el.classList.add('active');
+            document.getElementById('selectedPlatform').value = platform;
+            updateGamePayload();
+            triggerHaptic();
+        }
+
+        function updateGamePayload() {
+            let game = document.getElementById('selectedGame').value;
+            let plat = document.getElementById('selectedPlatform').value;
+            document.getElementById('finalGamePayload').value = `${game} [${plat}]`;
         }
 
         function filterGames() {
@@ -827,7 +987,7 @@
             triggerHaptic();
         }
 
-        // --- 7. NATIVE RICH TEXT EDITOR ---
+        // --- 7. ESPORTS NATIVE RICH TEXT EDITOR ---
         function formatText(command) {
             document.execCommand(command, false, null);
             document.getElementById('editor').focus();
@@ -854,8 +1014,10 @@
             }, 4000);
         }
 
-        // --- 8. DIRECT IMAGE UPLOADER LOGIC ---
-        function uploadDirectToImgBB(event) {
+        // --- 8. CROPPER.JS IMAGE ENGINE (16:9 BANNER) ---
+        let cropper;
+        
+        function openCropper(event) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -865,81 +1027,103 @@
                 return; 
             }
 
-            let titleState = document.getElementById('uploadTitleState');
-            let descState = document.getElementById('uploadDescState');
-            let iconState = document.getElementById('uploadIconState');
-
-            titleState.innerText = "Compressing & Uploading...";
-            descState.innerText = "Please wait, securing image link.";
-            iconState.className = "fa-solid fa-circle-notch fa-spin";
-            document.getElementById('bannerArea').classList.remove('error');
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    const MAX_WIDTH = 1280;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    const base64Data = compressedBase64.split(',')[1];
-                    const formData = new FormData();
-                    formData.append("image", base64Data);
-                    
-                    fetch("https://api.imgbb.com/1/upload?key=727c66ecfe2882d63fee08fee7495850", {
-                        method: "POST",
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        if(result.success) {
-                            document.getElementById('bannerBase64').value = result.data.url;
-                            document.getElementById('bannerPreview').src = result.data.url;
-                            
-                            document.getElementById('bannerArea').style.display = 'none';
-                            document.getElementById('bannerPreview').style.display = 'block';
-                            document.getElementById('removeBanner').style.display = 'block';
-                            
-                            showToast("Image uploaded successfully!");
-                            calculateProgress();
-                        } else {
-                            throw new Error("ImgBB Failed");
-                        }
-                    })
-                    .catch(error => {
-                        document.getElementById('bannerBase64').value = compressedBase64;
-                        document.getElementById('bannerPreview').src = compressedBase64;
-                        
-                        document.getElementById('bannerArea').style.display = 'none';
-                        document.getElementById('bannerPreview').style.display = 'block';
-                        document.getElementById('removeBanner').style.display = 'block';
-                        
-                        showToast("Image saved locally.");
-                        calculateProgress();
-                    })
-                    .finally(() => {
-                        titleState.innerText = "Upload Banner Image *";
-                        descState.innerText = "High-quality banner (16:9 ratio) • Max 5MB";
-                        iconState.className = "fa-solid fa-cloud-arrow-up";
-                    });
-                };
-                img.src = e.target.result;
+                document.getElementById('cropImage').src = e.target.result;
+                document.getElementById('cropModalOverlay').classList.add('active');
+                
+                if (cropper) { cropper.destroy(); }
+                
+                cropper = new Cropper(document.getElementById('cropImage'), {
+                    aspectRatio: 16 / 9,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
             };
             reader.readAsDataURL(file);
+        }
+
+        function rotateCrop() {
+            if(cropper) {
+                cropper.rotate(90);
+                triggerHaptic();
+            }
+        }
+
+        function cancelCrop() {
+            document.getElementById('cropModalOverlay').classList.remove('active');
+            document.getElementById('bannerInput').value = ""; 
+            if(cropper) cropper.destroy();
+            triggerHaptic();
+        }
+
+        function applyCrop() {
+            if(!cropper) return;
+            triggerHaptic();
+            
+            let confirmBtn = document.getElementById('cropConfirmBtn');
+            confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            confirmBtn.style.pointerEvents = 'none';
+
+            // Get Cropped Canvas and Compress
+            const canvas = cropper.getCroppedCanvas({
+                width: 1280,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            const base64Data = compressedBase64.split(',')[1];
+            
+            const formData = new FormData();
+            formData.append("image", base64Data);
+            
+            fetch("https://api.imgbb.com/1/upload?key=727c66ecfe2882d63fee08fee7495850", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if(result.success) {
+                    document.getElementById('bannerBase64').value = result.data.url;
+                    document.getElementById('bannerPreview').src = result.data.url;
+                    
+                    document.getElementById('bannerArea').style.display = 'none';
+                    document.getElementById('bannerPreview').style.display = 'block';
+                    document.getElementById('removeBanner').style.display = 'block';
+                    
+                    showToast("Banner Cropped & Uploaded!");
+                    calculateProgress();
+                } else {
+                    throw new Error("ImgBB Failed");
+                }
+            })
+            .catch(error => {
+                // Fallback to local Base64 if API fails
+                document.getElementById('bannerBase64').value = compressedBase64;
+                document.getElementById('bannerPreview').src = compressedBase64;
+                
+                document.getElementById('bannerArea').style.display = 'none';
+                document.getElementById('bannerPreview').style.display = 'block';
+                document.getElementById('removeBanner').style.display = 'block';
+                
+                showToast("Image processed locally.");
+                calculateProgress();
+            })
+            .finally(() => {
+                document.getElementById('cropModalOverlay').classList.remove('active');
+                cropper.destroy();
+                confirmBtn.innerHTML = '<i class="fa-solid fa-check"></i> Save & Compress';
+                confirmBtn.style.pointerEvents = 'auto';
+            });
         }
 
         function removeImage(inputId, base64Id, areaId, previewId, removeBtnId) {
@@ -989,7 +1173,6 @@
             });
             document.getElementById('prizeBase64').value = Object.keys(prizeJson).length > 0 ? JSON.stringify(prizeJson) : "";
 
-            // NEW UNIFIED BRACKET JSON SAVER (Including room details)
             let scheduleArr = [];
             document.querySelectorAll('.sch-block').forEach(block => {
                 let title = block.querySelector('.sch-title').value.trim();
