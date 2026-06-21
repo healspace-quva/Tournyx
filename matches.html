@@ -12,6 +12,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         (function() {
             try {
@@ -54,7 +55,6 @@
             --font-body: 'Rajdhani', sans-serif;
         }
 
-        /* --- TRUE GOLDEN VIP THEME --- */
         html.theme-vip {
             --accent-cyan: #FFD700;
             --accent-purple: #FFA500;
@@ -62,7 +62,6 @@
             --card-border: rgba(212, 175, 55, 0.3);
         }
 
-        /* --- ULTIMATE SCROLLBAR KILLER --- */
         * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
         *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; -webkit-appearance: none !important; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -174,29 +173,31 @@
         .status-badge { position: absolute; bottom: 10px; right: 10px; color: #000; background: var(--accent-cyan); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; font-family: var(--font-head); box-shadow: 0 0 10px rgba(0,242,255,0.4); text-transform: uppercase; letter-spacing: 1px; z-index: 5;}
         html.theme-vip .status-badge { background: #FFD700 !important; color: black !important; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
-        /* SEPARATED CARD SECTIONS */
-        .m-content { padding: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 2;}
-        .m-section { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        /* SEPARATED CARD SECTIONS (OVERFLOW FIX) */
+        .m-content { padding: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 2; width: 100%; min-width: 0;}
+        .m-section { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); width: 100%; min-width: 0;}
 
-        .m-title-box { display: flex; justify-content: space-between; align-items: flex-start; }
-        .m-title { font-family: var(--font-head); font-size: 1.05rem; color: white; margin-bottom: 4px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 5px rgba(255,255,255,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase;}
-        .m-date { font-size: 0.75rem; color: #aaa; display: flex; align-items: center; gap: 6px; font-weight: bold;}
+        .m-title-box { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .m-title-box > div { flex: 1; min-width: 0; }
+        .m-title { font-family: var(--font-head); font-size: 1.05rem; color: white; margin-bottom: 4px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 5px rgba(255,255,255,0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; display: block; width: 100%;}
+        .m-date { font-size: 0.75rem; color: #aaa; display: flex; align-items: center; gap: 6px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;}
         
-        .leave-btn { background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.4); color: #ff4d4d; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-weight: 900; transition: 0.3s; font-family: var(--font-head); text-transform: uppercase; z-index: 5; text-align: center; letter-spacing: 1px;}
+        .leave-btn { background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.4); color: #ff4d4d; padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-weight: 900; transition: 0.3s; font-family: var(--font-head); text-transform: uppercase; z-index: 5; text-align: center; letter-spacing: 1px; flex-shrink: 0;}
         .leave-btn:hover { background: rgba(255,77,77,0.2); box-shadow: 0 0 15px rgba(255,77,77,0.3);}
         .leave-btn:active { transform: scale(0.95); }
 
-        .m-roster-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #ccc; font-weight: bold;}
-        .m-detail-item { display: flex; align-items: center; gap: 6px; }
-        .m-detail-item i { color: var(--accent-purple); font-size: 0.9rem;}
+        .m-roster-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #ccc; font-weight: bold; gap: 10px;}
+        .m-detail-item { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .m-detail-item i { color: var(--accent-purple); font-size: 0.9rem; flex-shrink: 0;}
         html.theme-vip .m-detail-item i { color: #FFD700; }
+        .m-detail-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 80%; vertical-align: bottom; }
 
         /* MINIMAL MULTI-STAGE ROOM ID BOX */
-        .room-item { display: flex; flex-direction: column; gap: 4px; flex: 1; cursor: pointer; transition: 0.3s; padding: 6px; border-radius: 8px; z-index: 5; min-width: 0; text-align: center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05);}
+        .room-item { display: flex; flex-direction: column; gap: 4px; flex: 1; cursor: pointer; transition: 0.3s; padding: 6px; border-radius: 8px; z-index: 5; min-width: 0; text-align: center; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.05); overflow: hidden;}
         .room-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px);}
 
         .room-label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 2px;}
-        .room-val { font-family: var(--font-code); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.5s ease; }
+        .room-val { font-family: var(--font-code); font-size: 1.1rem; font-weight: bold; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.5s ease; width: 100%; display: block;}
         
         .val-waiting { color: #555; filter: blur(3px); user-select: none; }
         .val-active { color: var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.5); filter: blur(0px); }
@@ -204,11 +205,11 @@
         html.theme-vip .val-copied { color: #FFD700 !important; text-shadow: 0 0 10px rgba(255,215,0,0.6) !important; }
         
         /* PROFESSIONAL MINIMAL SPINNER */
-        .minimal-spinner { width: 22px; height: 22px; border: 3px solid rgba(0,242,255,0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; }
+        .minimal-spinner { width: 22px; height: 22px; border: 3px solid rgba(0,242,255,0.2); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; flex-shrink: 0;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* EPIC WHATSAPP SQUAD SHARE BUTTON */
-        .squad-share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; background: rgba(0,242,255,0.05); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 6px 12px; border-radius: 8px; font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; cursor: pointer; transition: 0.3s; z-index: 5; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 5px rgba(0,242,255,0.1);}
+        .squad-share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; background: rgba(0,242,255,0.05); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 6px 12px; border-radius: 8px; font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; cursor: pointer; transition: 0.3s; z-index: 5; text-transform: uppercase; letter-spacing: 1px; box-shadow: inset 0 0 5px rgba(0,242,255,0.1); flex-shrink: 0;}
         html.theme-vip .squad-share-btn { background: rgba(255,215,0,0.05); border-color: #FFD700; color: #FFD700; box-shadow: inset 0 0 5px rgba(255,215,0,0.1); }
         .squad-share-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 10px rgba(0,242,255,0.4); transform: translateY(-2px);}
         html.theme-vip .squad-share-btn:hover { background: rgba(255,215,0,0.15); box-shadow: 0 0 10px rgba(255,215,0,0.4); }
@@ -232,8 +233,8 @@
         .pro-features-wrapper { padding: 0 15px; margin-top: 25px; margin-bottom: 10px; }
         .pro-features-title { font-family: var(--font-head); font-size: 0.85rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-align: center; font-weight: bold;}
         .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.65rem; color: #aaa; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); }
-        .features-grid div { display: flex; align-items: center; gap: 6px; }
-        .features-grid i { color: var(--accent-cyan); width: 14px; text-align: center; }
+        .features-grid div { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .features-grid i { color: var(--accent-cyan); width: 14px; text-align: center; flex-shrink: 0; }
 
         /* CUSTOM TOAST */
         #customToast { visibility: hidden; min-width: 250px; background-color: var(--accent-cyan); color: #000; text-align: center; border-radius: 12px; padding: 14px; position: fixed; z-index: 5000; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: bold; box-shadow: 0 8px 25px rgba(0,242,255,0.5); opacity: 0; transition: opacity 0.4s, bottom 0.4s; font-size: 0.85rem;}
@@ -348,7 +349,6 @@
     </div>
 
     <div class="match-list" id="matchList">
-        <!-- Upgraded Sectioned Skeleton Loader -->
         <div id="skeletonLoader" class="skeleton-wrapper" style="display:flex;">
             <div class="s-card">
                 <div class="skeleton" style="height: 130px; width:100%; border-radius:0;"></div>
@@ -386,7 +386,6 @@
         <div id="realContent" class="real-content-wrapper"></div>
     </div>
 
-    <!-- 10 Upgraded Esports Features -->
     <div class="pro-features-wrapper">
         <div class="pro-features-title">10 Pro Esports Features Active</div>
         <div class="features-grid">
@@ -403,7 +402,6 @@
         </div>
     </div>
 
-    <!-- Perfected Tournyx Theme Unjoin Loader -->
     <div class="full-overlay" id="leaveOverlay">
         <div class="cyber-loader-container">
             <div class="cyber-ring-outer"></div>
@@ -574,7 +572,7 @@
         window.addEventListener('offline', () => { document.getElementById('offlineBanner').classList.add('active'); });
         window.addEventListener('online', () => { document.getElementById('offlineBanner').classList.remove('active'); fetchLiveMatches(true); });
 
-        // --- BULLETPROOF FETCH ENGINE ---
+        // --- BULLETPROOF FETCH ENGINE (CLAN SYNC) ---
         document.addEventListener("DOMContentLoaded", function() {
             if(!navigator.onLine) document.getElementById('offlineBanner').classList.add('active');
             
@@ -635,9 +633,20 @@
             if (!user || !user.email) return;
 
             try {
+                // Fetch user's clans to pass to the backend
+                let myClansRes = await secureFetch({ action: 'get_my_clans', username: user.username });
+                let clanNames = [];
+                if (myClansRes.status === 'success' && myClansRes.data) {
+                    clanNames = myClansRes.data.map(c => String(c.name || c.clan_name || c[1]).toLowerCase().trim());
+                    localStorage.setItem('tournyx_my_clans_cache', JSON.stringify(myClansRes.data));
+                } else {
+                    let cached = JSON.parse(localStorage.getItem('tournyx_my_clans_cache')) || [];
+                    clanNames = cached.map(c => String(c.name || c.clan_name || c[1]).toLowerCase().trim());
+                }
+
                 const [tournamentsRes, myMatchesRes] = await Promise.all([
                     secureFetch({ action: 'get_tournaments' }),
-                    secureFetch({ action: 'get_matches', email: user.email })
+                    secureFetch({ action: 'get_matches', email: user.email, clans: JSON.stringify(clanNames) })
                 ]);
 
                 let allTournaments = tournamentsRes.data || [];
@@ -741,7 +750,7 @@
             }, 10000); 
         }
 
-        // --- RENDER ENGINE WITH SECTIONED CARDS ---
+        // --- RENDER ENGINE WITH SECTIONED CARDS & OVERFLOW FIXES ---
         function switchTab(tabName, element) {
             currentTab = tabName;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -926,7 +935,7 @@
                         roomBoxHtml = `
                             <div class="m-section" style="border-color: var(--accent-red); background:rgba(255,77,77,0.05); display:flex; align-items:center; gap:15px; padding:12px 15px;">
                                 <i class="fa-solid fa-lock" style="font-size: 1.5rem; color: var(--accent-red); filter:drop-shadow(0 0 5px rgba(255,77,77,0.5));"></i>
-                                <div style="flex:1;">
+                                <div style="flex:1; min-width:0;">
                                     <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:0.95rem; letter-spacing:1px;">GROUP LOCKED</div>
                                     <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">Your match is currently locked by the organizer.</div>
                                 </div>
@@ -935,7 +944,7 @@
                          roomBoxHtml = `
                             <div class="m-section" style="border-color: var(--accent-cyan); background:rgba(0,242,255,0.05); display:flex; align-items:center; gap:15px; padding:12px 15px;">
                                 <div class="minimal-spinner" style="border-color: rgba(0,242,255,0.2); border-top-color: var(--accent-cyan);"></div>
-                                <div style="flex:1;">
+                                <div style="flex:1; min-width:0;">
                                     <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:0.95rem; letter-spacing:1px;">LOCATING SQUAD</div>
                                     <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">Scanning tournament groups for your roster...</div>
                                 </div>
@@ -944,7 +953,7 @@
                         roomBoxHtml = `
                             <div class="m-section" style="border-color: var(--accent-cyan); background:rgba(0,242,255,0.05); display:flex; align-items:center; gap:15px; padding:12px 15px;">
                                 <div class="minimal-spinner" style="border-color: rgba(0,242,255,0.2); border-top-color: var(--accent-cyan);"></div>
-                                <div style="flex:1;">
+                                <div style="flex:1; min-width:0;">
                                     <div style="font-family: var(--font-head); font-weight: 900; color: white; font-size:0.95rem; letter-spacing:1px;">WAITING FOR ORGANIZER ${groupDisplay}</div>
                                     <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">Credentials will appear here when live.</div>
                                 </div>
@@ -995,7 +1004,6 @@
                         </div>
                         
                         <div class="m-content">
-                            <!-- Section 1: Title & Actions -->
                             <div class="m-section m-title-box">
                                 <div>
                                     <h4 class="m-title">${displayTitle}</h4>
@@ -1006,13 +1014,11 @@
                                 ${(currentTab === 'Upcoming' && !isLeaved && !sLower.includes("completed")) ? `<button onclick="confirmLeave(event, '${safeTitle}', '${match.match_id}')" class="leave-btn">UNJOIN</button>` : ''}
                             </div>
                             
-                            <!-- Section 2: Roster & Status -->
                             <div class="m-section m-roster-row">
                                 ${rosterHtml}
-                                <div class="m-detail-item"><span style="color:${isLeaved ? '#ff4d4d' : 'var(--accent-green)'}; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;"><i class="fa-solid ${isLeaved ? 'fa-ban' : 'fa-check-circle'}"></i> ${isLeaved ? 'Unjoined' : 'Confirmed'}</span></div>
+                                <div class="m-detail-item" style="flex:none;"><span style="color:${isLeaved ? '#ff4d4d' : 'var(--accent-green)'}; font-weight:900; letter-spacing:0.5px; text-transform:uppercase;"><i class="fa-solid ${isLeaved ? 'fa-ban' : 'fa-check-circle'}"></i> ${isLeaved ? 'Unjoined' : 'Confirmed'}</span></div>
                             </div>
                             
-                            <!-- Section 3: Room Data / Loaders -->
                             ${roomBoxHtml}
                         </div>
                     </div>
@@ -1062,6 +1068,5 @@
             });
         }
     </script>
-   
 </body>
 </html>
