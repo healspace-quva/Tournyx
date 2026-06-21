@@ -158,20 +158,48 @@
         html.theme-vip .preview-img { border-color: #FFD700; box-shadow: 0 5px 15px rgba(255,215,0,0.2); }
         .remove-img { background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.3); padding: 8px 15px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; display: none; margin: 15px auto 0; text-align: center; font-weight: bold; width: max-content; transition: 0.3s; }
 
-        /* CROPPER MODAL */
-        .crop-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 3, 17, 0.98); z-index: 5000; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(10px);}
+        /* CROPPER MODAL (MOBILE OVERFLOW FIX) */
+        .crop-modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            height: 100dvh; /* Dynamic Viewport Height fixes the bottom cut-off! */
+            background: rgba(7, 3, 17, 0.98); z-index: 6000; 
+            display: flex; flex-direction: column; opacity: 0; pointer-events: none; 
+            transition: 0.3s; backdrop-filter: blur(10px);
+        }
         .crop-modal-overlay.active { opacity: 1; pointer-events: all; }
-        .crop-container-box { flex: 1; width: 100%; padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .crop-container-box img { max-width: 100%; max-height: 70vh; display: block; }
-        .crop-controls { padding: 20px; background: rgba(0,0,0,0.8); border-top: 1px solid var(--accent-cyan); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
+        
+        .crop-container-box { 
+            flex: 1; width: 100%; padding: 15px; 
+            display: flex; align-items: center; justify-content: center; 
+            min-height: 0; /* Prevents flexbox stretching */
+        }
+        .crop-container-box img { max-width: 100%; max-height: 55vh; display: block; } /* Reduced to 55vh to leave room for buttons */
+        
+        .crop-controls { 
+            padding: 15px 15px calc(25px + env(safe-area-inset-bottom)); /* Pushes buttons above the iPhone/Android home bar */
+            background: rgba(0,0,0,0.95); border-top: 1px solid var(--accent-cyan); 
+            display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; 
+            width: 100%; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
         html.theme-vip .crop-controls { border-top-color: #FFD700; }
-        .crop-btn { padding: 10px 20px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; font-size: 0.9rem; cursor: pointer; border: none; transition: 0.3s; color: white; display:flex; align-items:center; gap:8px;}
+        
+        .crop-btn { 
+            padding: 12px 15px; border-radius: 10px; font-family: var(--font-head); 
+            font-weight: bold; font-size: 0.9rem; cursor: pointer; border: none; 
+            transition: 0.3s; color: white; display:flex; align-items:center; justify-content:center; gap:8px;
+            flex: 1; min-width: 100px; /* Makes buttons size evenly */
+        }
         .crop-btn.cancel { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
         .crop-btn.rotate { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
         html.theme-vip .crop-btn.rotate { background: rgba(255,215,0,0.1); border-color: #FFD700; color: #FFD700; }
-        .crop-btn.confirm { background: var(--accent-gradient); box-shadow: 0 0 15px rgba(189,0,255,0.5); color: white;}
+        
+        .crop-btn.confirm { 
+            background: var(--accent-gradient); box-shadow: 0 0 15px rgba(189,0,255,0.5); color: white;
+            flex: 100%; /* Forces the main Save button to take up the whole bottom row! */
+            padding: 15px; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
+        }
         html.theme-vip .crop-btn.confirm { background: linear-gradient(135deg, #FFD700, #FF8C00); color: black; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
-        .crop-btn:active { transform: scale(0.95); }
+        .crop-btn:active { transform: scale(0.95); }}
 
         /* --- DYNAMIC PRIZE BUILDER WITH CUSTOM DROPDOWN --- */
         .prize-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; animation: slideUp 0.3s ease; width: 100%;}
