@@ -174,25 +174,27 @@
         .crop-btn:active { transform: scale(0.95); }
 
         /* --- DYNAMIC PRIZE BUILDER WITH CUSTOM DROPDOWN --- */
-        .prize-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; animation: slideUp 0.3s ease; width: 100%;}
-        .prize-row > div { flex: 1; min-width: 0; position: relative; } /* Wrapper for custom dropdown */
-        .prize-row input { width: 100%; }
-        .prize-remove { background: rgba(255,77,77,0.05); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-        .prize-remove:active { transform: scale(0.9); }
+        .prize-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; animation: slideUp 0.3s ease; width: 100%;}
+        .prize-title-wrapper { flex: 1.2; min-width: 0; position: relative; } 
+        .prize-val-wrapper { flex: 1; min-width: 0; }
+        .prize-row input { width: 100%; box-sizing: border-box; }
         
-        .add-prize-btn { background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); width: 100%; padding: 10px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.85rem;}
+        .prize-remove { background: rgba(255,77,77,0.05); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.2); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .prize-remove:active { transform: scale(0.9); background: var(--accent-red); color: white; box-shadow: 0 0 10px rgba(255,77,77,0.5); }
+        
+        .add-prize-btn { background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); width: 100%; padding: 12px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.9rem;}
         html.theme-vip .add-prize-btn { background: rgba(255,215,0,0.05); color: #FFD700; border-color: #FFD700; }
-        .add-prize-btn:hover { background: rgba(0,242,255,0.15); }
-        html.theme-vip .add-prize-btn:hover { background: rgba(255,215,0,0.15); }
+        .add-prize-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 15px rgba(0,242,255,0.3);}
+        html.theme-vip .add-prize-btn:hover { background: rgba(255,215,0,0.15); box-shadow: 0 0 15px rgba(255,215,0,0.3);}
         .add-prize-btn:active { transform: scale(0.98); }
 
         /* Custom Autocomplete Dropdown */
-        .custom-dropdown { position: absolute; top: 100%; left: 0; width: 100%; max-height: 180px; overflow-y: auto; background: var(--secondary-bg); border: 1px solid var(--accent-cyan); border-radius: 0 0 12px 12px; z-index: 100; box-shadow: 0 10px 20px rgba(0,0,0,0.8); display: none; flex-direction: column; }
+        .custom-dropdown { position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: rgba(10, 5, 20, 0.98); border: 1px solid var(--accent-cyan); border-radius: 12px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: none; flex-direction: column; backdrop-filter: blur(15px); }
         html.theme-vip .custom-dropdown { border-color: #FFD700; }
-        .dropdown-item { padding: 10px 15px; color: white; font-size: 0.85rem; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dropdown-item { padding: 12px 15px; color: white; font-size: 0.85rem; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--font-head); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
         .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover, .dropdown-item:active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); }
-        html.theme-vip .dropdown-item:hover, html.theme-vip .dropdown-item:active { background: rgba(255,215,0,0.15); color: #FFD700; }
+        .dropdown-item:hover, .dropdown-item:active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); padding-left: 20px;}
+        html.theme-vip .dropdown-item:hover, html.theme-vip .dropdown-item:active { background: rgba(255,215,0,0.15); color: #FFD700; padding-left: 20px;}
 
         /* --- SCHEDULE BUILDER --- */
         .sch-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; margin-bottom: 15px; position: relative; transition: 0.3s; box-shadow: inset 0 3px 6px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box; }
@@ -778,13 +780,17 @@
             triggerHaptic();
             customPrizeCount++;
             let id = Date.now() + Math.floor(Math.random() * 1000);
+            
+            // Notice how the Title and Value now have their own wrappers!
             let html = `
                 <div class="prize-row" id="prz-${id}">
-                    <div>
-                        <input type="text" class="form-control prz-title" placeholder="Title (e.g. MVP)" value="${title}" required onfocus="showSuggestions(this)" oninput="filterSuggestions(this); calculateProgress();" style="padding:10px; font-size:0.85rem;">
+                    <div class="prize-title-wrapper">
+                        <input type="text" class="form-control prz-title" placeholder="Title (e.g. 1st Place)" value="${title}" required onfocus="showSuggestions(this)" oninput="filterSuggestions(this); calculateProgress();" style="padding:14px 12px; font-size:0.85rem;">
                         <div class="custom-dropdown"></div>
                     </div>
-                    <input type="text" class="form-control prz-val" placeholder="Amount" value="${val}" required oninput="calculateProgress()" style="padding:10px; font-size:0.85rem;">
+                    <div class="prize-val-wrapper">
+                        <input type="text" class="form-control prz-val" placeholder="Amount" value="${val}" required oninput="calculateProgress()" style="padding:14px 12px; font-size:0.85rem;">
+                    </div>
                     <div class="prize-remove" onclick="removePrize('prz-${id}')"><i class="fa-solid fa-trash"></i></div>
                 </div>
             `;
