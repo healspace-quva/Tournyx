@@ -355,6 +355,40 @@
         @media (min-width: 850px) { .bottom-nav { display: none !important; } body { padding-bottom: 0; } }
         .median-active .top-header { display: none !important; } .median-active { padding-top: 15px !important; }
     </style>
+    <!-- ==========================================
+         ONESIGNAL GLOBAL NOTIFICATION ENGINE
+         ========================================== -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        window.OneSignal = OneSignal;
+        
+        // 1. Initialize the global OneSignal configuration
+        await OneSignal.init({
+          appId: "15a8e2b2-240c-4547-929e-797d7170e988",
+          notifyButton: {
+            enable: false, // Hides the default floating bell icon to keep your UI clean
+          },
+        });
+
+        // 2. SESSION ATTRIBUTE ROUTING
+        // Keeps player devices mapped to their accounts regardless of which page they browse
+        try {
+            let userSession = localStorage.getItem('tournyx_user');
+            if (userSession) {
+                let playerObj = JSON.parse(userSession);
+                if (playerObj && playerObj.email) {
+                    let playerEmail = String(playerObj.email).trim().toLowerCase();
+                    // Securely establish target alias link
+                    await OneSignal.login(playerEmail);
+                }
+            }
+        } catch(error) { 
+            console.warn("Notification session sync bypassed:", error.message); 
+        }
+      });
+    </script>
 </head>
 <body>
     <canvas id="particles-canvas"></canvas>
@@ -2630,57 +2664,6 @@
         }
     
 </script>
-        <!-- ==========================================
-     OFFICIAL ONESIGNAL PWA INTEGRATION (V16)
-     ========================================== -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-        
-        // Auto-calculates subdirectory context paths if hosted on Github sub-pages
-        const repoScope = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-
-        // 1. Initialize the Web Push SDK
-        await OneSignal.init({
-            appId: "15a8e2b2-248c-4547-929e-797d7170e988", 
-            allowLocalhostAsSecureOrigin: true,
-            serviceWorkerPath: repoScope + "OneSignalSDKWorker.js",
-            serviceWorkerParam: { scope: repoScope }
-        });
-
-        // 2. Extract user data safely from local browser storage
-        let user = JSON.parse(localStorage.getItem('tournyx_user'));
-        
-        if (user && user.email) {
-            let cleanEmail = String(user.email).toLowerCase().trim();
-
-            // 3. TARGETING LOCK: Map browser token to the user email alias
-            await OneSignal.login(cleanEmail);
-
-            // 4. Set Organizational Subscriptions Profile Tags
-            OneSignal.User.addTags({
-                "user_email": cleanEmail,
-                "user_status": "active",
-                "platform": "pwa"
-            });
-        }
-    });
-
-    // 🚀 ULTRA-PREMIUM PROMPT TRIGGER (Invoked on Button Interaction)
-    async function triggerNotificationPrompt() {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            if (OneSignal.Notifications.permission !== "granted") {
-                try {
-                    // Safe from strict browser permission blockers
-                    await OneSignal.Notifications.requestPermission();
-                } catch (err) {
-                    console.error("Notification prompt generation failed:", err);
-                }
-            }
-        });
-    }
-</script>
+       
 </body>
 </html>
