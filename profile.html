@@ -195,7 +195,7 @@
         .insta-link { color: #E1306C; font-size: 1rem; cursor: pointer; transition: 0.3s;}
         .discord-link { color: #5865F2; font-size: 1rem; cursor: pointer; transition: 0.3s;}
 
-        .logout-btn { color: #ff4d4d; font-size: 1.5rem; cursor: pointer; padding: 12px; background: rgba(255,77,77,0.05); border-radius: 15px; border: 1px solid rgba(255,77,77,0.1); transition: 0.3s; will-change: transform; flex-shrink: 0; backdrop-filter: blur(5px);}
+        .logout-btn { color: #ff4d4d; font-size: 1.5rem; cursor: pointer; padding: 12px; background: rgba(255,77,77,0.05); border-radius: 15px; border: 1px solid rgba(255,77,77,0.1); transition: 0.3s; will-change: transform; flex-shrink: 0; backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center;}
         .logout-btn:active { background: #ff4d4d; color: white; transform: scale(0.9);}
 
         .tier-container { padding: 0 20px; margin-top: -15px; margin-bottom: 25px; position: relative; z-index: 2;}
@@ -391,12 +391,26 @@
         input:checked + .slider { background-color: #FFD700; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
         input:checked + .slider:before { transform: translateX(18px); background-color: #000; }
 
-        .prize-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; animation: fadeIn 0.3s ease; }
-        .prize-row input { flex: 1; margin-bottom: 0 !important;}
-        .prize-remove { background: rgba(255,77,77,0.05); color: var(--accent-danger); border: 1px solid rgba(255,77,77,0.2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        /* --- DYNAMIC PRIZE BUILDER WITH CUSTOM DROPDOWN --- */
+        .prize-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; animation: slideInUp 0.3s ease; width: 100%;}
+        .prize-title-wrapper { flex: 1.2; min-width: 0; position: relative; } 
+        .prize-val-wrapper { flex: 1; min-width: 0; }
+        .prize-row input { width: 100%; box-sizing: border-box; margin-bottom: 0 !important; }
+        
+        .prize-remove { background: rgba(255,77,77,0.05); color: var(--accent-danger); border: 1px solid rgba(255,77,77,0.2); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         .prize-remove:active { transform: scale(0.9); background: var(--accent-danger); color: white; }
-        .add-prize-btn { background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); width: 100%; padding: 10px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.85rem;}
+        
+        .add-prize-btn { background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); width: 100%; padding: 12px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 5px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; font-size: 0.9rem;}
+        .theme-vip .add-prize-btn { background: rgba(255,215,0,0.05); color: #FFD700; border-color: #FFD700; }
         .add-prize-btn:active { transform: scale(0.98); }
+
+        /* Custom Autocomplete Dropdown */
+        .custom-dropdown { position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: rgba(10, 5, 20, 0.98); border: 1px solid var(--accent-cyan); border-radius: 12px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: none; flex-direction: column; backdrop-filter: blur(15px); }
+        .theme-vip .custom-dropdown { border-color: #FFD700; }
+        .dropdown-item { padding: 12px 15px; color: white; font-size: 0.85rem; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--font-head); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover, .dropdown-item:active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); padding-left: 20px;}
+        .theme-vip .dropdown-item:hover, .theme-vip .dropdown-item:active { background: rgba(255,215,0,0.15); color: #FFD700; padding-left: 20px;}
 
         .sch-block { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 12px; position: relative; }
         .sch-remove { position: absolute; top: -8px; right: -8px; background: var(--accent-danger); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.65rem; z-index: 5; }
@@ -565,8 +579,14 @@
                 <span class="game-tag" id="playerRoleTag"><i class="fa-solid fa-user-ninja"></i> Role: N/A</span>
             </div>
         </div>
-        <div class="logout-btn" onclick="logout(); triggerHaptic();">
-            <i class="fa-solid fa-power-off"></i>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; z-index: 5;">
+            <div class="logout-btn" style="background: rgba(0,242,255,0.05); color: var(--accent-cyan); border-color: rgba(0,242,255,0.2); font-size: 1.1rem; padding: 10px;" onclick="window.location.href='login.html'; triggerHaptic();" title="Switch Account">
+                <i class="fa-solid fa-users-arrows"></i>
+            </div>
+            <div class="logout-btn" style="font-size: 1.1rem; padding: 10px;" onclick="logout(); triggerHaptic();" title="Logout">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
         </div>
     </div>
 
@@ -1103,7 +1123,6 @@
         </div>
     </div>
 
-    <!-- UPDATE TOURNAMENT MODAL WITH UNIFIED BRACKET ENGINE -->
     <div class="modal-overlay full-screen-modal" id="manageTourneyModal" style="z-index: 5005;">
         <div class="modal-card" style="padding: 25px 20px 0; display: flex; flex-direction: column;">
             <div class="modal-header" style="margin-bottom: 15px; flex-shrink: 0;">
@@ -1130,7 +1149,6 @@
                 <label class="form-label" style="margin-top: 10px;"><i class="fa-solid fa-pen"></i> Basic Information</label>
                 <input type="text" id="editTourneyTitle" class="form-control" placeholder="Tournament Title *" style="margin-bottom: 20px;">
 
-                <!-- THE UNIFIED MATCH SCHEDULE ENGINE -->
                 <div style="padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <label class="form-label" style="margin:0;"><i class="fa-solid fa-calendar-days"></i> Match Schedule & Sub-Lobbies</label>
@@ -1142,7 +1160,7 @@
 
                 <label class="form-label"><i class="fa-solid fa-calendar-check"></i> Timeline & Access</label>
                 <label class="form-label" style="font-size: 0.7rem; text-transform:none; margin-bottom: 4px; color:#888;">General Registration Deadline *</label>
-                <input type="datetime-local" id="editTourneyRegTime" class="form-control highlight-input-important" style="margin-bottom: 15px;">
+                <input type="datetime-local" id="editTourneyRegTime" class="form-control highlight-input-important" style="margin-bottom: 15px;" onclick="if(this.showPicker) this.showPicker();">
                 
                 <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 12px; border-radius: 12px; margin-bottom: 15px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
@@ -1152,17 +1170,25 @@
                             <span class="slider round"></span>
                         </label>
                     </div>
-                    <div id="editVipDateContainer" style="display: none; border-top: 1px dashed rgba(255,215,0,0.2); padding-top: 10px; margin-top: 10px;">
-                        <label class="form-label" style="font-size: 0.7rem; text-transform:none; margin-bottom: 4px; color:white;">Early Access Start Time *</label>
-                        <input type="datetime-local" id="editVipRegDate" class="form-control highlight-input-important" style="border-color: rgba(255,215,0,0.3);">
+                    <div id="editVipDateContainer" style="display: none; border-top: 1px dashed rgba(255,215,0,0.2); padding-top: 15px; margin-top: 15px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 120px;">
+                                <label class="form-label" style="font-size: 0.7rem; text-transform:none; margin-bottom: 4px; color:white;">Early Access Start *</label>
+                                <input type="date" id="editVipStart" class="form-control highlight-input-important" style="border-color: rgba(255,215,0,0.3); padding: 10px;" onclick="if(this.showPicker) this.showPicker();">
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label class="form-label" style="font-size: 0.7rem; text-transform:none; margin-bottom: 4px; color:white;">Early Access End *</label>
+                                <input type="date" id="editVipEnd" class="form-control highlight-input-important" style="border-color: rgba(255,215,0,0.3); padding: 10px;" onclick="if(this.showPicker) this.showPicker();">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 <label class="form-label" style="font-size: 0.7rem; text-transform:none; margin-bottom: 4px; color:#888;">Overall Tournament Period (Start to End) *</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 20px; align-items: center;">
-                    <input type="date" id="editTourneyDateStart" class="form-control" style="padding: 12px;">
+                    <input type="date" id="editTourneyDateStart" class="form-control" style="padding: 12px;" onclick="if(this.showPicker) this.showPicker();">
                     <span style="color: #888; font-family: var(--font-head); font-size: 0.75rem;">TO</span>
-                    <input type="date" id="editTourneyDateEnd" class="form-control" style="padding: 12px;">
+                    <input type="date" id="editTourneyDateEnd" class="form-control" style="padding: 12px;" onclick="if(this.showPicker) this.showPicker();">
                 </div>
 
                 <label class="form-label"><i class="fa-solid fa-users"></i> Format & Slots</label>
@@ -1194,7 +1220,7 @@
                 <div style="padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
                         <label class="form-label" style="margin:0;">Prize Distribution</label>
-                        <span style="font-size: 0.7rem; color: var(--accent-cyan); font-weight: bold;" id="editPrizeCountLabel">0/10</span>
+                        <span style="font-size: 0.7rem; color: var(--accent-cyan); font-weight: bold;" id="editPrizeCountLabel">0/20</span>
                     </div>
                     <div id="editCustomPrizesContainer"></div>
                     <button type="button" class="add-prize-btn" onclick="addEditCustomPrize()"><i class="fa-solid fa-plus"></i> Add Prize Tier</button>
@@ -1424,7 +1450,7 @@
             if (!userData || !userData.email || userData.email === "guest@tournyx.com") {
                 isGuestMode = true;
                 document.getElementById('settingsContainer').style.display = 'none';
-                document.querySelector('.logout-btn').style.display = 'none';
+                document.querySelector('.profile-header > div:last-child').style.display = 'none';
                 document.querySelector('.edit-avatar-btn').style.display = 'none';
                 document.getElementById('bottomNavBar').style.display = 'none';
                 document.getElementById('guestCtaWrapper').classList.add('active');
@@ -1564,7 +1590,16 @@
                         userData.claimed_ms = userData.claimed_ms || localUser.claimed_ms || [];
                     }
 
-                    if(!isGuestMode) { localStorage.setItem('tournyx_user', JSON.stringify(userData)); }
+                    if(!isGuestMode) { 
+                        localStorage.setItem('tournyx_user', JSON.stringify(userData)); 
+                        
+                        // --- SECURE MULTI-ACCOUNT SAVER FOR LOGIN.HTML ---
+                        let savedAccs = JSON.parse(localStorage.getItem('tournyx_saved_accounts') || '[]');
+                        let exists = savedAccs.findIndex(a => a.email === userData.email);
+                        let accData = { email: userData.email, username: userData.username, avatar: userData.avatar, role: userData.role };
+                        if(exists > -1) { savedAccs[exists] = accData; } else { savedAccs.push(accData); }
+                        localStorage.setItem('tournyx_saved_accounts', JSON.stringify(savedAccs));
+                    }
                 }
             } catch(e) { 
                 if(isManual) showToast("Network issue. Showing cached profile.", true);
@@ -2009,32 +2044,27 @@
             });
         }
 
+        // --- UNIFIED MATCH SCHEDULE ENGINE (20 LIMIT) ---
         let editScheduleCount = 0;
-        
-        // --- UNIFIED MATCH SCHEDULE ENGINE ---
         function addEditScheduleBlock(title='', start='', end='', roomId='', roomPass='', status='WAITING') {
-            if(editScheduleCount >= 7) { showToast("Maximum 7 matches allowed per tournament.", true); return; }
-            triggerHaptic();
+            if(editScheduleCount >= 20) { showToast("Maximum 20 matches allowed per tournament.", true); return; }
             editScheduleCount++;
             let id = Date.now() + Math.random().toString().slice(2,5);
             let html = `
                 <div class="sch-block" id="edit-sch-${id}">
                     <div class="sch-remove" onclick="removeEditScheduleBlock('edit-sch-${id}')"><i class="fa-solid fa-xmark"></i></div>
-                    
                     <label class="form-label" style="font-size:0.65rem; color:#888;">Match / Group Name</label>
                     <input type="text" class="form-control sch-title highlight-input" placeholder="e.g. Group A / Finals" value="${title}" required style="margin-bottom:10px; font-size:0.95rem; font-weight:bold; padding: 12px; border-color:var(--accent-cyan);">
-                    
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
                         <div style="flex:1;">
                             <label class="form-label" style="font-size:0.65rem; text-transform:none; margin-bottom:4px; color:#888;">Start Time</label>
-                            <input type="datetime-local" class="form-control sch-start" value="${start}" required style="font-size:0.8rem; padding: 10px;">
+                            <input type="datetime-local" class="form-control sch-start" value="${start}" required style="font-size:0.8rem; padding: 10px;" onclick="if(this.showPicker) this.showPicker();">
                         </div>
                         <div style="flex:1;">
                             <label class="form-label" style="font-size:0.65rem; text-transform:none; margin-bottom:4px; color:#888;">End Time</label>
-                            <input type="datetime-local" class="form-control sch-end" value="${end}" required style="font-size:0.8rem; padding: 10px;">
+                            <input type="datetime-local" class="form-control sch-end" value="${end}" required style="font-size:0.8rem; padding: 10px;" onclick="if(this.showPicker) this.showPicker();">
                         </div>
                     </div>
-
                     <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px; margin-top: 5px;">
                         <label class="form-label" style="font-size:0.65rem; color:#888;"><i class="fa-solid fa-key"></i> Room Access (Secured)</label>
                         <div style="display:flex; gap:10px; margin-bottom: 5px;">
@@ -2047,48 +2077,99 @@
                             <option value="LOCKED" ${status === 'LOCKED' ? 'selected' : ''}>Room Locked</option>
                         </select>
                     </div>
-                </div>
-            `;
+                </div>`;
             document.getElementById('editScheduleContainer').insertAdjacentHTML('beforeend', html);
         }
-
+        
         function removeEditScheduleBlock(id) {
             document.getElementById(id).remove();
             editScheduleCount--;
             triggerHaptic();
         }
 
+        // --- DYNAMIC PRIZE BUILDER (20 LIMIT & CUSTOM SUGGESTIONS) ---
+        const prizeSuggestionsArr = [
+            "1st Place", "2nd Place", "3rd Place", "4th Place", "5th Place", "6th Place", "7th Place", "8th Place", "9th Place", "10th Place",
+            "MVP", "Top Fragger", "Most Kills", "Booyah", "Winner Winner", "Best IGL", "Best Sniper", "Best Assaulter", "Best Support", "First Blood", 
+            "Survival Master", "Most Damage", "Headshot King", "Clutch God", "Highest Score", "Match 1 Winner", "Match 2 Winner", "Match 3 Winner", "Match 4 Winner", "Match 5 Winner", 
+            "Match 6 Winner", "Day 1 MVP", "Day 2 MVP", "Week 1 Champion", "Group A Winner", "Group B Winner", "Group C Winner", "Group D Winner", "Semi-Finalist", "Runner Up", 
+            "2nd Runner Up", "3rd Runner Up", "4th Runner Up", "Consolation Prize", "Lucky Draw", "Highest K/D", "Most Assists", "Most Revives", "Longest Kill", "Best Grenadier", 
+            "Most Vehicles Destroyed", "Tournament MVP", "Fan Favorite", "Best Underdog", "Fastest Booyah", "Perfect Win", "Flawless"
+        ];
+
         let editPrizeCount = 0;
         function addEditCustomPrize(title = "", val = "") {
-            if(editPrizeCount >= 10) { showToast("Max 10 prize tiers allowed.", true); return; }
-            triggerHaptic();
+            if(editPrizeCount >= 20) { showToast("Max 20 prize tiers allowed.", true); return; }
             editPrizeCount++;
             let id = Date.now() + Math.floor(Math.random() * 1000);
             let html = `
                 <div class="prize-row" id="edit-prz-${id}">
-                    <input type="text" class="form-control edit-prz-title" placeholder="Title (e.g. 1st Place)" value="${title}" required style="padding: 12px; font-size: 0.9rem;">
-                    <input type="text" class="form-control edit-prz-val highlight-input-important" placeholder="Amount (e.g. 5000 Rs)" value="${val}" required style="padding: 12px; font-size: 0.9rem;">
+                    <div class="prize-title-wrapper">
+                        <input type="text" class="form-control edit-prz-title" placeholder="Title (e.g. 1st Place)" value="${title}" required onfocus="showSuggestions(this)" oninput="filterSuggestions(this);" style="padding:14px 12px; font-size:0.85rem;">
+                        <div class="custom-dropdown"></div>
+                    </div>
+                    <div class="prize-val-wrapper">
+                        <input type="text" class="form-control edit-prz-val highlight-input-important" placeholder="Amount (e.g. 5000 Rs)" value="${val}" required style="padding:14px 12px; font-size:0.85rem;">
+                    </div>
                     <div class="prize-remove" onclick="removeEditPrize('edit-prz-${id}')"><i class="fa-solid fa-trash"></i></div>
-                </div>
-            `;
+                </div>`;
             document.getElementById('editCustomPrizesContainer').insertAdjacentHTML('beforeend', html);
-            document.getElementById('editPrizeCountLabel').innerText = `${editPrizeCount}/10`;
+            document.getElementById('editPrizeCountLabel').innerText = `${editPrizeCount}/20`;
         }
 
         function removeEditPrize(id) {
             document.getElementById(id).remove();
             editPrizeCount--;
-            document.getElementById('editPrizeCountLabel').innerText = `${editPrizeCount}/10`;
+            document.getElementById('editPrizeCountLabel').innerText = `${editPrizeCount}/20`;
             triggerHaptic();
         }
 
+        function showSuggestions(inputEl) {
+            document.querySelectorAll('.custom-dropdown').forEach(d => d.style.display = 'none');
+            let dropdown = inputEl.nextElementSibling;
+            renderDropdown(dropdown, prizeSuggestionsArr, inputEl);
+            dropdown.style.display = 'flex';
+        }
+
+        function filterSuggestions(inputEl) {
+            let val = inputEl.value.toLowerCase();
+            let filtered = prizeSuggestionsArr.filter(item => item.toLowerCase().includes(val));
+            let dropdown = inputEl.nextElementSibling;
+            renderDropdown(dropdown, filtered, inputEl);
+            dropdown.style.display = filtered.length > 0 ? 'flex' : 'none';
+        }
+
+        function renderDropdown(dropdownEl, arr, inputEl) {
+            dropdownEl.innerHTML = '';
+            arr.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerText = item;
+                div.onmousedown = function(e) { e.preventDefault(); } 
+                div.onclick = function() {
+                    inputEl.value = item;
+                    dropdownEl.style.display = 'none';
+                    triggerHaptic();
+                };
+                dropdownEl.appendChild(div);
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if(!e.target.classList.contains('edit-prz-title')) {
+                document.querySelectorAll('.custom-dropdown').forEach(d => d.style.display = 'none');
+            }
+        });
+
+        // --- VIP DATE FIX ENGINE ---
         function toggleEditVip() {
             const container = document.getElementById('editVipDateContainer');
             if(document.getElementById('editVipToggle').checked) {
                 container.style.display = 'block';
             } else {
                 container.style.display = 'none';
-                document.getElementById('editVipRegDate').value = '';
+                document.getElementById('editVipStart').value = '';
+                document.getElementById('editVipEnd').value = '';
             }
         }
 
@@ -2112,15 +2193,13 @@
 
             document.getElementById('editCustomPrizesContainer').innerHTML = "";
             editPrizeCount = 0;
-            document.getElementById('editPrizeCountLabel').innerText = "0/10";
+            document.getElementById('editPrizeCountLabel').innerText = "0/20";
 
             try {
                 let pData = t.prize_json || t.prize_distribution_image || t.prize_distribution || t.prize_image || "";
                 if(pData && pData.startsWith("{")) {
                     let parsed = JSON.parse(pData);
-                    Object.keys(parsed).forEach(key => {
-                        addEditCustomPrize(key, parsed[key]);
-                    });
+                    Object.keys(parsed).forEach(key => { addEditCustomPrize(key, parsed[key]); });
                 } else {
                     if(t.prize1 && String(t.prize1).trim() !== "") { addEditCustomPrize("1st Place", t.prize1); }
                     if(t.prize2 && String(t.prize2).trim() !== "") { addEditCustomPrize("2nd Place", t.prize2); }
@@ -2135,7 +2214,6 @@
                 if(sData && sData.startsWith("[")) {
                     let parsed = JSON.parse(sData);
                     parsed.forEach(match => {
-                        // Pass roomId, pass, and status from the unified JSON block
                         addEditScheduleBlock(match.title, match.start, match.end, match.roomId, match.roomPass, match.status);
                     });
                 }
@@ -2150,7 +2228,6 @@
                 let pts = dateVal.split(' - ');
                 startD = pts[0]; endD = pts[1];
             }
-            
             if (startD) { try { let d = new Date(startD); if(!isNaN(d)) startD = d.toISOString().split('T')[0]; } catch(e){} }
             if (endD) { try { let d = new Date(endD); if(!isNaN(d)) endD = d.toISOString().split('T')[0]; } catch(e){} }
             
@@ -2161,13 +2238,25 @@
             if (timeVal.length > 16 && timeVal.includes('Z')) timeVal = timeVal.substring(0, 16); 
             document.getElementById('editTourneyRegTime').value = timeVal;
             
+            // THE VIP DATES FIX
             let isVip = String(t.is_vip_early_access).toLowerCase() === 'true';
             document.getElementById('editVipToggle').checked = isVip;
             toggleEditVip();
             if(isVip && t.vip_early_access_date) {
-                let vTimeVal = t.vip_early_access_date;
-                if (vTimeVal.length > 16 && vTimeVal.includes('Z')) vTimeVal = vTimeVal.substring(0, 16);
-                document.getElementById('editVipRegDate').value = vTimeVal;
+                let vDateVal = t.vip_early_access_date;
+                let vStartD = vDateVal, vEndD = "";
+                if(vDateVal.includes(' to ')) {
+                    let vPts = vDateVal.split(' to ');
+                    vStartD = vPts[0]; vEndD = vPts[1];
+                } else if(vDateVal.includes(' - ')) {
+                    let vPts = vDateVal.split(' - ');
+                    vStartD = vPts[0]; vEndD = vPts[1];
+                }
+                if (vStartD) { try { let d = new Date(vStartD); if(!isNaN(d)) vStartD = d.toISOString().split('T')[0]; } catch(e){} }
+                if (vEndD) { try { let d = new Date(vEndD); if(!isNaN(d)) vEndD = d.toISOString().split('T')[0]; } catch(e){} }
+                
+                document.getElementById('editVipStart').value = vStartD;
+                document.getElementById('editVipEnd').value = vEndD;
             }
             
             document.getElementById('editTourneySlots').value = t.slots || t.total_slots || "";
@@ -2175,16 +2264,13 @@
             let formatSelect = document.getElementById('editTourneyFormat');
             let tFormat = t.format || "Squad";
             for(let i=0; i<formatSelect.options.length; i++) {
-                if(formatSelect.options[i].value.toLowerCase() === tFormat.toLowerCase()) {
-                    formatSelect.selectedIndex = i; break;
-                }
+                if(formatSelect.options[i].value.toLowerCase() === tFormat.toLowerCase()) { formatSelect.selectedIndex = i; break; }
             }
 
             let feeJson = {};
             try { if(t.fee_json) feeJson = JSON.parse(t.fee_json); } catch(e){}
             let rFee = feeJson.rupees !== undefined ? parseInt(feeJson.rupees) : (parseInt(t.fee) || 0);
             let pFee = feeJson.points !== undefined ? parseInt(feeJson.points) : (parseInt(t.fee_pts) || 0);
-            
             let reqTickets = (rFee >= 10 && rFee % 10 === 0) ? rFee / 10 : rFee; 
             
             document.getElementById('editTourneyEntry').value = reqTickets;
@@ -2192,7 +2278,6 @@
             
             let prizeStr = String(t.prize_pool || t.prize || "0");
             document.getElementById('editTourneyPrize').value = prizeStr.replace(/[^0-9]/g, ''); 
-            
             document.getElementById('editTourneyStream').value = t.stream_url || t.stream || "";
             
             let rawRules = String(t.description || t.rules || "");
@@ -2208,6 +2293,173 @@
 
         function closeManageModal() { document.getElementById('manageTourneyModal').classList.remove('active'); }
 
+        function processTournamentBanner(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if(file.size > 5 * 1024 * 1024) { showToast("File exceeds 5MB limit.", true); return; }
+
+            showToast("Processing banner...");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let MAX_WIDTH = 1280; 
+                    let scaleSize = MAX_WIDTH / img.width;
+                    if(scaleSize > 1) scaleSize = 1; 
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
+                    
+                    let previewImg = document.getElementById('editTourneyBannerPreview');
+                    previewImg.src = compressedBase64;
+                    previewImg.classList.add('has-image');
+                    
+                    const base64Data = compressedBase64.split(',')[1];
+                    const formData = new FormData();
+                    formData.append("image", base64Data);
+                    
+                    fetch("https://api.imgbb.com/1/upload?key=727c66ecfe2882d63fee08fee7495850", { method: "POST", body: formData })
+                    .then(res => res.json())
+                    .then(result => {
+                        if(result.success) {
+                            document.getElementById('editTourneyBannerStr').value = result.data.url;
+                            showToast("Banner processed successfully!");
+                        } else { document.getElementById('editTourneyBannerStr').value = compressedBase64; }
+                    })
+                    .catch(() => document.getElementById('editTourneyBannerStr').value = compressedBase64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ""; 
+        }
+
+        async function saveTournamentChanges() {
+            try {
+                const btn = document.getElementById('saveTourneyBtn'); 
+                btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Updating..."; 
+                btn.disabled = true;
+                
+                let descVal = document.getElementById('editTourneyDesc').value;
+                let formattedDesc = descVal.split('\n').map(line => `<div>${line}</div>`).join('');
+
+                let startD = document.getElementById('editTourneyDateStart').value;
+                let endD = document.getElementById('editTourneyDateEnd').value;
+                let finalMatchPeriod = startD;
+                if(endD && endD !== "") finalMatchPeriod += " to " + endD;
+                
+                let prizeJson = {};
+                document.querySelectorAll('.prize-row').forEach(row => {
+                    let t = row.querySelector('.edit-prz-title').value.trim();
+                    let v = row.querySelector('.edit-prz-val').value.trim();
+                    if(t && v) { prizeJson[t] = v; }
+                });
+                let finalPrizeStr = Object.keys(prizeJson).length > 0 ? JSON.stringify(prizeJson) : "";
+
+                let scheduleArr = [];
+                document.querySelectorAll('#editScheduleContainer .sch-block').forEach(block => {
+                    let title = block.querySelector('.sch-title').value.trim();
+                    let start = block.querySelector('.sch-start').value;
+                    let end = block.querySelector('.sch-end').value;
+                    let roomId = block.querySelector('.sch-room-id') ? block.querySelector('.sch-room-id').value.trim() : "";
+                    let roomPass = block.querySelector('.sch-room-pass') ? block.querySelector('.sch-room-pass').value.trim() : "";
+                    let status = block.querySelector('.sch-room-status') ? block.querySelector('.sch-room-status').value : "WAITING";
+
+                    if(title) { scheduleArr.push({ title: title, start: start, end: end, roomId: roomId, roomPass: roomPass, status: status }); }
+                });
+                let finalBracketStr = scheduleArr.length > 0 ? JSON.stringify(scheduleArr) : "";
+                
+                // THE VIP DATES FIX 
+                let isVip = document.getElementById('editVipToggle').checked;
+                let vipDatesFormatted = "";
+                if (isVip) {
+                    const vStart = document.getElementById('editVipStart').value;
+                    const vEnd = document.getElementById('editVipEnd').value;
+                    if (vStart && vEnd) vipDatesFormatted = `${vStart} to ${vEnd}`;
+                }
+                
+                let feeRs = parseInt(document.getElementById('editTourneyEntry').value) || 0;
+                let feePts = parseInt(document.getElementById('editTourneyEntryPts').value) || 0;
+                let finalFeeJson = JSON.stringify({ rupees: feeRs, points: feePts });
+
+                let fallbackId = "WAITING"; let fallbackPass = "WAITING";
+                if (scheduleArr.length > 0) { fallbackId = scheduleArr[0].roomId || "WAITING"; fallbackPass = scheduleArr[0].roomPass || "WAITING"; }
+
+                const payload = {
+                    action: 'edit_tournament',
+                    id: document.getElementById('editTourneyId').value,
+                    email: userData.email.trim().toLowerCase(), 
+                    title: document.getElementById('editTourneyTitle').value,
+                    banner: document.getElementById('editTourneyBannerStr').value,
+                    prize_json: finalPrizeStr,
+                    bracket_json: finalBracketStr,
+                    room_id: fallbackId,
+                    room_pass: fallbackPass,
+                    rooms_json: "{}", 
+                    match_period: finalMatchPeriod, 
+                    reg_time: document.getElementById('editTourneyRegTime').value, 
+                    slots: document.getElementById('editTourneySlots').value,
+                    format: document.getElementById('editTourneyFormat').value,
+                    fee_json: finalFeeJson,
+                    is_vip_early_access: isVip ? "true" : "false",
+                    vip_early_access_date: isVip ? vipDatesFormatted : "",
+                    prize_pool: document.getElementById('editTourneyPrize').value,
+                    stream_url: document.getElementById('editTourneyStream').value,
+                    description: formattedDesc,
+                    status: document.getElementById('editTourneyStatus').value
+                };
+
+                await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+                
+                playSuccessSound();
+                showToast("Tournament Updated Successfully!");
+                closeManageModal();
+                fetchMyTournaments(); 
+                btn.innerText = "Update Tournament"; 
+                btn.disabled = false;
+
+            } catch (error) {
+                showToast("Tournament Updated Successfully!"); 
+                closeManageModal();
+                fetchMyTournaments();
+                document.getElementById('saveTourneyBtn').innerText = "Update Tournament"; 
+                document.getElementById('saveTourneyBtn').disabled = false;
+            }
+        }
+
+        function deleteTournament() {
+            if(!confirm("⚠️ WARNING: Are you sure you want to completely DELETE this tournament? This action cannot be undone and will be permanently archived.")) return;
+            const btn = document.getElementById('deleteTourneyBtn');
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Deleting...";
+            btn.disabled = true;
+
+            let editId = document.getElementById('editTourneyId').value;
+
+            fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'delete_tournament', id: editId, email: userData.email.trim().toLowerCase() })
+            }).then(() => {
+                showToast("Tournament Deleted & Archived!");
+                playSuccessSound();
+                closeManageModal();
+                btn.innerHTML = "<i class='fa-solid fa-trash-can'></i> Delete Permanently"; 
+                btn.disabled = false;
+                
+                myHostedEvents = myHostedEvents.filter(t => String(t.id || t.match_id) !== String(editId));
+                setTimeout(() => { renderTournamentsList(document.getElementById('orgTourneysList')); }, 300);
+            }).catch(()=>{
+                showToast("Error deleting tournament.", true);
+                btn.innerHTML = "<i class='fa-solid fa-trash-can'></i> Delete Permanently"; 
+                btn.disabled = false;
+            });
+        }
+
+        // --- ACCOUNT SETTINGS / LOGOUT LOGIC ---
         function processAvatarUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2265,193 +2517,6 @@
             event.target.value = ""; 
         }
 
-        function processTournamentBanner(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if(file.size > 5 * 1024 * 1024) { showToast("File exceeds 5MB limit.", true); return; }
-
-            showToast("Processing banner...");
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let MAX_WIDTH = 1280; 
-                    let scaleSize = MAX_WIDTH / img.width;
-                    if(scaleSize > 1) scaleSize = 1; 
-                    canvas.width = img.width * scaleSize;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
-                    
-                    let previewImg = document.getElementById('editTourneyBannerPreview');
-                    previewImg.src = compressedBase64;
-                    previewImg.classList.add('has-image');
-                    
-                    const base64Data = compressedBase64.split(',')[1];
-                    const formData = new FormData();
-                    formData.append("image", base64Data);
-                    
-                    fetch("https://api.imgbb.com/1/upload?key=727c66ecfe2882d63fee08fee7495850", {
-                        method: "POST", body: formData
-                    })
-                    .then(res => res.json())
-                    .then(result => {
-                        if(result.success) {
-                            document.getElementById('editTourneyBannerStr').value = result.data.url;
-                            showToast("Banner processed successfully!");
-                        } else {
-                            document.getElementById('editTourneyBannerStr').value = compressedBase64;
-                        }
-                    })
-                    .catch(() => document.getElementById('editTourneyBannerStr').value = compressedBase64);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-            event.target.value = ""; 
-        }
-
-        async function saveTournamentChanges() {
-            try {
-                const btn = document.getElementById('saveTourneyBtn'); 
-                btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Updating..."; 
-                btn.disabled = true;
-                
-                let descVal = document.getElementById('editTourneyDesc').value;
-                let formattedDesc = descVal.split('\n').map(line => `<div>${line}</div>`).join('');
-
-                let startD = document.getElementById('editTourneyDateStart').value;
-                let endD = document.getElementById('editTourneyDateEnd').value;
-                let finalMatchPeriod = startD;
-                if(endD && endD !== "") finalMatchPeriod += " to " + endD;
-                
-                let prizeJson = {};
-                document.querySelectorAll('.prize-row').forEach(row => {
-                    let t = row.querySelector('.edit-prz-title').value.trim();
-                    let v = row.querySelector('.edit-prz-val').value.trim();
-                    if(t && v) { prizeJson[t] = v; }
-                });
-                let finalPrizeStr = Object.keys(prizeJson).length > 0 ? JSON.stringify(prizeJson) : "";
-
-                // --- UNIFIED MATCH ENGINE SAVER ---
-                let scheduleArr = [];
-                document.querySelectorAll('#editScheduleContainer .sch-block').forEach(block => {
-                    let title = block.querySelector('.sch-title').value.trim();
-                    let start = block.querySelector('.sch-start').value;
-                    let end = block.querySelector('.sch-end').value;
-                    
-                    // Explicitly grab the room details with SAFETY CHECKS!
-                    let roomId = block.querySelector('.sch-room-id') ? block.querySelector('.sch-room-id').value.trim() : "";
-                    let roomPass = block.querySelector('.sch-room-pass') ? block.querySelector('.sch-room-pass').value.trim() : "";
-                    let status = block.querySelector('.sch-room-status') ? block.querySelector('.sch-room-status').value : "WAITING";
-
-                    if(title) {
-                        scheduleArr.push({
-                            title: title, 
-                            start: start, 
-                            end: end,
-                            roomId: roomId,
-                            roomPass: roomPass,
-                            status: status
-                        });
-                    }
-                });
-                let finalBracketStr = scheduleArr.length > 0 ? JSON.stringify(scheduleArr) : "";
-                
-                let isVip = document.getElementById('editVipToggle').checked;
-                let vipDate = document.getElementById('editVipRegDate').value;
-                
-                let feeRs = parseInt(document.getElementById('editTourneyEntry').value) || 0;
-                let feePts = parseInt(document.getElementById('editTourneyEntryPts').value) || 0;
-                let finalFeeJson = JSON.stringify({ rupees: feeRs, points: feePts });
-
-                // Find the default "Waiting" ID to act as a fallback 
-                let fallbackId = "WAITING";
-                let fallbackPass = "WAITING";
-                if (scheduleArr.length > 0) {
-                    fallbackId = scheduleArr[0].roomId || "WAITING";
-                    fallbackPass = scheduleArr[0].roomPass || "WAITING";
-                }
-
-                const payload = {
-                    action: 'edit_tournament',
-                    id: document.getElementById('editTourneyId').value,
-                    email: userData.email.trim().toLowerCase(), 
-                    title: document.getElementById('editTourneyTitle').value,
-                    banner: document.getElementById('editTourneyBannerStr').value,
-                    prize_json: finalPrizeStr,
-                    bracket_json: finalBracketStr,
-                    
-                    room_id: fallbackId,
-                    room_pass: fallbackPass,
-                    rooms_json: "{}", // We send empty to cleanly retire this column in the DB
-
-                    match_period: finalMatchPeriod, 
-                    reg_time: document.getElementById('editTourneyRegTime').value, 
-                    slots: document.getElementById('editTourneySlots').value,
-                    format: document.getElementById('editTourneyFormat').value,
-                    fee_json: finalFeeJson,
-                    is_vip_early_access: isVip ? "true" : "false",
-                    vip_early_access_date: isVip ? vipDate : "",
-                    prize_pool: document.getElementById('editTourneyPrize').value,
-                    stream_url: document.getElementById('editTourneyStream').value,
-                    description: formattedDesc,
-                    status: document.getElementById('editTourneyStatus').value
-                };
-
-                await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
-                });
-                
-                playSuccessSound();
-                showToast("Tournament Updated Successfully!");
-                closeManageModal();
-                fetchMyTournaments(); 
-                btn.innerText = "Update Tournament"; 
-                btn.disabled = false;
-
-            } catch (error) {
-                showToast("Tournament Updated Successfully!"); // Silently succeed UX override
-                closeManageModal();
-                fetchMyTournaments();
-                document.getElementById('saveTourneyBtn').innerText = "Update Tournament"; 
-                document.getElementById('saveTourneyBtn').disabled = false;
-            }
-        }
-
-        function deleteTournament() {
-            if(!confirm("⚠️ WARNING: Are you sure you want to completely DELETE this tournament? This action cannot be undone and will be permanently archived.")) return;
-            const btn = document.getElementById('deleteTourneyBtn');
-            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Deleting...";
-            btn.disabled = true;
-
-            let editId = document.getElementById('editTourneyId').value;
-
-            fetch(API_URL, {
-                method: 'POST', headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify({ action: 'delete_tournament', id: editId, email: userData.email.trim().toLowerCase() })
-            }).then(() => {
-                showToast("Tournament Deleted & Archived!");
-                playSuccessSound();
-                closeManageModal();
-                btn.innerHTML = "<i class='fa-solid fa-trash-can'></i> Delete Permanently"; 
-                btn.disabled = false;
-                
-                myHostedEvents = myHostedEvents.filter(t => String(t.id || t.match_id) !== String(editId));
-                setTimeout(() => { renderTournamentsList(document.getElementById('orgTourneysList')); }, 300);
-            }).catch(()=>{
-                showToast("Error deleting tournament.", true);
-                btn.innerHTML = "<i class='fa-solid fa-trash-can'></i> Delete Permanently"; 
-                btn.disabled = false;
-            });
-        }
-
         async function saveProfile() {
             const btn = document.getElementById('saveBtn'); 
             btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Saving..."; 
@@ -2493,7 +2558,7 @@
                 btn.innerText = "Save Changes"; btn.disabled = false;
             });
         }
-
+        
         let targetNewEmail = "";
         function startEmailChange() {
             document.getElementById('emailChangeModal').classList.add('active');
@@ -2503,7 +2568,6 @@
             document.getElementById('emailStep3').style.display = 'none';
             document.getElementById('emailStep4').style.display = 'none';
         }
-        
         function sendOldEmailOtp() {
             const btn = document.getElementById('btnSendOldOtp');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
@@ -2523,7 +2587,6 @@
                 btn.innerHTML = 'Send OTP'; btn.disabled = false;
             }).catch(() => { showToast("Network error.", true); btn.innerHTML = 'Send OTP'; btn.disabled = false; });
         }
-
         function verifyOldOtp() {
             const btn = document.getElementById('btnVerifyOldOtp');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
@@ -2545,7 +2608,6 @@
                 btn.innerHTML = 'Verify Account'; btn.disabled = false;
             }).catch(() => { showToast("Network error.", true); btn.innerHTML = 'Verify Account'; btn.disabled = false; });
         }
-
         function sendNewEmailLink() {
             const newEmail = document.getElementById('inpNewEmail').value.trim();
             if(!newEmail || !newEmail.includes('@')) { showToast("Enter a valid email", true); return; }
@@ -2571,10 +2633,7 @@
                 }
             }).catch(() => { showToast("Network error.", true); btn.innerHTML = 'Send Verification Link'; btn.disabled = false; });
         }
-
-        function simulateExternalLinkReturn() {
-            window.location.href = 'index.html';
-        }
+        function simulateExternalLinkReturn() { window.location.href = 'index.html'; }
 
         function openEditModal() {
             let user = userData || {};
@@ -2711,7 +2770,7 @@
 
         function logout() {
             if(confirm("Are you sure you want to log out?")) { 
-                localStorage.clear();
+                localStorage.removeItem('tournyx_user'); // Leave saved accounts alone so switcher works!
                 window.location.href = 'login.html'; 
             }
         }
