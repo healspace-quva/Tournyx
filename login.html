@@ -324,16 +324,28 @@
         @keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
         @keyframes cinematicEntry { 0% { transform: scale(0.8); opacity: 0; filter: blur(10px); } 20% { transform: scale(1); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
     </style>
-    <!-- ✅ ONESIGNAL - PASTE HERE -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-  window.OneSignal = OneSignal;
-  await OneSignal.init({
-    appId: "15a8e2b2-240c-4547-929e-797d7170e988",
-  });
-});
+        window.OneSignal = OneSignal;
+        await OneSignal.init({
+          appId: "15a8e2b2-240c-4547-929e-797d7170e988",
+          notifyButton: { enable: false }, // We hide the ugly default bell
+        });
+
+        // Instantly map the user if they are already logged in via LocalStorage
+        try {
+            let userStr = localStorage.getItem('tournyx_user');
+            if (userStr) {
+                let userObj = JSON.parse(userStr);
+                if (userObj && userObj.email) {
+                    let cleanEmail = String(userObj.email).trim().toLowerCase();
+                    await OneSignal.login(cleanEmail);
+                }
+            }
+        } catch(e) { console.error("OneSignal Setup Error", e); }
+      });
     </script>
 </head>
 <body id="mainBody">
@@ -837,19 +849,21 @@
 
 
 async function askNotificationPermission(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   doHaptic();
 
-  try {
-    const result = await Notification.requestPermission();
-    showToast("Permission: " + result, result === "granted");
-  } catch (err) {
-    console.log(err);
-    showToast("Permission request failed", false);
+  if (window.OneSignalDeferred) {
+    OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.slidedown.promptPush();
+        showToast("Notification prompt initiated!");
+      } catch (err) {
+        console.log(err);
+        showToast("Notifications already blocked or allowed.", false);
+      }
+    });
+  } else {
+    showToast("OneSignal Engine still loading...", false);
   }
 }
         function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
@@ -1254,6 +1268,14 @@ async function askNotificationPermission(e) {
             closeModals(true);
             saveRecentAccount(user); 
             localStorage.setItem('tournyx_user', JSON.stringify(user));
+            
+            // --- INJECT ONESIGNAL LOGIN HERE ---
+            if (window.OneSignalDeferred && user.email) {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.login(String(user.email).trim().toLowerCase());
+                });
+            }
+
             const loader = document.getElementById('arenaLoader');
             loader.classList.add('active');
             
