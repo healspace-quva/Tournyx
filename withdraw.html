@@ -264,6 +264,40 @@
         }
         .median-active .top-header { display: flex !important; visibility: visible !important; }
     </style>
+    <!-- ==========================================
+         ONESIGNAL GLOBAL NOTIFICATION ENGINE
+         ========================================== -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        window.OneSignal = OneSignal;
+        
+        // 1. Initialize the global OneSignal configuration
+        await OneSignal.init({
+          appId: "15a8e2b2-240c-4547-929e-797d7170e988",
+          notifyButton: {
+            enable: false, // Hides the default floating bell icon to keep your UI clean
+          },
+        });
+
+        // 2. SESSION ATTRIBUTE ROUTING
+        // Keeps player devices mapped to their accounts regardless of which page they browse
+        try {
+            let userSession = localStorage.getItem('tournyx_user');
+            if (userSession) {
+                let playerObj = JSON.parse(userSession);
+                if (playerObj && playerObj.email) {
+                    let playerEmail = String(playerObj.email).trim().toLowerCase();
+                    // Securely establish target alias link
+                    await OneSignal.login(playerEmail);
+                }
+            }
+        } catch(error) { 
+            console.warn("Notification session sync bypassed:", error.message); 
+        }
+      });
+    </script>
 </head>
 <body>
 
