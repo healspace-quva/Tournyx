@@ -430,7 +430,7 @@
     
     <script>
         // GLOBAL TOGGLE FOR MILESTONE MODAL
-        const IS_MILESTONE_FEATURE_ENABLED = true; 
+        const IS_MILESTONE_FEATURE_ENABLED = false; 
 
         // UTILITY: Hardcoded Enabled Haptics
         let hapticsEnabled = true;
@@ -592,12 +592,12 @@
             </div>
         </div>
         
-       <div class="profile-actions-wrapper">
-            <div class="logout-btn switch-acc-btn" onclick="window.location.href='login.html'; triggerHaptic();" title="Switch Account">
-                <i class="fa-solid fa-users-arrows"></i>
+      <div style="display: flex; flex-direction: row; gap: 10px; flex-shrink: 0; z-index: 5;">
+            <div class="logout-btn" style="width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,242,255,0.05); color: var(--accent-cyan); border: 1px solid rgba(0,242,255,0.2); font-size: 1rem; border-radius: 12px;" onclick="window.location.href='login.html'; triggerHaptic();" title="Switch Account">
+                <i class="fa-solid fa-user-plus" style="display: block;"></i>
             </div>
-            <div class="logout-btn" onclick="logout(); triggerHaptic();" title="Logout">
-                <i class="fa-solid fa-power-off"></i>
+            <div class="logout-btn" style="width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,77,77,0.05); color: #ff4d4d; border: 1px solid rgba(255,77,77,0.2); font-size: 1rem; border-radius: 12px;" onclick="logout(); triggerHaptic();" title="Logout">
+                <i class="fa-solid fa-power-off" style="display: block;"></i>
             </div>
         </div>
         </div>
