@@ -9,25 +9,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script>
-            (function() {
-                try {
-                    const THEMES = [
-                        {cyan: '#00f2ff', purple: '#bd00ff'},
-                        {cyan: '#00ff7f', purple: '#00b09b'},
-                        {cyan: '#ff9900', purple: '#ff4d4d'}
-                    ];
-                    let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
-                    if(THEMES[tIndex]) {
-                        document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
-                        document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
-                        document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(90deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
-                    }
-                } catch(e) {
-                    console.log("Theme setting bypassed - strict browser settings.");
+    
+    <script>
+        (function() {
+            try {
+                const THEMES = [
+                    {cyan: '#00f2ff', purple: '#bd00ff'},
+                    {cyan: '#00ff7f', purple: '#00b09b'},
+                    {cyan: '#ff9900', purple: '#ff4d4d'}
+                ];
+                let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
+                if(THEMES[tIndex]) {
+                    document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
+                    document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
+                    document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(90deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
                 }
-            })();
-        </script>
+            } catch(e) {
+                console.log("Theme setting bypassed - strict browser settings.");
+            }
+        })();
+    </script>
+    
     <style>
         :root {
             --primary-bg: #070311;
@@ -116,6 +118,40 @@
                 document.body.classList.add('median-active');
             }
         });
+    </script>
+
+    <!-- ==========================================
+         ONESIGNAL GLOBAL NOTIFICATION ENGINE
+         ========================================== -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        window.OneSignal = OneSignal;
+        
+        // 1. Initialize the global OneSignal configuration
+        await OneSignal.init({
+          appId: "15a8e2b2-240c-4547-929e-797d7170e988",
+          notifyButton: {
+            enable: false, // Hides the default floating bell icon
+          },
+        });
+
+        // 2. SESSION ATTRIBUTE ROUTING
+        try {
+            let userSession = localStorage.getItem('tournyx_user');
+            if (userSession) {
+                let playerObj = JSON.parse(userSession);
+                if (playerObj && playerObj.email) {
+                    let playerEmail = String(playerObj.email).trim().toLowerCase();
+                    // Securely establish target alias link
+                    await OneSignal.login(playerEmail);
+                }
+            }
+        } catch(error) { 
+            console.warn("Notification session sync bypassed:", error.message); 
+        }
+      });
     </script>
 </head>
 <body>
