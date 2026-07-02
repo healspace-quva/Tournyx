@@ -315,6 +315,10 @@
         let customCashAssignments = {}; 
         let pointAssignments = {}; 
 
+        function getAssignedPrize(rank) {
+            return allPrizes.find(p => p.rank === rank) || {amount: 0, isPts: false};
+        }
+
         async function secureFetch(payload) {
             try {
                 const response = await fetch(API_URL, {
@@ -408,14 +412,21 @@
                                     for (let key in parsed) {
                                         let numRank = parseInt(key.replace(/[^0-9]/g, ''));
                                         if(!isNaN(numRank) && numRank > 0 && numRank <= 20) {
-                                            pObj[numRank] = parseInt(String(parsed[key]).replace(/[^0-9]/g, '')) || 0;
+                                            // Detect if it says 'pt' or 'pts'
+                                            let rawVal = String(parsed[key]).toLowerCase();
+                                            let isPts = rawVal.includes('pt'); 
+                                            let amt = parseInt(rawVal.replace(/[^0-9]/g, '')) || 0;
+                                            pObj[numRank] = { amount: amt, isPts: isPts };
                                         }
                                     }
                                 } else {
-                                    if(t.prize1) pObj[1] = parseInt(String(t.prize1).replace(/[^0-9]/g, ''))||0;
-                                    if(t.prize2) pObj[2] = parseInt(String(t.prize2).replace(/[^0-9]/g, ''))||0;
-                                    if(t.prize3) pObj[3] = parseInt(String(t.prize3).replace(/[^0-9]/g, ''))||0;
-                                    if(!pObj[1] && t.prize_pool) pObj[1] = parseInt(String(t.prize_pool).replace(/[^0-9]/g, ''))||0;
+                                    // Column I Fallback (Total Prize / Prize Pool)
+                                    let fallbackVal = String(t.prize_pool || t.prize || t.prize1 || t.total_prize || "").toLowerCase();
+                                    if(fallbackVal) {
+                                        let isPts = fallbackVal.includes('pt');
+                                        let amt = parseInt(fallbackVal.replace(/[^0-9]/g, '')) || 0;
+                                        pObj[1] = { amount: amt, isPts: isPts };
+                                    }
                                 }
                             } catch(e) {}
                             
@@ -471,17 +482,21 @@
 
             prizeKeys.forEach(k => {
                 let rankNum = parseInt(k);
-                let amt = pObj[k];
+                let pData = pObj[k];
+                let amt = pData.amount;
+                let isPts = pData.isPts;
+
                 if(amt > 0) {
-                    allPrizes.push({rank: rankNum, amount: amt});
+                    allPrizes.push({rank: rankNum, amount: amt, isPts: isPts});
                     let icon = rankNum == 1 ? 'fa-trophy' : (rankNum == 2 ? 'fa-medal' : 'fa-award');
                     let cssClass = rankNum == 1 ? 'p1' : (rankNum == 2 ? 'p2' : (rankNum == 3 ? 'p3' : 'pn'));
-                    legendHtml += `<div class="prize-tag ${cssClass}"><i class="fa-solid ${icon}"></i> ${rankNum}${getRankSuffix(rankNum)}: ₹${amt}</div>`;
+                    let displayTxt = isPts ? `${amt} PTS` : `₹${amt}`;
+                    legendHtml += `<div class="prize-tag ${cssClass}"><i class="fa-solid ${icon}"></i> ${rankNum}${getRankSuffix(rankNum)}: ${displayTxt}</div>`;
                 }
             });
 
             if(allPrizes.length === 0) {
-                allPrizes.push({rank: 1, amount: 0});
+                allPrizes.push({rank: 1, amount: 0, isPts: false});
                 legendHtml = `<div class="prize-tag p1"><i class="fa-solid fa-trophy"></i> Winner Takes All</div>`;
             }
             
@@ -566,9 +581,14 @@
                                         </div>
                                     </div>
                                     <div class="rank-badge" id="badge-${cleanId}"></div>
-                                    <button class="action-btn" id="btn-${cleanId}" onclick="handleTeamAction('${cleanId}', '${safeTeamNameForJs}')">
-                                        <i class="fa-solid fa-crown"></i> Assign
-                                    </button>
+                                    <div style="display: flex; gap: 6px;">
+                                        <button class="action-btn" id="btn-custom-${cleanId}" onclick="toggleCustom('${cleanId}')" style="display:none; background:rgba(255,255,255,0.08); color:white;">
+                                            <i class="fa-solid fa-plus"></i> Custom
+                                        </button>
+                                        <button class="action-btn" id="btn-${cleanId}" onclick="handleTeamAction('${cleanId}', '${safeTeamNameForJs}')">
+                                            <i class="fa-solid fa-crown"></i> Assign
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="points-allocator" id="pts-box-${cleanId}">
                                     <input type="tel" inputmode="numeric" id="inp-cash-${cleanId}" placeholder="₹ Cash">
@@ -608,35 +628,67 @@
             return null; 
         }
 
+        function toggleCustom(cleanId) {
+            triggerHaptic();
+            let card = document.getElementById(`card-${cleanId}`);
+            card.classList.toggle('points-mode');
+            updateActionButtons();
+        }
+
         function updateActionButtons() {
             let nextPrize = getNextAvailablePrize();
             
             document.querySelectorAll('.team-card').forEach(card => {
                 let teamName = card.dataset.teamname;
-                let btn = card.querySelector('.action-btn');
-                let ptsBox = card.querySelector('.points-allocator');
-                let badge = card.querySelector('.rank-badge');
+                let cleanId = card.id.replace('card-', '');
+                let btn = document.getElementById(`btn-${cleanId}`);
+                let customBtn = document.getElementById(`btn-custom-${cleanId}`);
+                let ptsBox = document.getElementById(`pts-box-${cleanId}`);
+                let badge = document.getElementById(`badge-${cleanId}`);
                 
                 card.classList.remove('ranked-1', 'ranked-2', 'ranked-3', 'ranked-n', 'has-points');
 
                 if (rankAssignments[teamName]) {
                     let rank = rankAssignments[teamName];
-                    let amt = cashAssignments[teamName] || 0;
+                    let prizeInfo = getAssignedPrize(rank); // Fetches amount AND type
+                    let displayTxt = prizeInfo.isPts ? `${prizeInfo.amount} PTS` : `₹${prizeInfo.amount}`;
                     
                     let rankClass = rank <= 3 ? `ranked-${rank}` : 'ranked-n';
                     card.classList.add(rankClass);
                     
+                    // Layer custom performance rewards...
+                    let customC = customCashAssignments[teamName] || 0;
+                    let customP = pointAssignments[teamName] || 0;
+                    let extraText = "";
+                    if(customC > 0 || customP > 0) {
+                        let extras = [];
+                        if(customC > 0) extras.push(`₹${customC}`);
+                        if(customP > 0) extras.push(`${customP} PTS`);
+                        extraText = ` &nbsp;|&nbsp; ` + extras.join(' + ');
+                    }
+
                     badge.style.display = 'inline-flex';
                     let rankIcon = rank === 1 ? 'fa-trophy' : (rank === 2 ? 'fa-medal' : 'fa-award');
-                    badge.innerHTML = `<i class="fa-solid ${rankIcon}"></i> ${rank}${getRankSuffix(rank)} (₹${amt})`;
+                    badge.innerHTML = `<i class="fa-solid ${rankIcon}"></i> ${rank}${getRankSuffix(rank)} (${displayTxt})${extraText}`;
                     
-                    // 🔥 UI Upgrade: Clear Remove Button instead of Undo Text
+                    // Main action becomes Remove
                     btn.style.display = 'flex';
                     btn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
                     btn.style.background = 'rgba(255,77,77,0.15)';
                     btn.style.color = 'var(--accent-danger)';
-                    btn.style.padding = '8px 12px'; // Smaller, square hit-box
-                    ptsBox.style.display = 'none';
+                    btn.style.padding = '8px 12px';
+                    
+                    // Secondary action becomes Custom/Edit
+                    if(card.classList.contains('points-mode')) {
+                        if(customBtn) customBtn.style.display = 'none';
+                        ptsBox.style.display = 'flex';
+                    } else {
+                        if(customBtn) {
+                            customBtn.style.display = 'flex';
+                            customBtn.innerHTML = (customC > 0 || customP > 0) ? `<i class="fa-solid fa-pen"></i> Edit` : `<i class="fa-solid fa-plus"></i> Custom`;
+                        }
+                        ptsBox.style.display = 'none';
+                    }
 
                 } else if (customCashAssignments[teamName] || pointAssignments[teamName]) {
                     let c = customCashAssignments[teamName] || 0;
@@ -648,7 +700,7 @@
                     
                     card.classList.add('has-points');
                     badge.style.display = 'inline-flex';
-                    badge.innerText = "+" + bText.join(' | ');
+                    badge.innerHTML = "+" + bText.join(' | ');
                     badge.style.background = 'rgba(255,255,255,0.08)';
                     badge.style.color = document.body.classList.contains('theme-vip') ? '#FFD700' : 'var(--accent-cyan)';
                     
@@ -657,17 +709,29 @@
                     btn.style.background = 'rgba(255,77,77,0.15)';
                     btn.style.color = 'var(--accent-danger)';
                     btn.style.padding = '8px 12px';
-                    ptsBox.style.display = 'none';
+                    
+                    if(card.classList.contains('points-mode')) {
+                        if(customBtn) customBtn.style.display = 'none';
+                        ptsBox.style.display = 'flex';
+                    } else {
+                        if(customBtn) {
+                            customBtn.style.display = 'flex';
+                            customBtn.innerHTML = `<i class="fa-solid fa-pen"></i> Edit`;
+                        }
+                        ptsBox.style.display = 'none';
+                    }
 
                 } else {
                     badge.style.display = 'none';
+                    if(customBtn) customBtn.style.display = 'none';
+
                     if (card.classList.contains('points-mode')) {
                         btn.style.display = 'none';
                         ptsBox.style.display = 'flex';
                     } else {
                         ptsBox.style.display = 'none';
                         btn.style.display = 'flex';
-                        btn.style.padding = '6px 12px'; // Reset padding
+                        btn.style.padding = '6px 12px'; 
                         
                         if (nextPrize) {
                             btn.innerHTML = `<i class="fa-solid fa-crown"></i> Set ${nextPrize.rank}${getRankSuffix(nextPrize.rank)}`;
@@ -738,7 +802,18 @@
         // 🔥 STRICT MANDATORY PODIUM LOGIC (1st, 2nd, 3rd)
         function updateTotalsUI() {
             let totC = 0; let totP = 0;
-            Object.values(cashAssignments).forEach(v => totC += v);
+            
+            // Dynamically route podium prizes based on their type (Cash vs Pts)
+            Object.values(rankAssignments).forEach(rank => {
+                let pInfo = getAssignedPrize(rank);
+                if(pInfo.isPts) {
+                    totP += pInfo.amount;
+                } else {
+                    totC += pInfo.amount;
+                }
+            });
+
+            // Add custom assigned cash and points
             Object.values(customCashAssignments).forEach(v => totC += v);
             Object.values(pointAssignments).forEach(v => totP += v);
 
@@ -824,8 +899,13 @@
                     captain: capt
                 });
 
-                // Track cash winners explicitly under "winnings" for Column Y
-                let cashAmt = (cashAssignments[teamName] || 0) + (customCashAssignments[teamName] || 0);
+                // Get the base podium prize (if assigned)
+                let pInfo = rankAssignments[teamName] ? getAssignedPrize(rankAssignments[teamName]) : {amount: 0, isPts: false};
+                
+                // --- CASH WINNERS CALCULATION ---
+                let podiumCash = !pInfo.isPts ? pInfo.amount : 0; // Only add if it's NOT points
+                let cashAmt = podiumCash + (customCashAssignments[teamName] || 0);
+                
                 if(cashAmt > 0) {
                     cArr.push({
                         name: teamName, 
@@ -837,8 +917,10 @@
                     });
                 }
                 
-                // Track points winners explicitly under "points" for Column M
-                let ptsAmt = pointAssignments[teamName] || 0;
+                // --- POINTS WINNERS CALCULATION ---
+                let podiumPts = pInfo.isPts ? pInfo.amount : 0; // Only add if it IS points
+                let ptsAmt = podiumPts + (pointAssignments[teamName] || 0);
+                
                 if(ptsAmt > 0) {
                     pArr.push({
                         name: teamName, 
