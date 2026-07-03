@@ -50,13 +50,7 @@
             display: block;
         }
 
-        .main-container { 
-            max-width: 800px; 
-            margin: 0 auto !important; 
-            padding: 0 15px; 
-            width: 100%; 
-            display: block;
-        }
+        .main-container { max-width: 800px; margin: 0 auto !important; padding: 0 15px; width: 100%; display: block; }
 
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #15062e 0%, #05020c 100%); pointer-events: none; }
 
@@ -73,13 +67,17 @@
         .back-btn:active { transform: translateX(-5px); color: var(--accent-cyan); }
         .theme-vip .back-btn:active { color: #FFD700; }
         .page-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        
+        /* WHATSAPP SUPPORT BUTTON */
+        .support-btn { color: #25D366; font-size: 1.4rem; cursor: pointer; text-decoration: none; padding: 10px 0 10px 10px; transition: 0.3s; display: flex; align-items: center; filter: drop-shadow(0 0 5px rgba(37, 211, 102, 0.4));}
+        .support-btn:active { transform: scale(0.9); }
 
         /* COMMAND CENTER WALLET BAR */
         .wallet-bar { 
             background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(189, 0, 255, 0.05)); 
             border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 15px; 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 20px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3); 
+            margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3); 
             backdrop-filter: blur(10px); transition: all 0.4s ease; animation: fadeInDown 0.4s ease backwards; 
         }
         .theme-vip .wallet-bar { background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 140, 0, 0.05)); }
@@ -87,6 +85,18 @@
         .wallet-stat h5 { font-family: var(--font-head); font-size: 0.7rem; color: #a0a0b0; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px;}
         .wallet-stat span { font-family: var(--font-head); font-size: 1.2rem; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2);}
         .wallet-divider { width: 1px; height: 30px; background: rgba(255,255,255,0.1); }
+
+        /* FAQ SECTION */
+        .faq-section { margin-bottom: 20px; animation: fadeInUp 0.4s ease backwards; animation-delay: 0.1s;}
+        .faq-title { font-family: var(--font-head); font-size: 0.9rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .faq-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; overflow: hidden; transition: 0.3s; }
+        .faq-item summary { padding: 12px 15px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary:after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--accent-cyan); transition: 0.3s; }
+        .theme-vip .faq-item summary:after { color: #FFD700; }
+        .faq-item[open] summary:after { transform: rotate(180deg); }
+        .faq-item[open] { border-color: var(--card-border); background: rgba(255,255,255,0.05); }
+        .faq-content { padding: 0 15px 12px 15px; font-size: 0.8rem; color: #a0a0b0; line-height: 1.5; border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 5px; padding-top: 10px;}
 
         .section-title { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-left: 3px solid var(--accent-cyan); padding-left: 8px;}
         .theme-vip .section-title { border-left-color: #FFD700; }
@@ -141,21 +151,23 @@
         .prize-tag.p3 { color: #cd7f32; border-color: rgba(205,127,50,0.5); background: rgba(205,127,50,0.1); box-shadow: 0 0 10px rgba(205,127,50,0.2); }
         .prize-tag.pn { color: var(--accent-cyan); border-color: rgba(0,242,255,0.4); background: rgba(0,242,255,0.1); }
 
-        /* UPGRADED REDUCED TEAM CARDS */
-        .team-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: fadeInUp 0.3s ease backwards;}
+        /* UPGRADED STACKED TEAM CARDS (Fixes Mobile Overflow) */
+        .team-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: fadeInUp 0.3s ease backwards;}
         .team-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-        .team-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
         
-        .team-name { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-        .team-name-text { font-family: var(--font-head); font-weight: bold; font-size: clamp(0.8rem, 3.5vw, 1rem); color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;}
-        .team-name-sub { font-size: 0.6rem; color: #888; font-family: var(--font-body); font-weight: 600; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .team-name i { font-size: 1.1rem; }
+        .team-info-row { display: flex; align-items: flex-start; gap: 8px; width: 100%; }
+        .team-info-row i { font-size: 1.2rem; margin-top: 2px;}
+        .team-name-text { font-family: var(--font-head); font-weight: bold; font-size: clamp(0.9rem, 4vw, 1.05rem); color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;}
+        .team-name-sub { font-size: 0.65rem; color: #888; font-family: var(--font-body); font-weight: 600; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .team-actions-row { display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;}
+        .actions-group { display: flex; gap: 6px; margin-left: auto; }
 
         /* ASSIGN / REMOVE BUTTON LOGIC */
-        .action-btn { background: var(--accent-gradient); border: 1px solid transparent; padding: 6px 12px; border-radius: 6px; color: white; font-family: var(--font-head); font-weight: bold; font-size: 0.7rem; cursor: pointer; transition: all 0.3s; text-transform: uppercase; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 10px rgba(0,242,255,0.2);}
+        .action-btn { background: var(--accent-gradient); border: 1px solid transparent; padding: 8px 14px; border-radius: 6px; color: white; font-family: var(--font-head); font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; text-transform: uppercase; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 10px rgba(0,242,255,0.2);}
         .action-btn:active { transform: scale(0.92); box-shadow: 0 0 5px rgba(0,242,255,0.5); }
         
-        .rank-badge { display: none; font-family: var(--font-head); font-weight: 900; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; transition: 0.3s; white-space: nowrap; letter-spacing: 0.5px; align-items: center; justify-content: center; gap: 4px;}
+        .rank-badge { display: none; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem; padding: 6px 12px; border-radius: 6px; text-transform: uppercase; transition: 0.3s; white-space: nowrap; letter-spacing: 0.5px; align-items: center; justify-content: center; gap: 6px;}
         
         .team-card.ranked-1 { border-color: #FFD700; background: rgba(255,215,0,0.06); box-shadow: 0 4px 12px rgba(255,215,0,0.1);}
         .team-card.ranked-1 .rank-badge { display: inline-flex; background: rgba(255,215,0,0.15); color: #FFD700; border: 1px solid #FFD700; box-shadow: 0 0 8px rgba(255,215,0,0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -207,15 +219,44 @@
         .loading-state i { font-size: 1.8rem; color: var(--accent-cyan); margin-bottom: 12px; display: block; filter: drop-shadow(0 0 8px rgba(0,242,255,0.4));}
         .theme-vip .loading-state i { color: #FFD700; filter: drop-shadow(0 0 8px rgba(255,215,0,0.4)); }
 
+        /* 🔥 TERMINAL LIVE LOADER */
+        #payoutLoaderOverlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(5,2,12,0.98); z-index: 12000; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #payoutLoaderOverlay.active { display: flex; opacity: 1; }
+        .terminal-box {
+            width: 90%; max-width: 500px; background: rgba(0,0,0,0.8);
+            border: 1px solid var(--accent-cyan); border-radius: 8px; padding: 15px;
+            box-shadow: 0 0 25px rgba(0,242,255,0.1); font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem; color: #0f0; height: 300px; overflow-y: auto; text-align: left;
+            position: relative;
+        }
+        .theme-vip .terminal-box { border-color: #FFD700; box-shadow: 0 0 25px rgba(255,215,0,0.1); color: #FFD700; }
+        .term-header { font-family: var(--font-head); color: white; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .term-line { margin-bottom: 6px; line-height: 1.4; text-shadow: 0 0 5px rgba(0,255,0,0.5); word-wrap: break-word;}
+        .term-line.highlight { color: var(--accent-cyan); font-weight: bold; }
+        .term-cursor { display: inline-block; width: 8px; height: 15px; background: #0f0; animation: blink 1s step-end infinite; vertical-align: middle;}
+        
         /* 🔥 CELEBRATION OVERLAY */
         #celebrationOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 11000; display: none;
+            background: rgba(0,0,0,0.95); z-index: 13000; display: none;
             align-items: center; justify-content: center; flex-direction: column;
             opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(10px);
         }
         #celebrationOverlay.active { display: flex; opacity: 1; animation: flashBg 2.5s ease-out; }
+        
         @keyframes flashBg { 0% { background: rgba(0,242,255,0.2); } 100% { background: rgba(0,0,0,0.95); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
         .celeb-icon { font-size: 4.5rem; color: var(--accent-cyan); filter: drop-shadow(0 0 20px var(--accent-cyan)); margin-bottom: 12px; animation: popScaleIcon 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .theme-vip .celeb-icon { color: #FFD700; filter: drop-shadow(0 0 20px #FFD700); }
         .celeb-text { font-family: var(--font-head); font-size: clamp(1.8rem, 6vw, 2.5rem); font-weight: 900; color: white; text-shadow: 0 0 10px var(--accent-purple), 0 0 20px var(--accent-cyan); animation: popScaleText 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; letter-spacing: 1px;}
@@ -225,18 +266,25 @@
         @keyframes popScaleText { 0% { transform: scale(0.5); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
         @keyframes slideUpSub { 0% { transform: translateY(20px); opacity: 0;} 100% { transform: translateY(0); opacity: 1;} }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
-
     </style>
 </head>
 <body>
 
     <canvas id="particles-canvas"></canvas>
 
+    <!-- LIVE TERMINAL OVERLAY -->
+    <div id="payoutLoaderOverlay">
+        <div class="terminal-box">
+            <div class="term-header">
+                <span><i class="fa-solid fa-satellite-dish"></i> TX_LINK SECURE</span>
+                <span>v2.1.0</span>
+            </div>
+            <div id="terminalOutput"></div>
+            <span class="term-cursor"></span>
+        </div>
+    </div>
+
+    <!-- CELEBRATION OVERLAY -->
     <div id="celebrationOverlay">
         <i class="fa-solid fa-trophy celeb-icon"></i>
         <div class="celeb-text">MATCH RESOLVED</div>
@@ -246,7 +294,7 @@
     <header class="top-header">
         <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
         <h3 class="page-title">Match Resolution</h3>
-        <div style="width: 20px;"></div> 
+        <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="support-btn" title="Support"><i class="fa-brands fa-whatsapp"></i></a>
     </header>
 
     <div class="main-container">
@@ -261,6 +309,52 @@
                 <h5>My Points</h5>
                 <span style="color: var(--accent-orange);"><span id="orgPointsBal">0</span> PTS</span>
             </div>
+        </div>
+
+        <!-- NEW FAQ SECTION -->
+        <div class="faq-section">
+            <div class="faq-title"><i class="fa-solid fa-circle-question"></i> Resolution FAQ</div>
+            
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>1. How long do payouts take?</summary>
+                <div class="faq-content">Payouts are completely instant. As soon as you tap Finalize, the backend processes the routing and credits the winning team leaders' wallets immediately.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>2. How are funds deducted?</summary>
+                <div class="faq-content">Any Rupee (Cash) prizes are deducted from your "My Earnings" balance. Any Point (PTS) prizes are deducted from your "My Points" balance. You must have enough funds before finalizing.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>3. What is a "Custom Payout"?</summary>
+                <div class="faq-content">The Custom button allows you to manually reward teams outside of the standard 1st/2nd/3rd podium. You can also use it to add bonus cash or points on top of a podium prize.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>4. Why is a specific match not showing here?</summary>
+                <div class="faq-content">Matches disappear from this screen once they are successfully marked as "Completed", "Resolved", or "Cancelled" in the database.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>5. Can I edit payouts after finalizing?</summary>
+                <div class="faq-content">No. Once the match is resolved, funds are permanently moved to the players. Please double-check your assignments before confirming.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>6. Do solo players receive clan payouts?</summary>
+                <div class="faq-content">Yes. If a solo player enters without a clan, the system automatically detects them as the leader and routes the prize to their personal wallet.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>7. Can I give both Points and Cash?</summary>
+                <div class="faq-content">Absolutely! Tap "Custom" or "Edit" on a team to mix both Rupees and Points in the same payout.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>8. What happens if I make a typo in the amount?</summary>
+                <div class="faq-content">Review the "Total Deduct" bar at the bottom before submitting. If the numbers look too high, untoggle the team and re-enter the correct custom values.</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>9. Why is the Submit button red?</summary>
+                <div class="faq-content">The button locks itself if you have insufficient wallet funds or if you have forgotten to assign a mandatory podium position (like 1st Place).</div>
+            </details>
+            <details class="faq-item" onmousedown="triggerHaptic()">
+                <summary>10. Who do I contact for database errors?</summary>
+                <div class="faq-content">If a match freezes or fails to resolve, tap the WhatsApp icon at the top right of this screen to contact Admin Support instantly.</div>
+            </details>
         </div>
 
         <div id="tourneyListSection">
@@ -316,15 +410,17 @@
         let pointAssignments = {}; 
 
         function getAssignedPrize(rank) {
-            return allPrizes.find(p => p.rank === rank) || {amount: 0, isPts: false};
+            return allPrizes.find(p => parseInt(p.rank) === parseInt(rank)) || {amount: 0, isPts: false};
         }
 
         async function secureFetch(payload) {
             try {
+                // Add timestamp cache-buster to prevent loading stale "Completed" matches
+                let finalPayload = { ...payload, _ts: Date.now() };
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(finalPayload)
                 });
                 return await response.json();
             } catch (error) {
@@ -333,7 +429,9 @@
             }
         }
 
-        function triggerHaptic() { if(navigator.vibrate) navigator.vibrate(40); }
+        function triggerHaptic(strong = false) { 
+            if(navigator.vibrate) navigator.vibrate(strong ? [50, 50, 50] : 40); 
+        }
         
         function showToast(msg, isError = false) {
             const t = document.getElementById('customToast');
@@ -342,12 +440,6 @@
             t.style.backgroundColor = isError ? "var(--accent-danger)" : (document.body.classList.contains('theme-vip') ? "#FFD700" : "var(--accent-cyan)");
             t.style.color = isError ? "white" : "#000";
             setTimeout(() => t.className = "", 3000);
-        }
-
-        function triggerCelebration() {
-            triggerHaptic();
-            const el = document.getElementById('celebrationOverlay');
-            el.classList.add('active');
         }
 
         function checkVIP() {
@@ -389,8 +481,10 @@
                 if(data.status === "success" && data.data) {
                     let myEmailStr = String(userData.email).toLowerCase().trim();
                     let myEvents = data.data.filter(t => {
-                        let dbStatus = String(t.db_status || t.status || "").toLowerCase();
-                        if (dbStatus === 'completed' || dbStatus === 'deleted' || dbStatus === 'cancelled') return false;
+                        // STRICT STATUS FILTERING
+                        let dbStatus = String(t.db_status || t.status || "").toLowerCase().trim();
+                        if (dbStatus === 'completed' || dbStatus === 'resolved' || dbStatus === 'deleted' || dbStatus === 'cancelled') return false;
+                        
                         let backendEmail = String(t.org_email || t.organizer_email || t.email || "").toLowerCase().trim();
                         return backendEmail === myEmailStr;
                     });
@@ -412,7 +506,6 @@
                                     for (let key in parsed) {
                                         let numRank = parseInt(key.replace(/[^0-9]/g, ''));
                                         if(!isNaN(numRank) && numRank > 0 && numRank <= 20) {
-                                            // Detect if it says 'pt' or 'pts'
                                             let rawVal = String(parsed[key]).toLowerCase();
                                             let isPts = rawVal.includes('pt'); 
                                             let amt = parseInt(rawVal.replace(/[^0-9]/g, '')) || 0;
@@ -420,7 +513,7 @@
                                         }
                                     }
                                 } else {
-                                    // Column I Fallback (Total Prize / Prize Pool)
+                                    // Column I Fallback
                                     let fallbackVal = String(t.prize_pool || t.prize || t.prize1 || t.total_prize || "").toLowerCase();
                                     if(fallbackVal) {
                                         let isPts = fallbackVal.includes('pt');
@@ -483,7 +576,7 @@
             prizeKeys.forEach(k => {
                 let rankNum = parseInt(k);
                 let pData = pObj[k];
-                let amt = pData.amount;
+                let amt = parseInt(pData.amount) || 0;
                 let isPts = pData.isPts;
 
                 if(amt > 0) {
@@ -513,7 +606,6 @@
             activeMatchId = "";
         }
 
-        // 🔥 BULLETPROOF JSON NAME EXTRACTION
         function extractNameFromData(rawData, fallbackName) {
             if (!rawData) return { name: fallbackName };
             if (typeof rawData === 'object') return rawData;
@@ -554,7 +646,6 @@
                     container.innerHTML = "";
                     if(matchRegs.length > 0) {
                         matchRegs.forEach((team, index) => {
-                            // Flawless Extraction Protocol
                             let parsedJson = extractNameFromData(team.team_json || team.user_json || team.clan || team.username || team.user_email, "Unknown");
                             
                             let teamName = parsedJson.name || parsedJson.clan || parsedJson.clan_name || parsedJson.team_name || parsedJson.teamName || team.clan || team.username || "Unknown Player";
@@ -562,38 +653,44 @@
                             let isClan = !!(parsedJson.clanId || parsedJson.clan || team.clan);
                             
                             let animDelay = index * 0.05;
-                            let cleanId = String(teamName).replace(/[^a-zA-Z0-9]/g, '') + index; 
-                            let safeTeamNameForJs = String(teamName).replace(/"/g, "&quot;").replace(/'/g, "\\'");
-                            let safeCaptain = String(pName).replace(/"/g, "&quot;").replace(/'/g, "\\'");
+                            let cleanId = "team_" + index; 
+                            
+                            // 🚀 BULLETPROOF PAYLOAD STORAGE: Store pure raw string for API submission later
+                            let encodedRawName = encodeURIComponent(teamName.trim());
+                            let encodedRawCaptain = encodeURIComponent(pName.trim());
                             
                             let iconClass = isClan ? 'fa-shield-halved' : 'fa-user';
                             let subText = isClan ? `Leader: ${pName}` : 'Solo Player';
                             let iconColor = isClan ? 'var(--accent-purple)' : 'var(--accent-cyan)';
 
+                            // New Stacked Flex Column HTML Structure
                             container.innerHTML += `
-                            <div class="team-card" id="card-${cleanId}" data-teamname="${safeTeamNameForJs}" data-isclan="${isClan}" data-captain="${safeCaptain}" style="animation-delay: ${animDelay}s">
-                                <div class="team-top">
-                                    <div class="team-name">
-                                        <i class="fa-solid ${iconClass}" style="color:${iconColor};"></i> 
-                                        <div style="flex:1; min-width:0; overflow:hidden;">
-                                            <div class="team-name-text">${teamName}</div>
-                                            <div class="team-name-sub">${subText}</div>
-                                        </div>
+                            <div class="team-card" id="card-${cleanId}" data-rawname="${encodedRawName}" data-isclan="${isClan}" data-rawcaptain="${encodedRawCaptain}" style="animation-delay: ${animDelay}s">
+                                
+                                <div class="team-info-row">
+                                    <i class="fa-solid ${iconClass}" style="color:${iconColor};"></i> 
+                                    <div style="flex:1; min-width:0; overflow:hidden;">
+                                        <div class="team-name-text">${teamName.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                                        <div class="team-name-sub">${subText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
                                     </div>
+                                </div>
+
+                                <div class="team-actions-row">
                                     <div class="rank-badge" id="badge-${cleanId}"></div>
-                                    <div style="display: flex; gap: 6px;">
+                                    <div class="actions-group">
                                         <button class="action-btn" id="btn-custom-${cleanId}" onclick="toggleCustom('${cleanId}')" style="display:none; background:rgba(255,255,255,0.08); color:white;">
                                             <i class="fa-solid fa-plus"></i> Custom
                                         </button>
-                                        <button class="action-btn" id="btn-${cleanId}" onclick="handleTeamAction('${cleanId}', '${safeTeamNameForJs}')">
+                                        <button class="action-btn" id="btn-${cleanId}" onclick="handleTeamAction('${cleanId}')">
                                             <i class="fa-solid fa-crown"></i> Assign
                                         </button>
                                     </div>
                                 </div>
+                                
                                 <div class="points-allocator" id="pts-box-${cleanId}">
                                     <input type="tel" inputmode="numeric" id="inp-cash-${cleanId}" placeholder="₹ Cash">
                                     <input type="tel" inputmode="numeric" id="inp-pts-${cleanId}" placeholder="Points">
-                                    <button class="pts-save-btn" onclick="saveCustomPayout('${cleanId}', '${safeTeamNameForJs}')"><i class="fa-solid fa-check"></i></button>
+                                    <button class="pts-save-btn" onclick="saveCustomPayout('${cleanId}')"><i class="fa-solid fa-check"></i></button>
                                 </div>
                             </div>`;
                         });
@@ -622,7 +719,7 @@
         function getNextAvailablePrize() {
             for (let i = 0; i < allPrizes.length; i++) {
                 let p = allPrizes[i];
-                let isAssigned = Object.values(rankAssignments).includes(p.rank);
+                let isAssigned = Object.values(rankAssignments).includes(parseInt(p.rank));
                 if (!isAssigned) return p;
             }
             return null; 
@@ -639,8 +736,9 @@
             let nextPrize = getNextAvailablePrize();
             
             document.querySelectorAll('.team-card').forEach(card => {
-                let teamName = card.dataset.teamname;
                 let cleanId = card.id.replace('card-', '');
+                let rawName = decodeURIComponent(card.dataset.rawname); // Using Raw Name as ID Key
+                
                 let btn = document.getElementById(`btn-${cleanId}`);
                 let customBtn = document.getElementById(`btn-custom-${cleanId}`);
                 let ptsBox = document.getElementById(`pts-box-${cleanId}`);
@@ -648,17 +746,16 @@
                 
                 card.classList.remove('ranked-1', 'ranked-2', 'ranked-3', 'ranked-n', 'has-points');
 
-                if (rankAssignments[teamName]) {
-                    let rank = rankAssignments[teamName];
-                    let prizeInfo = getAssignedPrize(rank); // Fetches amount AND type
+                if (rankAssignments[rawName]) {
+                    let rank = parseInt(rankAssignments[rawName]);
+                    let prizeInfo = getAssignedPrize(rank);
                     let displayTxt = prizeInfo.isPts ? `${prizeInfo.amount} PTS` : `₹${prizeInfo.amount}`;
                     
                     let rankClass = rank <= 3 ? `ranked-${rank}` : 'ranked-n';
                     card.classList.add(rankClass);
                     
-                    // Layer custom performance rewards...
-                    let customC = customCashAssignments[teamName] || 0;
-                    let customP = pointAssignments[teamName] || 0;
+                    let customC = parseInt(customCashAssignments[rawName]) || 0;
+                    let customP = parseInt(pointAssignments[rawName]) || 0;
                     let extraText = "";
                     if(customC > 0 || customP > 0) {
                         let extras = [];
@@ -671,14 +768,11 @@
                     let rankIcon = rank === 1 ? 'fa-trophy' : (rank === 2 ? 'fa-medal' : 'fa-award');
                     badge.innerHTML = `<i class="fa-solid ${rankIcon}"></i> ${rank}${getRankSuffix(rank)} (${displayTxt})${extraText}`;
                     
-                    // Main action becomes Remove
                     btn.style.display = 'flex';
                     btn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
                     btn.style.background = 'rgba(255,77,77,0.15)';
                     btn.style.color = 'var(--accent-danger)';
-                    btn.style.padding = '8px 12px';
                     
-                    // Secondary action becomes Custom/Edit
                     if(card.classList.contains('points-mode')) {
                         if(customBtn) customBtn.style.display = 'none';
                         ptsBox.style.display = 'flex';
@@ -690,9 +784,9 @@
                         ptsBox.style.display = 'none';
                     }
 
-                } else if (customCashAssignments[teamName] || pointAssignments[teamName]) {
-                    let c = customCashAssignments[teamName] || 0;
-                    let p = pointAssignments[teamName] || 0;
+                } else if (customCashAssignments[rawName] || pointAssignments[rawName]) {
+                    let c = parseInt(customCashAssignments[rawName]) || 0;
+                    let p = parseInt(pointAssignments[rawName]) || 0;
                     
                     let bText = [];
                     if (c > 0) bText.push(`₹${c}`);
@@ -708,7 +802,6 @@
                     btn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
                     btn.style.background = 'rgba(255,77,77,0.15)';
                     btn.style.color = 'var(--accent-danger)';
-                    btn.style.padding = '8px 12px';
                     
                     if(card.classList.contains('points-mode')) {
                         if(customBtn) customBtn.style.display = 'none';
@@ -731,7 +824,6 @@
                     } else {
                         ptsBox.style.display = 'none';
                         btn.style.display = 'flex';
-                        btn.style.padding = '6px 12px'; 
                         
                         if (nextPrize) {
                             btn.innerHTML = `<i class="fa-solid fa-crown"></i> Set ${nextPrize.rank}${getRankSuffix(nextPrize.rank)}`;
@@ -750,18 +842,19 @@
                     }
                 }
             });
-            updateTotalsUI(); // Force strict validation check
+            updateTotalsUI(); 
         }
 
-        function handleTeamAction(cleanId, teamName) {
+        function handleTeamAction(cleanId) {
             triggerHaptic();
             let card = document.getElementById(`card-${cleanId}`);
+            let rawName = decodeURIComponent(card.dataset.rawname);
 
-            if (rankAssignments[teamName] || customCashAssignments[teamName] || pointAssignments[teamName]) {
-                delete rankAssignments[teamName];
-                delete cashAssignments[teamName];
-                delete customCashAssignments[teamName];
-                delete pointAssignments[teamName];
+            if (rankAssignments[rawName] || customCashAssignments[rawName] || pointAssignments[rawName]) {
+                delete rankAssignments[rawName];
+                delete cashAssignments[rawName];
+                delete customCashAssignments[rawName];
+                delete pointAssignments[rawName];
                 
                 document.getElementById(`inp-cash-${cleanId}`).value = "";
                 document.getElementById(`inp-pts-${cleanId}`).value = "";
@@ -772,8 +865,8 @@
 
             let nextPrize = getNextAvailablePrize();
             if (nextPrize) {
-                rankAssignments[teamName] = nextPrize.rank;
-                cashAssignments[teamName] = nextPrize.amount;
+                rankAssignments[rawName] = nextPrize.rank;
+                cashAssignments[rawName] = nextPrize.amount;
                 updateActionButtons();
             } else {
                 card.classList.add('points-mode');
@@ -781,41 +874,37 @@
             }
         }
 
-        function saveCustomPayout(cleanId, teamName) {
+        function saveCustomPayout(cleanId) {
             triggerHaptic();
+            let card = document.getElementById(`card-${cleanId}`);
+            let rawName = decodeURIComponent(card.dataset.rawname);
+            
             let cInp = document.getElementById(`inp-cash-${cleanId}`).value;
             let pInp = document.getElementById(`inp-pts-${cleanId}`).value;
             
             let cash = parseInt(cInp) || 0;
             let pts = parseInt(pInp) || 0;
             
-            let card = document.getElementById(`card-${cleanId}`);
-            
             if (cash > 0 || pts > 0) {
-                if (cash > 0) customCashAssignments[teamName] = cash;
-                if (pts > 0) pointAssignments[teamName] = pts;
+                if (cash > 0) customCashAssignments[rawName] = cash;
+                if (pts > 0) pointAssignments[rawName] = pts;
             }
             card.classList.remove('points-mode');
             updateActionButtons();
         }
 
-        // 🔥 STRICT MANDATORY PODIUM LOGIC (1st, 2nd, 3rd)
+        // 🔥 STRICT MANDATORY PODIUM LOGIC
         function updateTotalsUI() {
             let totC = 0; let totP = 0;
             
-            // Dynamically route podium prizes based on their type (Cash vs Pts)
             Object.values(rankAssignments).forEach(rank => {
                 let pInfo = getAssignedPrize(rank);
-                if(pInfo.isPts) {
-                    totP += pInfo.amount;
-                } else {
-                    totC += pInfo.amount;
-                }
+                if(pInfo.isPts) totP += parseInt(pInfo.amount);
+                else totC += parseInt(pInfo.amount);
             });
 
-            // Add custom assigned cash and points
-            Object.values(customCashAssignments).forEach(v => totC += v);
-            Object.values(pointAssignments).forEach(v => totP += v);
+            Object.values(customCashAssignments).forEach(v => totC += parseInt(v));
+            Object.values(pointAssignments).forEach(v => totP += parseInt(v));
 
             let orgEarn = parseInt(userData.earnings) || 0;
             let orgPts = parseInt(userData.points) || 0;
@@ -835,16 +924,15 @@
             if (totC > orgEarn) { cText.classList.add('err'); hasError = true; } else { cText.classList.remove('err'); }
             if (totP > orgPts) { pText.classList.add('err'); hasError = true; } else { pText.classList.remove('err'); }
 
-            // Strict 1st, 2nd, 3rd validation based on available prizes and team count
             if (!hasError) {
                 let totalTeamsCount = document.querySelectorAll('.team-card').length;
                 let requiredRanks = [];
                 
-                if(totalTeamsCount >= 1 && allPrizes.some(p => p.rank===1)) requiredRanks.push(1);
-                if(totalTeamsCount >= 2 && allPrizes.some(p => p.rank===2)) requiredRanks.push(2);
-                if(totalTeamsCount >= 3 && allPrizes.some(p => p.rank===3)) requiredRanks.push(3);
+                if(totalTeamsCount >= 1 && allPrizes.some(p => parseInt(p.rank)===1)) requiredRanks.push(1);
+                if(totalTeamsCount >= 2 && allPrizes.some(p => parseInt(p.rank)===2)) requiredRanks.push(2);
+                if(totalTeamsCount >= 3 && allPrizes.some(p => parseInt(p.rank)===3)) requiredRanks.push(3);
 
-                let assignedRanks = Object.values(rankAssignments);
+                let assignedRanks = Object.values(rankAssignments).map(v => parseInt(v));
                 let missingRanks = requiredRanks.filter(r => !assignedRanks.includes(r));
                 
                 if (missingRanks.length > 0) {
@@ -868,7 +956,7 @@
             }
         }
 
-        // --- STEP 4: SUBMIT BATCH RESOLUTION WITH ADVANCED PAYLOAD ---
+        // --- STEP 4: SUBMIT BATCH WITH LIVE TERMINAL ANIMATION ---
         function submitResolution() {
             let hasAnyCash = Object.keys(cashAssignments).length > 0 || Object.keys(customCashAssignments).length > 0;
             if (!hasAnyCash && Object.keys(pointAssignments).length === 0) {
@@ -877,61 +965,67 @@
 
             if (!confirm("⚠️ Confirm Final Payouts?\n\nThis will deduct funds, credit the Clan Owners (or Solo Players), and permanently resolve this match for everyone.")) return;
 
-            triggerHaptic();
-            const btn = document.getElementById('btnFinalize');
-            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> Securing Data...";
-            btn.disabled = true;
+            triggerHaptic(true);
+            document.getElementById('submitBar').style.display = 'none';
 
-            // 🔥 BULLETPROOF PAYLOADS (Columns Y, M, K)
+            // 🔥 BULLETPROOF PAYLOAD ASSEMBLY
             let cArr = []; 
             let pArr = [];
             let allParticipants = [];
             
             document.querySelectorAll('.team-card').forEach(card => {
-                let teamName = card.dataset.teamname;
+                let rawName = decodeURIComponent(card.dataset.rawname);
+                let rawCaptain = decodeURIComponent(card.dataset.rawcaptain);
                 let isClanStatus = card.dataset.isclan === 'true';
-                let capt = card.dataset.captain || "";
                 
-                // Track all participants for Column K (Matches Played)
-                allParticipants.push({
-                    name: teamName,
-                    isClan: isClanStatus,
-                    captain: capt
-                });
+                allParticipants.push({ name: rawName, isClan: isClanStatus, captain: rawCaptain });
 
-                // Get the base podium prize (if assigned)
-                let pInfo = rankAssignments[teamName] ? getAssignedPrize(rankAssignments[teamName]) : {amount: 0, isPts: false};
+                let assignedRank = parseInt(rankAssignments[rawName]) || 0;
+                let pInfo = assignedRank > 0 ? getAssignedPrize(assignedRank) : {amount: 0, isPts: false};
                 
-                // --- CASH WINNERS CALCULATION ---
-                let podiumCash = !pInfo.isPts ? pInfo.amount : 0; // Only add if it's NOT points
-                let cashAmt = podiumCash + (customCashAssignments[teamName] || 0);
+                // Force Numbers
+                let podiumCash = !pInfo.isPts ? parseInt(pInfo.amount) : 0; 
+                let customCash = parseInt(customCashAssignments[rawName]) || 0;
+                let cashAmt = podiumCash + customCash;
                 
                 if(cashAmt > 0) {
-                    cArr.push({
-                        name: teamName, 
-                        amount: cashAmt, 
-                        winnings: cashAmt, 
-                        rank: rankAssignments[teamName] || 0,
-                        isClan: isClanStatus,
-                        captain: capt
-                    });
+                    cArr.push({ name: rawName, amount: cashAmt, winnings: cashAmt, rank: assignedRank, isClan: isClanStatus, captain: rawCaptain });
                 }
                 
-                // --- POINTS WINNERS CALCULATION ---
-                let podiumPts = pInfo.isPts ? pInfo.amount : 0; // Only add if it IS points
-                let ptsAmt = podiumPts + (pointAssignments[teamName] || 0);
+                let podiumPts = pInfo.isPts ? parseInt(pInfo.amount) : 0; 
+                let customPts = parseInt(pointAssignments[rawName]) || 0;
+                let ptsAmt = podiumPts + customPts;
                 
                 if(ptsAmt > 0) {
-                    pArr.push({
-                        name: teamName, 
-                        points: ptsAmt, 
-                        rank: rankAssignments[teamName] || 0,
-                        isClan: isClanStatus,
-                        captain: capt
-                    });
+                    pArr.push({ name: rawName, points: ptsAmt, rank: assignedRank, isClan: isClanStatus, captain: rawCaptain });
                 }
             });
 
+            // 🚀 INITIATE TERMINAL ANIMATION
+            const termOverlay = document.getElementById('payoutLoaderOverlay');
+            const termOut = document.getElementById('terminalOutput');
+            termOut.innerHTML = '';
+            termOverlay.classList.add('active');
+
+            let termMessages = ["[SYS] Authenticating Organizer Token...", "[SYS] Compiling Secure Payout Block..."];
+            cArr.forEach(c => termMessages.push(`[TX] Routing ₹${c.amount} to [${c.name.substring(0,15)}]...`));
+            pArr.forEach(p => termMessages.push(`[TX] Routing ${p.points} PTS to [${p.name.substring(0,15)}]...`));
+            termMessages.push("[SYS] Transmitting Ledger to Tournyx Database...", "[SYS] Awaiting Sync Confirmation...");
+
+            let msgIndex = 0;
+            let termInterval = setInterval(() => {
+                if (msgIndex < termMessages.length) {
+                    let div = document.createElement('div');
+                    div.className = 'term-line';
+                    div.innerText = `> ${termMessages[msgIndex]}`;
+                    if(termMessages[msgIndex].startsWith("[TX]")) div.classList.add('highlight');
+                    termOut.appendChild(div);
+                    termOut.scrollTop = termOut.scrollHeight;
+                    msgIndex++;
+                }
+            }, 500); // 500ms typing effect
+
+            // 🔥 FIRE BACKEND REQUEST CONCURRENTLY
             let payload = {
                 action: 'resolve_match_batch',
                 match_id: activeMatchId,
@@ -943,23 +1037,38 @@
 
             secureFetch(payload)
             .then(data => {
+                clearInterval(termInterval);
                 if (data.status === 'success') {
-                    let totC = 0; cArr.forEach(x => totC += x.amount);
-                    let totP = 0; pArr.forEach(x => totP += x.points);
+                    // Update Local Balances
+                    let totC = 0; cArr.forEach(x => totC += parseInt(x.amount));
+                    let totP = 0; pArr.forEach(x => totP += parseInt(x.points));
                     userData.earnings = (parseInt(userData.earnings) || 0) - totC;
                     userData.points = (parseInt(userData.points) || 0) - totP;
                     localStorage.setItem('tournyx_user', JSON.stringify(userData));
 
-                    closeResolutionView();
-                    triggerCelebration(); 
+                    // Success Terminal Logic
+                    let div = document.createElement('div');
+                    div.className = 'term-line highlight';
+                    div.innerText = `> [SUCCESS] 200 OK: Match Resolved.`;
+                    termOut.appendChild(div);
                     
-                    setTimeout(() => { window.location.href = 'profile.html'; }, 2500);
+                    setTimeout(() => {
+                        termOverlay.classList.remove('active');
+                        closeResolutionView();
+                        document.getElementById('celebrationOverlay').classList.add('active');
+                        triggerHaptic(true);
+                        setTimeout(() => { window.location.href = 'profile.html'; }, 2500);
+                    }, 800);
+                    
                 } else {
+                    termOverlay.classList.remove('active');
                     showToast(data.message || "Transaction failed.", true);
-                    btn.innerText = "Finalize Payouts"; btn.disabled = false;
+                    document.getElementById('submitBar').style.display = 'flex';
                 }
             })
             .catch(err => {
+                clearInterval(termInterval);
+                termOverlay.classList.remove('active');
                 showToast("Network Error. Verify in dashboard.", true);
                 setTimeout(() => { window.location.href = 'profile.html'; }, 2000);
             });
