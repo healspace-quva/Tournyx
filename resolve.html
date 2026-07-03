@@ -68,8 +68,8 @@
         .theme-vip .back-btn:active { color: #FFD700; }
         .page-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         
-        /* WHATSAPP SUPPORT BUTTON */
-        .support-btn { color: #25D366; font-size: 1.4rem; cursor: pointer; text-decoration: none; padding: 10px 0 10px 10px; transition: 0.3s; display: flex; align-items: center; filter: drop-shadow(0 0 5px rgba(37, 211, 102, 0.4));}
+        /* WHATSAPP SUPPORT BUTTON - TRIGGERS FAQ MODAL */
+        .support-btn { color: #25D366; font-size: 1.4rem; cursor: pointer; padding: 10px 0 10px 10px; transition: 0.3s; display: flex; align-items: center; filter: drop-shadow(0 0 5px rgba(37, 211, 102, 0.4));}
         .support-btn:active { transform: scale(0.9); }
 
         /* COMMAND CENTER WALLET BAR */
@@ -77,7 +77,7 @@
             background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(189, 0, 255, 0.05)); 
             border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 15px; 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3); 
+            margin-bottom: 20px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 5px 20px rgba(0,0,0,0.3); 
             backdrop-filter: blur(10px); transition: all 0.4s ease; animation: fadeInDown 0.4s ease backwards; 
         }
         .theme-vip .wallet-bar { background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 140, 0, 0.05)); }
@@ -86,18 +86,7 @@
         .wallet-stat span { font-family: var(--font-head); font-size: 1.2rem; font-weight: 900; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2);}
         .wallet-divider { width: 1px; height: 30px; background: rgba(255,255,255,0.1); }
 
-        /* FAQ SECTION */
-        .faq-section { margin-bottom: 20px; animation: fadeInUp 0.4s ease backwards; animation-delay: 0.1s;}
-        .faq-title { font-family: var(--font-head); font-size: 0.9rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-        .faq-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; overflow: hidden; transition: 0.3s; }
-        .faq-item summary { padding: 12px 15px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; user-select: none; }
-        .faq-item summary::-webkit-details-marker { display: none; }
-        .faq-item summary:after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--accent-cyan); transition: 0.3s; }
-        .theme-vip .faq-item summary:after { color: #FFD700; }
-        .faq-item[open] summary:after { transform: rotate(180deg); }
-        .faq-item[open] { border-color: var(--card-border); background: rgba(255,255,255,0.05); }
-        .faq-content { padding: 0 15px 12px 15px; font-size: 0.8rem; color: #a0a0b0; line-height: 1.5; border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 5px; padding-top: 10px;}
-
+        /* SECTION TITLES */
         .section-title { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; border-left: 3px solid var(--accent-cyan); padding-left: 8px;}
         .theme-vip .section-title { border-left-color: #FFD700; }
 
@@ -123,27 +112,42 @@
         .theme-vip .t-arrow { color: #FFD700; }
         .tourney-card:hover .t-arrow { transform: translateX(4px); opacity: 1;}
 
-        /* RESOLUTION POPUP MODAL */
-        #resolutionView { 
+        /* 🔥 UNIVERSAL MODAL SYSTEM (Resolutions & FAQs) */
+        .modal-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); 
             z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; 
         }
-        #resolutionView.active { display: flex; opacity: 1; }
+        .modal-overlay.active { display: flex; opacity: 1; }
         
-        .resolution-modal { 
+        .modal-box { 
             background: var(--secondary-bg); width: 95%; max-width: 600px; max-height: 85vh; 
             border-radius: 16px; border: 1px solid var(--accent-cyan); 
             box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,242,255,0.05); 
             padding: 15px 12px 90px 12px; position: relative; overflow-y: auto; overflow-x: hidden;
             transform: scale(0.95) translateY(15px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
-        .theme-vip .resolution-modal { border-color: #FFD700; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(255,215,0,0.05); }
-        #resolutionView.active .resolution-modal { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-box.faq-box { padding-bottom: 15px; } /* Override bottom padding for FAQ */
+        .theme-vip .modal-box { border-color: #FFD700; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(255,215,0,0.05); }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
         
         .close-modal-btn { position: absolute; top: 12px; right: 12px; color: #888; background: rgba(255,255,255,0.05); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: 0.3s; z-index: 10; border: 1px solid transparent;}
         .close-modal-btn:hover { color: white; background: var(--accent-danger); border-color: var(--accent-danger); transform: rotate(90deg); }
+
+        /* SMART DEFLECTION FAQ SYSTEM */
+        .faq-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; overflow: hidden; transition: 0.3s; }
+        .faq-item summary { padding: 12px 15px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: white; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary:after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--accent-cyan); transition: 0.3s; }
+        .theme-vip .faq-item summary:after { color: #FFD700; }
+        .faq-item[open] summary:after { transform: rotate(180deg); }
+        .faq-item[open] { border-color: var(--card-border); background: rgba(255,255,255,0.05); }
+        .faq-content { padding: 0 15px 12px 15px; font-size: 0.8rem; color: #a0a0b0; line-height: 1.5; border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 5px; padding-top: 10px;}
         
+        .wa-escalate-btn { display: block; width: 100%; text-align: center; background: rgba(37, 211, 102, 0.1); border: 1px solid #25D366; color: #25D366; padding: 12px; border-radius: 10px; font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; text-decoration: none; margin-top: 15px; transition: 0.3s; box-shadow: 0 0 15px rgba(37,211,102,0.15);}
+        .wa-escalate-btn:active { transform: scale(0.96); background: #25D366; color: #000; box-shadow: 0 0 25px rgba(37,211,102,0.4); }
+
+        /* MATCH RESOLUTION SPECIFICS */
         .prize-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.1); justify-content: center;}
         .prize-tag { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-family: var(--font-head); font-weight: bold; border: 1px solid; display: flex; align-items: center; gap: 4px; transition: 0.3s; text-transform: uppercase;}
         .prize-tag.p1 { color: #FFD700; border-color: rgba(255,215,0,0.5); background: rgba(255,215,0,0.1); box-shadow: 0 0 10px rgba(255,215,0,0.2); }
@@ -291,10 +295,11 @@
         <div class="celeb-sub">PAYOUTS DEPLOYED</div>
     </div>
 
+    <!-- MAIN HEADER -->
     <header class="top-header">
         <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
         <h3 class="page-title">Match Resolution</h3>
-        <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="support-btn" title="Support"><i class="fa-brands fa-whatsapp"></i></a>
+        <div class="support-btn" onclick="openFAQ()" title="Support & FAQ"><i class="fa-brands fa-whatsapp"></i></div>
     </header>
 
     <div class="main-container">
@@ -311,52 +316,6 @@
             </div>
         </div>
 
-        <!-- NEW FAQ SECTION -->
-        <div class="faq-section">
-            <div class="faq-title"><i class="fa-solid fa-circle-question"></i> Resolution FAQ</div>
-            
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>1. How long do payouts take?</summary>
-                <div class="faq-content">Payouts are completely instant. As soon as you tap Finalize, the backend processes the routing and credits the winning team leaders' wallets immediately.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>2. How are funds deducted?</summary>
-                <div class="faq-content">Any Rupee (Cash) prizes are deducted from your "My Earnings" balance. Any Point (PTS) prizes are deducted from your "My Points" balance. You must have enough funds before finalizing.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>3. What is a "Custom Payout"?</summary>
-                <div class="faq-content">The Custom button allows you to manually reward teams outside of the standard 1st/2nd/3rd podium. You can also use it to add bonus cash or points on top of a podium prize.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>4. Why is a specific match not showing here?</summary>
-                <div class="faq-content">Matches disappear from this screen once they are successfully marked as "Completed", "Resolved", or "Cancelled" in the database.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>5. Can I edit payouts after finalizing?</summary>
-                <div class="faq-content">No. Once the match is resolved, funds are permanently moved to the players. Please double-check your assignments before confirming.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>6. Do solo players receive clan payouts?</summary>
-                <div class="faq-content">Yes. If a solo player enters without a clan, the system automatically detects them as the leader and routes the prize to their personal wallet.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>7. Can I give both Points and Cash?</summary>
-                <div class="faq-content">Absolutely! Tap "Custom" or "Edit" on a team to mix both Rupees and Points in the same payout.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>8. What happens if I make a typo in the amount?</summary>
-                <div class="faq-content">Review the "Total Deduct" bar at the bottom before submitting. If the numbers look too high, untoggle the team and re-enter the correct custom values.</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>9. Why is the Submit button red?</summary>
-                <div class="faq-content">The button locks itself if you have insufficient wallet funds or if you have forgotten to assign a mandatory podium position (like 1st Place).</div>
-            </details>
-            <details class="faq-item" onmousedown="triggerHaptic()">
-                <summary>10. Who do I contact for database errors?</summary>
-                <div class="faq-content">If a match freezes or fails to resolve, tap the WhatsApp icon at the top right of this screen to contact Admin Support instantly.</div>
-            </details>
-        </div>
-
         <div id="tourneyListSection">
             <div class="section-title"><i class="fa-solid fa-server"></i> Active Matches Awaiting Payout</div>
             <div id="tourneyListContainer">
@@ -364,8 +323,9 @@
             </div>
         </div>
 
-        <div id="resolutionView">
-            <div class="resolution-modal">
+        <!-- RESOLUTION MODAL OVERLAY -->
+        <div id="resolutionView" class="modal-overlay">
+            <div class="modal-box">
                 <div class="close-modal-btn" onclick="closeResolutionView()"><i class="fa-solid fa-xmark"></i></div>
                 
                 <div class="section-title" style="border:none; margin-bottom: 8px; padding-right: 30px; font-size: 1rem; color: #FFD700;">
@@ -383,8 +343,65 @@
                 </div>
             </div>
         </div>
+        
+        <!-- SMART DEFLECTION FAQ MODAL -->
+        <div id="faqOverlay" class="modal-overlay">
+            <div class="modal-box faq-box">
+                <div class="close-modal-btn" onclick="closeFAQ()"><i class="fa-solid fa-xmark"></i></div>
+                
+                <div class="section-title" style="border:none; margin-bottom: 15px; font-size: 1.1rem; color: #fff;">
+                    <i class="fa-solid fa-circle-question"></i> Resolution FAQ
+                </div>
+                
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>1. How long do payouts take?</summary>
+                    <div class="faq-content">Payouts are completely instant. As soon as you tap Finalize, the backend processes the routing and credits the winning team leaders' wallets immediately.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>2. How are funds deducted?</summary>
+                    <div class="faq-content">Any Rupee (Cash) prizes are deducted from your "My Earnings" balance. Any Point (PTS) prizes are deducted from your "My Points" balance. You must have enough funds before finalizing.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>3. What is a "Custom Payout"?</summary>
+                    <div class="faq-content">The Custom button allows you to manually reward teams outside of the standard 1st/2nd/3rd podium. You can also use it to add bonus cash or points on top of a podium prize.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>4. Why is a specific match not showing here?</summary>
+                    <div class="faq-content">Matches disappear from this screen once they are successfully marked as "Completed", "Resolved", or "Cancelled" in the database.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>5. Can I edit payouts after finalizing?</summary>
+                    <div class="faq-content">No. Once the match is resolved, funds are permanently moved to the players. Please double-check your assignments before confirming.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>6. Do solo players receive clan payouts?</summary>
+                    <div class="faq-content">Yes. If a solo player enters without a clan, the system automatically detects them as the leader and routes the prize to their personal wallet.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>7. Can I give both Points and Cash?</summary>
+                    <div class="faq-content">Absolutely! Tap "Custom" or "Edit" on a team to mix both Rupees and Points in the same payout.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>8. What happens if I make a typo in the amount?</summary>
+                    <div class="faq-content">Review the "Total Deduct" bar at the bottom before submitting. If the numbers look too high, untoggle the team and re-enter the correct custom values.</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>9. Why is the Submit button red?</summary>
+                    <div class="faq-content">The button locks itself if you have insufficient wallet funds or if you have forgotten to assign a mandatory podium position (like 1st Place).</div>
+                </details>
+                <details class="faq-item" onmousedown="triggerHaptic()">
+                    <summary>10. Who do I contact for database errors?</summary>
+                    <div class="faq-content">If a match freezes or fails to resolve, tap the WhatsApp Escalation button below to contact Admin Support instantly.</div>
+                </details>
+                
+                <a href="https://wa.me/+918608205254" target="_blank" class="wa-escalate-btn" onclick="triggerHaptic(true)">
+                    <i class="fa-brands fa-whatsapp"></i> Chat with Admin Support
+                </a>
+            </div>
+        </div>
     </div>
 
+    <!-- TACTICAL FLOATING ACTION BAR -->
     <div class="bottom-summary-bar" id="submitBar">
         <div class="totals-text">
             <span>Total Deduct:</span>
@@ -409,13 +426,34 @@
         let customCashAssignments = {}; 
         let pointAssignments = {}; 
 
+        // 🔥 HARDWARE BACK-BUTTON & HISTORY STATE MANAGER
+        window.addEventListener('popstate', (event) => {
+            if (document.getElementById('faqOverlay').classList.contains('active')) {
+                closeFAQ(true);
+            }
+            if (document.getElementById('resolutionView').classList.contains('active')) {
+                closeResolutionView(true);
+            }
+        });
+
+        function openFAQ() {
+            triggerHaptic();
+            document.getElementById('faqOverlay').classList.add('active');
+            history.pushState({ modal: 'faq' }, '');
+        }
+
+        function closeFAQ(fromHistory = false) {
+            triggerHaptic();
+            document.getElementById('faqOverlay').classList.remove('active');
+            if (!fromHistory) history.back();
+        }
+
         function getAssignedPrize(rank) {
             return allPrizes.find(p => parseInt(p.rank) === parseInt(rank)) || {amount: 0, isPts: false};
         }
 
         async function secureFetch(payload) {
             try {
-                // Add timestamp cache-buster to prevent loading stale "Completed" matches
                 let finalPayload = { ...payload, _ts: Date.now() };
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -481,9 +519,15 @@
                 if(data.status === "success" && data.data) {
                     let myEmailStr = String(userData.email).toLowerCase().trim();
                     let myEvents = data.data.filter(t => {
-                        // STRICT STATUS FILTERING
-                        let dbStatus = String(t.db_status || t.status || "").toLowerCase().trim();
-                        if (dbStatus === 'completed' || dbStatus === 'resolved' || dbStatus === 'deleted' || dbStatus === 'cancelled') return false;
+                        // 🚀 AGGRESSIVE GARBAGE COLLECTOR FIX
+                        let dbStatus = String(t.status || t.Status || t.db_status || t.match_status || "").toLowerCase();
+                        
+                        if (dbStatus.includes('completed') || 
+                            dbStatus.includes('resolved') || 
+                            dbStatus.includes('deleted') || 
+                            dbStatus.includes('cancelled')) {
+                            return false;
+                        }
                         
                         let backendEmail = String(t.org_email || t.organizer_email || t.email || "").toLowerCase().trim();
                         return backendEmail === myEmailStr;
@@ -554,6 +598,8 @@
             document.getElementById('submitBar').classList.add('active');
             document.body.style.overflow = 'hidden'; 
             
+            history.pushState({ modal: 'resolve' }, '');
+            
             document.getElementById('resMatchTitle').innerText = decodeURIComponent(titleEnc);
 
             allPrizes = [];
@@ -598,12 +644,13 @@
             loadTeams(matchId);
         }
 
-        function closeResolutionView() {
+        function closeResolutionView(fromHistory = false) {
             triggerHaptic();
             document.getElementById('resolutionView').classList.remove('active');
             document.getElementById('submitBar').classList.remove('active');
             document.body.style.overflow = '';
             activeMatchId = "";
+            if (!fromHistory) history.back();
         }
 
         function extractNameFromData(rawData, fallbackName) {
@@ -655,7 +702,6 @@
                             let animDelay = index * 0.05;
                             let cleanId = "team_" + index; 
                             
-                            // 🚀 BULLETPROOF PAYLOAD STORAGE: Store pure raw string for API submission later
                             let encodedRawName = encodeURIComponent(teamName.trim());
                             let encodedRawCaptain = encodeURIComponent(pName.trim());
                             
@@ -663,7 +709,6 @@
                             let subText = isClan ? `Leader: ${pName}` : 'Solo Player';
                             let iconColor = isClan ? 'var(--accent-purple)' : 'var(--accent-cyan)';
 
-                            // New Stacked Flex Column HTML Structure
                             container.innerHTML += `
                             <div class="team-card" id="card-${cleanId}" data-rawname="${encodedRawName}" data-isclan="${isClan}" data-rawcaptain="${encodedRawCaptain}" style="animation-delay: ${animDelay}s">
                                 
@@ -737,7 +782,7 @@
             
             document.querySelectorAll('.team-card').forEach(card => {
                 let cleanId = card.id.replace('card-', '');
-                let rawName = decodeURIComponent(card.dataset.rawname); // Using Raw Name as ID Key
+                let rawName = decodeURIComponent(card.dataset.rawname); 
                 
                 let btn = document.getElementById(`btn-${cleanId}`);
                 let customBtn = document.getElementById(`btn-custom-${cleanId}`);
@@ -1054,7 +1099,8 @@
                     
                     setTimeout(() => {
                         termOverlay.classList.remove('active');
-                        closeResolutionView();
+                        // Close Modal WITHOUT triggering a back action to avoid loop
+                        document.getElementById('resolutionView').classList.remove('active');
                         document.getElementById('celebrationOverlay').classList.add('active');
                         triggerHaptic(true);
                         setTimeout(() => { window.location.href = 'profile.html'; }, 2500);
