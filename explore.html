@@ -1284,14 +1284,12 @@
             e.stopPropagation();
             triggerHaptic();
 
-            // 1. GUEST BLOCKER: Prevent empty emails in backend
             if (isGuestMode) {
                 let guestModal = document.getElementById('guestLoginModal');
                 if(guestModal) guestModal.classList.add('active');
                 return;
             }
 
-            // 2. EXTRACT EXACT USER EMAIL
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             if (!user || !user.email) {
                 showToast("Please log in to like tournaments.", true);
@@ -1300,40 +1298,46 @@
 
             let likes = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
             let idx = likes.indexOf(tId);
-            let iconContainer = e.currentTarget;
-            let countSpan = iconContainer.querySelector('span');
-            let currentCount = parseInt(countSpan.innerText) || baseCount;
+            
+            // Instantly update ALL cards with this ID on the frontend (Explore list + Slider)
+            let updateAllCards = (mode, serverCount = null) => {
+                document.querySelectorAll(`.tourney-card[data-id='${tId}'], .org-other-card[data-id='${tId}']`).forEach(card => {
+                    let likeBtn = card.querySelector('.t-like');
+                    let countSpan = card.querySelector('.t-like span');
+                    if(!likeBtn || !countSpan) return;
+                    
+                    if(mode === 'add') {
+                        likeBtn.classList.add('liked');
+                        countSpan.innerText = serverCount !== null ? serverCount : (parseInt(countSpan.innerText) + 1);
+                    } else {
+                        likeBtn.classList.remove('liked');
+                        let curr = parseInt(countSpan.innerText);
+                        countSpan.innerText = serverCount !== null ? serverCount : (curr > 0 ? curr - 1 : 0);
+                    }
+                });
+            };
 
             if(idx > -1) {
-                // REMOVE LIKE
                 likes.splice(idx, 1);
-                iconContainer.classList.remove('liked');
-                countSpan.innerText = currentCount > 0 ? currentCount - 1 : 0;
+                updateAllCards('remove');
                 
-                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "remove" })
                 .then(res => { 
-                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
-                        countSpan.innerText = res.data.likes; // Sync true server count
-                    }
+                    if(res.status === 'success' && res.likes !== undefined) updateAllCards('remove', res.likes);
+                    else if(res.status === 'success' && res.data && res.data.likes !== undefined) updateAllCards('remove', res.data.likes);
                 }).catch(()=>{});
 
             } else {
-                // ADD LIKE
                 likes.push(tId);
-                iconContainer.classList.add('liked');
-                countSpan.innerText = currentCount + 1;
+                updateAllCards('add');
                 playSuccessSound();
                 
-                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "add" })
                 .then(res => { 
-                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
-                        countSpan.innerText = res.data.likes; // Sync true server count
-                    }
+                    if(res.status === 'success' && res.likes !== undefined) updateAllCards('add', res.likes);
+                    else if(res.status === 'success' && res.data && res.data.likes !== undefined) updateAllCards('add', res.data.likes);
                 }).catch(()=>{});
             }
-            
             localStorage.setItem('tournyx_liked_matches', JSON.stringify(likes));
         }
 
@@ -2076,6 +2080,7 @@
 
                     let card = document.createElement('div');
                     card.className = cardClasses.join(' ');
+                    card.setAttribute('data-id', tIdSafe); // CRITICAL FIX FOR LIVE LIKES
 
                     card.onclick = () => { 
                         triggerHaptic();
@@ -2602,9 +2607,24 @@
                     });
                     
                     let activeTeams = Array.from(uniqueTeamsMap.values());
-                    let liveCount = activeTeams.length;
-                    let totalSlots = parseInt(activeTournament.slots) || 48;
-                    document.getElementById('dtRegistrations').innerText = `${liveCount}/${totalSlots}`;
+        let liveCount = activeTeams.length;
+        let totalSlots = parseInt(activeTournament.slots) || 48;
+        document.getElementById('dtRegistrations').innerText = `${liveCount}/${totalSlots}`;
+
+        // 🔥 AUTO-HEAL ALGORITHM: Force Sync Database if Mismatched! 🔥
+        let dbSlots = parseInt(activeTournament.filled_slots) || 0;
+        if (liveCount !== dbSlots) {
+            secureFetch({
+                action: 'auto_sync_slots',
+                match_id: activeTournament.id || activeTournament.title,
+                real_count: liveCount
+            }).catch(e => console.log("Silent sync failed"));
+            activeTournament.filled_slots = liveCount; 
+        }
+        // 🔥 END AUTO-HEAL 🔥
+
+        let fillPct = Math.min((liveCount / totalSlots) * 100, 100);
+        let progBar = document.querySelector('.slot-tracker .progress-bar');
                     
                     let fillPct = Math.min((liveCount / totalSlots) * 100, 100);
                     let progBar = document.querySelector('.slot-tracker .progress-bar');
