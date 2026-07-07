@@ -1284,12 +1284,14 @@
             e.stopPropagation();
             triggerHaptic();
 
+            // 1. GUEST BLOCKER
             if (isGuestMode) {
                 let guestModal = document.getElementById('guestLoginModal');
                 if(guestModal) guestModal.classList.add('active');
                 return;
             }
 
+            // 2. EXTRACT EXACT USER EMAIL
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             if (!user || !user.email) {
                 showToast("Please log in to like tournaments.", true);
@@ -1318,29 +1320,35 @@
             };
 
             if(idx > -1) {
+                // REMOVE LIKE
                 likes.splice(idx, 1);
                 updateAllCards('remove');
                 
+                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "remove" })
                 .then(res => { 
-                    if(res.status === 'success' && res.likes !== undefined) updateAllCards('remove', res.likes);
-                    else if(res.status === 'success' && res.data && res.data.likes !== undefined) updateAllCards('remove', res.data.likes);
+                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
+                        updateAllCards('remove', res.data.likes);
+                    }
                 }).catch(()=>{});
 
             } else {
+                // ADD LIKE
                 likes.push(tId);
                 updateAllCards('add');
                 playSuccessSound();
                 
+                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "add" })
                 .then(res => { 
-                    if(res.status === 'success' && res.likes !== undefined) updateAllCards('add', res.likes);
-                    else if(res.status === 'success' && res.data && res.data.likes !== undefined) updateAllCards('add', res.data.likes);
+                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
+                        updateAllCards('add', res.data.likes);
+                    }
                 }).catch(()=>{});
             }
+            
             localStorage.setItem('tournyx_liked_matches', JSON.stringify(likes));
         }
-
         function shareTournament() {
             triggerHaptic();
             if(!activeTournament.title) return;
