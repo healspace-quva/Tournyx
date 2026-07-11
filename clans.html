@@ -984,7 +984,7 @@
 
             let urlParams = new URLSearchParams(window.location.search);
             let inviteId = urlParams.get('invite');
-            if (inviteId) {
+           if (inviteId) {
                 let waitLoad = setInterval(() => {
                     if (globalClans.length > 0) {
                         clearInterval(waitLoad);
@@ -993,7 +993,6 @@
                     }
                 }, 500);
             }
-        });
 
             // Hide emoji picker if clicked outside
             document.addEventListener('click', (e) => {
