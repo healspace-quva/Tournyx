@@ -579,7 +579,39 @@
         .single-page-mode .dm-header { margin-top: 40px; } 
 
         #shareLoader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary-bg); z-index: 99999; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.3s; }
+
+        /* 🔥 ULTIMATE PREMIUM CARD EFFECTS 🔥 */
+        .metal-shine { position: relative; overflow: hidden; }
+        .metal-shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: skewX(-25deg); animation: cardShine 6s infinite 2s; z-index: 10; pointer-events: none;
+        }
+        
+        .mega-shine { position: relative; overflow: hidden; }
+        .mega-shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,215,0,0.25), transparent);
+            transform: skewX(-25deg); animation: cardShine 4s infinite; z-index: 10; pointer-events: none;
+        }
+
+        @keyframes cardShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        /* UPGRADED ANIMATED PROGRESS BAR */
+        .progress-container { width: 100%; background: rgba(0,0,0,0.6); border-radius: 20px; height: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
+        .progress-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #00f2ff, #b026ff, #00f2ff); background-size: 200% 100%; animation: gradientFlow 2s linear infinite; box-shadow: 0 0 10px rgba(0,242,255,0.5); transition: width 0.4s ease-out; }
+        .progress-bar.filling { background: linear-gradient(90deg, #ff9900, #ff4d4d, #ff9900); box-shadow: 0 0 10px rgba(255,153,0,0.5); }
+        .progress-bar.full { background: #ff4d4d; box-shadow: 0 0 10px #ff4d4d; animation: none; }
+        @keyframes gradientFlow { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+        /* 🔋 POWER SAVING MODE INTERCEPTOR */
+        body.power-saving .metal-shine::after, 
+        body.power-saving .mega-shine::after { display: none !important; animation: none !important; }
+        body.power-saving .progress-bar { animation: none !important; background-image: none !important; background-color: var(--accent-cyan) !important; }
+        body.power-saving .progress-bar.filling { background-color: #ff9900 !important; }
+        body.power-saving .progress-bar.full { background-color: #ff4d4d !important; }
     </style>
+    
     <!-- ==========================================
          ONESIGNAL GLOBAL NOTIFICATION ENGINE
          ========================================== -->
@@ -1287,7 +1319,8 @@
                 if(guestModal) guestModal.classList.add('active');
                 return;
             }
-
+            let isPowerSaving = localStorage.getItem('tournyx_power_saving') === 'true' || (user && String(user.power_saving) === 'true');
+            if(isPowerSaving) document.body.classList.add('power-saving');
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             if (!user || !user.email) {
                 showToast("Please log in to like tournaments.", true);
@@ -1917,12 +1950,13 @@
                         let applyBlur = isFull || isRegClosed || isCancelled || sLower.includes("completed");
                         let isMega = parseInt(t.prize) >= 5000;
                         
-                        let cardClasses = ['tourney-card'];
-                        if (applyBlur) cardClasses.push('is-full');
-                        else {
-                            if (isMega) cardClasses.push('mega-event');
-                            else if (sLower.includes("live")) cardClasses.push('live-glow');
-                            else cardClasses.push('upcoming-glow');
+                       let cardClasses = ['tourney-card'];
+                        if (applyBlur) {
+                            cardClasses.push('is-full');
+                        } else {
+                            if (isMega) cardClasses.push('mega-event', 'mega-shine'); // Added Mega Shine
+                            else if (sLower.includes("live")) cardClasses.push('live-glow', 'metal-shine'); // Added Metal Shine
+                            else cardClasses.push('upcoming-glow', 'metal-shine'); // Added Metal Shine
                         }
                         
                         card.className = cardClasses.join(' ');
@@ -1958,26 +1992,43 @@
                                 <div class="t-like ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${tIdSafe}', ${baseLikeCount})"><i class="fa-solid fa-heart"></i> <span>${displayLikes}</span></div>
                                 <div class="t-plat-badge"><i class="fa-solid ${plat==='PC' ? 'fa-desktop' : 'fa-mobile-screen'}"></i> ${plat}</div>
                             </div>
-                            <div class="t-info-box">
-                                <div class="t-title">${tTitleSafe} ${isVerifiedPremium}</div>
+                            <div class="t-info-box" style="position:relative; z-index:2;">
+                                <div class="t-title" style="font-size:1.05rem; margin-bottom: 12px; letter-spacing:0.5px;">${tTitleSafe} ${isVerifiedPremium}</div>
                                 
-                                <div class="t-details-grid">
-                                    <div class="t-detail-item"><i class="fa-solid fa-gamepad"></i> <span>${t.game || "Esports"} (${t.format || "Any"})</span></div>
-                                    <div class="t-detail-item"><i class="fa-solid fa-ticket"></i> <span style="display:flex; align-items:center; gap:5px;">${entryTxt}</span></div>
-                                    <div class="t-detail-item" style="grid-column: 1 / -1;"><i class="fa-solid fa-calendar-day"></i> <span>Reg Ends: ${formatTournamentDateStrict(t.date)}</span></div>
-                                    <div class="t-detail-item" style="grid-column: 1 / -1;"><i class="fa-solid fa-clock"></i> <span style="color:var(--accent-cyan);">Match Period: ${formatMatchPeriod(t.match_period || t.date)}</span></div>
+                                <div class="t-details-grid" style="background: rgba(10, 5, 20, 0.6); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                     
-                                    <div class="t-detail-item slot-tracker" style="grid-column: 1 / -1; flex-direction:column; align-items:flex-start; gap:4px; margin-top: 5px;">
-                                        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                                            <span class="slot-text"><i class="fa-solid fa-users"></i> ${slotsFilled}/${totalSlots} Slots</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;"><i class="fa-solid fa-gamepad" style="color: var(--accent-cyan);"></i> <span style="font-weight:bold; color:white;">${t.game || "Esports"}</span></div>
+                                        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;"><i class="fa-solid fa-users-viewfinder" style="color: var(--accent-cyan);"></i> <span style="font-weight:bold; color:white;">${t.format || "Any"}</span></div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent); padding: 6px 10px; border-radius: 6px; border-left: 3px solid var(--accent-cyan); margin-bottom: 10px;">
+                                        <i class="fa-solid fa-calendar-check" style="color: var(--accent-cyan);"></i> 
+                                        <span style="color: #ccc;">Match: <b style="color: white; letter-spacing: 0.5px;">${formatMatchPeriod(t.match_period || t.date)}</b></span>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #aaa;">
+                                            <i class="fa-solid fa-hourglass-end"></i> Reg Ends: <span style="color:white; font-weight:bold;">${formatTournamentDateStrict(t.date)}</span>
+                                        </div>
+                                        <div style="background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(189,0,255,0.15)); border: 1px solid var(--accent-cyan); padding: 4px 12px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,242,255,0.2); font-size: 0.85rem; display: flex; align-items: center; justify-content: center;">
+                                            ${entryTxt}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slot-tracker">
+                                        <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:6px;">
+                                            <span class="slot-text" style="font-size:0.75rem; color:#aaa; font-family: var(--font-head); font-weight:bold; letter-spacing: 0.5px;"><i class="fa-solid fa-users" style="color:#888;"></i> ${slotsFilled}/${totalSlots} SLOTS FILLED</span>
                                             <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${Math.round(fillPct)}%</span>
                                         </div>
-                                        <div class="progress-container"><div class="progress-bar ${progColorClass}" style="width:${fillPct}%"></div></div>
+                                        <div class="progress-container">
+                                            <div class="progress-bar ${progColorClass}" style="width:${fillPct}%;"></div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="t-action-row">
-                                    <div class="t-prize-area"><div class="t-prize-label">Prize Pool</div><div class="t-prize-val">${getPrizeText(t.prize, t.prize_pts)}</div></div>
+                                <div class="t-action-row" style="margin-top:0; padding-top:0; border:none;">
+                                    <div class="t-prize-area"><div class="t-prize-label" style="font-size:0.7rem; color:#888;">PRIZE POOL</div><div class="t-prize-val" style="font-size:1.15rem;">${getPrizeText(t.prize, t.prize_pts)}</div></div>
                                     ${actionBtnHTML}
                                 </div>
                             </div>`;
@@ -2066,13 +2117,13 @@
                     let applyBlur = isFull || isRegClosed || isCancelled || sLower.includes("completed");
                     let isMega = parseInt(t.prize) >= 5000;
                     
-                    let cardClasses = ['org-other-card'];
+                   let cardClasses = ['org-other-card'];
                     if (applyBlur) {
                         cardClasses.push('is-full');
                     } else {
-                        if (isMega) cardClasses.push('mega-event');
-                        else if (sLower.includes("live")) cardClasses.push('live-glow');
-                        else cardClasses.push('upcoming-glow');
+                        if (isMega) cardClasses.push('mega-event', 'mega-shine'); // Added Mega Shine
+                        else if (sLower.includes("live")) cardClasses.push('live-glow', 'metal-shine'); // Added Metal Shine
+                        else cardClasses.push('upcoming-glow', 'metal-shine'); // Added Metal Shine
                     }
 
                     let card = document.createElement('div');
@@ -2113,24 +2164,43 @@
                             <div class="t-like ${isLiked ? 'liked' : ''}"><i class="fa-solid fa-heart"></i> <span>${displayLikes}</span></div>
                             <div class="t-plat-badge"><i class="fa-solid ${plat==='PC' ? 'fa-desktop' : 'fa-mobile-screen'}"></i> ${plat}</div>
                         </div>
-                        <div class="t-info-box">
-                            <div class="t-title">${t.title || "Tournament"} ${isVerifiedPremium}</div>
-                            <div class="t-details-grid">
-                                <div class="t-detail-item"><i class="fa-solid fa-gamepad"></i> <span>${t.game || "Esports"} (${t.format || "Any"})</span></div>
-                                <div class="t-detail-item"><i class="fa-solid fa-ticket"></i> <span style="display:flex; align-items:center; gap:5px;">${entryTxt}</span></div>
-                                <div class="t-detail-item" style="grid-column: 1 / -1;"><i class="fa-solid fa-calendar-day"></i> <span>Reg Ends: ${formatTournamentDateStrict(t.date)}</span></div>
-                                <div class="t-detail-item" style="grid-column: 1 / -1;"><i class="fa-solid fa-clock"></i> <span style="color:var(--accent-cyan);">Match Period: ${formatMatchPeriod(t.match_period || t.date)}</span></div>
+                        <div class="t-info-box" style="position:relative; z-index:2;">
+                            <div class="t-title" style="font-size:1.05rem; margin-bottom: 12px; letter-spacing:0.5px;">${t.title || "Tournament"} ${isVerifiedPremium}</div>
+                            
+                            <div class="t-details-grid" style="background: rgba(10, 5, 20, 0.6); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                                 
-                                <div class="t-detail-item slot-tracker" style="grid-column: 1 / -1; flex-direction:column; align-items:flex-start; gap:4px; margin-top: 5px;">
-                                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                                        <span class="slot-text"><i class="fa-solid fa-users"></i> ${slotsFilled}/${totalSlots} Slots</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;"><i class="fa-solid fa-gamepad" style="color: var(--accent-cyan);"></i> <span style="font-weight:bold; color:white;">${t.game || "Esports"}</span></div>
+                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #ccc; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;"><i class="fa-solid fa-users-viewfinder" style="color: var(--accent-cyan);"></i> <span style="font-weight:bold; color:white;">${t.format || "Any"}</span></div>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent); padding: 6px 10px; border-radius: 6px; border-left: 3px solid var(--accent-cyan); margin-bottom: 10px;">
+                                    <i class="fa-solid fa-calendar-check" style="color: var(--accent-cyan);"></i> 
+                                    <span style="color: #ccc;">Match: <b style="color: white; letter-spacing: 0.5px;">${formatMatchPeriod(t.match_period || t.date)}</b></span>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #aaa;">
+                                        <i class="fa-solid fa-hourglass-end"></i> Reg Ends: <span style="color:white; font-weight:bold;">${formatTournamentDateStrict(t.date)}</span>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(189,0,255,0.15)); border: 1px solid var(--accent-cyan); padding: 4px 12px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,242,255,0.2); font-size: 0.85rem; display: flex; align-items: center; justify-content: center;">
+                                        ${entryTxt}
+                                    </div>
+                                </div>
+                                
+                                <div class="slot-tracker">
+                                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:6px;">
+                                        <span class="slot-text" style="font-size:0.75rem; color:#aaa; font-family: var(--font-head); font-weight:bold; letter-spacing: 0.5px;"><i class="fa-solid fa-users" style="color:#888;"></i> ${slotsFilled}/${totalSlots} SLOTS FILLED</span>
                                         <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${Math.round(fillPct)}%</span>
                                     </div>
-                                    <div class="progress-container"><div class="progress-bar ${progColorClass}" style="width:${fillPct}%"></div></div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar ${progColorClass}" style="width:${fillPct}%;"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="t-action-row">
-                                <div class="t-prize-area"><div class="t-prize-label">Prize Pool</div><div class="t-prize-val">${getPrizeText(t.prize, t.prize_pts)}</div></div>
+
+                            <div class="t-action-row" style="margin-top:0; padding-top:0; border:none;">
+                                <div class="t-prize-area"><div class="t-prize-label" style="font-size:0.7rem; color:#888;">PRIZE POOL</div><div class="t-prize-val" style="font-size:1.15rem;">${getPrizeText(t.prize, t.prize_pts)}</div></div>
                                 ${actionBtnHTML}
                             </div>
                         </div>
@@ -2518,7 +2588,8 @@
                     else if(roleText.includes('PLAYER')) roleColor = '#aaa'; 
                     else roleColor = glowColor; 
 
-                    let pAvatarUrl = p.avatar || p.logo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(pName)}&colors=cyan,purple,gold`;
+                    // 🔥 PERFECT AVATAR FETCHER: Searches all possible json keys
+                    let pAvatarUrl = p.avatar || p.Avatar || p.logo || p.Logo || p.image || p.profile_pic || p.pic || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(pName)}&colors=cyan,purple,gold`;
 
                     html += `
                         <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); opacity:0; animation:slideUpRoster 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${delay}s;">
@@ -2540,13 +2611,16 @@
             document.getElementById('rosterPopupModal').classList.add('active');
         }
         
-        function closeRosterPopup() {
+        function closeRosterPopup(e) {
+            if(e) e.stopPropagation();
             triggerHaptic();
             let modal = document.getElementById('rosterPopupModal');
             if(modal && modal.classList.contains('active')) {
-                modal.classList.remove('active');
+                // 🔥 THE FIX: Let the PopState listener handle removing the active class safely
                 if (window.history.state && window.history.state.modal === 'rosterPopup') {
                     window.history.back();
+                } else {
+                    modal.classList.remove('active');
                 }
             }
         }
