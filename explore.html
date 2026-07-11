@@ -1146,7 +1146,7 @@
             <span>Profile</span>
         </a>
     </nav>
-         <script>
+        <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec';
         let activeTournament = {}; 
         let pendingRegistrationData = null; 
@@ -1222,18 +1222,16 @@
         // ==========================================
 
         window.addEventListener('popstate', function(event) {
-            // 1. Check if Roster Popup is open FIRST
             const rosterModal = document.getElementById('rosterPopupModal');
             if (rosterModal && rosterModal.classList.contains('active')) {
                 rosterModal.classList.remove('active');
-                return; // Stop here so it doesn't close the tournament details beneath it
+                return; 
             }
 
-            // 2. Otherwise, check if Tournament Details is open
             const modal = document.getElementById('tourneyDetailModal');
             if (modal && modal.classList.contains('active')) {
                 if(document.body.classList.contains('single-page-mode')) {
-                    window.location.href = 'explore.html'; // Failsafe for deep links
+                    window.location.href = 'explore.html'; 
                 } else {
                     modal.classList.remove('active');
                     if(activeCountdown) clearInterval(activeCountdown);
@@ -1284,14 +1282,12 @@
             e.stopPropagation();
             triggerHaptic();
 
-            // 1. GUEST BLOCKER: Prevent empty emails in backend
             if (isGuestMode) {
                 let guestModal = document.getElementById('guestLoginModal');
                 if(guestModal) guestModal.classList.add('active');
                 return;
             }
 
-            // 2. EXTRACT EXACT USER EMAIL
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             if (!user || !user.email) {
                 showToast("Please log in to like tournaments.", true);
@@ -1300,40 +1296,49 @@
 
             let likes = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
             let idx = likes.indexOf(tId);
-            let iconContainer = e.currentTarget;
-            let countSpan = iconContainer.querySelector('span');
-            let currentCount = parseInt(countSpan.innerText) || baseCount;
+            
+            // Instantly update ALL cards with this ID
+            let updateAllCards = (mode, serverCount = null) => {
+                document.querySelectorAll(`.tourney-card[data-id='${tId}'], .org-other-card[data-id='${tId}']`).forEach(card => {
+                    let likeBtn = card.querySelector('.t-like');
+                    let countSpan = card.querySelector('.t-like span');
+                    if(!likeBtn || !countSpan) return;
+                    
+                    if(mode === 'add') {
+                        likeBtn.classList.add('liked');
+                        countSpan.innerText = serverCount !== null ? serverCount : (parseInt(countSpan.innerText) + 1);
+                    } else {
+                        likeBtn.classList.remove('liked');
+                        let curr = parseInt(countSpan.innerText);
+                        countSpan.innerText = serverCount !== null ? serverCount : (curr > 0 ? curr - 1 : 0);
+                    }
+                });
+            };
 
             if(idx > -1) {
-                // REMOVE LIKE
                 likes.splice(idx, 1);
-                iconContainer.classList.remove('liked');
-                countSpan.innerText = currentCount > 0 ? currentCount - 1 : 0;
+                updateAllCards('remove');
                 
-                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "remove" })
                 .then(res => { 
-                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
-                        countSpan.innerText = res.data.likes; // Sync true server count
+                    if(res.status === 'success') {
+                        let finalCount = (res.data && res.data.likes !== undefined) ? res.data.likes : res.likes;
+                        if(finalCount !== undefined) updateAllCards('remove', finalCount);
                     }
                 }).catch(()=>{});
-
             } else {
-                // ADD LIKE
                 likes.push(tId);
-                iconContainer.classList.add('liked');
-                countSpan.innerText = currentCount + 1;
+                updateAllCards('add');
                 playSuccessSound();
                 
-                // Secure Payload WITH Email
                 secureFetch({ action: "like_tournament", match_id: tId, email: user.email, mode: "add" })
                 .then(res => { 
-                    if(res.status === 'success' && res.data && res.data.likes !== undefined) {
-                        countSpan.innerText = res.data.likes; // Sync true server count
+                    if(res.status === 'success') {
+                        let finalCount = (res.data && res.data.likes !== undefined) ? res.data.likes : res.likes;
+                        if(finalCount !== undefined) updateAllCards('add', finalCount);
                     }
                 }).catch(()=>{});
             }
-            
             localStorage.setItem('tournyx_liked_matches', JSON.stringify(likes));
         }
 
@@ -1749,7 +1754,6 @@
             });
         }
 
-        // --- 1. CRASH FIX: DOMContentLoaded Initializer ---
         document.addEventListener("DOMContentLoaded", () => {
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             const urlParams = new URLSearchParams(window.location.search);
@@ -1822,7 +1826,6 @@
             loadLiveTournaments(null); 
         }
 
-        // --- 2. CRASH FIX: Bulletproof Feed Loader ---
         function loadLiveTournaments(autoOpenId) {
             secureFetch({ action: 'get_tournaments' })
             .then(data => {
@@ -1874,8 +1877,6 @@
                     feed.innerHTML = "";
                     let likesArr = JSON.parse(localStorage.getItem('tournyx_liked_matches')) || [];
                     
-                   
-
                     validTournaments.forEach(t => {
                         let dbStatus = String(t.db_status || t.col_u || t.status || "").toLowerCase();
                         if(dbStatus === "deleted") return;
@@ -2076,6 +2077,7 @@
 
                     let card = document.createElement('div');
                     card.className = cardClasses.join(' ');
+                    card.setAttribute('data-id', tIdSafe);
 
                     card.onclick = () => { 
                         triggerHaptic();
@@ -2394,7 +2396,6 @@
 
             document.getElementById('dtTimeLeft').innerText = t.status || "Upcoming";
             
-            // CRASH FIX 4: Safe View Count Generation
             let safeTitleStr = String(t.title || "Tournament");
             let viewCount = t.views ? parseInt(t.views) : (Math.floor((safeTitleStr.length * 7) + ((parseInt(t.id) || 12) * 3)) % 300) + 12;
             document.getElementById('realViewerCount').innerText = viewCount;
@@ -2422,7 +2423,6 @@
             } else {
                 modal.classList.remove('active'); 
                 
-                // Navigate back safely without breaking the browser
                 if(window.history.state && window.history.state.modal === 'tourneyDetailModal') {
                     window.history.back();
                 }
@@ -2460,7 +2460,6 @@
             if(e) e.stopPropagation(); 
             triggerHaptic();
 
-            // 🔥 MOBILE BACK BUTTON SUPPORT: Push state so "Back" closes the popup!
             history.pushState({ modal: 'rosterPopup' }, '', '#roster');
 
             let teamData = {};
@@ -2546,12 +2545,12 @@
             let modal = document.getElementById('rosterPopupModal');
             if(modal && modal.classList.contains('active')) {
                 modal.classList.remove('active');
-                // Pop the state if closed manually
                 if (window.history.state && window.history.state.modal === 'rosterPopup') {
                     window.history.back();
                 }
             }
         }
+
         // ==========================================
         function fetchLiveTeams() {
             if(!activeTournament.title) return;
@@ -2606,6 +2605,18 @@
                     let totalSlots = parseInt(activeTournament.slots) || 48;
                     document.getElementById('dtRegistrations').innerText = `${liveCount}/${totalSlots}`;
                     
+                    // 🔥 AUTO-HEAL ALGORITHM: Force Sync Database if Mismatched! 🔥
+                    let dbSlots = parseInt(activeTournament.filled_slots) || 0;
+                    if (liveCount !== dbSlots) {
+                        secureFetch({
+                            action: 'auto_sync_slots',
+                            match_id: activeTournament.id || activeTournament.title,
+                            real_count: liveCount
+                        }).catch(e => console.log("Silent sync failed"));
+                        activeTournament.filled_slots = liveCount; 
+                    }
+                    // 🔥 END AUTO-HEAL 🔥
+
                     let fillPct = Math.min((liveCount / totalSlots) * 100, 100);
                     let progBar = document.querySelector('.slot-tracker .progress-bar');
                     let pctText = document.querySelector('.slot-tracker span:last-child');
@@ -2620,7 +2631,6 @@
                         else progBar.className = "progress-bar";
                     }
                     
-                    activeTournament.filled_slots = liveCount;
                     let existingCard = document.querySelector(`.tourney-card[data-id="${activeTournament.id || activeTournament.title}"]`);
                     if (existingCard) {
                         let cardSlotTxt = existingCard.querySelector('.slot-text');
@@ -3098,7 +3108,6 @@
             }
         }
 
-        // --- 4. CRASH FIX: Fail-Safe Try/Catch Animation Engine ---
         function triggerSecureLoader(clanName, cost, method) {
             let loaderOverlay = document.getElementById('securePaymentLoader');
             loaderOverlay.style.display = 'flex';
@@ -3182,7 +3191,6 @@
             }, 3500);
         }
 
-       // --- 🚀 ASYNC LIVE-FETCH TICKETING ENGINE ---
         async function submitFinalRegistration(clanName, cost, method, bar, txt, head, logoBox) {
             const t = activeTournament;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
@@ -3196,21 +3204,17 @@
                 let usedTicketId = "FREE-ENTRY";
                 let entryPaidPts = method === 'points' ? cost : 0;
 
-                // 🎫 LIVE TICKET EXTRACTION (Bypasses Local Storage entirely)
                 if (cost > 0) {
                     if (method === 'points') {
                         usedTicketId = "PTS-" + Date.now().toString().slice(-6);
                     } else {
-                        // 1. Update the Loader UI so the user knows we are verifying the server
                         txt.style.opacity = '0';
                         setTimeout(() => { txt.innerText = "Verifying Live Ticket Inventory..."; txt.style.opacity = '1'; }, 100);
                         
-                        // 2. FETCH DIRECTLY FROM BACKEND SHEETS
                         let liveTxnsRes = await secureFetch({ action: 'get_transactions', email: user.email });
                         let liveTxns = (liveTxnsRes.status === 'success' && liveTxnsRes.data) ? liveTxnsRes.data : [];
                         
                         if (liveTxns.length > 0) {
-                            // Automatically heal the local cache so other pages are updated!
                             localStorage.setItem('tournyx_txns', JSON.stringify(liveTxns));
                             
                             let validTicket = liveTxns.find(x => 
@@ -3233,17 +3237,15 @@
                     }
                 }
 
-                // UI Update for Final Transmission
                 txt.style.opacity = '0';
                 setTimeout(() => { txt.innerText = "Transmitting to Server..."; txt.style.opacity = '1'; }, 100);
 
-                // 🚀 FIRING PAYLOAD TO BACKEND WITH REAL TICKET ID
                 let response = await secureFetch({
                     action: "join", match_id: t.id || t.title, game: t.game, title: t.title,
                     date: t.date, prize: t.prize, email: user.email, username: user.username, phone: user.phone, 
                     clan: clanName, entry_paid: method !== 'points' ? cost : 0, entry_paid_pts: entryPaidPts, method: method,
                     org_email: t.org_email || t.email || "",
-                    ticket_id: usedTicketId // <-- Sent directly to your Google Sheet!
+                    ticket_id: usedTicketId 
                 });
 
                 if(response.status === 'error') {
@@ -3254,7 +3256,6 @@
                 if(cost > 0) {
                     secureFetch({ action: 'update_wallet', email: user.email, rupees: user.rupees, points: user.points }).catch(()=>{});
                     
-                    // Add the "USED" ticket to the local cache so it displays cleanly in the UI history immediately
                     let txns = JSON.parse(localStorage.getItem('tournyx_txns')) || [];
                     let dateStr = getISTDateTime();
                     let newTxn = { 
@@ -3273,7 +3274,6 @@
                 userLiveMatches.push({ tournament_title: t.title, match_id: t.id || t.title });
                 playGunshotSound();
                 
-                // 🟢 SUCCESS ANIMATION
                 bar.style.width = "100%"; 
                 bar.classList.add('blast');
                 bar.style.background = "#00ff7f";
@@ -3309,7 +3309,6 @@
                 }, 2000);
 
             } catch (e) {
-                // If anything fails (Network drop, Google Sheet timeout), it cleanly errors out instead of freezing
                 forceLoaderError("Network Error. Check connection.", bar, txt, head, logoBox);
             }
         }
@@ -3430,7 +3429,7 @@
             activeGame = game; 
             applyFilter(); 
         }
-          // --- DYNAMIC ESPORTS EMPTY STATE ENGINE ---
+        
         function checkEmptyState() {
             const feed = document.getElementById('tournamentContainer');
             const visibleCards = feed.querySelectorAll('.tourney-card');
@@ -3440,7 +3439,6 @@
                 if (card.style.display !== 'none') hasVisible = true;
             });
             
-            // Remove existing empty message if it's there
             let existingEmpty = document.getElementById('emptyStateMessage');
             if (existingEmpty) existingEmpty.remove();
 
@@ -3471,6 +3469,7 @@
                 feed.insertAdjacentHTML('beforeend', emptyHtml);
             }
         }
+
         function applyFilter() {
             let s = document.getElementById('fltStatus').value; 
             let p = document.getElementById('fltPlatform').value; 
