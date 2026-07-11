@@ -1622,7 +1622,9 @@
 
             sortedRoster.forEach(member => {
                 let rColor = member.role==='Owner' ? 'var(--accent-orange)' : (member.role==='Admin'?'var(--accent-cyan)':'#ccc');
-                let encodedData = encodeURIComponent(JSON.stringify(member));
+                
+                // 🔥 THE FIX: Perfectly escape all single quotes to %27 so HTML never breaks!
+                let encodedData = encodeURIComponent(JSON.stringify(member)).replace(/'/g, "%27");
                 let isOnline = Math.random() > 0.5 ? 'block' : 'none'; if(member.name === user.username) isOnline = 'block'; 
 
                 let roleIcon = '<i class="fa-solid fa-user-ninja"></i>';
@@ -1632,12 +1634,15 @@
                 else if(member.pos && member.pos.includes('Substitute')) roleIcon = '<i class="fa-solid fa-people-arrows"></i>';
 
                 let posTag = member.pos ? `<span class="r-pos-tag">${roleIcon} ${member.pos}</span>` : "";
-                let pStateTag = member.state && member.state !== "N/A" ? `<span class="state-badge"><i class="fa-solid fa-location-dot" style="font-size:0.5rem;"></i> ${member.state}</span>` : "";
+                let pStateTag = member.state && member.state !== "N/A" ? `<span class="state-badge" style="font-size:0.65rem; color:#aaa;"><i class="fa-solid fa-location-dot"></i> ${member.state}</span>` : "";
 
+                let pAvatarUrl = member.avatar || member.Avatar || member.logo || member.pic || member.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=110822&color=00f2ff`;
+
+                // 🔥 THE FIX: Removed the buggy 4th argument, making the onclick flawlessly clean
                 rl.innerHTML += `
-                    <div class="roster-item" onclick="openMemberCard('${encodedData}', ${isAdmin}, ${isOwner}, '${member.name.replace(/'/g, "\\'")}')">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=110822&color=00f2ff" class="r-avatar" id="avatar-${member.name.replace(/\s+/g,'')}">
-                        <div class="online-dot" style="display:${isOnline}; width:10px; height:10px; background:#00ff7f; border-radius:50%; margin-left:-16px; margin-top:25px; z-index:3; border:2px solid var(--primary-bg); box-shadow: 0 0 5px #00ff7f;"></div>
+                    <div class="roster-item" onclick="openMemberCard('${encodedData}', ${isAdmin}, ${isOwner})">
+                        <img src="${pAvatarUrl}" class="r-avatar" id="avatar-${member.name.replace(/\s+/g,'')}">
+                        <div class="online-dot" style="display:${isOnline}; width:12px; height:12px; background:#00ff7f; border-radius:50%; margin-left:-20px; margin-top:30px; z-index:3; border:2px solid var(--card-bg); box-shadow: 0 0 8px #00ff7f;"></div>
                         <div class="r-info">
                             <div class="r-name" title="${member.name}">${member.name}</div>
                             <div class="roster-tags-wrapper">
@@ -1646,7 +1651,7 @@
                                 ${pStateTag}
                             </div>
                         </div>
-                        <i class="fa-solid fa-chevron-right" style="color:#666; font-size:0.75rem; margin-left:auto;"></i>
+                        <i class="fa-solid fa-chevron-right" style="color:#888; font-size:1rem; margin-left:auto;"></i>
                     </div>`;
 
                 secureFetch({ action: "get_avatar", username: member.name })
@@ -1660,62 +1665,71 @@
         }
 
         // 🔥 UPGRADE: Bulletproof UX Overflow for Player Modal
-        function openMemberCard(encodedStr, isAdminViewing, isOwnerViewing, memberName) {
+        // 🔥 THE FIX: Updated Signature and Safe Name Escaping
+        function openMemberCard(encodedStr, isAdminViewing, isOwnerViewing) {
             triggerHaptic();
             let m = JSON.parse(decodeURIComponent(encodedStr));
             let rColor = m.role==='Owner' ? 'var(--accent-orange)' : (m.role==='Admin'?'var(--accent-cyan)':'#ccc');
             
+            let isMe = (m.name === user.username);
             let adminActionsHtml = "";
-            if(isAdminViewing && m.name !== user.username) {
-                adminActionsHtml += `<div style="margin-top:20px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px;">`;
-                adminActionsHtml += `<div style="font-family:var(--font-head); font-size:0.75rem; color:var(--accent-cyan); margin-bottom:10px; text-transform:uppercase;">Admin Controls</div>`;
+            
+            // 🔥 THE FIX: Safely escape the name for the admin action buttons to prevent crashes
+            let safeMName = m.name.replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+            
+            if(isAdminViewing && !isMe) {
+                adminActionsHtml += `<div style="margin-top:20px; border-top:1px dashed var(--glass-border); padding-top:20px;">`;
+                adminActionsHtml += `<div style="font-family:var(--font-head); font-size:0.85rem; color:var(--accent-cyan); margin-bottom:12px; text-transform:uppercase; font-weight:bold;">Admin Controls</div>`;
                 adminActionsHtml += `<div style="display:flex; gap:10px; flex-wrap:wrap;">`;
                 
-                adminActionsHtml += `<button class="btn-secondary" style="flex:1; margin:0; padding:10px; font-size:0.8rem;" onclick="openRoleDropdown(event, '${m.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-crosshairs"></i> Set Role</button>`;
+                adminActionsHtml += `<button class="btn-secondary" style="flex:1; margin:0; padding:12px; font-size:0.85rem;" onclick="openRoleDropdown(event, '${safeMName}')"><i class="fa-solid fa-crosshairs"></i> Set Role</button>`;
                 
                 if(isOwnerViewing && m.role === 'Player') {
-                    adminActionsHtml += `<button class="btn-primary" style="flex:1; margin:0; padding:10px; font-size:0.8rem; background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid var(--accent-cyan); box-shadow:none;" onclick="modRole(event, '${m.name.replace(/'/g, "\\'")}', 'Admin')"><i class="fa-solid fa-star"></i> Make Admin</button>`;
+                    adminActionsHtml += `<button class="btn-primary" style="flex:1; margin:0; padding:12px; font-size:0.85rem; background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid var(--accent-cyan); box-shadow:none;" onclick="modRole(event, '${safeMName}', 'Admin')"><i class="fa-solid fa-star"></i> Make Admin</button>`;
                 }
                 if(isOwnerViewing && m.role === 'Admin') {
-                    adminActionsHtml += `<button class="btn-secondary" style="flex:1; margin:0; padding:10px; font-size:0.8rem; color:#aaa; border-color:#aaa;" onclick="modRole(event, '${m.name.replace(/'/g, "\\'")}', 'Player')"><i class="fa-solid fa-arrow-down"></i> Demote</button>`;
+                    adminActionsHtml += `<button class="btn-secondary" style="flex:1; margin:0; padding:12px; font-size:0.85rem; color:#aaa; border-color:#aaa;" onclick="modRole(event, '${safeMName}', 'Player')"><i class="fa-solid fa-arrow-down"></i> Demote</button>`;
                 }
                 
-                adminActionsHtml += `<button class="btn-danger" style="flex:1; margin:0; padding:10px; font-size:0.8rem;" onclick="kickMember(event, '${m.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-ban"></i> Kick</button>`;
+                adminActionsHtml += `<button class="btn-danger" style="flex:1; margin:0; padding:12px; font-size:0.85rem;" onclick="kickMember(event, '${safeMName}')"><i class="fa-solid fa-ban"></i> Kick</button>`;
                 adminActionsHtml += `</div></div>`;
-            } else if (isAdminViewing && m.name === user.username) {
-                adminActionsHtml += `<div style="margin-top:20px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:15px;">`;
-                adminActionsHtml += `<button class="btn-secondary" style="width:100%; margin:0; padding:10px; font-size:0.8rem;" onclick="openRoleDropdown(event, '${m.name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-crosshairs"></i> Set My Game Role</button>`;
+            } else if (isAdminViewing && isMe) {
+                adminActionsHtml += `<div style="margin-top:20px; border-top:1px dashed var(--glass-border); padding-top:20px;">`;
+                adminActionsHtml += `<button class="btn-secondary" style="width:100%; margin:0; padding:12px; font-size:0.85rem;" onclick="openRoleDropdown(event, '${safeMName}')"><i class="fa-solid fa-crosshairs"></i> Set My Game Role</button>`;
                 adminActionsHtml += `</div>`;
             }
 
-           let pAvatarUrl = m.avatar || m.Avatar || m.logo || m.pic || m.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=110822&color=00f2ff`;
-            let uploadBtnHtml = isMe ? `<div onclick="document.getElementById('liveAvatarInp').click()" style="position:absolute; bottom:5px; right:-5px; background:var(--accent-cyan); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 15px rgba(0,242,255,0.8); border:2px solid var(--primary-bg); z-index:10;"><i class="fa-solid fa-camera" style="color:black; font-size:0.8rem;"></i></div>` : '';
+            let pAvatarUrl = m.avatar || m.Avatar || m.logo || m.pic || m.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=110822&color=00f2ff`;
+            let uploadBtnHtml = isMe ? `<div onclick="document.getElementById('liveAvatarInp').click()" style="position:absolute; bottom:5px; right:-5px; background:var(--accent-cyan); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 15px rgba(0,242,255,0.8); border:3px solid var(--primary-bg); z-index:10;"><i class="fa-solid fa-camera" style="color:black; font-size:0.9rem;"></i></div>` : '';
 
             let html = `
-                <div style="text-align:center; margin-bottom:15px; display:flex; flex-direction:column; align-items:center; position:relative;">
-                    <div style="position:relative; margin-bottom:10px;">
-                        <img id="cardAvatarImg" src="${pAvatarUrl}" style="width:75px; height:75px; background:var(--accent-purple); border:2px solid var(--accent-cyan); border-radius:50%; font-size:2.5rem; color:white; font-family:var(--font-head); display:flex; align-items:center; justify-content:center; box-shadow:0 0 15px rgba(0,242,255,0.3); object-fit: cover; flex-shrink:0;">
+                <div style="text-align:center; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; position:relative;">
+                    <div style="position:relative; margin-bottom:12px;">
+                        <img id="cardAvatarImg" src="${pAvatarUrl}" style="width:85px; height:85px; background:var(--accent-purple); border:3px solid var(--accent-cyan); border-radius:50%; font-size:2.5rem; color:white; font-family:var(--font-head); display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(0,242,255,0.4); object-fit: cover; flex-shrink:0;">
                         ${uploadBtnHtml}
                     </div>
-                    <div style="font-family:var(--font-head); font-size:clamp(1.1rem, 5vw, 1.4rem); font-weight:900; letter-spacing:1px; margin-bottom:5px; word-break:break-all; max-width:100%; line-height: 1.2;">${m.name}</div>
-                    <div style="color:${rColor}; font-size:0.85rem; font-weight:bold; letter-spacing:1px; text-transform:uppercase; text-align:center; flex-wrap:wrap; display:flex; justify-content:center; gap:5px;"><span>${m.role}</span> ${m.pos ? `<span style="color:#888;">|</span> <span>${m.pos}</span>` : ''}</div>
+                    <div style="font-family:var(--font-head); font-size:clamp(1.3rem, 5vw, 1.6rem); font-weight:900; letter-spacing:1px; margin-bottom:6px; word-break:break-all; max-width:100%; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
+                    <div style="color:${rColor}; font-size:0.95rem; font-weight:bold; letter-spacing:1px; text-transform:uppercase; text-align:center; flex-wrap:wrap; display:flex; justify-content:center; gap:6px;"><span>${m.role}</span> ${m.pos ? `<span style="color:#888;">|</span> <span>${m.pos}</span>` : ''}</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); width:100%; overflow:hidden; box-sizing: border-box;">
-                    <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px; width:100%;"><i class="fa-solid fa-gamepad" style="color:#888; width:18px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>IGN:</strong> <span style="color:var(--accent-cyan); font-weight:bold;">${m.gameName || "Not provided"}</span></span></div>
-                    <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px; width:100%;"><i class="fa-solid fa-fingerprint" style="color:#888; width:18px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>UID:</strong> <span style="font-family:monospace; color:white; font-weight:bold;">${m.uid || "Not provided"}</span></span></div>
-                    <div style="display:flex; align-items:center; gap:8px; width:100%;"><i class="fa-solid fa-phone" style="color:#888; width:18px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>Contact:</strong> ${m.phone || "Hidden"}</span></div>
+                <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:14px; border:1px solid rgba(255,255,255,0.05); width:100%; overflow:hidden; box-sizing: border-box; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);">
+                    <div style="margin-bottom:12px; display:flex; align-items:center; gap:10px; width:100%;"><i class="fa-solid fa-gamepad" style="color:#888; width:20px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>IGN:</strong> <span style="color:var(--accent-cyan); font-weight:bold; letter-spacing:0.5px;">${m.gameName || "Not provided"}</span></span></div>
+                    <div style="margin-bottom:12px; display:flex; align-items:center; gap:10px; width:100%;"><i class="fa-solid fa-fingerprint" style="color:#888; width:20px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>UID:</strong> <span style="font-family:monospace; color:white; font-weight:bold; letter-spacing:1px;">${m.uid || "Not provided"}</span></span></div>
+                    <div style="display:flex; align-items:center; gap:10px; width:100%;"><i class="fa-solid fa-phone" style="color:#888; width:20px; text-align:center; flex-shrink:0;"></i> <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><strong>Contact:</strong> ${m.phone || "Hidden"}</span></div>
                 </div>
                 ${adminActionsHtml}
             `;
             document.getElementById('memberDetailContent').innerHTML = html;
             document.getElementById('memberDetailModal').classList.add('active');
 
-            secureFetch({ action: "get_avatar", username: m.name })
-            .then(d => {
-                if(d.status === 'success' && (d.data || d.avatar)) {
-                    document.getElementById('cardAvatarImg').src = (d.data || d.avatar);
-                }
-            }).catch(e=>{});
+            if(!m.avatar && !m.logo) {
+                secureFetch({ action: "get_avatar", username: m.name })
+                .then(d => {
+                    if(d.status === 'success' && (d.data || d.avatar)) {
+                        let cAvatar = document.getElementById('cardAvatarImg');
+                        if(cAvatar) cAvatar.src = (d.data || d.avatar);
+                    }
+                }).catch(e=>{});
+            }
         }
 
         function openRoleDropdown(e, name) {
