@@ -354,6 +354,24 @@
 
         @media (min-width: 850px) { .bottom-nav { display: none !important; } body { padding-bottom: 0; } }
         .median-active .top-header { display: none !important; } .median-active { padding-top: 15px !important; }
+        /* 🔥 PREMIUM CARD EFFECTS & POWER SAVING 🔥 */
+        .metal-shine { position: relative; overflow: hidden; }
+        .metal-shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: skewX(-25deg); animation: cardShine 6s infinite 2s; z-index: 10; pointer-events: none;
+        }
+        .mega-shine { position: relative; overflow: hidden; }
+        .mega-shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,215,0,0.25), transparent);
+            transform: skewX(-25deg); animation: cardShine 4s infinite; z-index: 10; pointer-events: none;
+        }
+        @keyframes cardShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        body.power-saving .metal-shine::after, 
+        body.power-saving .mega-shine::after { display: none !important; animation: none !important; }
+        body.power-saving .xp-bar-fill { animation: none !important; }
     </style>
     <!-- ==========================================
          ONESIGNAL GLOBAL NOTIFICATION ENGINE
@@ -391,6 +409,7 @@
     </script>
 </head>
 <body>
+    <input type="file" id="liveAvatarInp" accept="image/*" style="display:none;" onchange="processAvatarUpload(event)">
     <canvas id="particles-canvas"></canvas>
     
     <div id="celebrationOverlay">
@@ -934,16 +953,31 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            if(!isGuestMode && user.avatar) {
-                document.getElementById('headerProfilePic').src = user.avatar;
-            }
+            // 🔋 Detect Power Saving Mode
+            let isPowerSaving = localStorage.getItem('tournyx_power_saving') === 'true' || (user && String(user.power_saving) === 'true');
+            if(isPowerSaving) document.body.classList.add('power-saving');
+            
+            if(!isGuestMode && user.avatar) { document.getElementById('headerProfilePic').src = user.avatar; }
             
             fetchAllClansSilent();
 
             if (!isGuestMode) { 
-                fetchLiveClanData(false); 
+                let cachedClans = localStorage.getItem('tournyx_my_clans_cache');
+                if (cachedClans) {
+                    // Cache Hit: Instant Load
+                    userLiveClans = JSON.parse(cachedClans);
+                    document.getElementById('skeletonLoader').classList.remove('active');
+                    document.getElementById('skeletonLoader').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    if (userLiveClans.length > 0) renderHub(); else showNoClan();
+                    fetchLiveClanData(true); // Silent Sync
+                } else {
+                    // First Visit: Force Loader
+                    fetchLiveClanData(false); 
+                }
             } else {
                 document.getElementById('skeletonLoader').classList.remove('active');
+                document.getElementById('skeletonLoader').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 showNoClan();
             }
@@ -959,6 +993,7 @@
                     }
                 }, 500);
             }
+        });
 
             // Hide emoji picker if clicked outside
             document.addEventListener('click', (e) => {
@@ -1127,18 +1162,20 @@
                             if (myRosterIndex !== -1) {
                                 if(item.logo && item.logo.length > 20) clanObj.logo = item.logo;
                                 if(item.banner && item.banner.length > 20) clanObj.banner = item.banner;
-                                
-                                if (String(item.claimed_premium).toLowerCase() === 'true') {
-                                    clanObj.isPremiumClan = true;
-                                }
+                                if (String(item.claimed_premium).toLowerCase() === 'true') { clanObj.isPremiumClan = true; }
 
+                                // 🔥 AUTO-HEAL PLAYER PROFILE
                                 let currentRosterMe = clanObj.roster[myRosterIndex];
-                                let pPhone = user.phone || ""; let pIgn = user.gameName || user.ign || user.username || ""; let pUid = user.uid || user.gameUid || "";
+                                let pPhone = user.phone || ""; 
+                                let pIgn = user.gameName || user.ign || user.username || ""; 
+                                let pUid = user.uid || user.gameUid || "";
+                                let pAvatar = user.avatar || "";
                                 
-                                if (currentRosterMe.phone !== pPhone || currentRosterMe.gameName !== pIgn || currentRosterMe.uid !== pUid) {
+                                if (currentRosterMe.phone !== pPhone || currentRosterMe.gameName !== pIgn || currentRosterMe.uid !== pUid || currentRosterMe.avatar !== pAvatar) {
                                     clanObj.roster[myRosterIndex].phone = pPhone;
                                     clanObj.roster[myRosterIndex].gameName = pIgn;
                                     clanObj.roster[myRosterIndex].uid = pUid;
+                                    clanObj.roster[myRosterIndex].avatar = pAvatar;
                                     needsLiveSyncUpdate = true;
                                 }
                                 parsedClans.push(clanObj);
@@ -1652,9 +1689,15 @@
                 adminActionsHtml += `</div>`;
             }
 
+           let pAvatarUrl = m.avatar || m.Avatar || m.logo || m.pic || m.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=110822&color=00f2ff`;
+            let uploadBtnHtml = isMe ? `<div onclick="document.getElementById('liveAvatarInp').click()" style="position:absolute; bottom:5px; right:-5px; background:var(--accent-cyan); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 15px rgba(0,242,255,0.8); border:2px solid var(--primary-bg); z-index:10;"><i class="fa-solid fa-camera" style="color:black; font-size:0.8rem;"></i></div>` : '';
+
             let html = `
-                <div style="text-align:center; margin-bottom:15px; display:flex; flex-direction:column; align-items:center;">
-                    <img id="cardAvatarImg" src="https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=110822&color=00f2ff" style="width:70px; height:70px; background:var(--accent-purple); border:2px solid var(--accent-cyan); border-radius:50%; font-size:2.5rem; color:white; font-family:var(--font-head); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; box-shadow:0 0 15px rgba(0,242,255,0.3); object-fit: cover; flex-shrink:0;">
+                <div style="text-align:center; margin-bottom:15px; display:flex; flex-direction:column; align-items:center; position:relative;">
+                    <div style="position:relative; margin-bottom:10px;">
+                        <img id="cardAvatarImg" src="${pAvatarUrl}" style="width:75px; height:75px; background:var(--accent-purple); border:2px solid var(--accent-cyan); border-radius:50%; font-size:2.5rem; color:white; font-family:var(--font-head); display:flex; align-items:center; justify-content:center; box-shadow:0 0 15px rgba(0,242,255,0.3); object-fit: cover; flex-shrink:0;">
+                        ${uploadBtnHtml}
+                    </div>
                     <div style="font-family:var(--font-head); font-size:clamp(1.1rem, 5vw, 1.4rem); font-weight:900; letter-spacing:1px; margin-bottom:5px; word-break:break-all; max-width:100%; line-height: 1.2;">${m.name}</div>
                     <div style="color:${rColor}; font-size:0.85rem; font-weight:bold; letter-spacing:1px; text-transform:uppercase; text-align:center; flex-wrap:wrap; display:flex; justify-content:center; gap:5px;"><span>${m.role}</span> ${m.pos ? `<span style="color:#888;">|</span> <span>${m.pos}</span>` : ''}</div>
                 </div>
@@ -1785,26 +1828,20 @@
         async function calculateLiveClanStats(clan) {
             if(!clan) return;
             try {
-                // Fetch matches from the backend arrays
                 const mData = await secureFetch({ action: "get_matches", email: user.email });
                 let played = 0; let won = 0; let earn = 0;
                 
-                // Fallbacks to User Sheet K-Column equivalents directly if they exist
-                let fallbackPlayed = parseInt(user.matches_played || 0);
-                let fallbackWon = parseInt(user.matches_won || 0);
-
                 if(mData.status === 'success' && mData.data && mData.data.length > 0) {
                     mData.data.forEach(m => {
-                        if(m.clan === clan.name || m.team === clan.name) {
-                            let s = String(m.status || "").toLowerCase();
+                        if(String(m.clan).toLowerCase() === String(clan.name).toLowerCase() || String(m.team).toLowerCase() === String(clan.name).toLowerCase()) {
+                            let s = String(m.status || m.match_status || m.db_status || "").toLowerCase();
                             if(s.includes('completed') || s.includes('past') || s.includes('resolved') || s.includes('won') || s.includes('finished')) {
                                 played++;
                                 let prizeNum = parseInt(m.prize || m.winnings || "0");
                                 let pos = String(m.position || m.rank || m.standing || m.placement || "").toLowerCase().trim();
                                 
-                                // Perfect logic mapping 1st, 2nd, and 3rd place as Wins!
+                                // Precise Win Identification Logic
                                 let isTop3 = ["1", "2", "3", "1st", "2nd", "3rd"].includes(pos);
-                                
                                 if (isTop3 || s.includes('won') || (!isNaN(prizeNum) && prizeNum > 0)) { 
                                     won++; 
                                     earn += isNaN(prizeNum) ? 0 : prizeNum; 
@@ -1812,10 +1849,7 @@
                             }
                         }
                     });
-                } else {
-                    played = fallbackPlayed;
-                    won = fallbackWon;
-                }
+                } 
                 
                 let wr = played > 0 ? Math.round((won / played) * 100) : 0;
                 let generatedXp = (played * 50) + (won * 150);
@@ -1829,8 +1863,6 @@
                 document.getElementById('dashLvl').innerText = levelData.level; 
                 document.getElementById('dashXp').innerText = levelData.currentXp;
                 document.getElementById('dashNextXp').innerText = levelData.nextXp;
-                
-                // Instant update without delay
                 document.getElementById('dashXpFill').style.width = levelData.progress + "%";
 
                 if (clan.stats_played !== played || clan.stats_won !== won) {
@@ -2662,7 +2694,57 @@
                 console.error("Error processing request", e);
             }
         }
-    
+    function processAvatarUpload(e) {
+            const file = e.target.files[0]; if(!file) return;
+            showToast("Uploading Profile Avatar...", false);
+            const reader = new FileReader();
+            reader.onload = (ev) => { 
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let scaleSize = 250 / img.width;
+                    if(scaleSize > 1) scaleSize = 1; 
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
+                    const base64Data = compressedBase64.split(',')[1];
+                    const formData = new FormData();
+                    formData.append("image", base64Data);
+                    
+                    fetch("https://api.imgbb.com/1/upload?key=727c66ecfe2882d63fee08fee7495850", { method: "POST", body: formData })
+                    .then(res => res.json())
+                    .then(result => {
+                        if(result.success) {
+                            let imgbbUrl = result.data.url;
+                            
+                            // Save to Local User
+                            user.avatar = imgbbUrl;
+                            localStorage.setItem('tournyx_user', JSON.stringify(user));
+                            document.getElementById('headerProfilePic').src = imgbbUrl;
+                            let cardAvatar = document.getElementById('cardAvatarImg');
+                            if(cardAvatar) cardAvatar.src = imgbbUrl;
+                            
+                            // Save to Backend Profile
+                            secureFetch({action: "update_profile", email: user.email, field: "avatar", value: imgbbUrl}).catch(()=>{});
+
+                            // Save to Clan Roster
+                            let myRosterIndex = activeClan.roster.findIndex(r => String(r.name).toLowerCase() === String(user.username).toLowerCase());
+                            if(myRosterIndex !== -1) {
+                                activeClan.roster[myRosterIndex].avatar = imgbbUrl;
+                                pushUpdateToLive('FULL_UPDATE', activeClan);
+                            }
+
+                            showToast("Avatar Updated Perfectly!"); 
+                        } else { showToast("Image upload failed. Try again.", true); }
+                    }).catch(() => showToast("Upload error.", true));
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
 </script>
        
 </body>
