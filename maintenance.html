@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Server Maintenance - Tournyx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #05020c;
+            --accent-orange: #ff9900;
+            --accent-cyan: #00f2ff;
+            --card-bg: rgba(20, 10, 35, 0.6);
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            background-color: var(--primary-bg);
+            color: white;
+            font-family: var(--font-body);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding: 20px;
+        }
+        /* Moving Cinematic Cyber Mesh Grid Background */
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: linear-gradient(rgba(255, 153, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 153, 0, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: gridMove 8s linear infinite;
+        }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 30px 30px; } }
+
+        /* Free Fire Themed Header Slide Banners */
+        .banner-slider {
+            width: 100%; max-width: 600px; background: linear-gradient(90deg, transparent, rgba(255,153,0,0.15), transparent);
+            border-top: 2px solid var(--accent-orange); border-bottom: 2px solid var(--accent-orange);
+            padding: 10px 0; text-align: center; font-family: var(--font-head); font-weight: 900;
+            font-size: 1.1rem; letter-spacing: 3px; color: #fff; text-transform: uppercase;
+            text-shadow: 0 0 10px var(--accent-orange); margin-bottom: 30px;
+        }
+
+        .lobby-container {
+            background: var(--card-bg); border: 1px solid rgba(255, 153, 0, 0.2);
+            border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 480px;
+            text-align: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,153,0,0.05);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .logo-box i { font-size: 3.5rem; color: var(--accent-orange); filter: drop-shadow(0 0 15px var(--accent-orange)); animation: pulse 2s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-orange)); } to { transform: scale(1.05); filter: drop-shadow(0 0 25px var(--accent-orange)); } }
+
+        h2 { font-family: var(--font-head); font-size: 1.6rem; margin-top: 15px; letter-spacing: 1px; text-transform: uppercase; }
+        .sub-status { font-size: 0.95rem; color: #aaa; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+
+        /* Countdown Grid Box */
+        .countdown-grid { display: flex; justify-content: center; gap: 15px; margin: 25px 0; }
+        .time-box { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); min-width: 70px; }
+        .time-box span { display: block; font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: var(--accent-orange); }
+        .time-box label { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; display: block; }
+
+        /* AWM Reflex mini-game arena */
+        .game-arena {
+            background: rgba(0,0,0,0.6); border: 1px dashed rgba(0, 242, 255, 0.3); border-radius: 12px;
+            height: 160px; margin-top: 20px; position: relative; overflow: hidden; cursor: crosshair;
+        }
+        .game-target {
+            position: absolute; width: 30px; height: 30px; background: radial-gradient(circle, red 20%, transparent 25%, red 40%, transparent 45%, #00f2ff 80%);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transform: translate(-50%, -50%); transition: top 0.2s, left 0.2s; box-shadow: 0 0 10px #00f2ff;
+        }
+        .game-target::before, .game-target::after { content: ''; position: absolute; background: #00f2ff; }
+        .game-target::before { width: 100%; height: 2px; }
+        .game-target::after { width: 2px; height: 100%; }
+        
+        .score-counter { position: absolute; top: 8px; left: 10px; font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; }
+
+        /* Tactical Load Bar */
+        .loading-bar-wrap { width: 100%; height: 5px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 15px; position: relative;}
+        .loading-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, transparent, var(--accent-orange), transparent); background-size: 200% 100%; animation: loadSweep 1.5s infinite linear; }
+        @keyframes loadSweep { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Touch Interaction Particles */
+        .click-particle { position: fixed; width: 8px; height: 8px; background: var(--accent-orange); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: explode 0.4s ease-out forwards; box-shadow: 0 0 8px var(--accent-orange); }
+        @keyframes explode { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 30px; height: 30px; opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="banner-slider">
+        <i class="fa-solid fa-triangle-exclamation"></i> Notice: System Optimization Live
+    </div>
+
+    <div class="lobby-container">
+        <div class="logo-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <h2>Patch Updating</h2>
+        <div class="sub-status">Synchronizing Battle Database</div>
+
+        <div class="countdown-grid">
+            <div class="time-box"><span id="lblHrs">00</span><label>Hrs</label></div>
+            <div class="time-box"><span id="lblMins">00</span><label>Min</label></div>
+            <div class="time-box"><span id="lblSecs">00</span><label>Sec</label></div>
+        </div>
+
+        <div class="loading-bar-wrap">
+            <div class="loading-bar-fill"></div>
+        </div>
+
+        <!-- TARGET PRACTICE RANGE -->
+        <div class="game-arena" id="gameArena" onclick="triggerMiss(event)">
+            <div class="score-counter">TARGET LOCKS: <span id="gameScoreVal">0</span></div>
+            <div class="game-target" id="gameTarget" onclick="triggerHit(event)"></div>
+        </div>
+        <div style="font-size:0.65rem; color:#666; font-family:var(--font-head); margin-top:8px; letter-spacing:0.5px; text-transform:uppercase;">
+            <i class="fa-solid fa-crosshairs"></i> Warm up Range: Tap target to match records
+        </div>
+    </div>
+
+    <script>
+        // --- SECURE SYSTEM RE-ENTRY ENGINE ---
+        const RE-ENTRY_FALLBACK_URL = "/explore"; // Destination route once servers launch
+        
+        // Extract destination setup dynamically from Cloudflare edge link parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        let endTimeStamp = decodeURIComponent(urlParams.get('end') || "");
+        let targetTime = endTimeStamp ? new Date(endTimeStamp).getTime() : Date.now() + (2 * 60 * 60 * 1000); // Default 2 hours fallback
+
+        function runCountdownTicker() {
+            let now = Date.now();
+            let distance = targetTime - now;
+
+            // When the countdown timer ends, continuously probe the network edge
+            if (distance <= 0) {
+                document.getElementById('lblHrs').innerText = "00";
+                document.getElementById('lblMins').innerText = "00";
+                document.getElementById('lblSecs').innerText = "00";
+                
+                // Continuous ping to check if Maintenance mode has turned false
+                setInterval(async () => {
+                    try {
+                        let check = await fetch('/explore', { method: 'HEAD', cache: 'no-store' });
+                        if (check.ok) {
+                            window.location.href = RE-ENTRY_FALLBACK_URL; // Instant programmatic auto-login
+                        }
+                    } catch(e) {}
+                }, 3000);
+                return;
+            }
+
+            let hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('lblHrs').innerText = hrs < 10 ? "0" + hrs : hrs;
+            document.getElementById('lblMins').innerText = mins < 10 ? "0" + mins : mins;
+            document.getElementById('lblSecs').innerText = secs < 10 ? "0" + secs : secs;
+        }
+        setInterval(runCountdownTicker, 1000);
+        runCountdownTicker();
+
+        // --- AWM TARGET PRACTICE MINI-GAME ---
+        let score = 0;
+        const arena = document.getElementById('gameArena');
+        const target = document.getElementById('gameTarget');
+        const scoreVal = document.getElementById('gameScoreVal');
+
+        function moveTarget() {
+            let maxX = arena.clientWidth - 30;
+            let maxY = arena.clientHeight - 30;
+            let randomX = Math.floor(Math.random() * maxX) + 15;
+            let randomY = Math.floor(Math.random() * maxY) + 15;
+            target.style.left = randomX + 'px';
+            target.style.top = randomY + 'px';
+        }
+
+        function triggerHit(e) {
+            e.stopPropagation(); // Stop miss counter from firing
+            if(navigator.vibrate) navigator.vibrate(30);
+            score++;
+            scoreVal.innerText = score;
+            moveTarget();
+        }
+
+        function triggerMiss(e) {
+            if(score > 0 && e.target === arena) {
+                score--;
+                scoreVal.innerText = score;
+            }
+        }
+        moveTarget();
+
+        // --- PREMIUM HAPTIC CLICK PARTICLES ---
+        window.addEventListener('click', (e) => {
+            let p = document.createElement('div');
+            p.className = 'click-particle';
+            p.style.left = e.clientX + 'px';
+            p.style.top = e.clientY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 400);
+        });
+    </script>
+</body>
+</html>
