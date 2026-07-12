@@ -3,210 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Server Maintenance - Tournyx</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#05020c">
+    <title>Server Maintenance - Esports Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary-bg: #05020c;
-            --accent-orange: #ff9900;
-            --accent-cyan: #00f2ff;
-            --card-bg: rgba(20, 10, 35, 0.6);
+            --bg-dark: #070913;
+            --accent-main: #00e5ff;
+            --accent-second: #ff3c00;
+            --accent-glow: rgba(0, 229, 255, 0.4);
+            --panel-bg: rgba(12, 16, 33, 0.65);
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-        body {
-            background-color: var(--primary-bg);
-            color: white;
-            font-family: var(--font-body);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-            padding: 20px;
-        }
-        /* Moving Cinematic Cyber Mesh Grid Background */
-        .bg-grid {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: linear-gradient(rgba(255, 153, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 153, 0, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: gridMove 8s linear infinite;
-        }
-        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 30px 30px; } }
 
-        /* Free Fire Themed Header Slide Banners */
-        .banner-slider {
-            width: 100%; max-width: 600px; background: linear-gradient(90deg, transparent, rgba(255,153,0,0.15), transparent);
-            border-top: 2px solid var(--accent-orange); border-bottom: 2px solid var(--accent-orange);
-            padding: 10px 0; text-align: center; font-family: var(--font-head); font-weight: 900;
-            font-size: 1.1rem; letter-spacing: 3px; color: #fff; text-transform: uppercase;
-            text-shadow: 0 0 10px var(--accent-orange); margin-bottom: 30px;
-        }
-
-        .lobby-container {
-            background: var(--card-bg); border: 1px solid rgba(255, 153, 0, 0.2);
-            border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 480px;
-            text-align: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,153,0,0.05);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .logo-box i { font-size: 3.5rem; color: var(--accent-orange); filter: drop-shadow(0 0 15px var(--accent-orange)); animation: pulse 2s infinite alternate; }
-        @keyframes pulse { from { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-orange)); } to { transform: scale(1.05); filter: drop-shadow(0 0 25px var(--accent-orange)); } }
-
-        h2 { font-family: var(--font-head); font-size: 1.6rem; margin-top: 15px; letter-spacing: 1px; text-transform: uppercase; }
-        .sub-status { font-size: 0.95rem; color: #aaa; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
-
-        /* Countdown Grid Box */
-        .countdown-grid { display: flex; justify-content: center; gap: 15px; margin: 25px 0; }
-        .time-box { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); min-width: 70px; }
-        .time-box span { display: block; font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: var(--accent-orange); }
-        .time-box label { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; display: block; }
-
-        /* AWM Reflex mini-game arena */
-        .game-arena {
-            background: rgba(0,0,0,0.6); border: 1px dashed rgba(0, 242, 255, 0.3); border-radius: 12px;
-            height: 160px; margin-top: 20px; position: relative; overflow: hidden; cursor: crosshair;
-        }
-        .game-target {
-            position: absolute; width: 30px; height: 30px; background: radial-gradient(circle, red 20%, transparent 25%, red 40%, transparent 45%, #00f2ff 80%);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            transform: translate(-50%, -50%); transition: top 0.2s, left 0.2s; box-shadow: 0 0 10px #00f2ff;
-        }
-        .game-target::before, .game-target::after { content: ''; position: absolute; background: #00f2ff; }
-        .game-target::before { width: 100%; height: 2px; }
-        .game-target::after { width: 2px; height: 100%; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        .score-counter { position: absolute; top: 8px; left: 10px; font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; }
+        body {
+            background-color: var(--bg-dark); color: #ffffff;
+            font-family: var(--font-body);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            min-height: 100vh; overflow-x: hidden; overflow-y: auto; /* Handles tiny screens gracefully */
+            cursor: crosshair; padding: 15px;
+        }
 
-        /* Tactical Load Bar */
-        .loading-bar-wrap { width: 100%; height: 5px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 15px; position: relative;}
-        .loading-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, transparent, var(--accent-orange), transparent); background-size: 200% 100%; animation: loadSweep 1.5s infinite linear; }
-        @keyframes loadSweep { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        /* 1. Cinematic Blurred Background & Cyber Grid */
+        .bg-layer {
+            position: fixed; top: -5%; left: -5%; width: 110vw; height: 110vh; z-index: -2;
+            /* PASTE YOUR BACKGROUND IMAGE LINK HERE */
+            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            filter: blur(12px) brightness(0.25);
+        }
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px; transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 10s linear infinite; pointer-events: none;
+        }
+        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
 
-        /* Touch Interaction Particles */
-        .click-particle { position: fixed; width: 8px; height: 8px; background: var(--accent-orange); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: explode 0.4s ease-out forwards; box-shadow: 0 0 8px var(--accent-orange); }
-        @keyframes explode { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 30px; height: 30px; opacity: 0; } }
+        /* Status Header */
+        .server-status {
+            display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.6);
+            padding: 8px 16px; border-radius: 30px; border: 1px solid rgba(255, 60, 0, 0.3);
+            font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 20px; margin-top: 10px;
+        }
+        .status-dot { width: 10px; height: 10px; background: var(--accent-second); border-radius: 50%; box-shadow: 0 0 10px var(--accent-second); animation: blink 1s infinite alternate; }
+        @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* 3. 16:9 Auto-Sliding Banners */
+        .banner-carousel {
+            width: 100%; max-width: 600px; aspect-ratio: 16/9; background: #000;
+            border-radius: 8px; border: 2px solid var(--accent-main);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--accent-glow);
+            overflow: hidden; position: relative; margin-bottom: 25px;
+        }
+        .slider-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .slide { min-width: 100%; height: 100%; position: relative; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); font-family: var(--font-head); text-transform: uppercase; }
+        .slider-indicators { position: absolute; bottom: 10px; right: 15px; display: flex; gap: 5px; }
+        .indicator { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
+        .indicator.active { background: var(--accent-main); box-shadow: 0 0 8px var(--accent-main); width: 20px; border-radius: 10px; }
+
+        /* 2. Glassmorphism Main Hub */
+        .main-hub {
+            background: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(0, 229, 255, 0.4);
+            border-radius: 16px; padding: 25px; width: 100%; max-width: 600px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); position: relative;
+        }
+
+        /* 7. Glitch Text */
+        .glitch-text {
+            font-family: var(--font-head); font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 900;
+            text-transform: uppercase; color: #fff; text-shadow: 2px 2px 0px var(--accent-second), -2px -2px 0px var(--accent-main);
+            letter-spacing: 2px; margin-bottom: 5px; position: relative;
+        }
+        
+        .sub-text { color: #8a93a0; font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+
+        /* Countdown Grid */
+        .timer-grid { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .time-box { background: rgba(0, 0, 0, 0.5); padding: 12px 15px; border-radius: 8px; border-bottom: 2px solid var(--accent-main); min-width: 75px; position: relative; overflow: hidden; }
+        .time-box::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; }
+        @keyframes shine { 100% { left: 200%; } }
+        .time-val { font-family: var(--font-head); font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--accent-glow); display: block; line-height: 1; }
+        .time-lbl { font-size: 0.75rem; color: var(--accent-main); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-top: 5px; display: block; }
+
+        /* 9. Tactical Progress Bar */
+        .progress-wrap { width: 100%; height: 6px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        .progress-fill { height: 100%; width: 100%; background: repeating-linear-gradient( 45deg, var(--accent-main), var(--accent-main) 10px, #008899 10px, #008899 20px ); background-size: 28px 28px; animation: moveStripes 1s linear infinite; }
+        @keyframes moveStripes { 0% { background-position: 0 0; } 100% { background-position: 28px 0; } }
+
+        /* 4. Quick-Launch Game Hub */
+        .hub-title { font-size: 0.85rem; color: #8a93a0; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .hub-title::before, .hub-title::after { content: ''; height: 1px; width: 40px; background: rgba(255,255,255,0.2); }
+        .quick-launch-grid { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .game-btn {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            padding: 12px 10px; width: 100px; color: #fff; font-family: var(--font-body); font-weight: 700;
+            text-transform: uppercase; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: crosshair;
+        }
+        .game-btn i { font-size: 1.8rem; }
+        .game-btn.ff:hover { border-color: #ff9900; box-shadow: 0 0 15px rgba(255,153,0,0.4); color: #ff9900; transform: translateY(-3px); }
+        .game-btn.bgmi:hover { border-color: #ff3c00; box-shadow: 0 0 15px rgba(255,60,0,0.4); color: #ff3c00; transform: translateY(-3px); }
+        .game-btn.cod:hover { border-color: #aaaaaa; box-shadow: 0 0 15px rgba(170,170,170,0.4); color: #fff; transform: translateY(-3px); }
+
+        /* 5. Advanced Aim Trainer */
+        .aim-trainer {
+            background: rgba(0, 0, 0, 0.7); border: 1px dashed rgba(0, 229, 255, 0.4); border-radius: 8px;
+            height: 180px; position: relative; overflow: hidden; cursor: crosshair;
+        }
+        .aim-header { position: absolute; top: 10px; left: 15px; display: flex; justify-content: space-between; width: calc(100% - 30px); pointer-events: none; z-index: 2;}
+        .aim-stat { font-family: var(--font-head); font-size: 0.8rem; color: var(--accent-main); text-transform: uppercase; letter-spacing: 1px; }
+        .target {
+            position: absolute; width: 36px; height: 36px;
+            background: radial-gradient(circle, var(--accent-second) 15%, transparent 20%, transparent 40%, var(--accent-second) 45%, transparent 50%, var(--accent-main) 90%);
+            border-radius: 50%; transform: translate(-50%, -50%) scale(0); display: flex; align-items: center; justify-content: center;
+            transition: top 0.1s, left 0.1s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: crosshair;
+        }
+        .target.active { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px var(--accent-main); }
+        .target::before, .target::after { content: ''; position: absolute; background: #fff; }
+        .target::before { width: 100%; height: 2px; }
+        .target::after { width: 2px; height: 100%; }
+
+        /* 13. Scrolling Marquee */
+        .marquee-container {
+            width: 100vw; background: rgba(0, 0, 0, 0.8); border-top: 1px solid var(--accent-second);
+            border-bottom: 1px solid var(--accent-second); position: fixed; bottom: 0; left: 0;
+            padding: 8px 0; overflow: hidden; display: flex; font-family: var(--font-head); font-size: 0.8rem;
+            color: #fff; text-transform: uppercase; letter-spacing: 2px; z-index: 10;
+        }
+        .marquee-content { display: flex; white-space: nowrap; animation: marquee 20s linear infinite; }
+        .marquee-content span { margin-right: 50px; display: flex; align-items: center; gap: 10px; }
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
+
+        /* 6. Touch/Click Particles */
+        .particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: pop 0.4s ease-out forwards; z-index: 9999; }
+        @keyframes pop { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(4); opacity: 0; } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-main); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-grid"></div>
+    <div class="bg-layer"></div>
+    <div class="grid-overlay"></div>
 
-    <div class="banner-slider">
-        <i class="fa-solid fa-triangle-exclamation"></i> Notice: System Optimization Live
+    <div class="server-status">
+        <div class="status-dot"></div> System Maintenance Live
     </div>
 
-    <div class="lobby-container">
-        <div class="logo-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-        <h2>Patch Updating</h2>
-        <div class="sub-status">Synchronizing Battle Database</div>
+    <div class="banner-carousel">
+        <div class="slider-track" id="sliderTrack">
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop" alt="Patch Notes">
+                <div class="slide-overlay">OB40 Patch: New Character Unlocked</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop" alt="Map Update">
+                <div class="slide-overlay">Map Optimization in Progress</div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" alt="Weapon Balance">
+                <div class="slide-overlay">Weapon Balances & Bug Fixes</div>
+            </div>
+        </div>
+        <div class="slider-indicators" id="sliderIndicators">
+            <div class="indicator active"></div>
+            <div class="indicator"></div>
+            <div class="indicator"></div>
+        </div>
+    </div>
 
-        <div class="countdown-grid">
-            <div class="time-box"><span id="lblHrs">00</span><label>Hrs</label></div>
-            <div class="time-box"><span id="lblMins">00</span><label>Min</label></div>
-            <div class="time-box"><span id="lblSecs">00</span><label>Sec</label></div>
+    <div class="main-hub">
+        <h1 class="glitch-text">Platform Offline</h1>
+        <div class="sub-text">Deploying Database Upgrades</div>
+
+        <div class="timer-grid">
+            <div class="time-box"><span class="time-val" id="valHrs">00</span><span class="time-lbl">Hours</span></div>
+            <div class="time-box"><span class="time-val" id="valMins">00</span><span class="time-lbl">Minutes</span></div>
+            <div class="time-box"><span class="time-val" id="valSecs">00</span><span class="time-lbl">Seconds</span></div>
         </div>
 
-        <div class="loading-bar-wrap">
-            <div class="loading-bar-fill"></div>
+        <div class="progress-wrap"><div class="progress-fill"></div></div>
+
+        <div class="hub-title">Launch Games Locally</div>
+        <div class="quick-launch-grid">
+            <button class="game-btn ff" onclick="launchGame('freefire')">
+                <i class="fa-solid fa-fire"></i> Free Fire
+            </button>
+            <button class="game-btn bgmi" onclick="launchGame('bgmi')">
+                <i class="fa-solid fa-helmet-battle"></i> BGMI
+            </button>
+            <button class="game-btn cod" onclick="launchGame('cod')">
+                <i class="fa-solid fa-crosshairs"></i> COD:M
+            </button>
         </div>
 
-        <!-- TARGET PRACTICE RANGE -->
-        <div class="game-arena" id="gameArena" onclick="triggerMiss(event)">
-            <div class="score-counter">TARGET LOCKS: <span id="gameScoreVal">0</span></div>
-            <div class="game-target" id="gameTarget" onclick="triggerHit(event)"></div>
+        <div class="hub-title">Reflex Warmup Range</div>
+        <div class="aim-trainer" id="aimArena" onclick="missTarget(event)">
+            <div class="aim-header">
+                <div class="aim-stat">Hits: <span id="hitCount" style="color:#fff;">0</span></div>
+                <div class="aim-stat">Accuracy: <span id="accCount" style="color:#fff;">100%</span></div>
+            </div>
+            <div class="target" id="aimTarget" onclick="hitTarget(event)"></div>
         </div>
-        <div style="font-size:0.65rem; color:#666; font-family:var(--font-head); margin-top:8px; letter-spacing:0.5px; text-transform:uppercase;">
-            <i class="fa-solid fa-crosshairs"></i> Warm up Range: Tap target to match records
+    </div>
+
+    <br><br><br> <div class="marquee-container">
+        <div class="marquee-content">
+            <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-second)"></i> SERVER MAINTENANCE IN PROGRESS</span>
+            <span><i class="fa-solid fa-check-circle" style="color:var(--accent-main)"></i> PLAYER ACCOUNTS ARE SAFE</span>
+            <span><i class="fa-solid fa-bolt" style="color:#ffcc00"></i> NEW ESPORTS TOURNAMENTS DROPPING SOON</span>
+            
+            <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-second)"></i> SERVER MAINTENANCE IN PROGRESS</span>
+            <span><i class="fa-solid fa-check-circle" style="color:var(--accent-main)"></i> PLAYER ACCOUNTS ARE SAFE</span>
+            <span><i class="fa-solid fa-bolt" style="color:#ffcc00"></i> NEW ESPORTS TOURNAMENTS DROPPING SOON</span>
         </div>
     </div>
 
     <script>
-        // --- SECURE SYSTEM RE-ENTRY ENGINE ---
-        const RE-ENTRY_FALLBACK_URL = "/explore"; // Destination route once servers launch
-        
-        // Extract destination setup dynamically from Cloudflare edge link parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        let endTimeStamp = decodeURIComponent(urlParams.get('end') || "");
-        let targetTime = endTimeStamp ? new Date(endTimeStamp).getTime() : Date.now() + (2 * 60 * 60 * 1000); // Default 2 hours fallback
+        // --- 1. COUNTDOWN LOGIC (JSON / Param Fallback) ---
+        // Simulating JSON input timeframe. Normally fetched via API.
+        const mockJSON = { "maintenanceEnd": new Date().getTime() + (3 * 60 * 60 * 1000) }; 
+        const endTime = mockJSON.maintenanceEnd;
 
-        function runCountdownTicker() {
-            let now = Date.now();
-            let distance = targetTime - now;
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = endTime - now;
 
-            // When the countdown timer ends, continuously probe the network edge
-            if (distance <= 0) {
-                document.getElementById('lblHrs').innerText = "00";
-                document.getElementById('lblMins').innerText = "00";
-                document.getElementById('lblSecs').innerText = "00";
-                
-                // Continuous ping to check if Maintenance mode has turned false
-                setInterval(async () => {
-                    try {
-                        let check = await fetch('/explore', { method: 'HEAD', cache: 'no-store' });
-                        if (check.ok) {
-                            window.location.href = RE-ENTRY_FALLBACK_URL; // Instant programmatic auto-login
-                        }
-                    } catch(e) {}
-                }, 3000);
+            if (diff <= 0) {
+                document.getElementById('valHrs').innerText = "00";
+                document.getElementById('valMins').innerText = "00";
+                document.getElementById('valSecs').innerText = "00";
+                document.querySelector('.glitch-text').innerText = "SERVERS ONLINE";
+                document.querySelector('.glitch-text').style.color = "#00ffaa";
                 return;
             }
+            
+            let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((diff % (1000 * 60)) / 1000);
 
-            let hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            let secs = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById('lblHrs').innerText = hrs < 10 ? "0" + hrs : hrs;
-            document.getElementById('lblMins').innerText = mins < 10 ? "0" + mins : mins;
-            document.getElementById('lblSecs').innerText = secs < 10 ? "0" + secs : secs;
+            document.getElementById('valHrs').innerText = h < 10 ? '0'+h : h;
+            document.getElementById('valMins').innerText = m < 10 ? '0'+m : m;
+            document.getElementById('valSecs').innerText = s < 10 ? '0'+s : s;
         }
-        setInterval(runCountdownTicker, 1000);
-        runCountdownTicker();
+        setInterval(updateTimer, 1000);
+        updateTimer();
 
-        // --- AWM TARGET PRACTICE MINI-GAME ---
-        let score = 0;
-        const arena = document.getElementById('gameArena');
-        const target = document.getElementById('gameTarget');
-        const scoreVal = document.getElementById('gameScoreVal');
+        // --- 2. BANNER CAROUSEL LOGIC ---
+        let currentSlide = 0;
+        const track = document.getElementById('sliderTrack');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = indicators.length;
 
-        function moveTarget() {
-            let maxX = arena.clientWidth - 30;
-            let maxY = arena.clientHeight - 30;
-            let randomX = Math.floor(Math.random() * maxX) + 15;
-            let randomY = Math.floor(Math.random() * maxY) + 15;
-            target.style.left = randomX + 'px';
-            target.style.top = randomY + 'px';
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            indicators.forEach((ind, i) => {
+                ind.classList.toggle('active', i === currentSlide);
+            });
+        }
+        setInterval(nextSlide, 3500); // Auto-slide every 3.5s
+
+        // --- 3. QUICK LAUNCH REDIRECTS ---
+        function launchGame(game) {
+            // These are deep-link schemas. If the app is installed on mobile, it triggers it.
+            // If not, it safely does nothing or you can redirect to App Store.
+            const schemas = {
+                'freefire': 'intent://#Intent;package=com.dts.freefireth;scheme=freefire;end;',
+                'bgmi': 'intent://#Intent;package=com.pubg.imobile;scheme=pubg;end;',
+                'cod': 'intent://#Intent;package=com.activision.callofduty.shooter;scheme=cod;end;'
+            };
+            if(navigator.vibrate) navigator.vibrate(50);
+            window.location.href = schemas[game]; 
         }
 
-        function triggerHit(e) {
-            e.stopPropagation(); // Stop miss counter from firing
-            if(navigator.vibrate) navigator.vibrate(30);
-            score++;
-            scoreVal.innerText = score;
-            moveTarget();
+        // --- 4. ADVANCED AIM TRAINER LOGIC ---
+        const arena = document.getElementById('aimArena');
+        const target = document.getElementById('aimTarget');
+        let hits = 0, totalClicks = 0;
+
+        function spawnTarget() {
+            target.classList.remove('active');
+            setTimeout(() => {
+                // Ensure target spawns fully inside the arena boundaries
+                const maxX = arena.clientWidth - 40;
+                const maxY = arena.clientHeight - 40;
+                const x = Math.floor(Math.random() * maxX) + 20;
+                const y = Math.floor(Math.random() * maxY) + 20;
+                
+                target.style.left = `${x}px`;
+                target.style.top = `${y}px`;
+                target.classList.add('active');
+            }, 150);
         }
 
-        function triggerMiss(e) {
-            if(score > 0 && e.target === arena) {
-                score--;
-                scoreVal.innerText = score;
+        function hitTarget(e) {
+            e.stopPropagation(); // Prevent missTarget from firing
+            if(navigator.vibrate) navigator.vibrate(40); // Tactile feedback
+            hits++;
+            totalClicks++;
+            updateStats();
+            createParticle(e.clientX, e.clientY, '#00e5ff');
+            spawnTarget();
+        }
+
+        function missTarget(e) {
+            if(e.target === arena) {
+                totalClicks++;
+                updateStats();
+                createParticle(e.clientX, e.clientY, '#ff3c00');
             }
         }
-        moveTarget();
 
-        // --- PREMIUM HAPTIC CLICK PARTICLES ---
-        window.addEventListener('click', (e) => {
-            let p = document.createElement('div');
-            p.className = 'click-particle';
-            p.style.left = e.clientX + 'px';
-            p.style.top = e.clientY + 'px';
+        function updateStats() {
+            document.getElementById('hitCount').innerText = hits;
+            let acc = totalClicks === 0 ? 100 : Math.round((hits / totalClicks) * 100);
+            document.getElementById('accCount').innerText = `${acc}%`;
+            document.getElementById('accCount').style.color = acc > 75 ? "#00ffaa" : (acc > 40 ? "#ffcc00" : "#ff3c00");
+        }
+        
+        // Initial Target Spawn
+        setTimeout(spawnTarget, 500);
+
+        // --- 5. GLOBAL PARTICLE SYSTEM ---
+        function createParticle(x, y, color = '#ffffff') {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.background = color;
+            p.style.boxShadow = `0 0 10px ${color}`;
             document.body.appendChild(p);
-            setTimeout(() => p.remove(), 400);
+            setTimeout(() => p.remove(), 400); // Clean up DOM
+        }
+
+        // Add particles to all screen clicks for gaming feel
+        window.addEventListener('click', (e) => {
+            // Don't duplicate particles on the target which has its own colored particles
+            if(e.target !== target && e.target !== arena) {
+                createParticle(e.clientX, e.clientY, 'rgba(0, 229, 255, 0.5)');
+            }
         });
     </script>
 </body>
