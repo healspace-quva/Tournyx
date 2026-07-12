@@ -2727,13 +2727,12 @@
                             let currentTeamStr = String(team.clan).toLowerCase().trim();
                             let isMyClan = userClanNames.includes(currentTeamStr) || (team.username === user.username);
                             
-                            if (isMyClan) {
-                                myGroup = team.group || "Default Lobby";
-                            }
+                            if (isMyClan) { myGroup = team.group || "Default Lobby"; }
 
                             let displayClanName = team.clan;
                             let hasRoster = false;
                             let parsedClanObj = null;
+                            let needsExploreAutoHeal = false; // 🔥 AUTO HEAL FLAG
                             
                             if(displayClanName.startsWith("{")) {
                                 try { 
@@ -2741,10 +2740,29 @@
                                     displayClanName = parsedClanObj.username || parsedClanObj.name || "Unknown Clan"; 
                                     
                                     if(parsedClanObj.players && Array.isArray(parsedClanObj.players)) hasRoster = true;
-                                    else if(parsedClanObj.roster && Array.isArray(parsedClanObj.roster)) hasRoster = true;
+                                    else if(parsedClanObj.roster && Array.isArray(parsedClanObj.roster)) {
+                                        hasRoster = true;
+                                        
+                                        // 🔥 AUTO-HEAL: If it's my clan, check my profile details and update the object if needed!
+                                        if (isMyClan && !isGuestMode) {
+                                            let myIdx = parsedClanObj.roster.findIndex(r => String(r.name).toLowerCase() === String(user.username).toLowerCase());
+                                            if(myIdx !== -1) {
+                                                let pPhone = user.phone || ""; let pIgn = user.gameName || user.ign || user.username || ""; let pUid = user.uid || user.gameUid || ""; let pAvatar = user.avatar || "";
+                                                if(parsedClanObj.roster[myIdx].avatar !== pAvatar || parsedClanObj.roster[myIdx].gameName !== pIgn) {
+                                                    parsedClanObj.roster[myIdx].avatar = pAvatar;
+                                                    parsedClanObj.roster[myIdx].gameName = pIgn;
+                                                    needsExploreAutoHeal = true;
+                                                }
+                                            }
+                                        }
+                                    }
                                 } catch(e){}
                             }
 
+                            // If we healed the object, silently push the corrected JSON string to the Google Sheet (Column F)
+                            if (needsExploreAutoHeal) {
+                                secureFetch({ action: "auto_sync_slots", match_id: activeTournament.id || activeTournament.title, repair_json: JSON.stringify(parsedClanObj), target_clan: team.clan }).catch(()=>{});
+                            }
                             if (isSolo) {
                                 let playerName = team.username || displayClanName;
                                 let safePlayerName = encodeURIComponent(playerName);
