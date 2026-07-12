@@ -15,493 +15,242 @@
             --accent-green: #00ff7f;
             --text-muted: #8b80a3;
             --glass-card: rgba(13, 6, 30, 0.65);
-            --glass-border: rgba(0, 242, 255, 0.15);
+            --glass-border: rgba(0, 242, 255, 0.25);
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --neon-glow: 0 0 15px rgba(0, 242, 255, 0.4);
+            --neon-glow: 0 0 15px rgba(0, 242, 255, 0.5);
+            --purple-glow: 0 0 15px rgba(189, 0, 255, 0.5);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 
         html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--primary-bg);
-            color: #ffffff;
-            font-family: var(--font-body);
+            width: 100%; height: 100%; overflow: hidden;
+            background-color: var(--primary-bg); color: #ffffff; font-family: var(--font-body);
         }
 
         /* 🎬 VIDEO BACKGROUND CONFIGURATIONS */
         .video-bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
             background: radial-gradient(circle at 50% 50%, #12072b 0%, #05020c 100%);
         }
-
-        .video-bg-file {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.35;
-            pointer-events: none;
-        }
+        .video-bg-file { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; pointer-events: none; filter: blur(3px); }
 
         /* 🛡️ SINGLE VIEWPORT MATRIX LAYOUT */
         .app-shell {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: calc(15px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
-            position: relative;
-            z-index: 2;
+            width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            padding: calc(15px + env(safe-area-inset-top)) 20px calc(15px + env(safe-area-inset-bottom));
+            position: relative; z-index: 2;
         }
 
         /* 🛰️ TOP SYSTEM HEADER ROW */
-        .app-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 50px;
-        }
-
-        .brand-meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand-logo {
-            width: 42px;
-            height: 42px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 8px var(--accent-purple));
-        }
-
+        .app-header { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 50px; }
+        .brand-meta { display: flex; align-items: center; gap: 10px; }
+        .brand-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px var(--accent-purple)); }
         .brand-title {
-            font-family: var(--font-head);
-            font-weight: 900;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+            font-family: var(--font-head); font-weight: 900; font-size: 1.2rem; letter-spacing: 1px;
             background: linear-gradient(90deg, #ffffff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* ⏱️ TOP RIGHT REFINED TIMER GRID */
-        .compact-timer {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(5, 2, 12, 0.75);
-            border: 1px solid var(--glass-border);
-            padding: 6px 14px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            box-shadow: var(--neon-glow);
+        /* ⏱️ DYNAMIC TIMER / STATUS BADGE */
+        .header-status-box {
+            display: flex; align-items: center; justify-content: center; min-width: 120px;
+            background: rgba(5, 2, 12, 0.75); border: 1px solid var(--glass-border);
+            padding: 6px 14px; border-radius: 10px; backdrop-filter: blur(10px); box-shadow: var(--neon-glow);
+            transition: all 0.5s ease;
         }
-
-        .timer-unit-slot {
-            display: flex;
-            align-items: baseline;
-            gap: 1px;
-        }
-
-        .timer-val {
-            font-family: var(--font-head);
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--accent-cyan);
-        }
-
-        .timer-lbl {
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-left: 2px;
-        }
-
-        .timer-divider {
-            color: rgba(0, 242, 255, 0.3);
-            font-weight: 700;
-            animation: flashBlink 1s infinite;
+        .compact-timer { display: flex; align-items: center; gap: 8px; }
+        .timer-unit-slot { display: flex; align-items: baseline; gap: 1px; }
+        .timer-val { font-family: var(--font-head); font-weight: 900; font-size: 1.1rem; color: var(--accent-cyan); text-shadow: 0 0 8px var(--accent-cyan); }
+        .timer-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-left: 2px; }
+        .timer-divider { color: rgba(0, 242, 255, 0.5); font-weight: 900; animation: flashBlink 1s infinite; }
+        
+        .active-shortly-badge {
+            font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; color: var(--accent-orange);
+            text-transform: uppercase; letter-spacing: 1px; animation: pulseBadge 1.5s infinite alternate; text-align: center;
         }
 
         @keyframes flashBlink { 50% { opacity: 0.3; } }
+        @keyframes pulseBadge { from { text-shadow: 0 0 5px var(--accent-orange); } to { text-shadow: 0 0 15px var(--accent-orange); color: #fff; } }
 
         /* 🎚️ CENTER INTERFACE LOBBY */
-        .main-lobby-hub {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 540px;
-            margin: 0 auto;
-        }
+        .main-lobby-hub { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; margin: 0 auto; gap: 12px; }
 
-        .showcase-banner-frame {
-            width: 100%;
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            background: rgba(13, 6, 30, 0.4);
-            padding: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+        /* MAIN MAINTENANCE HEADING */
+        .maintenance-heading {
+            font-family: var(--font-head); font-size: clamp(1.2rem, 5vw, 1.8rem); font-weight: 900;
+            text-transform: uppercase; text-align: center; color: #fff; text-shadow: var(--purple-glow);
+            letter-spacing: 1px; line-height: 1.2; margin-bottom: 5px;
         }
+        .maintenance-sub { font-size: 0.85rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; text-align: center; margin-bottom: 10px; }
 
-        .showcase-asset {
-            width: 100%;
-            height: clamp(140px, 22vh, 210px);
-            object-fit: cover;
-            border-radius: 10px;
-            opacity: 0.9;
+        /* 🎡 5-IMAGE CAROUSEL BANNER */
+        .carousel-wrapper {
+            width: 100%; aspect-ratio: 16/9; max-height: clamp(180px, 30vh, 260px);
+            border-radius: 16px; border: 2px solid var(--accent-purple);
+            background: #000; box-shadow: 0 15px 40px rgba(0,0,0,0.8), var(--purple-glow);
+            overflow: hidden; position: relative; margin-bottom: 10px;
         }
+        .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; text-shadow: 0 0 5px #000;}
 
-        /* 💬 INTERACTIVE FADE NOTIFICATION BAR */
-        .status-msg-carousel {
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            width: 100%;
+        /* 🎮 GAME QUICK LAUNCH ROW */
+        .launch-hub { width: 100%; background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; backdrop-filter: blur(10px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); text-align: center; }
+        .launch-title { font-family: var(--font-head); font-size: 0.75rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .launch-title::before, .launch-title::after { content: ''; height: 1px; width: 30px; background: rgba(0, 242, 255, 0.4); }
+        
+        .launch-buttons { display: flex; justify-content: center; gap: 15px; }
+        .launch-btn {
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
+            width: 75px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            color: #fff; font-family: var(--font-body); font-weight: 700; font-size: 0.7rem; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .launch-btn i { font-size: 1.8rem; transition: 0.3s; }
+        .launch-btn.ffmax:hover { border-color: #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.5); color: #ff9900; transform: translateY(-5px); }
+        .launch-btn.bgmi:hover { border-color: #ff3c00; box-shadow: 0 0 20px rgba(255, 60, 0, 0.5); color: #ff3c00; transform: translateY(-5px); }
+        .launch-btn.codm:hover { border-color: #aaaaaa; box-shadow: 0 0 20px rgba(170, 170, 170, 0.5); color: #fff; transform: translateY(-5px); }
 
-        .status-msg-node {
-            font-family: var(--font-head);
-            font-size: clamp(0.85rem, 3.5vw, 1.05rem);
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
-            animation: textShineGlow 4s infinite ease-in-out;
-        }
-
-        @keyframes textShineGlow {
-            0%, 100% { opacity: 0.4; transform: scale(0.98); color: #ffffff; }
-            50% { opacity: 1; transform: scale(1); color: var(--accent-cyan); text-shadow: var(--neon-glow); }
-        }
-
-        /* 🎮 MARKETING UTILITY INTERACTION ACTIVATOR */
+        /* WARMUP PRACTICE BUTTON */
         .game-launch-trigger {
             background: linear-gradient(90deg, #7b2cbf, var(--accent-purple), var(--accent-cyan));
-            background-size: 200% 100%;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 12px;
-            color: #ffffff;
-            font-family: var(--font-head);
-            font-weight: 900;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(189, 0, 255, 0.4);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: gradientMove 3s infinite linear, buttonPulse 2s infinite alternate;
-            text-transform: uppercase;
-        }
-
-        @keyframes buttonPulse {
-            from { transform: scale(1); box-shadow: 0 0 15px rgba(189, 0, 255, 0.4); }
-            to { transform: scale(1.04); box-shadow: 0 0 25px rgba(0, 242, 255, 0.6); }
+            background-size: 200% 100%; border: none; padding: 12px 30px; border-radius: 12px;
+            color: #ffffff; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem;
+            letter-spacing: 1px; cursor: pointer; box-shadow: var(--purple-glow);
+            transition: 0.3s; animation: gradientMove 3s infinite linear, buttonPulse 2s infinite alternate; text-transform: uppercase; width: 100%;
         }
 
         /* 📡 FOOTER SYSTEM ARCHITECTURE */
-        .app-footer {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-top: 10px;
+        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: auto; }
+        .social-icon-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 5px; }
+        .social-icon-anchor { color: rgba(255, 255, 255, 0.5); font-size: 1.2rem; transition: 0.3s; }
+        .social-icon-anchor:hover { color: var(--accent-cyan); transform: scale(1.15); filter: drop-shadow(0 0 10px var(--accent-cyan)); }
+        
+        .legal-credits {
+            font-family: var(--font-body); font-size: 0.65rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; text-align: center;
         }
+        .quva-badge { font-family: var(--font-head); font-weight: 900; color: rgba(255,255,255,0.6); margin-top: 2px; }
 
-        .social-headline {
-            font-family: var(--font-head);
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .social-icon-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .social-icon-anchor {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
-
-        .social-icon-anchor:hover {
-            color: var(--accent-cyan);
-            transform: scale(1.15);
-            filter: drop-shadow(0 0 8px var(--accent-cyan));
-        }
-
-        /* 🎰 ULTRA-SMOOTH MODAL POPUP GAME SYSTEM */
-        .game-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(3, 1, 8, 0.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 5000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.25s ease-out;
-        }
-
-        .game-modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .game-box-container {
-            background: var(--glass-card);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            width: 92%;
-            max-width: 420px;
-            padding: 20px;
-            position: relative;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-            transform: scale(0.9);
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .game-modal-overlay.active .game-box-container {
-            transform: scale(1);
-        }
-
-        .game-close-action {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 28px;
-            height: 28px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-
-        .game-close-action:hover {
-            color: var(--accent-red);
-            background: rgba(255,77,77,0.15);
-        }
-
-        .game-header-meta {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .game-title-lbl {
-            font-family: var(--font-head);
-            font-size: 1.1rem;
-            font-weight: 900;
-            color: var(--accent-orange);
-            letter-spacing: 0.5px;
-        }
-
-        .game-canvas-bounds {
-            width: 100%;
-            height: 200px;
-            background: #020006;
-            border-radius: 12px;
-            border: 1px dashed rgba(0, 242, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-        }
-
-        /* 🎯 RADIAL PINWHEEL INDIAN TARGET UTILITY */
-        .spinning-wheel-target {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 80px;
-            height: 80px;
-            background: repeating-conic-gradient(from 0deg, var(--accent-purple) 0deg 30deg, #18093c 30deg 60deg);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px var(--accent-purple);
-            animation: rotateTargetWheel 3s linear infinite;
-        }
-
+        /* 🎰 ULTRA-SMOOTH MODAL POPUP (Kept exactly as requested) */
+        .game-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 1, 8, 0.92); backdrop-filter: blur(12px); z-index: 5000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease-out; }
+        .game-modal-overlay.active { display: flex; opacity: 1; }
+        .game-box-container { background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 20px; width: 92%; max-width: 420px; padding: 20px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .game-modal-overlay.active .game-box-container { transform: scale(1); }
+        .game-close-action { position: absolute; top: 15px; right: 15px; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; width: 28px; height: 28px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .game-close-action:hover { color: #ff4d4d; background: rgba(255,77,77,0.15); }
+        .game-header-meta { text-align: center; margin-bottom: 15px; }
+        .game-title-lbl { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; color: var(--accent-cyan); text-transform: uppercase; }
+        .game-canvas-bounds { width: 100%; height: 180px; background: #020006; border-radius: 12px; border: 1px dashed rgba(0, 242, 255, 0.2); position: relative; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
+        .spinning-wheel-target { position: absolute; top: 50%; left: 50%; width: 70px; height: 70px; background: repeating-conic-gradient(from 0deg, var(--accent-purple) 0deg 30deg, #18093c 30deg 60deg); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--accent-purple); animation: rotateTargetWheel 2.5s linear infinite; }
         @keyframes rotateTargetWheel { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-
-        .game-knife-projectile {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            width: 6px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--accent-cyan), #ffffff);
-            border-radius: 2px;
-            transform: translateX(-50%);
-            box-shadow: 0 0 8px var(--accent-cyan);
-            display: none;
-        }
-
-        .game-hud-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-            font-family: var(--font-head);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: bold;
-        }
-
+        .game-knife-projectile { position: absolute; bottom: 10px; left: 50%; width: 6px; height: 24px; background: linear-gradient(180deg, var(--accent-cyan), #ffffff); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 8px var(--accent-cyan); display: none; }
+        .game-hud-row { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--font-head); font-size: 0.75rem; color: var(--text-muted); font-weight: bold; }
         .hud-highlight { color: #ffffff; font-weight: 900; }
-
-        .game-action-btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 8px;
-            font-family: var(--font-head);
-            font-weight: 900;
-            font-size: 0.8rem;
-            color: #000000;
-            background: var(--accent-cyan);
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3);
-            text-transform: uppercase;
-        }
-
-        /* 🎁 REWARD MARKETING VIEW PANEL */
-        .victory-claim-card {
-            display: none;
-            text-align: center;
-            animation: popIn 0.3s ease-out forwards;
-        }
-
-        .victory-icon {
-            font-size: 2.5rem;
-            color: var(--accent-green);
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 8px var(--accent-green));
-        }
-
-        /* Dynamic Tap Interaction Particle Templates */
-        .click-particle {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            background: var(--accent-cyan);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            animation: burstFade 0.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-            z-index: 99999;
-        }
-
+        .game-action-btn { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem; color: #000; background: var(--accent-cyan); cursor: pointer; box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3); text-transform: uppercase; }
+        .victory-claim-card { display: none; text-align: center; animation: popIn 0.3s ease-out forwards; }
+        .victory-icon { font-size: 2.5rem; color: var(--accent-green); margin-bottom: 10px; filter: drop-shadow(0 0 8px var(--accent-green)); }
+        
         @keyframes burstFade { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 25px; height: 25px; opacity: 0; } }
         @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes buttonPulse { from { box-shadow: 0 0 15px rgba(189, 0, 255, 0.4); } to { box-shadow: 0 0 25px rgba(0, 242, 255, 0.6); } }
+        .click-particle { position: fixed; width: 6px; height: 6px; background: var(--accent-cyan); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: burstFade 0.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; z-index: 99999; }
     </style>
 </head>
 <body>
 
-    <!-- 🎬 BACKGROUND ENGINE LAYER -->
     <div class="video-bg-container">
-        <!-- Replace content link string inside src to bind alternative configurations perfectly -->
-        <video class="video-bg-file" autoplay loop muted playsinline id="bgVideoMatrix" onerror="handleVideoLoadError()">
+        <video class="video-bg-file" autoplay loop muted playsinline id="bgVideoMatrix">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-loop-41740-large.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- 📲 UNIFIED APPLICATION VIEW LAYER -->
     <div class="app-shell">
         
-        <!-- 🛰️ SYSTEM CONTROL TOP HEADER -->
         <header class="app-header">
             <div class="brand-meta">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="brand-logo" alt="TX">
                 <span class="brand-title">TOURNYX</span>
             </div>
 
-            <div class="compact-timer" id="timerContainerSlot">
-                <div class="timer-unit-slot"><span id="meshHrs">00</span><label>H</label></div>
-                <div class="timer-divider">:</div>
-                <div class="timer-unit-slot"><span id="meshMin">00</span><label>M</label></div>
-                <div class="timer-divider">:</div>
-                <div class="timer-unit-slot"><span id="meshSec">00</span><label>S</label></div>
+            <div class="header-status-box" id="dynamicHeaderStatus">
+                <div class="active-shortly-badge">Checking Status...</div>
             </div>
         </header>
 
-        <!-- 🎚️ MAIN CONSOLE CARD CENTRE -->
         <main class="main-lobby-hub">
-            <div class="showcase-banner-frame">
-                <!-- Using premium native official community splash assets directly -->
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJvPTY_y_XU-0Lwbnjwm7961lCDkSlQh2MtCWHunFVX6WS7WCprCtkPyB334BU_-4vGsP0NseDQf4NPBEOIxqjk7VZQqZUHpnLb4Bw-c1UeXQy2M9DzNrNdYt_aL0GEb1AlTPupC5zEjJiP3Ci0Oxk-wdg5TF5cs8_UNSe3uTT1BE884je3iXr8QlMjx8/s1264/1000094210.jpg" class="showcase-asset" alt="Update Center">
+            
+            <h1 class="maintenance-heading">Server Under Maintenance</h1>
+            <h2 class="maintenance-sub">Come Back Again Soon</h2>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="mainCarousel">
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Update 1">
+                        <div class="carousel-overlay">OB40 Patch Integration</div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop" alt="Update 2">
+                        <div class="carousel-overlay">Global Server Syncing</div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop" alt="Update 3">
+                        <div class="carousel-overlay">Map Rendering Optimization</div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" alt="Update 4">
+                        <div class="carousel-overlay">Weapon Balance Adjusted</div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop" alt="Update 5">
+                        <div class="carousel-overlay">Database Upgrades Live</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 💬 SEQUENTIAL NOTIFICATION LAYER -->
-            <div class="status-msg-carousel">
-                <div class="status-msg-node" id="activeStatusDisplay">Optimizing Esports Arena Infrastructure</div>
-            </div>
+            <div class="launch-hub">
+                <div class="launch-title">Practice Until Platform Opens</div>
+                
+                <div class="launch-buttons" style="margin-bottom: 15px;">
+                    <div class="launch-btn ffmax" onclick="launchGame('ffmax')">
+                        <i class="fa-solid fa-fire"></i> FF MAX
+                    </div>
+                    <div class="launch-btn bgmi" onclick="launchGame('bgmi')">
+                        <i class="fa-solid fa-helmet-battle"></i> BGMI
+                    </div>
+                    <div class="launch-btn codm" onclick="launchGame('codm')">
+                        <i class="fa-solid fa-crosshairs"></i> CODM
+                    </div>
+                </div>
 
-            <!-- 🎮 INTERACTIVE UTILITY TRIGGERS -->
-            <button class="game-launch-trigger" onclick="toggleGameModal(true)">
-                <i class="fa-solid fa-gamepad"></i> Warmup Practice Range
-            </button>
+                <button class="game-launch-trigger" onclick="toggleGameModal(true)">
+                    <i class="fa-solid fa-gamepad"></i> Warmup Practice Range
+                </button>
+            </div>
         </main>
 
-        <!-- 📡 SYSTEM SOCIAL ACCESS INFRASTRUCTURE -->
         <footer class="app-footer">
-            <span class="social-headline">Follow Us For Live Updates</span>
             <div class="social-icon-row">
-                <a href="https://instagram.com" target="_blank" class="social-icon-anchor"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://whatsapp.com" target="_blank" class="social-icon-anchor"><i class="fa-brands fa-whatsapp"></i></a>
-                <a href="https://youtube.com" target="_blank" class="social-icon-anchor"><i class="fa-brands fa-youtube"></i></a>
-                <a href="https://discord.com" target="_blank" class="social-icon-anchor"><i class="fa-brands fa-discord"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-discord"></i></a>
+            </div>
+            
+            <div class="legal-credits">
+                © Tournyx Esports private limited | © KRAFTON | © Garena
+                <div class="quva-badge">Powered by QUVA</div>
             </div>
         </footer>
 
     </div>
 
-    <!-- 🎰 MODAL GAME LAYER HOVER COMPONENT -->
     <div class="game-modal-overlay" id="gameModalWrapper">
         <div class="game-box-container" id="gamePanelInteract">
             <i class="fa-solid fa-xmark game-close-action" onclick="toggleGameModal(false)"></i>
             
-            <!-- CORE TARGET LOBBY STATE -->
             <div id="gamePlayStateBlock">
                 <div class="game-header-meta">
                     <span class="game-title-lbl">Chakra Ninja Strike</span>
@@ -520,7 +269,6 @@
                 <button class="game-action-btn" onclick="executeKnifeThrow()">Release Strike</button>
             </div>
 
-            <!-- WINNING MARKETING REWARD BLOCK -->
             <div class="victory-claim-card" id="gameRewardStateBlock">
                 <i class="fa-solid fa-trophy victory-icon"></i>
                 <h3 style="font-family: var(--font-head); margin-bottom: 8px; color: var(--accent-green);">MISSION ACCOMPLISHED!</h3>
@@ -534,86 +282,79 @@
         </div>
     </div>
 
-    <!-- SYSTEM CORE ALGORITHMS DEPLOYMENT MODULE -->
     <script>
-        // --- 📡 EDGE RE-ENTRY CONFIGURATIONS ---
-        const EDGE_DESTINATION_ROUTE = "/explore";
-        let targetExecutionTime = Date.now() + (45 * 60 * 1000); // 45 minute runtime configuration backup
-        
-        // Parse raw endpoint links supplied securely by Cloudflare redirect configurations
-        const currentUriParams = new URLSearchParams(window.location.search);
-        let timestampParamPayload = currentUriParams.get('end');
-        if (timestampParamPayload) {
-            let processedTime = decodeURIComponent(timestampParamPayload);
-            if (!isNaN(Date.parse(processedTime))) {
-                targetExecutionTime = new Date(processedTime).getTime();
-            }
-        }
+        // --- 1. TIMER & JSON STATUS LOGIC ---
+        // Simulating JSON input timeframe. Normally fetched via API.
+        const mockJSON = { "maintenanceEnd": new Date().getTime() + (30 * 60 * 1000) }; // Change to + or - to test
+        const endTime = mockJSON.maintenanceEnd;
 
-        // Sequential status array strings to keep players engaged securely
-        const systemStatusStrings = [
-            "Optimizing Esports Arena Infrastructure",
-            "Refreshing Global Ladder Calculations",
-            "Fortifying Matchmaking Anti-Cheat Matrices",
-            "Deploying Hyper-Edge Packet Synchronizers"
-        ];
-        let carouselStringIndex = 0;
-        setInterval(() => {
-            carouselStringIndex = (carouselStringIndex + 1) % systemStatusStrings.length;
-            const node = document.getElementById('activeStatusDisplay');
-            if(node) node.innerText = systemStatusStrings[carouselStringIndex];
-        }, 4000);
+        function updateTemporalEngine() {
+            const now = Date.now();
+            const diff = endTime - now;
+            const statusBox = document.getElementById('dynamicHeaderStatus');
 
-        // --- ⏱️ HIGH-PRECISION RE-ENTRY COUNTDOWN LOOP ---
-        let isSystemEnteringSoonState = false;
-
-        function renderSystemCountdownTicker() {
-            let rightNow = Date.now();
-            let temporalDistance = targetExecutionTime - rightNow;
-
-            if (temporalDistance <= 0) {
-                // Force configuration array mapping immediately to Entering Soon Hologram
-                document.getElementById('timerContainerSlot').innerHTML = `<span style="font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-orange); font-weight: 900; letter-spacing: 1px; animation: flashBlink 0.8s infinite;"><i class="fa-solid fa-bolt"></i> ENTERING SOON</span>`;
-                
-                if (!isSystemEnteringSoonState) {
-                    isSystemEnteringSoonState = true;
-                    // Continually ping core loop routes until switch flips off
-                    setInterval(async () => {
-                        try {
-                            let networkEdgePing = await fetch(EDGE_DESTINATION_ROUTE, { method: 'HEAD', cache: 'no-store' });
-                            if (networkEdgePing.ok) {
-                                window.location.href = EDGE_DESTINATION_ROUTE; // Instant login reload routing
-                            }
-                        } catch(err) {}
-                    }, 3000);
-                }
+            if (diff <= 0) {
+                // Time has passed: Hide timer, show "Active Shortly"
+                statusBox.innerHTML = `<div class="active-shortly-badge">The Platform Will Be Active Shortly</div>`;
+                statusBox.style.borderColor = "var(--accent-orange)";
+                statusBox.style.boxShadow = "0 0 15px rgba(255, 153, 0, 0.4)";
                 return;
             }
 
-            let computedHrs = Math.floor((temporalDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let computedMins = Math.floor((temporalDistance % (1000 * 60 * 60)) / (1000 * 60));
-            let computedSecs = Math.floor((temporalDistance % (1000 * 60)) / 1000);
+            // Time is in the future: Show standard Timer
+            let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((diff % (1000 * 60)) / 1000);
 
-            document.getElementById('meshHrs').innerText = computedHrs < 10 ? "0" + computedHrs : computedHrs;
-            document.getElementById('meshMin').innerText = computedMins < 10 ? "0" + computedMins : computedMins;
-            document.getElementById('meshSec').innerText = computedSecs < 10 ? "0" + computedSecs : computedSecs;
+            let strH = h < 10 ? "0" + h : h;
+            let strM = m < 10 ? "0" + m : m;
+            let strS = s < 10 ? "0" + s : s;
+
+            statusBox.innerHTML = `
+                <div class="compact-timer">
+                    <div class="timer-unit-slot"><span>${strH}</span><label>H</label></div>
+                    <div class="timer-divider">:</div>
+                    <div class="timer-unit-slot"><span>${strM}</span><label>M</label></div>
+                    <div class="timer-divider">:</div>
+                    <div class="timer-unit-slot"><span>${strS}</span><label>S</label></div>
+                </div>
+            `;
         }
-        setInterval(renderSystemCountdownTicker, 1000);
-        renderSystemCountdownTicker();
+        setInterval(updateTemporalEngine, 1000);
+        updateTemporalEngine();
 
-        // --- 🎮 INDIVIDUAL CHAKRA STRIKE RANGE RIG ---
+        // --- 2. 5-IMAGE CAROUSEL ENGINE ---
+        let currentSlide = 0;
+        const track = document.getElementById('mainCarousel');
+        const totalSlides = 5;
+
+        function autoSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        setInterval(autoSlide, 3000);
+
+        // --- 3. QUICK LAUNCH DEEP LINKS ---
+        function launchGame(appId) {
+            if(navigator.vibrate) navigator.vibrate(50);
+            const schemas = {
+                'ffmax': 'intent://#Intent;package=com.dts.freefiremax;scheme=freefiremax;end;',
+                'bgmi': 'intent://#Intent;package=com.pubg.imobile;scheme=pubg;end;',
+                'codm': 'intent://#Intent;package=com.activision.callofduty.shooter;scheme=cod;end;'
+            };
+            window.location.href = schemas[appId];
+        }
+
+        // --- 4. CHAKRA STRIKE WARMUP GAME ---
         let internalScore = 0;
         let ammoCount = 5;
         let isProjectileInFlight = false;
 
         function toggleGameModal(activateStatus) {
-            triggerHapticFeedback(40);
+            if(navigator.vibrate) navigator.vibrate(40);
             const overlay = document.getElementById('gameModalWrapper');
             if (activateStatus) {
-                // Initialize clean data structures
-                internalScore = 0;
-                ammoCount = 5;
-                isProjectileInFlight = false;
+                internalScore = 0; ammoCount = 5; isProjectileInFlight = false;
                 document.getElementById('lblGameScore').innerText = "0";
                 document.getElementById('lblGameAmmo').innerText = "5";
                 document.getElementById('gamePlayStateBlock').style.display = "block";
@@ -626,9 +367,9 @@
 
         function executeKnifeThrow() {
             if (isProjectileInFlight || ammoCount <= 0) return;
-            
             isProjectileInFlight = true;
-            triggerHapticFeedback(25);
+            if(navigator.vibrate) navigator.vibrate(25);
+            
             const knife = document.getElementById('projectileKnifeNode');
             knife.style.display = "block";
             
@@ -637,36 +378,30 @@
                 knifeVerticalOffset += 8;
                 knife.style.bottom = knifeVerticalOffset + "px";
 
-                // Collision registration threshold boundary check (Middle target ring)
-                if (knifeVerticalOffset >= 90 && knifeVerticalOffset <= 120) {
-                    clearInterval(flightInterval);
-                    registerStrikeSuccess();
-                } else if (knifeVerticalOffset > 200) {
-                    clearInterval(flightInterval);
-                    registerStrikeMiss();
+                if (knifeVerticalOffset >= 80 && knifeVerticalOffset <= 110) {
+                    clearInterval(flightInterval); registerStrikeSuccess();
+                } else if (knifeVerticalOffset > 180) {
+                    clearInterval(flightInterval); registerStrikeMiss();
                 }
             }, 16);
         }
 
         function registerStrikeSuccess() {
-            triggerHapticFeedback(60);
+            if(navigator.vibrate) navigator.vibrate(60);
             internalScore += 2;
             document.getElementById('lblGameScore').innerText = internalScore;
-            resetProjectileNode();
-            evaluateGameThresholds();
+            resetProjectileNode(); evaluateGameThresholds();
         }
 
         function registerStrikeMiss() {
             ammoCount--;
             document.getElementById('lblGameAmmo').innerText = ammoCount;
-            resetProjectileNode();
-            evaluateGameThresholds();
+            resetProjectileNode(); evaluateGameThresholds();
         }
 
         function resetProjectileNode() {
             const knife = document.getElementById('projectileKnifeNode');
-            knife.style.display = "none";
-            knife.style.bottom = "10px";
+            knife.style.display = "none"; knife.style.bottom = "10px";
             isProjectileInFlight = false;
         }
 
@@ -675,57 +410,23 @@
                 document.getElementById('gamePlayStateBlock').style.display = "none";
                 document.getElementById('gameRewardStateBlock').style.display = "block";
             } else if (ammoCount <= 0) {
-                showToastNotification("Ammunition Depleted! Reloading Practice Cell...", true);
-                setTimeout(() => toggleGameModal(true), 1200);
+                setTimeout(() => toggleGameModal(true), 1000); // Reload
             }
         }
 
         function executeMarketingShare() {
-            triggerHapticFeedback(40);
-            let targetOriginUrl = window.location.origin;
-            const payloadMessage = `Tournyx Servers are upgrading parameters live! Join the Warmup Target practices with me here to claim entries: ${targetOriginUrl}`;
-            
+            if(navigator.vibrate) navigator.vibrate(40);
+            let targetOriginUrl = window.location.href;
             if (navigator.share) {
-                navigator.share({
-                    title: 'Tournyx Patch Update Arena',
-                    text: payloadMessage,
-                    url: targetOriginUrl
-                }).then(() => {
-                    showToastNotification("Share Complete! Points Logged Successfully.");
-                    toggleGameModal(false);
-                }).catch(() => {});
+                navigator.share({ title: 'Tournyx Patch Update', text: 'Play Warmup while servers update!', url: targetOriginUrl }).then(() => { toggleGameModal(false); }).catch(() => {});
             } else {
-                navigator.clipboard.writeText(payloadMessage).then(() => {
-                    showToastNotification("Share Text Copied to Clipboard!");
-                    toggleGameModal(false);
-                });
+                alert("Link Copied!"); toggleGameModal(false);
             }
         }
 
-        // --- 🛠️ AUXILIARY HARDWARE LAYER ACCESSORS ---
-        function triggerHapticFeedback(durationLength) {
-            if (navigator.vibrate) navigator.vibrate(durationLength);
-        }
-
-        function showToastNotification(messageString, errorFlag = false) {
-            const container = document.getElementById('customToast');
-            if (!container) return;
-            container.innerText = messageString;
-            container.style.backgroundColor = errorFlag ? "#ff4d4d" : "var(--accent-cyan)";
-            container.style.color = "#000000";
-            container.className = "show";
-            setTimeout(() => container.className = "", 3000);
-        }
-
-        function handleVideoLoadError() {
-            console.warn("Background structural video source unavailable. Processing interactive ambient layout fallback.");
-            const bin = document.getElementById('bgVideoMatrix');
-            if (bin) bin.remove();
-        }
-
-        // Render reactive tap nodes continuously inside the global execution grid
+        // Ambient Click Particles
         window.addEventListener('click', (ev) => {
-            if (ev.clientY > 65 && !document.getElementById('gameModalWrapper').classList.contains('active')) {
+            if (!document.getElementById('gameModalWrapper').classList.contains('active')) {
                 let dot = document.createElement('div');
                 dot.className = 'click-particle';
                 dot.style.left = ev.clientX + 'px';
