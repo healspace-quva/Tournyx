@@ -89,16 +89,50 @@
         .hub-title { font-family: var(--font-body); font-size: 0.75rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
         
         .launch-grid { display: flex; justify-content: center; gap: clamp(10px, 4vw, 20px); margin-bottom: 15px; }
-        .game-btn {
-            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
-            width: clamp(70px, 20vw, 85px); height: clamp(70px, 20vw, 85px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-            color: #fff; font-family: var(--font-display); font-size: 0.65rem; text-transform: uppercase;
-            cursor: pointer; transition: 0.3s;
+       /* 🎮 UPGRADED GAME LOGO IMAGE IMPLEMENTATION */
+        .game-btn img {
+            width: clamp(35px, 9vw, 44px);
+            height: clamp(35px, 9vw, 44px);
+            object-fit: contain;
+            border-radius: 8px;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.1));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
         }
-        .game-btn i { font-size: clamp(1.5rem, 5vw, 1.8rem); transition: 0.3s; animation: iconPulse 2s infinite alternate; }
-        .game-btn.ffmax:hover { border-color: #ff9900; box-shadow: 0 0 20px rgba(255,153,0,0.4); color: #ff9900; transform: translateY(-3px); }
-        .game-btn.bgmi:hover { border-color: #ff3c00; box-shadow: 0 0 20px rgba(255,60,0,0.4); color: #ff3c00; transform: translateY(-3px); }
-        .game-btn.codm:hover { border-color: #aaaaaa; box-shadow: 0 0 20px rgba(170,170,170,0.4); color: #fff; transform: translateY(-3px); }
+        .game-btn:hover img {
+            transform: scale(1.08);
+        }
+        .game-btn.ffmax:hover img { filter: drop-shadow(0 0 8px #ff9900); }
+        .game-btn.bgmi:hover img { filter: drop-shadow(0 0 8px #ff3c00); }
+        .game-btn.codm:hover img { filter: drop-shadow(0 0 8px #ffffff); }
+
+        /* 🎡 SYNCHRONIZED FADE TEXT ENGINE UNDER BANNER */
+        .banner-text-fader {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 4px;
+        }
+        .banner-caption {
+            position: absolute;
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 2.8vw, 0.85rem);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .banner-caption.active {
+            opacity: 1;
+            transform: translateY(0);
+            text-shadow: 0 0 10px var(--tx-cyan);
+        }
 
         /* WARMUP BUTTON (Small, Glowing) */
         .warmup-btn {
@@ -112,7 +146,25 @@
         .warmup-btn i { font-size: 1rem; }
 
         /* 📡 QUVA REPLICA FOOTER */
-        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; }
+         /* 📡 STRUCTURAL REARRANGED FOOTER */
+        .app-footer {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: auto;
+            padding-top: 5px;
+        }
+        .footer-social-lbl {
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #a0aabf;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
         
         .cached-badge { color: var(--tx-green); font-family: var(--font-body); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; text-shadow: 0 0 8px rgba(0,255,127,0.4); }
         .cached-badge i { font-size: 0.9rem; }
@@ -190,43 +242,53 @@
                 <h2 class="title-sub" id="subTitleText">Come Back Again Soon</h2>
             </div>
 
-            <div class="hero-carousel">
-                <div class="carousel-track" id="sliderTrack">
-                    <div class="slide">
-                        <img src="" alt="Patch Notes" style="background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover;">
-                        <div class="slide-overlay">System Optimization in Progress</div>
+            <!-- 🎡 5-SLIDE CLEAN CAROUSEL -->
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="mainCarousel">
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Update 1">
                     </div>
-                    <div class="slide">
-                        <img src="" alt="Global Sync" style="background: url('https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop') center/cover;">
-                        <div class="slide-overlay">Syncing Global Leaderboards</div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop" alt="Update 2">
                     </div>
-                    <div class="slide">
-                        <img src="" alt="Weapon Balance" style="background: url('https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop') center/cover;">
-                        <div class="slide-overlay">Refreshing Scrim Infrastructure</div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop" alt="Update 3">
                     </div>
-                    <div class="slide">
-                        <img src="" alt="Update 4" style="background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop') center/cover;">
-                        <div class="slide-overlay">Fortifying Anti-Cheat Engines</div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" alt="Update 4">
                     </div>
-                    <div class="slide">
-                        <img src="" alt="Update 5" style="background: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop') center/cover;">
-                        <div class="slide-overlay">The Esports Arena Awaits</div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop" alt="Update 5">
                     </div>
                 </div>
             </div>
 
+            <!-- 🎡 SYNCHRONIZED TEXT OUTPUT FIELD -->
+            <div class="banner-text-fader">
+                <div class="banner-caption active">OB40 Patch Integration Live</div>
+                <div class="banner-caption">Syncing Global Matchmaking Profiles</div>
+                <div class="banner-caption">Optimizing Local Latency Nodes</div>
+                <div class="banner-caption">Deploying Advanced Anti-Cheat Protocol</div>
+                <div class="banner-caption">Welcome To The Next Generation Arena</div>
+            </div>
+
+            <!-- 🎮 GAME QUICK LAUNCH & WARMUP -->
             <div class="interaction-hub">
                 <div class="hub-title">Practice Until Platform Opens</div>
                 
                 <div class="launch-grid">
+                    <!-- EDIT GAME LOGOS HERE: Replace placeholders with your exact direct .png links -->
                     <div class="game-btn ffmax" onclick="launchGame('ffmax')">
-                        <i class="fa-solid fa-fire"></i> FF MAX
+                        <img src="https://i.ibb.co/3S4xH3y/ffmax-logo.png" alt="FF MAX">
+                        <span>FF MAX</span>
                     </div>
                     <div class="game-btn bgmi" onclick="launchGame('bgmi')">
-                        <i class="fa-solid fa-helmet-battle"></i> BGMI
+                        <img src="https://i.ibb.co/qyV5m4m/bgmi-logo.png" alt="BGMI">
+                        <span>BGMI</span>
                     </div>
                     <div class="game-btn codm" onclick="launchGame('codm')">
-                        <i class="fa-solid fa-crosshairs"></i> CODM
+                        <img src="https://i.ibb.co/jykHgbg/codm-logo.png" alt="CODM">
+                        <span>CODM</span>
                     </div>
                 </div>
 
@@ -237,8 +299,17 @@
             
         </main>
 
+        <!-- 📡 QUVA REPLICA FOOTER WITH INTEGRATED SOCIAL LAYER -->
         <footer class="app-footer">
-            <div class="cached-badge">
+            <div class="footer-social-lbl">Follow Us For Live Updates</div>
+            <div class="social-icon-row">
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-discord"></i></a>
+            </div>
+
+            <div class="cached-badge" style="margin-top: 4px;">
                 <i class="fa-solid fa-cloud-arrow-down"></i> Video cached. Zero data usage.
             </div>
             <div class="legal-text">
@@ -350,14 +421,26 @@
             setInterval(fetchLiveStatus, 30000); 
         });
 
-        // --- 2. 5-SLIDE CAROUSEL LOGIC ---
+       // --- 2. 5-IMAGE CAROUSEL ENGINE (WITH CAPTION TRANSLATIONS) ---
         let currentSlide = 0;
-        const track = document.getElementById('sliderTrack');
+        const track = document.getElementById('mainCarousel');
+        const captions = document.querySelectorAll('.banner-caption');
         const totalSlides = 5;
 
         function autoSlide() {
             currentSlide = (currentSlide + 1) % totalSlides;
+            
+            // Execute absolute structural slide tracking shift
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Execute fade processing translation safely
+            captions.forEach((caption, index) => {
+                if (index === currentSlide) {
+                    caption.classList.add('active');
+                } else {
+                    caption.classList.remove('active');
+                }
+            });
         }
         setInterval(autoSlide, 3500);
 
