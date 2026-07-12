@@ -2156,7 +2156,7 @@
             activeModalClanId = null;
         }
 
-        function openPublicClanModal(cId, isSilent = false) {
+       function openPublicClanModal(cId, isSilent = false) {
             if(!isSilent) triggerHaptic();
             let c = globalClans.find(clan => clan.clanId === cId);
             if(!c) return;
@@ -2181,13 +2181,9 @@
             let vipBadgeEl = document.getElementById('pubModalVipBadge');
             let logoWrapEl = document.getElementById('pubModalLogoWrap');
             if(c.isPremiumClan) {
-                vipBadgeEl.style.display = 'block';
-                logoWrapEl.style.boxShadow = '0 0 30px rgba(255,215,0,0.6)';
-                logoWrapEl.style.borderColor = '#FFD700';
+                vipBadgeEl.style.display = 'block'; logoWrapEl.style.boxShadow = '0 0 30px rgba(255,215,0,0.6)'; logoWrapEl.style.borderColor = '#FFD700';
             } else {
-                vipBadgeEl.style.display = 'none';
-                logoWrapEl.style.boxShadow = 'none';
-                logoWrapEl.style.borderColor = 'var(--primary-bg)';
+                vipBadgeEl.style.display = 'none'; logoWrapEl.style.boxShadow = 'none'; logoWrapEl.style.borderColor = 'var(--primary-bg)';
             }
 
             document.getElementById('pubClanName').innerHTML = c.name + (c.isPremiumClan ? ' <i class="fa-solid fa-crown" style="color:#FFD700; font-size:1rem; filter:drop-shadow(0 0 5px #FFD700);"></i>' : '');
@@ -2212,34 +2208,55 @@
                 if(c.instagramLink) socHtml += `<a href="${c.instagramLink}" target="_blank" class="social-btn insta-btn"><i class="fa-brands fa-instagram"></i></a>`;
                 if(c.youtubeLink) socHtml += `<a href="${c.youtubeLink}" target="_blank" class="social-btn yt-btn"><i class="fa-brands fa-youtube"></i></a>`;
                 document.getElementById('pubSocialGrid').innerHTML = socHtml;
-            } else {
-                socialsArea.style.display = 'none';
-            }
+            } else { socialsArea.style.display = 'none'; }
 
             let rosterHtml = "";
+            let needsGlobalAutoHeal = false;
+
             if(c.roster && c.roster.length > 0) {
                 c.roster.forEach(r => {
                     let rColor = r.role === 'Owner' ? 'var(--accent-orange)' : (r.role === 'Admin' ? 'var(--accent-cyan)' : '#ccc');
+                    
+                    // 🔥 FIND TAB AUTO-HEAL ALGORITHM
+                    if (r.name === user.username) {
+                        let pAvatar = user.avatar || "";
+                        if (r.avatar !== pAvatar) {
+                            r.avatar = pAvatar;
+                            needsGlobalAutoHeal = true;
+                        }
+                    }
+
+                    let safeAvatar = r.avatar || r.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=110822&color=00f2ff`;
+
                     rosterHtml += `
                     <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=110822&color=00f2ff" id="pubAvatar-${r.name.replace(/\s+/g,'')}" style="width:40px; height:40px; border-radius:10px; object-fit:cover; flex-shrink:0;">
+                        <img src="${safeAvatar}" id="pubAvatar-${r.name.replace(/\s+/g,'')}" style="width:40px; height:40px; border-radius:10px; object-fit:cover; flex-shrink:0;">
                         <div style="flex:1; min-width:0; overflow:hidden;">
                             <div style="font-family:var(--font-head); color:white; font-size:0.9rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.name} <span style="font-size:0.65rem; color:${rColor}; margin-left:5px; text-transform:uppercase;">(${r.role})</span></div>
                             <div style="font-size:0.7rem; color:#aaa; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">IGN: <span style="color:var(--accent-cyan); font-weight:bold;">${r.gameName || 'N/A'}</span> | UID: <span style="color:white; font-family:monospace;">${r.uid || 'N/A'}</span></div>
                         </div>
                     </div>`;
                     
-                    secureFetch({ action: "get_avatar", username: r.name })
-                    .then(d => {
-                        if(d.status === 'success' && (d.data || d.avatar)) {
-                            let imgEl = document.getElementById(`pubAvatar-${r.name.replace(/\s+/g,'')}`);
-                            if(imgEl) imgEl.src = (d.data || d.avatar);
-                        }
-                    }).catch(e=>{});
+                    // 🔥 LAG FIX: Delay fetching API avatars until animation completes
+                    if(!r.avatar) {
+                        setTimeout(() => {
+                            secureFetch({ action: "get_avatar", username: r.name }).then(d => {
+                                if(d.status === 'success' && (d.data || d.avatar)) {
+                                    let imgEl = document.getElementById(`pubAvatar-${r.name.replace(/\s+/g,'')}`);
+                                    if(imgEl) imgEl.src = (d.data || d.avatar);
+                                }
+                            }).catch(e=>{});
+                        }, 400);
+                    }
                 });
-            } else {
-                rosterHtml = "<div style='color:#888; font-size:0.85rem;'>Roster is empty.</div>";
-            }
+
+                // Fire silent heal if we updated our own avatar in someone else's clan view
+                if (needsGlobalAutoHeal) {
+                    let cleanClan = JSON.parse(JSON.stringify(c)); delete cleanClan.logo; delete cleanClan.banner;
+                    secureFetch({ action: "update_clan", clan_id: c.clanId, field: "FULL_UPDATE", value: JSON.stringify(cleanClan) }).catch(()=>{});
+                }
+            } else { rosterHtml = "<div style='color:#888; font-size:0.85rem;'>Roster is empty.</div>"; }
+            
             document.getElementById('pubClanRosterList').innerHTML = rosterHtml;
 
             let isRejected = false;
@@ -2248,9 +2265,16 @@
 
             let isRequested = (c.requests && c.requests.some(r => r.name === user.username)) || localRequestedClans.has(c.clanId);
             
+            // 🔥 INSTANT LINK JOIN LOGIC
+            let urlParams = new URLSearchParams(window.location.search);
+            let isFromInviteLink = urlParams.get('invite') === c.clanId;
+
             let btnActionHtml = "";
             if(isMember) {
                 btnActionHtml = `<button class="btn-primary" style="width:100%; margin:0; background:rgba(255,255,255,0.1); color:white; box-shadow:none;" onclick="closePublicModal()">ALREADY A MEMBER</button>`;
+            } else if (isFromInviteLink) {
+                // If they came from the invite link, bypass the request queue
+                btnActionHtml = `<button class="btn-primary" style="width:100%; margin:0; background:var(--accent-green); color:black;" onclick="instantLinkJoin('${c.clanId}', '${c.name.replace(/'/g, "\\'")}', '${c.game}'); closePublicModal();"><i class="fa-solid fa-bolt"></i> ACCEPT INVITE & JOIN</button>`;
             } else if (isRejected) {
                 btnActionHtml = `<button class="btn-primary" style="width:100%; border-color:var(--accent-cyan); background:transparent; color:var(--accent-cyan); margin:0;" onclick="triggerJoinFlow('${c.clanId}', '${c.name.replace(/'/g, "\\'")}', '${c.game || "Esports"}', ${c.autoAccept}, this); closePublicModal();">RE-APPLY TO SQUAD</button>`;
             } else if (isRequested) {
@@ -2757,6 +2781,37 @@
                 img.src = ev.target.result;
             };
             reader.readAsDataURL(file);
+        }
+        // 🔥 DIRECT LINK INSTANT JOIN PROCESSOR
+        function instantLinkJoin(cId, cName, cGame) {
+            triggerHaptic();
+            if(isGuestMode) { document.getElementById('guestLoginModal').classList.add('active'); return; }
+
+            let existingClansForGame = userLiveClans.filter(c => c.game === cGame);
+            if(existingClansForGame.length >= 3) { showToast(`Max 3 clans allowed for ${cGame}!`, true); return; }
+
+            showToast("Authenticating Invite Link...");
+            
+            let phone = user.phone || user.mobile || "Not Set"; 
+            let ign = user.gameName || user.ign || user.inGameName || user.username || "Not Set"; 
+            let uid = user.uid || user.gameUid || user.playerId || "Not Set";
+            let uAvatar = user.avatar || "";
+            let playerObj = { name: user.username, role: "Player", phone: phone, gameName: ign, uid: uid, state: user.state || "N/A", city: user.city || "N/A", avatar: uAvatar };
+            
+            // Bypass approval by forcing is_auto and is_accept to true
+            let payload = { 
+                action: "handle_join_request", clan_id: cId, player_data: playerObj, 
+                is_accept: true, is_auto: true, email: user.email, target_username: user.username
+            };
+
+            secureFetch(payload).catch(()=>{});
+            
+            triggerCelebration("SQUAD JOINED!", "POWER YOUR PLAY ⚡");
+            
+            // Remove the invite param so they don't get stuck in a loop
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            setTimeout(() => { fetchAllClansSilent(); fetchLiveClanData(true); }, 2000);
         }
 </script>
        
