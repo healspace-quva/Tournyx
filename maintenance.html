@@ -3,305 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>System Optimizations - Tournyx</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <title>System Maintenance - Tournyx Esports</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary-bg: #05020c;
-            --accent-cyan: #00f2ff;
-            --accent-purple: #bd00ff;
-            --accent-orange: #ff9900;
-            --accent-green: #00ff7f;
-            --text-muted: #8b80a3;
-            --glass-card: rgba(13, 6, 30, 0.65);
-            --glass-border: rgba(0, 242, 255, 0.25);
-            --font-head: 'Orbitron', sans-serif;
-            --font-body: 'Rajdhani', sans-serif;
-            --neon-glow: 0 0 15px rgba(0, 242, 255, 0.5);
-            --purple-glow: 0 0 15px rgba(189, 0, 255, 0.5);
+            --tx-bg: #05020a;
+            --tx-cyan: #00f2ff;
+            --tx-purple: #9d00ff;
+            --tx-orange: #ff9900;
+            --tx-green: #00ff7f;
+            --tx-quva: #8cb4ff;
+            --glass-bg: rgba(15, 8, 30, 0.55);
+            --glass-border: rgba(0, 242, 255, 0.15);
+            --font-display: 'Audiowide', cursive;
+            --font-body: 'Outfit', sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         html, body {
-            width: 100%; height: 100%; overflow: hidden;
-            background-color: var(--primary-bg); color: #ffffff; font-family: var(--font-body);
+            width: 100%; height: 100dvh; overflow: hidden;
+            background-color: var(--tx-bg); color: #ffffff; font-family: var(--font-body);
         }
 
-        /* 🎬 VIDEO BACKGROUND CONFIGURATIONS */
-        .video-bg-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
-            background: radial-gradient(circle at 50% 50%, #12072b 0%, #05020c 100%);
-        }
-        .video-bg-file { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; pointer-events: none; filter: blur(3px); }
+        /* 🎬 VIDEO BACKGROUND */
+        .video-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: #05020a; }
+        .video-bg-file { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; filter: blur(4px); pointer-events: none; }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(180deg, rgba(5,2,10,0.2) 0%, #05020a 100%); }
 
-        /* 🛡️ SINGLE VIEWPORT MATRIX LAYOUT */
+        /* 🛡️ APP SHELL */
         .app-shell {
-            width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
-            padding: calc(15px + env(safe-area-inset-top)) 20px calc(15px + env(safe-area-inset-bottom));
-            position: relative; z-index: 2;
+            width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
+            padding: calc(10px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom));
+            position: relative; z-index: 2; transition: filter 0.3s;
         }
 
-        /* 🛰️ TOP SYSTEM HEADER ROW */
-        .app-header { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 50px; }
+        /* 🛰️ HEADER */
+        .app-header { width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 15px; }
         .brand-meta { display: flex; align-items: center; gap: 10px; }
-        .brand-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px var(--accent-purple)); }
-        .brand-title {
-            font-family: var(--font-head); font-weight: 900; font-size: 1.2rem; letter-spacing: 1px;
-            background: linear-gradient(90deg, #ffffff, var(--accent-cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .brand-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px var(--tx-purple)); animation: float 3s ease-in-out infinite; }
+        .brand-title { font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--tx-purple); }
+
+        /* ⏱️ DYNAMIC TIMER BADGE */
+        .status-badge-container {
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--glass-border); padding: 6px 12px;
+            border-radius: 8px; backdrop-filter: blur(10px); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            display: flex; align-items: center; justify-content: center; min-width: 130px;
         }
+        .timer-grid { display: flex; align-items: center; gap: 6px; }
+        .timer-unit { display: flex; align-items: baseline; gap: 2px; }
+        .t-val { font-family: var(--font-display); font-size: 1.1rem; color: var(--tx-cyan); text-shadow: 0 0 8px var(--tx-cyan); }
+        .t-lbl { font-size: 0.65rem; color: #8b80a3; font-weight: 800; }
+        .t-div { color: rgba(0, 242, 255, 0.5); font-weight: 900; animation: flash 1s infinite; }
+        .active-text { font-family: var(--font-display); font-size: 0.75rem; color: var(--tx-orange); text-transform: uppercase; letter-spacing: 1px; animation: pulseGlow 1.5s infinite alternate; text-align: center;}
 
-        /* ⏱️ DYNAMIC TIMER / STATUS BADGE */
-        .header-status-box {
-            display: flex; align-items: center; justify-content: center; min-width: 120px;
-            background: rgba(5, 2, 12, 0.75); border: 1px solid var(--glass-border);
-            padding: 6px 14px; border-radius: 10px; backdrop-filter: blur(10px); box-shadow: var(--neon-glow);
-            transition: all 0.5s ease;
+        /* 🎚️ MAIN CONTENT */
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 650px; gap: clamp(10px, 2vh, 20px); }
+
+        /* SHINING HEADINGS */
+        .maintenance-titles { text-align: center; }
+        .title-main {
+            font-family: var(--font-display); font-size: clamp(1.4rem, 6vw, 2.2rem); text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #888, #fff); background-size: 200% auto;
+            color: transparent; -webkit-background-clip: text; background-clip: text;
+            animation: shineText 3s linear infinite; text-shadow: 0 0 20px rgba(157, 0, 255, 0.5); line-height: 1.1;
         }
-        .compact-timer { display: flex; align-items: center; gap: 8px; }
-        .timer-unit-slot { display: flex; align-items: baseline; gap: 1px; }
-        .timer-val { font-family: var(--font-head); font-weight: 900; font-size: 1.1rem; color: var(--accent-cyan); text-shadow: 0 0 8px var(--accent-cyan); }
-        .timer-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-left: 2px; }
-        .timer-divider { color: rgba(0, 242, 255, 0.5); font-weight: 900; animation: flashBlink 1s infinite; }
-        
-        .active-shortly-badge {
-            font-family: var(--font-head); font-size: 0.7rem; font-weight: 900; color: var(--accent-orange);
-            text-transform: uppercase; letter-spacing: 1px; animation: pulseBadge 1.5s infinite alternate; text-align: center;
-        }
+        .title-sub { font-family: var(--font-body); font-size: clamp(0.85rem, 3vw, 1rem); color: var(--tx-cyan); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
-        @keyframes flashBlink { 50% { opacity: 0.3; } }
-        @keyframes pulseBadge { from { text-shadow: 0 0 5px var(--accent-orange); } to { text-shadow: 0 0 15px var(--accent-orange); color: #fff; } }
-
-        /* 🎚️ CENTER INTERFACE LOBBY */
-        .main-lobby-hub { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 600px; margin: 0 auto; gap: 12px; }
-
-        /* MAIN MAINTENANCE HEADING */
-        .maintenance-heading {
-            font-family: var(--font-head); font-size: clamp(1.2rem, 5vw, 1.8rem); font-weight: 900;
-            text-transform: uppercase; text-align: center; color: #fff; text-shadow: var(--purple-glow);
-            letter-spacing: 1px; line-height: 1.2; margin-bottom: 5px;
-        }
-        .maintenance-sub { font-size: 0.85rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; text-align: center; margin-bottom: 10px; }
-
-        /* 🎡 5-IMAGE CAROUSEL BANNER */
-        .carousel-wrapper {
-            width: 100%; aspect-ratio: 16/9; max-height: clamp(180px, 30vh, 260px);
-            border-radius: 16px; border: 2px solid var(--accent-purple);
-            background: #000; box-shadow: 0 15px 40px rgba(0,0,0,0.8), var(--purple-glow);
-            overflow: hidden; position: relative; margin-bottom: 10px;
+        /* 🎡 5-SLIDE ENLARGED CAROUSEL */
+        .hero-carousel {
+            width: 100%; aspect-ratio: 16/9; max-height: clamp(200px, 35vh, 320px);
+            background: #000; border-radius: 16px; position: relative; overflow: hidden;
+            border: 2px solid rgba(157, 0, 255, 0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(157, 0, 255, 0.3);
         }
         .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
-        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
-        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .carousel-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; text-shadow: 0 0 5px #000;}
+        .slide { min-width: 100%; height: 100%; position: relative; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: linear-gradient(transparent, rgba(0,0,0,0.95)); font-family: var(--font-display); font-size: clamp(0.75rem, 3vw, 0.9rem); text-transform: uppercase; letter-spacing: 1px; color: #fff; }
 
-        /* 🎮 GAME QUICK LAUNCH ROW */
-        .launch-hub { width: 100%; background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; backdrop-filter: blur(10px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); text-align: center; }
-        .launch-title { font-family: var(--font-head); font-size: 0.75rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .launch-title::before, .launch-title::after { content: ''; height: 1px; width: 30px; background: rgba(0, 242, 255, 0.4); }
+        /* 🎮 GAME QUICK LAUNCH & WARMUP */
+        .interaction-hub { width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center; }
+        .hub-title { font-family: var(--font-body); font-size: 0.75rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
         
-        .launch-buttons { display: flex; justify-content: center; gap: 15px; }
-        .launch-btn {
-            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
-            width: 75px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-            color: #fff; font-family: var(--font-body); font-weight: 700; font-size: 0.7rem; text-transform: uppercase;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .launch-grid { display: flex; justify-content: center; gap: clamp(10px, 4vw, 20px); margin-bottom: 15px; }
+        .game-btn {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            width: clamp(70px, 20vw, 85px); height: clamp(70px, 20vw, 85px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            color: #fff; font-family: var(--font-display); font-size: 0.65rem; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s;
         }
-        .launch-btn i { font-size: 1.8rem; transition: 0.3s; }
-        .launch-btn.ffmax:hover { border-color: #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.5); color: #ff9900; transform: translateY(-5px); }
-        .launch-btn.bgmi:hover { border-color: #ff3c00; box-shadow: 0 0 20px rgba(255, 60, 0, 0.5); color: #ff3c00; transform: translateY(-5px); }
-        .launch-btn.codm:hover { border-color: #aaaaaa; box-shadow: 0 0 20px rgba(170, 170, 170, 0.5); color: #fff; transform: translateY(-5px); }
+        .game-btn i { font-size: clamp(1.5rem, 5vw, 1.8rem); transition: 0.3s; animation: iconPulse 2s infinite alternate; }
+        .game-btn.ffmax:hover { border-color: #ff9900; box-shadow: 0 0 20px rgba(255,153,0,0.4); color: #ff9900; transform: translateY(-3px); }
+        .game-btn.bgmi:hover { border-color: #ff3c00; box-shadow: 0 0 20px rgba(255,60,0,0.4); color: #ff3c00; transform: translateY(-3px); }
+        .game-btn.codm:hover { border-color: #aaaaaa; box-shadow: 0 0 20px rgba(170,170,170,0.4); color: #fff; transform: translateY(-3px); }
 
-        /* WARMUP PRACTICE BUTTON */
-        .game-launch-trigger {
-            background: linear-gradient(90deg, #7b2cbf, var(--accent-purple), var(--accent-cyan));
-            background-size: 200% 100%; border: none; padding: 12px 30px; border-radius: 12px;
-            color: #ffffff; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem;
-            letter-spacing: 1px; cursor: pointer; box-shadow: var(--purple-glow);
-            transition: 0.3s; animation: gradientMove 3s infinite linear, buttonPulse 2s infinite alternate; text-transform: uppercase; width: 100%;
+        /* WARMUP BUTTON (Small, Glowing) */
+        .warmup-btn {
+            background: linear-gradient(90deg, #7b2cbf, var(--tx-purple), var(--tx-cyan));
+            background-size: 200% 100%; border: none; padding: 10px 25px; border-radius: 30px;
+            color: #ffffff; font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 1px;
+            cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+            transition: 0.3s; animation: gradientMove 3s infinite linear, buttonPulse 2s infinite alternate;
+            text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px;
         }
+        .warmup-btn i { font-size: 1rem; }
 
-        /* 📡 FOOTER SYSTEM ARCHITECTURE */
-        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: auto; }
-        .social-icon-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 5px; }
-        .social-icon-anchor { color: rgba(255, 255, 255, 0.5); font-size: 1.2rem; transition: 0.3s; }
-        .social-icon-anchor:hover { color: var(--accent-cyan); transform: scale(1.15); filter: drop-shadow(0 0 10px var(--accent-cyan)); }
+        /* 📡 QUVA REPLICA FOOTER */
+        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; }
         
-        .legal-credits {
-            font-family: var(--font-body); font-size: 0.65rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; text-align: center;
-        }
-        .quva-badge { font-family: var(--font-head); font-weight: 900; color: rgba(255,255,255,0.6); margin-top: 2px; }
-
-        /* 🎰 ULTRA-SMOOTH MODAL POPUP (Kept exactly as requested) */
-        .game-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 1, 8, 0.92); backdrop-filter: blur(12px); z-index: 5000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease-out; }
-        .game-modal-overlay.active { display: flex; opacity: 1; }
-        .game-box-container { background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 20px; width: 92%; max-width: 420px; padding: 20px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .game-modal-overlay.active .game-box-container { transform: scale(1); }
-        .game-close-action { position: absolute; top: 15px; right: 15px; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; width: 28px; height: 28px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .game-close-action:hover { color: #ff4d4d; background: rgba(255,77,77,0.15); }
-        .game-header-meta { text-align: center; margin-bottom: 15px; }
-        .game-title-lbl { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; color: var(--accent-cyan); text-transform: uppercase; }
-        .game-canvas-bounds { width: 100%; height: 180px; background: #020006; border-radius: 12px; border: 1px dashed rgba(0, 242, 255, 0.2); position: relative; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
-        .spinning-wheel-target { position: absolute; top: 50%; left: 50%; width: 70px; height: 70px; background: repeating-conic-gradient(from 0deg, var(--accent-purple) 0deg 30deg, #18093c 30deg 60deg); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--accent-purple); animation: rotateTargetWheel 2.5s linear infinite; }
-        @keyframes rotateTargetWheel { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        .game-knife-projectile { position: absolute; bottom: 10px; left: 50%; width: 6px; height: 24px; background: linear-gradient(180deg, var(--accent-cyan), #ffffff); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 8px var(--accent-cyan); display: none; }
-        .game-hud-row { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--font-head); font-size: 0.75rem; color: var(--text-muted); font-weight: bold; }
-        .hud-highlight { color: #ffffff; font-weight: 900; }
-        .game-action-btn { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; font-family: var(--font-head); font-weight: 900; font-size: 0.8rem; color: #000; background: var(--accent-cyan); cursor: pointer; box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3); text-transform: uppercase; }
-        .victory-claim-card { display: none; text-align: center; animation: popIn 0.3s ease-out forwards; }
-        .victory-icon { font-size: 2.5rem; color: var(--accent-green); margin-bottom: 10px; filter: drop-shadow(0 0 8px var(--accent-green)); }
+        .cached-badge { color: var(--tx-green); font-family: var(--font-body); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; text-shadow: 0 0 8px rgba(0,255,127,0.4); }
+        .cached-badge i { font-size: 0.9rem; }
         
-        @keyframes burstFade { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 25px; height: 25px; opacity: 0; } }
+        .legal-text { font-family: var(--font-body); font-size: 0.6rem; color: #a0aabf; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; text-align: center; }
+        
+        .powered-by { font-family: var(--font-body); font-size: 0.7rem; color: #7a7a7a; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-top: 2px;}
+        .quva-logo { font-family: var(--font-display); font-size: 0.9rem; color: var(--tx-quva); font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 8px rgba(140, 180, 255, 0.5); }
+
+        /* 🎰 BATTLEGROUNDS REFLEX MINI-GAME MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 2, 10, 0.9); backdrop-filter: blur(15px); z-index: 5000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; width: 92%; max-width: 400px; padding: 25px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.9); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-overlay.active .game-card { transform: scale(1); }
+        
+        .close-btn { position: absolute; top: 15px; right: 15px; color: #fff; font-size: 1.2rem; cursor: pointer; opacity: 0.5; padding: 5px; transition: 0.3s; }
+        .close-btn:hover { opacity: 1; color: #ff4d4d; }
+        
+        .g-head { text-align: center; margin-bottom: 15px; }
+        .g-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--tx-cyan); text-transform: uppercase; }
+        
+        .g-arena { width: 100%; height: 220px; background: rgba(0,0,0,0.7); border-radius: 12px; border: 2px dashed rgba(157, 0, 255, 0.4); position: relative; overflow: hidden; cursor: crosshair; }
+        
+        .g-target { position: absolute; width: 45px; height: 45px; background: radial-gradient(circle, #fff 10%, var(--tx-cyan) 30%, transparent 70%); border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 0 20px var(--tx-cyan); transform: translate(-50%, -50%); transition: all 0.2s ease-out; }
+        
+        .g-stats { display: flex; justify-content: space-between; margin-top: 15px; font-family: var(--font-display); font-size: 0.8rem; color: #a0aabf; }
+        .g-highlight { color: #fff; font-size: 1rem; }
+        
+        .g-action { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; font-family: var(--font-display); font-size: 0.85rem; color: #000; background: var(--tx-cyan); cursor: pointer; text-transform: uppercase; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); transition: 0.3s; }
+        
+        /* 🎁 REWARD BLOCK */
+        .reward-card { display: none; text-align: center; }
+        .reward-icon { font-size: 3rem; color: var(--tx-green); margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--tx-green)); }
+        
+        /* KEYFRAMES */
+        @keyframes shineText { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+        @keyframes flash { 50% { opacity: 0.2; } }
+        @keyframes pulseGlow { from { text-shadow: 0 0 5px var(--tx-orange); } to { text-shadow: 0 0 15px var(--tx-orange); color: #fff; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes iconPulse { from { filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); } to { filter: drop-shadow(0 0 12px rgba(255,255,255,0.7)); } }
         @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes buttonPulse { from { box-shadow: 0 0 15px rgba(189, 0, 255, 0.4); } to { box-shadow: 0 0 25px rgba(0, 242, 255, 0.6); } }
-        .click-particle { position: fixed; width: 6px; height: 6px; background: var(--accent-cyan); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: burstFade 0.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; z-index: 99999; }
+        @keyframes buttonPulse { from { box-shadow: 0 0 10px rgba(0, 242, 255, 0.4); } to { box-shadow: 0 0 25px rgba(0, 242, 255, 0.8); } }
+        
+        .click-particle { position: fixed; width: 8px; height: 8px; background: var(--tx-cyan); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: burstFade 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; z-index: 99999; }
+        @keyframes burstFade { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 30px; height: 30px; opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div class="video-bg-container">
-        <video class="video-bg-file" autoplay loop muted playsinline id="bgVideoMatrix">
+        <video class="video-bg-file" autoplay loop muted playsinline>
             <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-loop-41740-large.mp4" type="video/mp4">
         </video>
+        <div class="bg-overlay"></div>
     </div>
 
-    <div class="app-shell">
+    <div class="app-shell" id="appShell">
         
         <header class="app-header">
             <div class="brand-meta">
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="brand-logo" alt="TX">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="brand-logo" alt="Tournyx Logo">
                 <span class="brand-title">TOURNYX</span>
             </div>
-
-            <div class="header-status-box" id="dynamicHeaderStatus">
-                <div class="active-shortly-badge">Checking Status...</div>
+            
+            <div class="status-badge-container" id="statusBadge">
+                <div class="active-text">Loading Data...</div>
             </div>
         </header>
 
-        <main class="main-lobby-hub">
+        <main class="main-content">
             
-            <h1 class="maintenance-heading">Server Under Maintenance</h1>
-            <h2 class="maintenance-sub">Come Back Again Soon</h2>
+            <div class="maintenance-titles">
+                <h1 class="title-main">Server Under Maintenance</h1>
+                <h2 class="title-sub" id="subTitleText">Come Back Again Soon</h2>
+            </div>
 
-            <div class="carousel-wrapper">
-                <div class="carousel-track" id="mainCarousel">
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Update 1">
-                        <div class="carousel-overlay">OB40 Patch Integration</div>
+            <div class="hero-carousel">
+                <div class="carousel-track" id="sliderTrack">
+                    <div class="slide">
+                        <img src="" alt="Patch Notes" style="background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover;">
+                        <div class="slide-overlay">System Optimization in Progress</div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop" alt="Update 2">
-                        <div class="carousel-overlay">Global Server Syncing</div>
+                    <div class="slide">
+                        <img src="" alt="Global Sync" style="background: url('https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop') center/cover;">
+                        <div class="slide-overlay">Syncing Global Leaderboards</div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop" alt="Update 3">
-                        <div class="carousel-overlay">Map Rendering Optimization</div>
+                    <div class="slide">
+                        <img src="" alt="Weapon Balance" style="background: url('https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop') center/cover;">
+                        <div class="slide-overlay">Refreshing Scrim Infrastructure</div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" alt="Update 4">
-                        <div class="carousel-overlay">Weapon Balance Adjusted</div>
+                    <div class="slide">
+                        <img src="" alt="Update 4" style="background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop') center/cover;">
+                        <div class="slide-overlay">Fortifying Anti-Cheat Engines</div>
                     </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop" alt="Update 5">
-                        <div class="carousel-overlay">Database Upgrades Live</div>
+                    <div class="slide">
+                        <img src="" alt="Update 5" style="background: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop') center/cover;">
+                        <div class="slide-overlay">The Esports Arena Awaits</div>
                     </div>
                 </div>
             </div>
 
-            <div class="launch-hub">
-                <div class="launch-title">Practice Until Platform Opens</div>
+            <div class="interaction-hub">
+                <div class="hub-title">Practice Until Platform Opens</div>
                 
-                <div class="launch-buttons" style="margin-bottom: 15px;">
-                    <div class="launch-btn ffmax" onclick="launchGame('ffmax')">
+                <div class="launch-grid">
+                    <div class="game-btn ffmax" onclick="launchGame('ffmax')">
                         <i class="fa-solid fa-fire"></i> FF MAX
                     </div>
-                    <div class="launch-btn bgmi" onclick="launchGame('bgmi')">
+                    <div class="game-btn bgmi" onclick="launchGame('bgmi')">
                         <i class="fa-solid fa-helmet-battle"></i> BGMI
                     </div>
-                    <div class="launch-btn codm" onclick="launchGame('codm')">
+                    <div class="game-btn codm" onclick="launchGame('codm')">
                         <i class="fa-solid fa-crosshairs"></i> CODM
                     </div>
                 </div>
 
-                <button class="game-launch-trigger" onclick="toggleGameModal(true)">
-                    <i class="fa-solid fa-gamepad"></i> Warmup Practice Range
+                <button class="warmup-btn" onclick="openGameModal()">
+                    <i class="fa-solid fa-crosshairs"></i> Warmup Practice Range
                 </button>
             </div>
+            
         </main>
 
         <footer class="app-footer">
-            <div class="social-icon-row">
-                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-whatsapp"></i></a>
-                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="social-icon-anchor"><i class="fa-brands fa-discord"></i></a>
+            <div class="cached-badge">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Video cached. Zero data usage.
             </div>
-            
-            <div class="legal-credits">
+            <div class="legal-text">
                 © Tournyx Esports private limited | © KRAFTON | © Garena
-                <div class="quva-badge">Powered by QUVA</div>
+            </div>
+            <div class="powered-by">
+                Powered by <span class="quva-logo">QUVA</span>
             </div>
         </footer>
 
     </div>
 
-    <div class="game-modal-overlay" id="gameModalWrapper">
-        <div class="game-box-container" id="gamePanelInteract">
-            <i class="fa-solid fa-xmark game-close-action" onclick="toggleGameModal(false)"></i>
+    <div class="modal-overlay" id="gameModal">
+        <div class="game-card">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeGameModal()"></i>
             
-            <div id="gamePlayStateBlock">
-                <div class="game-header-meta">
-                    <span class="game-title-lbl">Chakra Ninja Strike</span>
+            <div id="gameUI">
+                <div class="g-head">
+                    <div class="g-title">Battlegrounds Warmup</div>
                 </div>
                 
-                <div class="game-canvas-bounds" id="arenaBoxBounds">
-                    <div class="spinning-wheel-target" id="wheelTargetNode"></div>
-                    <div class="game-knife-projectile" id="projectileKnifeNode"></div>
+                <div class="g-arena" id="gArena" onclick="registerMiss(event)">
+                    <div class="g-target" id="gTarget" onclick="registerHit(event)"></div>
                 </div>
 
-                <div class="game-hud-row">
-                    <span>SCORE: <span class="hud-highlight" id="lblGameScore">0</span>/10</span>
-                    <span>ATTEMPTS: <span class="hud-highlight" id="lblGameAmmo">5</span></span>
+                <div class="g-stats">
+                    <div>SCORE: <span class="g-highlight" id="lblScore">0</span></div>
+                    <div>TIME: <span class="g-highlight" id="lblTime" style="color:var(--tx-orange);">15s</span></div>
                 </div>
 
-                <button class="game-action-btn" onclick="executeKnifeThrow()">Release Strike</button>
+                <button class="g-action" id="btnStart" onclick="startAimTrainer()">Start Drills</button>
             </div>
 
-            <div class="victory-claim-card" id="gameRewardStateBlock">
-                <i class="fa-solid fa-trophy victory-icon"></i>
-                <h3 style="font-family: var(--font-head); margin-bottom: 8px; color: var(--accent-green);">MISSION ACCOMPLISHED!</h3>
-                <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 20px; line-height: 1.4;">
-                    You claimed <b style="color: var(--accent-cyan);">100 TX Points</b>! Share this operational status bypass link with your team to unlock more points!
+            <div class="reward-card" id="rewardUI">
+                <i class="fa-solid fa-ranking-star reward-icon"></i>
+                <h3 style="font-family: var(--font-display); color: var(--tx-green); margin-bottom: 10px;">DRILLS COMPLETED!</h3>
+                <p style="font-size: 0.85rem; color: #a0aabf; margin-bottom: 20px; font-family: var(--font-body);">
+                    Your reflexes are insane! You secured <b style="color: var(--tx-cyan);" id="finalScoreTxt">0</b> targets. Share this link with your squad to claim TX points!
                 </p>
-                <button class="game-action-btn" style="background: var(--accent-orange);" onclick="executeMarketingShare()">
-                    <i class="fa-solid fa-share-nodes"></i> Share Status Link
+                <button class="g-action" style="background: #25D366; color: #fff;" onclick="shareScore()">
+                    <i class="fa-brands fa-whatsapp"></i> Share to Claim Points
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. TIMER & JSON STATUS LOGIC ---
-        // Simulating JSON input timeframe. Normally fetched via API.
-        const mockJSON = { "maintenanceEnd": new Date().getTime() + (30 * 60 * 1000) }; // Change to + or - to test
-        const endTime = mockJSON.maintenanceEnd;
+        // --- 1. INTELLIGENT JSON TEMPORAL ENGINE ---
+        // Simulating your maintenance.json structure
+        const maintenanceConfig = {
+            "maintenance_active": true, // Toggle this to test logic
+            "end_time": "July 12, 2026 18:00:00 GMT+0530" 
+        };
 
-        function updateTemporalEngine() {
+        const targetTime = new Date(maintenanceConfig.end_time).getTime();
+        
+        function updateLogicEngine() {
             const now = Date.now();
-            const diff = endTime - now;
-            const statusBox = document.getElementById('dynamicHeaderStatus');
+            const diff = targetTime - now;
+            const badge = document.getElementById('statusBadge');
+            const subTitle = document.getElementById('subTitleText');
 
-            if (diff <= 0) {
-                // Time has passed: Hide timer, show "Active Shortly"
-                statusBox.innerHTML = `<div class="active-shortly-badge">The Platform Will Be Active Shortly</div>`;
-                statusBox.style.borderColor = "var(--accent-orange)";
-                statusBox.style.boxShadow = "0 0 15px rgba(255, 153, 0, 0.4)";
+            // Logic: If maintenance is FALSE OR time is in the past -> Platform Active Shortly
+            if (!maintenanceConfig.maintenance_active || diff <= 0) {
+                badge.innerHTML = `<div class="active-text">Platform Active Shortly</div>`;
+                badge.style.borderColor = "var(--tx-orange)";
+                badge.style.boxShadow = "0 0 15px rgba(255, 153, 0, 0.4)";
+                subTitle.innerText = "The Battlegrounds Esports practice is ready yet!";
+                subTitle.style.color = "var(--tx-green)";
                 return;
             }
 
-            // Time is in the future: Show standard Timer
+            // Maintenance is TRUE and Time is in FUTURE -> Show Timer
             let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             let s = Math.floor((diff % (1000 * 60)) / 1000);
@@ -310,33 +320,34 @@
             let strM = m < 10 ? "0" + m : m;
             let strS = s < 10 ? "0" + s : s;
 
-            statusBox.innerHTML = `
-                <div class="compact-timer">
-                    <div class="timer-unit-slot"><span>${strH}</span><label>H</label></div>
-                    <div class="timer-divider">:</div>
-                    <div class="timer-unit-slot"><span>${strM}</span><label>M</label></div>
-                    <div class="timer-divider">:</div>
-                    <div class="timer-unit-slot"><span>${strS}</span><label>S</label></div>
+            badge.innerHTML = `
+                <div class="timer-grid">
+                    <div class="timer-unit"><span class="t-val">${strH}</span><span class="t-lbl">H</span></div>
+                    <div class="t-div">:</div>
+                    <div class="timer-unit"><span class="t-val">${strM}</span><span class="t-lbl">M</span></div>
+                    <div class="t-div">:</div>
+                    <div class="timer-unit"><span class="t-val">${strS}</span><span class="t-lbl">S</span></div>
                 </div>
             `;
         }
-        setInterval(updateTemporalEngine, 1000);
-        updateTemporalEngine();
+        setInterval(updateLogicEngine, 1000);
+        updateLogicEngine();
 
-        // --- 2. 5-IMAGE CAROUSEL ENGINE ---
+        // --- 2. 5-SLIDE CAROUSEL LOGIC ---
         let currentSlide = 0;
-        const track = document.getElementById('mainCarousel');
+        const track = document.getElementById('sliderTrack');
         const totalSlides = 5;
 
         function autoSlide() {
             currentSlide = (currentSlide + 1) % totalSlides;
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
-        setInterval(autoSlide, 3000);
+        setInterval(autoSlide, 3500);
 
         // --- 3. QUICK LAUNCH DEEP LINKS ---
         function launchGame(appId) {
             if(navigator.vibrate) navigator.vibrate(50);
+            createParticle(event.clientX, event.clientY, '#00f2ff');
             const schemas = {
                 'ffmax': 'intent://#Intent;package=com.dts.freefiremax;scheme=freefiremax;end;',
                 'bgmi': 'intent://#Intent;package=com.pubg.imobile;scheme=pubg;end;',
@@ -345,94 +356,140 @@
             window.location.href = schemas[appId];
         }
 
-        // --- 4. CHAKRA STRIKE WARMUP GAME ---
-        let internalScore = 0;
-        let ammoCount = 5;
-        let isProjectileInFlight = false;
+        // --- 4. BATTLEGROUNDS REFLEX TRAINER ---
+        let score = 0;
+        let timeLeft = 15;
+        let gameLoop;
+        let targetLoop;
+        let isPlaying = false;
+        
+        const modal = document.getElementById('gameModal');
+        const shell = document.getElementById('appShell');
+        const arena = document.getElementById('gArena');
+        const target = document.getElementById('gTarget');
 
-        function toggleGameModal(activateStatus) {
+        function openGameModal() {
             if(navigator.vibrate) navigator.vibrate(40);
-            const overlay = document.getElementById('gameModalWrapper');
-            if (activateStatus) {
-                internalScore = 0; ammoCount = 5; isProjectileInFlight = false;
-                document.getElementById('lblGameScore').innerText = "0";
-                document.getElementById('lblGameAmmo').innerText = "5";
-                document.getElementById('gamePlayStateBlock').style.display = "block";
-                document.getElementById('gameRewardStateBlock').style.display = "none";
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
+            modal.classList.add('active');
+            shell.style.filter = "blur(8px)";
+            resetGame();
+        }
+
+        function closeGameModal() {
+            modal.classList.remove('active');
+            shell.style.filter = "none";
+            clearInterval(gameLoop);
+            clearTimeout(targetLoop);
+            isPlaying = false;
+        }
+
+        function resetGame() {
+            score = 0; timeLeft = 15; isPlaying = false;
+            document.getElementById('lblScore').innerText = score;
+            document.getElementById('lblTime').innerText = timeLeft + "s";
+            document.getElementById('gameUI').style.display = "block";
+            document.getElementById('rewardUI').style.display = "none";
+            document.getElementById('btnStart').style.display = "block";
+            target.style.display = "none";
+            arena.style.borderColor = "rgba(157, 0, 255, 0.4)";
+        }
+
+        function startAimTrainer() {
+            if(navigator.vibrate) navigator.vibrate(30);
+            resetGame();
+            isPlaying = true;
+            document.getElementById('btnStart').style.display = "none";
+            
+            spawnTarget();
+            
+            gameLoop = setInterval(() => {
+                timeLeft--;
+                document.getElementById('lblTime').innerText = timeLeft + "s";
+                if(timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function spawnTarget() {
+            if(!isPlaying) return;
+            target.style.display = "flex";
+            
+            // Calculate safe bounds
+            const maxX = arena.clientWidth - 50;
+            const maxY = arena.clientHeight - 50;
+            const x = Math.max(25, Math.floor(Math.random() * maxX));
+            const y = Math.max(25, Math.floor(Math.random() * maxY));
+            
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            
+            // Move target automatically if not clicked fast enough
+            clearTimeout(targetLoop);
+            targetLoop = setTimeout(spawnTarget, 900); // 0.9s to react
+        }
+
+        function registerHit(e) {
+            e.stopPropagation();
+            if(!isPlaying) return;
+            if(navigator.vibrate) navigator.vibrate([20, 30]);
+            createParticle(e.clientX, e.clientY, '#00f2ff');
+            
+            score++;
+            document.getElementById('lblScore').innerText = score;
+            target.style.display = "none";
+            clearTimeout(targetLoop);
+            setTimeout(spawnTarget, 200);
+        }
+
+        function registerMiss(e) {
+            if(isPlaying && score > 0) {
+                score--;
+                document.getElementById('lblScore').innerText = score;
+                createParticle(e.clientX, e.clientY, '#ff0055');
             }
         }
 
-        function executeKnifeThrow() {
-            if (isProjectileInFlight || ammoCount <= 0) return;
-            isProjectileInFlight = true;
-            if(navigator.vibrate) navigator.vibrate(25);
+        function endGame() {
+            isPlaying = false;
+            clearInterval(gameLoop);
+            clearTimeout(targetLoop);
+            target.style.display = "none";
             
-            const knife = document.getElementById('projectileKnifeNode');
-            knife.style.display = "block";
-            
-            let knifeVerticalOffset = 10;
-            let flightInterval = setInterval(() => {
-                knifeVerticalOffset += 8;
-                knife.style.bottom = knifeVerticalOffset + "px";
-
-                if (knifeVerticalOffset >= 80 && knifeVerticalOffset <= 110) {
-                    clearInterval(flightInterval); registerStrikeSuccess();
-                } else if (knifeVerticalOffset > 180) {
-                    clearInterval(flightInterval); registerStrikeMiss();
-                }
-            }, 16);
+            document.getElementById('gameUI').style.display = "none";
+            document.getElementById('rewardUI').style.display = "block";
+            document.getElementById('finalScoreTxt').innerText = score;
         }
 
-        function registerStrikeSuccess() {
-            if(navigator.vibrate) navigator.vibrate(60);
-            internalScore += 2;
-            document.getElementById('lblGameScore').innerText = internalScore;
-            resetProjectileNode(); evaluateGameThresholds();
-        }
-
-        function registerStrikeMiss() {
-            ammoCount--;
-            document.getElementById('lblGameAmmo').innerText = ammoCount;
-            resetProjectileNode(); evaluateGameThresholds();
-        }
-
-        function resetProjectileNode() {
-            const knife = document.getElementById('projectileKnifeNode');
-            knife.style.display = "none"; knife.style.bottom = "10px";
-            isProjectileInFlight = false;
-        }
-
-        function evaluateGameThresholds() {
-            if (internalScore >= 10) {
-                document.getElementById('gamePlayStateBlock').style.display = "none";
-                document.getElementById('gameRewardStateBlock').style.display = "block";
-            } else if (ammoCount <= 0) {
-                setTimeout(() => toggleGameModal(true), 1000); // Reload
-            }
-        }
-
-        function executeMarketingShare() {
+        function shareScore() {
             if(navigator.vibrate) navigator.vibrate(40);
-            let targetOriginUrl = window.location.href;
+            const msg = `🔥 I hit ${score} targets on the Tournyx Battlegrounds Warmup! Join the queue and practice your aim before servers launch!`;
             if (navigator.share) {
-                navigator.share({ title: 'Tournyx Patch Update', text: 'Play Warmup while servers update!', url: targetOriginUrl }).then(() => { toggleGameModal(false); }).catch(() => {});
+                navigator.share({ title: 'Tournyx Esports', text: msg, url: window.location.href })
+                .then(() => { closeGameModal(); })
+                .catch(console.error);
             } else {
-                alert("Link Copied!"); toggleGameModal(false);
+                navigator.clipboard.writeText(msg).then(() => {
+                    alert("Score Copied! Share with your squad.");
+                    closeGameModal();
+                });
             }
         }
 
-        // Ambient Click Particles
-        window.addEventListener('click', (ev) => {
-            if (!document.getElementById('gameModalWrapper').classList.contains('active')) {
-                let dot = document.createElement('div');
-                dot.className = 'click-particle';
-                dot.style.left = ev.clientX + 'px';
-                dot.style.top = ev.clientY + 'px';
-                document.body.appendChild(dot);
-                setTimeout(() => dot.remove(), 400);
+        // --- 5. GLOBAL PARTICLE SYSTEM ---
+        function createParticle(x, y, color) {
+            const p = document.createElement('div');
+            p.className = 'click-particle';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            p.style.background = color;
+            p.style.boxShadow = `0 0 10px ${color}`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 500);
+        }
+
+        // Ambient clicks outside modal
+        window.addEventListener('click', (e) => {
+            if (!modal.classList.contains('active')) {
+                createParticle(e.clientX, e.clientY, 'rgba(0, 242, 255, 0.6)');
             }
         });
     </script>
