@@ -286,15 +286,24 @@
     </div>
 
     <script>
-        // --- 1. INTELLIGENT JSON TEMPORAL ENGINE ---
-        // Simulating your maintenance.json structure
-        const maintenanceConfig = {
-            "maintenance_active": true, // Toggle this to test logic
-            "end_time": "July 12, 2026 18:00:00 GMT+0530" 
-        };
+        // --- 1. INTELLIGENT JSON TEMPORAL ENGINE (LIVE GITHUB FETCH) ---
+        let maintenanceConfig = { maintenance_active: false, end_time: new Date().getTime() }; 
+        let targetTime = new Date().getTime();
 
-        const targetTime = new Date(maintenanceConfig.end_time).getTime();
-        
+        // 1. Fetch live data from your GitHub repository
+        async function fetchLiveStatus() {
+            try {
+                // Using your exact GitHub repo with a cache-buster to ensure instant updates
+                const url = 'https://raw.githubusercontent.com/quva-globe/Tournyx/main/maintenance.json?v=' + new Date().getTime();
+                const response = await fetch(url);
+                maintenanceConfig = await response.json();
+                targetTime = new Date(maintenanceConfig.end_time).getTime();
+            } catch (error) {
+                console.error("Failed to sync with Tournyx servers:", error);
+            }
+        }
+
+        // 2. The Logic Engine (Runs every second)
         function updateLogicEngine() {
             const now = Date.now();
             const diff = targetTime - now;
@@ -302,7 +311,7 @@
             const subTitle = document.getElementById('subTitleText');
 
             // Logic: If maintenance is FALSE OR time is in the past -> Platform Active Shortly
-            if (!maintenanceConfig.maintenance_active || diff <= 0) {
+            if (maintenanceConfig.maintenance_active === false || diff <= 0) {
                 badge.innerHTML = `<div class="active-text">Platform Active Shortly</div>`;
                 badge.style.borderColor = "var(--tx-orange)";
                 badge.style.boxShadow = "0 0 15px rgba(255, 153, 0, 0.4)";
@@ -330,8 +339,16 @@
                 </div>
             `;
         }
-        setInterval(updateLogicEngine, 1000);
-        updateLogicEngine();
+        
+        // 3. Initialize: Fetch data first, then start the loop
+        fetchLiveStatus().then(() => {
+            updateLogicEngine();
+            setInterval(updateLogicEngine, 1000);
+            
+            // Pro-feature: Re-check GitHub every 30 seconds so if you update it, 
+            // users see the change without even refreshing the page!
+            setInterval(fetchLiveStatus, 30000); 
+        });
 
         // --- 2. 5-SLIDE CAROUSEL LOGIC ---
         let currentSlide = 0;
