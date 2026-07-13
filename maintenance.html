@@ -26,44 +26,40 @@
 
         html, body {
             width: 100%; height: 100dvh; overflow: hidden;
-            background-color: transparent; 
-            color: #ffffff; font-family: var(--font-body);
+            background: #000; color: #ffffff; font-family: var(--font-body);
         }
 
-        /* 🎬 BULLETPROOF VIDEO BACKGROUND ENGINE */
-        .video-bg-container { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -999; 
-            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
-            background-color: var(--tx-bg);
-        }
-        .video-bg-file { 
-            width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0.85; 
-            pointer-events: none; 
-        }
-        .bg-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -998; 
-            background: radial-gradient(circle at center, rgba(5,2,10,0.1) 0%, rgba(5,2,10,0.8) 100%);
-            backdrop-filter: blur(4px); 
-            -webkit-backdrop-filter: blur(4px); 
+        /* 🎬 BULLETPROOF BACKGROUND LAYER SYSTEM */
+        #ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -100; overflow: hidden; background: #000; }
+        
+        /* Layer 1: Fallback Image (Bottom) */
+        .layer-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.6; }
+        
+        /* Layer 2: Video (Middle - Covers Image if loaded) */
+        .layer-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; opacity: 1; }
+        
+        /* Layer 3: Cinematic Blur Overlay (Top) */
+        .layer-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; 
+            background: radial-gradient(circle at center, rgba(5,2,10,0.1) 0%, rgba(5,2,10,0.85) 100%);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); 
         }
 
-        /* 🛡️ APP SHELL */
+        /* 🛡️ APP SHELL (Flexbox Desktop Fix) */
         .app-shell {
-            width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
-            padding: calc(8px + env(safe-area-inset-top)) 15px calc(10px + env(safe-area-inset-bottom));
-            position: relative; z-index: 2; transition: filter 0.3s;
+            width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: calc(10px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom));
+            position: relative; z-index: 10; transition: filter 0.3s;
         }
 
         /* 🛰️ HEADER */
-        .app-header { width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; height: 45px; margin-bottom: 10px; }
+        .app-header { width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; height: 45px; flex-shrink: 0; }
         .brand-meta { display: flex; align-items: center; gap: 10px; }
         .brand-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px var(--tx-purple)); animation: float 3s ease-in-out infinite; }
         .brand-title { font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--tx-purple); }
 
-        /* ⏱️ UPGRADED DIGITAL TIMER UI */
+        /* ⏱️ DIGITAL TIMER UI */
         .status-badge-container { display: flex; align-items: center; justify-content: center; min-width: 130px; }
-        
         .timer-grid { display: flex; align-items: center; gap: 6px; }
         .timer-unit {
             background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.3);
@@ -81,11 +77,15 @@
             letter-spacing: 1px; animation: pulseGlow 1.5s infinite alternate; text-align: center; backdrop-filter: blur(10px);
         }
 
-        /* 🎚️ MAIN CONTENT */
-        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 650px; gap: clamp(6px, 1.5vh, 15px); }
+        /* 🎚️ MAIN CONTENT (Desktop Shrink Fix) */
+        .main-content { 
+            flex: 1; min-height: 0; /* CRITICAL: Allows shrinking to keep footer on screen */
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            width: 100%; max-width: 650px; gap: clamp(8px, 1.5vh, 15px); 
+        }
 
         /* SHINING HEADINGS */
-        .maintenance-titles { text-align: center; }
+        .maintenance-titles { text-align: center; flex-shrink: 0; }
         .title-main {
             font-family: var(--font-display); font-size: clamp(1.2rem, 5vw, 1.8rem); text-transform: uppercase;
             background: linear-gradient(90deg, #fff, #888, #fff); background-size: 200% auto;
@@ -96,25 +96,18 @@
 
         /* 🎡 BULLETPROOF 16:9 CAROUSEL FRAMEWORK */
         .hero-carousel {
-            height: clamp(140px, 25vh, 260px); 
-            width: auto; 
-            max-width: 100%; 
-            aspect-ratio: 16/9; 
+            flex: 0 1 auto; height: min(26vh, 240px); /* Strictly prevents vertical desktop blowout */
+            width: auto; max-width: 100%; aspect-ratio: 16/9; 
             background: #000; border-radius: 16px; position: relative; overflow: hidden;
             border: 2px solid rgba(157, 0, 255, 0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(157, 0, 255, 0.3);
             margin: 0 auto;
         }
         .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
         .slide { min-width: 100%; height: 100%; position: relative; }
-        
-        /* Forces images to obey the parent container entirely */
-        .slide img { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: cover; object-position: center; 
-        }
+        .slide img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
         
         /* 🎡 SYNCHRONIZED FADE TEXT ENGINE */
-        .banner-text-fader { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .banner-text-fader { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;}
         .banner-caption {
             position: absolute; font-family: var(--font-display); font-size: clamp(0.75rem, 2.8vw, 0.85rem); text-transform: uppercase;
             letter-spacing: 1px; color: #ffffff; opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease;
@@ -123,7 +116,11 @@
         .banner-caption.active { opacity: 1; transform: translateY(0); text-shadow: 0 0 10px var(--tx-cyan); }
 
         /* 🎮 GAME QUICK LAUNCH & WARMUP */
-        .interaction-hub { width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: clamp(10px, 2vh, 15px); backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center; }
+        .interaction-hub { 
+            width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; 
+            padding: clamp(10px, 2vh, 15px); backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+            text-align: center; flex-shrink: 0;
+        }
         .hub-title { font-family: var(--font-body); font-size: 0.75rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
         
         .launch-grid { display: flex; justify-content: center; gap: clamp(10px, 4vw, 20px); margin-bottom: clamp(10px, 2vh, 15px); }
@@ -145,8 +142,8 @@
             text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px;
         }
 
-        /* 📡 QUVA FOOTER */
-        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: auto; padding-top: 5px; }
+        /* 📡 QUVA FOOTER (Forced to bottom) */
+        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; padding-top: 5px; }
         .footer-social-lbl { font-family: var(--font-body); font-size: 0.65rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
         .social-icon-row { display: flex; justify-content: center; gap: 20px; }
         .social-icon-anchor { color: rgba(255, 255, 255, 0.5); font-size: 1.2rem; transition: 0.3s; }
@@ -171,14 +168,12 @@
         .g-head { text-align: center; margin-bottom: 15px; }
         .g-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--tx-cyan); text-transform: uppercase; }
         
-        /* Tactical Arena Theme */
         .g-arena { 
             width: 100%; height: 240px; border-radius: 12px; position: relative; overflow: hidden; cursor: crosshair; 
             background: linear-gradient(rgba(10, 15, 10, 0.85), rgba(5, 10, 5, 0.9)), repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 10px);
             border: 2px solid #3a4a3a; box-shadow: inset 0 0 20px rgba(0,0,0,1);
         }
         
-        /* Realistic Enemy Emoji Targets */
         .g-target { 
             position: absolute; font-size: 2.8rem; display: none; align-items: center; justify-content: center; 
             transform: translate(-50%, -50%); transition: transform 0.1s; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.7)); 
@@ -206,12 +201,15 @@
 </head>
 <body>
 
-    <div class="video-bg-container">
-        <video class="video-bg-file" id="bgVideoMatrix" autoplay loop muted playsinline>
+    <div id="ambient-bg">
+        <img class="layer-img" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Fallback Background">
+        
+        <video id="bgVideoMatrix" class="layer-video" autoplay loop muted playsinline webkit-playsinline>
             <source src="https://tournyx.in/FFBGMICODTRAILER.mp4" type="video/mp4">
         </video>
+        
+        <div class="layer-overlay"></div>
     </div>
-    <div class="bg-overlay"></div>
 
     <div class="app-shell" id="appShell">
         
@@ -339,7 +337,6 @@
 
         async function fetchLiveStatus() {
             try {
-                // Safely fetched via raw Github with cache-busting logic
                 const url = 'https://raw.githubusercontent.com/quva-globe/Tournyx/main/maintenance.json?v=' + new Date().getTime();
                 const response = await fetch(url);
                 maintenanceConfig = await response.json();
@@ -356,14 +353,12 @@
             const subTitle = document.getElementById('subTitleText');
 
             if (maintenanceConfig.maintenance_active === false || diff <= 0) {
-                // UI: Platform Active
                 badge.innerHTML = `<div class="active-text">Platform Active Shortly</div>`;
                 subTitle.innerText = "The Battlegrounds Esports practice is ready yet!";
                 subTitle.style.color = "var(--tx-green)";
                 return;
             }
 
-            // UI: Dynamic Segments Timer
             let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             let s = Math.floor((diff % (1000 * 60)) / 1000);
@@ -385,7 +380,6 @@
             subTitle.style.color = "var(--tx-cyan)";
         }
         
-        // Init Engine
         fetchLiveStatus().then(() => {
             updateLogicEngine();
             setInterval(updateLogicEngine, 1000);
@@ -424,13 +418,13 @@
             window.location.href = schemas[appId];
         }
 
-        // --- 4. BATTLEGROUNDS REFLEX TRAINER (UPGRADED TACTICAL LOGIC) ---
+        // --- 4. BATTLEGROUNDS REFLEX TRAINER ---
         let score = 0;
         let timeLeft = 15;
         let gameLoop;
         let targetLoop;
         let isPlaying = false;
-        const characterEmojis = ['🪖', '🥷', '🧟', '🎯']; // Tactical Characters
+        const characterEmojis = ['🪖', '🥷', '🧟', '🎯']; 
         
         const modal = document.getElementById('gameModal');
         const shell = document.getElementById('appShell');
@@ -481,11 +475,9 @@
         function spawnTarget() {
             if(!isPlaying) return;
             
-            // Assign Random Battleground Character
             target.innerText = characterEmojis[Math.floor(Math.random() * characterEmojis.length)];
             target.style.display = "flex";
             
-            // Calculate safe bounds within tactical arena
             const maxX = arena.clientWidth - 50;
             const maxY = arena.clientHeight - 50;
             const x = Math.max(30, Math.floor(Math.random() * maxX));
@@ -507,11 +499,9 @@
             score++;
             document.getElementById('lblScore').innerText = score;
             
-            // Show Explosive Hit Marker
             target.innerText = '💥';
             clearTimeout(targetLoop);
             
-            // Short delay to register the visual hit explosion before spawning next target
             setTimeout(() => {
                 target.style.display = "none";
                 setTimeout(spawnTarget, 150); 
@@ -571,23 +561,35 @@
             }
         });
 
-        // --- 0. FORCE MOBILE VIDEO AUTOPLAY & FIX AUDIO CONTEXT ---
+        // --- 0. AGGRESSIVE MOBILE VIDEO WAKE-UP ENGINE ---
         document.addEventListener("DOMContentLoaded", function() {
             const bgVideo = document.getElementById('bgVideoMatrix');
+            
             if(bgVideo) {
+                // Force properties that allow bypassing mobile autoplay blocks
                 bgVideo.muted = true; 
                 bgVideo.defaultMuted = true;
+                bgVideo.setAttribute('muted', '');
+                bgVideo.setAttribute('playsinline', '');
+                bgVideo.setAttribute('webkit-playsinline', '');
                 
-                // Native mobile override
-                const playPromise = bgVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // If browser forcefully blocks it, bind to first touch
-                        window.addEventListener('touchstart', function() {
-                            bgVideo.play();
-                        }, { once: true });
-                    });
-                }
+                const forcePlayVideo = () => {
+                    const playPromise = bgVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log("Video playing successfully.");
+                        }).catch(error => {
+                            console.warn("Autoplay blocked by browser. Awaiting user tap.");
+                        });
+                    }
+                };
+
+                // Attempt immediately on load
+                forcePlayVideo();
+
+                // Aggressive Fallback: Bind to EVERY touch/click on the document
+                document.body.addEventListener('touchstart', forcePlayVideo, { passive: true });
+                document.body.addEventListener('click', forcePlayVideo, { passive: true });
             }
         });
     </script>
