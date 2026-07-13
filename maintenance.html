@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>System Maintenance - Tournyx Esports</title>
     
-    <!-- Premium Esports Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -27,10 +26,12 @@
 
         html, body {
             width: 100%; height: 100dvh; overflow: hidden;
-            background-color: var(--tx-bg); color: #ffffff; font-family: var(--font-body);
+            /* CRITICAL FIX: Made body transparent so the z-index: -10 video is actually visible behind it */
+            background-color: transparent; 
+            color: #ffffff; font-family: var(--font-body);
         }
 
-       /* 🎬 VIDEO BACKGROUND & SMART FALLBACK */
+        /* 🎬 VIDEO BACKGROUND & SMART FALLBACK */
         .video-bg-container { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -10; 
             /* Fallback image if video fails to load */
@@ -39,12 +40,11 @@
         }
         .video-bg-file { 
             width: 100%; height: 100%; object-fit: cover; 
-            opacity: 0.85; /* Pumped up opacity to make it pop */
+            opacity: 0.85; 
             pointer-events: none; 
         }
         .bg-overlay { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
-            /* Lighter gradient so the video is perfectly visible */
             background: radial-gradient(circle at center, rgba(5,2,10,0.1) 0%, rgba(5,2,10,0.7) 100%);
             backdrop-filter: blur(4px); 
             -webkit-backdrop-filter: blur(4px); 
@@ -53,12 +53,13 @@
         /* 🛡️ APP SHELL */
         .app-shell {
             width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
-            padding: calc(10px + env(safe-area-inset-top)) 15px calc(15px + env(safe-area-inset-bottom));
+            /* CRITICAL FIX: Adjusted padding dynamically to secure footer visibility on desktop */
+            padding: calc(8px + env(safe-area-inset-top)) 15px calc(10px + env(safe-area-inset-bottom));
             position: relative; z-index: 2; transition: filter 0.3s;
         }
 
         /* 🛰️ HEADER */
-        .app-header { width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 15px; }
+        .app-header { width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; height: 45px; margin-bottom: 10px; }
         .brand-meta { display: flex; align-items: center; gap: 10px; }
         .brand-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 10px var(--tx-purple)); animation: float 3s ease-in-out infinite; }
         .brand-title { font-family: var(--font-display); font-size: 1.2rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--tx-purple); }
@@ -84,23 +85,26 @@
         }
 
         /* 🎚️ MAIN CONTENT */
-        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 650px; gap: clamp(10px, 2vh, 15px); }
+        /* CRITICAL FIX: Re-scaled gap dynamics for universal single-view display */
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 650px; gap: clamp(6px, 1.5vh, 15px); }
 
         /* SHINING HEADINGS */
         .maintenance-titles { text-align: center; }
         .title-main {
-            font-family: var(--font-display); font-size: clamp(1.4rem, 6vw, 2.2rem); text-transform: uppercase;
+            font-family: var(--font-display); font-size: clamp(1.2rem, 5vw, 1.8rem); text-transform: uppercase;
             background: linear-gradient(90deg, #fff, #888, #fff); background-size: 200% auto;
             color: transparent; -webkit-background-clip: text; background-clip: text;
             animation: shineText 3s linear infinite; text-shadow: 0 0 20px rgba(157, 0, 255, 0.5); line-height: 1.1;
         }
-        .title-sub { font-family: var(--font-body); font-size: clamp(0.85rem, 3vw, 1rem); color: var(--tx-cyan); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
+        .title-sub { font-family: var(--font-body); font-size: clamp(0.75rem, 3vw, 0.95rem); color: var(--tx-cyan); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
         /* 🎡 5-SLIDE ENLARGED CAROUSEL */
+        /* CRITICAL FIX: Restrained max-height mapped tightly to vh to prevent desktop overflow cutoff */
         .hero-carousel {
-            width: 100%; aspect-ratio: 16/9; max-height: clamp(200px, 32vh, 320px);
+            width: 100%; aspect-ratio: 16/9; max-height: clamp(140px, 25vh, 260px);
             background: #000; border-radius: 16px; position: relative; overflow: hidden;
             border: 2px solid rgba(157, 0, 255, 0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(157, 0, 255, 0.3);
+            margin: 0 auto;
         }
         .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
         .slide { min-width: 100%; height: 100%; position: relative; }
@@ -116,13 +120,13 @@
         .banner-caption.active { opacity: 1; transform: translateY(0); text-shadow: 0 0 10px var(--tx-cyan); }
 
         /* 🎮 GAME QUICK LAUNCH & WARMUP */
-        .interaction-hub { width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center; }
+        .interaction-hub { width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: clamp(10px, 2vh, 15px); backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-align: center; }
         .hub-title { font-family: var(--font-body); font-size: 0.75rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
         
-        .launch-grid { display: flex; justify-content: center; gap: clamp(10px, 4vw, 20px); margin-bottom: 15px; }
-        .game-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; width: clamp(70px, 20vw, 85px); height: clamp(70px, 20vw, 85px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #fff; font-family: var(--font-display); font-size: 0.65rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .launch-grid { display: flex; justify-content: center; gap: clamp(10px, 4vw, 20px); margin-bottom: clamp(10px, 2vh, 15px); }
+        .game-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; width: clamp(65px, 18vw, 85px); height: clamp(65px, 18vw, 85px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #fff; font-family: var(--font-display); font-size: 0.65rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
         
-        .game-btn img { width: clamp(32px, 8vw, 40px); height: clamp(32px, 8vw, 40px); object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.1)); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s; }
+        .game-btn img { width: clamp(28px, 8vw, 40px); height: clamp(28px, 8vw, 40px); object-fit: contain; border-radius: 8px; filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.1)); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s; }
         .game-btn:hover img { transform: scale(1.1); }
         .game-btn.ffmax:hover img { filter: drop-shadow(0 0 10px #ff9900); }
         .game-btn.bgmi:hover img { filter: drop-shadow(0 0 10px #ff3c00); }
@@ -139,17 +143,17 @@
         }
 
         /* 📡 QUVA FOOTER */
-        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: auto; padding-top: 5px; }
-        .footer-social-lbl { font-family: var(--font-body); font-size: 0.7rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
+        .app-footer { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: auto; padding-top: 5px; }
+        .footer-social-lbl { font-family: var(--font-body); font-size: 0.65rem; font-weight: 800; color: #a0aabf; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
         .social-icon-row { display: flex; justify-content: center; gap: 20px; }
         .social-icon-anchor { color: rgba(255, 255, 255, 0.5); font-size: 1.2rem; transition: 0.3s; }
         .social-icon-anchor:hover { color: var(--tx-cyan); transform: scale(1.15); filter: drop-shadow(0 0 10px var(--tx-cyan)); }
         
-        .cached-badge { color: var(--tx-green); font-family: var(--font-body); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; text-shadow: 0 0 8px rgba(0,255,127,0.4); margin-top: 4px; }
+        .cached-badge { color: var(--tx-green); font-family: var(--font-body); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; text-shadow: 0 0 8px rgba(0,255,127,0.4); margin-top: 2px; }
         .cached-badge i { font-size: 0.9rem; }
-        .legal-text { font-family: var(--font-body); font-size: 0.6rem; color: #a0aabf; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; text-align: center; }
-        .powered-by { font-family: var(--font-body); font-size: 0.7rem; color: #7a7a7a; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-top: 2px;}
-        .quva-logo { font-family: var(--font-display); font-size: 0.9rem; color: var(--tx-quva); font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 8px rgba(140, 180, 255, 0.5); }
+        .legal-text { font-family: var(--font-body); font-size: 0.55rem; color: #a0aabf; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; text-align: center; }
+        .powered-by { font-family: var(--font-body); font-size: 0.65rem; color: #7a7a7a; font-weight: 600; display: flex; align-items: center; gap: 5px;}
+        .quva-logo { font-family: var(--font-display); font-size: 0.85rem; color: var(--tx-quva); font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 8px rgba(140, 180, 255, 0.5); }
 
         /* 🎰 BATTLEGROUNDS REFLEX MINI-GAME MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 2, 10, 0.9); backdrop-filter: blur(15px); z-index: 5000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
@@ -199,18 +203,15 @@
 </head>
 <body>
 
-    <!-- 🎬 VIDEO BACKGROUND & SMART FALLBACK -->
     <div class="video-bg-container">
-        <!-- Using a highly reliable direct MP4 link. Paste yours here! -->
         <video class="video-bg-file" id="bgVideoMatrix" autoplay loop muted playsinline>
             <source src="https://tournyx.in/FFBGMICODTRAILER.mp4" type="video/mp4">
         </video>
         <div class="bg-overlay"></div>
     </div>
-    <!-- 📲 APP SHELL -->
+
     <div class="app-shell" id="appShell">
         
-        <!-- 🛰️ HEADER -->
         <header class="app-header">
             <div class="brand-meta">
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="brand-logo" alt="Tournyx Logo">
@@ -222,7 +223,6 @@
             </div>
         </header>
 
-        <!-- 🎚️ MAIN CONTENT -->
         <main class="main-content">
             
             <div class="maintenance-titles">
@@ -230,7 +230,6 @@
                 <h2 class="title-sub" id="subTitleText">Come Back Again Soon</h2>
             </div>
 
-            <!-- 🎡 5-SLIDE CAROUSEL (Fixed Broken Images) -->
             <div class="hero-carousel">
                 <div class="carousel-track" id="mainCarousel">
                     <div class="slide"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Update 1"></div>
@@ -241,7 +240,6 @@
                 </div>
             </div>
 
-            <!-- 🎡 SYNCHRONIZED TEXT OUTPUT FIELD -->
             <div class="banner-text-fader">
                 <div class="banner-caption active">OB40 Patch Integration Live</div>
                 <div class="banner-caption">Syncing Global Matchmaking Profiles</div>
@@ -250,7 +248,6 @@
                 <div class="banner-caption">Welcome To The Next Generation Arena</div>
             </div>
 
-            <!-- 🎮 GAME QUICK LAUNCH & WARMUP -->
             <div class="interaction-hub">
                 <div class="hub-title">Practice Until Platform Opens</div>
                 
@@ -276,7 +273,6 @@
             
         </main>
 
-        <!-- 📡 QUVA REPLICA FOOTER -->
         <footer class="app-footer">
             <div class="footer-social-lbl">Follow Us For Live Updates</div>
             <div class="social-icon-row">
@@ -299,7 +295,6 @@
 
     </div>
 
-    <!-- 🎰 BATTLEGROUNDS REFLEX MINI-GAME MODAL -->
     <div class="modal-overlay" id="gameModal">
         <div class="game-card">
             <i class="fa-solid fa-xmark close-btn" onclick="closeGameModal()"></i>
@@ -309,7 +304,6 @@
                     <div class="g-title">Battlegrounds Warmup</div>
                 </div>
                 
-                <!-- Tactical Arena with Emojis -->
                 <div class="g-arena" id="gArena" onclick="registerMiss(event)">
                     <div class="g-target" id="gTarget" onclick="registerHit(event)">🪖</div>
                 </div>
@@ -322,7 +316,6 @@
                 <button class="g-action" id="btnStart" onclick="startAimTrainer()">Deploy Into Range</button>
             </div>
 
-            <!-- REWARD CARD -->
             <div class="reward-card" id="rewardUI">
                 <i class="fa-solid fa-ranking-star reward-icon"></i>
                 <h3 style="font-family: var(--font-display); color: var(--tx-green); margin-bottom: 10px;">DRILLS COMPLETED!</h3>
@@ -574,6 +567,7 @@
                 createParticle(e.clientX, e.clientY, 'rgba(0, 242, 255, 0.6)');
             }
         });
+
         // --- 0. FORCE MOBILE VIDEO AUTOPLAY ---
         document.addEventListener("DOMContentLoaded", function() {
             const bgVideo = document.getElementById('bgVideoMatrix');
