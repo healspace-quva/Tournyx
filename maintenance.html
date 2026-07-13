@@ -26,7 +26,6 @@
 
         html, body {
             width: 100%; height: 100dvh; overflow: hidden;
-            /* CRITICAL FIX: Made body transparent so the z-index: -10 video is actually visible behind it */
             background-color: transparent; 
             color: #ffffff; font-family: var(--font-body);
         }
@@ -34,7 +33,6 @@
         /* 🎬 VIDEO BACKGROUND & SMART FALLBACK */
         .video-bg-container { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -10; 
-            /* Fallback image if video fails to load */
             background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
             background-color: var(--tx-bg);
         }
@@ -53,7 +51,6 @@
         /* 🛡️ APP SHELL */
         .app-shell {
             width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
-            /* CRITICAL FIX: Adjusted padding dynamically to secure footer visibility on desktop */
             padding: calc(8px + env(safe-area-inset-top)) 15px calc(10px + env(safe-area-inset-bottom));
             position: relative; z-index: 2; transition: filter 0.3s;
         }
@@ -85,7 +82,6 @@
         }
 
         /* 🎚️ MAIN CONTENT */
-        /* CRITICAL FIX: Re-scaled gap dynamics for universal single-view display */
         .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 650px; gap: clamp(6px, 1.5vh, 15px); }
 
         /* SHINING HEADINGS */
@@ -98,10 +94,12 @@
         }
         .title-sub { font-family: var(--font-body); font-size: clamp(0.75rem, 3vw, 0.95rem); color: var(--tx-cyan); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
-        /* 🎡 5-SLIDE ENLARGED CAROUSEL */
-        /* CRITICAL FIX: Restrained max-height mapped tightly to vh to prevent desktop overflow cutoff */
+        /* 🎡 5-SLIDE PERFECT 16:9 CAROUSEL (DESKTOP & MOBILE FIX) */
         .hero-carousel {
-            width: 100%; aspect-ratio: 16/9; max-height: clamp(140px, 25vh, 260px);
+            height: clamp(140px, 25vh, 260px); /* Height dictates size to prevent stretching */
+            width: auto; /* Allows width to adapt mathematically */
+            max-width: 100%; /* Prevents mobile overflow, gracefully scaling height down */
+            aspect-ratio: 16/9; /* Hard-locks perfect 16:9 ratio universally */
             background: #000; border-radius: 16px; position: relative; overflow: hidden;
             border: 2px solid rgba(157, 0, 255, 0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 25px rgba(157, 0, 255, 0.3);
             margin: 0 auto;
@@ -232,7 +230,7 @@
 
             <div class="hero-carousel">
                 <div class="carousel-track" id="mainCarousel">
-                    <div class="slide"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEic7d5XikMK9ejyItap04nkmNw9GopUwmigwFnxbasypATAzdCGni0L6zcsDgncf11hhwcbaaSlq7UvBkhJ-Hat_TlFuZqbhWxt4tag1_ceDIm76qTlty_4wQnH_BnHh_7Bh7QTcXOBkkvVdbWbsA0k63jYvhUFhbWcFkYvdQxcmpxL-m5lZo-P5TCRUdI/s1672/1000148854.png" alt="Update 1"></div>
+                    <div class="slide"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" alt="Update 1"></div>
                     <div class="slide"><img src="https://images.unsplash.com/photo-1538481199005-c710c4d965fc?q=80&w=2070&auto=format&fit=crop" alt="Update 2"></div>
                     <div class="slide"><img src="https://images.unsplash.com/photo-1605901309584-818e25960b8f?q=80&w=2019&auto=format&fit=crop" alt="Update 3"></div>
                     <div class="slide"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" alt="Update 4"></div>
@@ -421,7 +419,7 @@
             window.location.href = schemas[appId];
         }
 
-        // --- 4. BATTLEGROUNDS REFLEX TRAINER (UPGRADED TACTICAL LOGIC) ---
+        // --- 4. BATTLEGROUNDS REFLEX TRAINER ---
         let score = 0;
         let timeLeft = 15;
         let gameLoop;
