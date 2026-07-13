@@ -30,10 +30,28 @@
             background-color: var(--tx-bg); color: #ffffff; font-family: var(--font-body);
         }
 
-        /* 🎬 VIDEO BACKGROUND */
-        .video-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: #05020a; }
-        .video-bg-file { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; filter: blur(4px); pointer-events: none; }
-        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(180deg, rgba(5,2,10,0.2) 0%, #05020a 100%); }
+       /* 🎬 VIDEO BACKGROUND & SMART FALLBACK */
+        .video-bg-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; 
+            /* EDIT HERE: Fallback image if video link is empty or fails to load */
+            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            background-color: var(--tx-bg);
+        }
+        
+        .video-bg-file { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; 
+            opacity: 0.6; /* Increased opacity so the video actually pops! */
+            pointer-events: none; 
+        }
+        
+        .bg-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
+            /* Smart Glass Overlay: Seamlessly blurs the video OR the fallback image */
+            background: radial-gradient(circle at center, rgba(5,2,10,0.3) 0%, rgba(5,2,10,0.95) 100%);
+            backdrop-filter: blur(6px); 
+            -webkit-backdrop-filter: blur(6px); /* Required for iPhones */
+        }
 
         /* 🛡️ APP SHELL */
         .app-shell {
@@ -184,9 +202,7 @@
 </head>
 <body>
 
-    <!-- 🎬 VIDEO BACKGROUND -->
     <div class="video-bg-container">
-        <!-- Tournyx Background Video -->
         <video class="video-bg-file" autoplay loop muted playsinline>
             <source src="https://tournyx.in/FFBGMICODTRAILER.mp4" type="video/mp4">
         </video>
