@@ -59,19 +59,18 @@
         }
 
         /* --- BACKGROUND VIDEO --- */
-.video-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  filter: brightness(0.85);
-  transition: opacity 0.8s ease-in-out;
-  opacity: 1;
-}
-
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.85);
+            transition: opacity 0.8s ease-in-out;
+            opacity: 1;
+        }
 
         /* AAA GAME HUD */
         .hud-top-left {
@@ -117,17 +116,17 @@
         }
 
         /* --- MAIN UI CONTAINER --- */
-.main-ui-container {
-  width: 100%;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  opacity: 1;
-  transition: opacity 1s ease;
-  z-index: 10;
-}
+        .main-ui-container {
+            width: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s ease;
+            z-index: 10;
+        }
         .main-ui-container.active { opacity: 1; }
 
         /* DESKTOP LAYOUT */
@@ -176,7 +175,6 @@
             .footer-center.copyrights { font-size: 0.6rem; text-align: center; font-weight: 600; color: rgba(255, 255, 255, 0.7); }
             
             .terms-gate { justify-content: flex-start; margin-bottom: 25px; padding-bottom: 5px; font-size: 0.7rem; width: 100%;}
-
         }
 
         @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -323,18 +321,24 @@
         .arena-text { font-family: var(--font-head); font-size: 1.8rem; color: #fff; font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 20px rgba(0, 242, 255, 0.6); text-align: center; text-transform: uppercase; animation: cinematicEntry 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
         @keyframes cinematicEntry { 0% { transform: scale(0.8); opacity: 0; filter: blur(10px); } 20% { transform: scale(1); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
+
+        /* MULTI-AUTH BUTTONS & DIVIDER */
+        .social-btn { background: white; color: black; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border: none; }
+        .google-btn { background: white; color: black; }
+        .divider { display: flex; align-items: center; text-align: center; color: #888; font-size: 0.75rem; font-weight: bold; margin: 15px 0; width: 100%;}
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .divider span { padding: 0 10px; }
     </style>
-   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         window.OneSignal = OneSignal;
         await OneSignal.init({
           appId: "15a8e2b2-240c-4547-929e-797d7170e988",
-          notifyButton: { enable: false }, // We hide the ugly default bell
+          notifyButton: { enable: false }, 
         });
 
-        // Instantly map the user if they are already logged in via LocalStorage
         try {
             let userStr = localStorage.getItem('tournyx_user');
             if (userStr) {
@@ -347,6 +351,7 @@
         } catch(e) { console.error("OneSignal Setup Error", e); }
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body id="mainBody">
 
@@ -366,7 +371,7 @@
   class="video-bg"
   id="bgVideo">
 </video>
-           
+            
     <div class="bg-overlay"></div>
     <canvas id="particles-canvas"></canvas>
     <div class="hud-top-left">Beta Version 1.2.0.</div>
@@ -426,8 +431,14 @@
             </label>
 
             <div id="authButtons" class="auth-buttons-container">
+                <button class="action-btn social-btn google-btn" onclick="signInWithGoogle(); triggerHaptic();">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" style="width:18px;"> CONTINUE WITH GOOGLE
+                </button>
+
+                <div class="divider"><span>OR</span></div>
+
                 <button class="action-btn login-btn" onclick="checkTermsAndOpen('loginModal')">
-                    <i class="fa-solid fa-right-to-bracket"></i> <span id="txtBtnLogin">PLAYER LOGIN</span>
+                    <i class="fa-solid fa-right-to-bracket"></i> <span id="txtBtnLogin">EMAIL LOGIN</span>
                 </button>
                 <button class="action-btn register-btn" onclick="checkTermsAndOpen('signupModal')">
                     <i class="fa-solid fa-user-plus"></i> <span id="txtBtnReg">CREATE ACCOUNT</span>
@@ -511,7 +522,7 @@
                 <div class="step-dot" id="dot2"></div>
                 <div class="step-dot" id="dot3"></div>
             </div>
-
+            
             <form id="playerSignupForm">
                 <div class="slider-window">
                     <div class="slider-track" id="sliderTrack">
@@ -643,6 +654,57 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="googleOnboardModal">
+        <div class="modal-card">
+            <h2 class="modal-title" style="color:var(--accent-orange)">Complete Profile</h2>
+            <p style="color:#aaa; font-size:0.85rem; text-align:center; margin-bottom: 15px;">Welcome to Tournyx! Setup your gamer profile.</p>
+            
+            <form id="onboardForm">
+                <div class="slider-window">
+                    <div class="slider-track" id="onboardSliderTrack">
+                        
+                        <div class="slide-step">
+                            <div class="input-wrapper"><div class="input-group">
+                                <input type="text" id="obUsername" class="form-control" placeholder="Display Name (e.g. John Doe)" required>
+                                <i class="fa-solid fa-user input-icon"></i>
+                            </div></div>
+                            <div class="input-wrapper"><div class="input-group">
+                                <select id="obGame" class="form-control" required>
+                                    <option value="" disabled selected>Select Primary Game</option>
+                                    <option value="BGMI">BGMI</option>
+                                    <option value="Free Fire">Free Fire</option>
+                                    <option value="COD Mobile">Call of Duty Mobile</option>
+                                </select>
+                                <i class="fa-solid fa-crosshairs input-icon"></i>
+                            </div></div>
+                            <button type="button" class="action-btn" style="background: rgba(255,255,255,0.1); color: white; margin-top:10px;" onclick="nextOnboardSlide()">NEXT <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+
+                        <div class="slide-step">
+                            <div class="input-wrapper"><div class="input-group">
+                                <input type="text" id="obIgn" class="form-control" placeholder="In-Game Name (IGN)" required>
+                                <i class="fa-solid fa-gamepad input-icon"></i>
+                            </div></div>
+                            <div class="input-wrapper"><div class="input-group">
+                                <input type="number" id="obUid" class="form-control" placeholder="Game UID (Numbers)" required>
+                                <i class="fa-solid fa-id-card input-icon"></i>
+                            </div></div>
+                            <div class="input-wrapper"><div class="input-group">
+                                <input type="tel" id="obPhone" class="form-control" placeholder="WhatsApp Number" required>
+                                <i class="fa-solid fa-phone input-icon"></i>
+                            </div></div>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <button type="button" class="action-btn" style="flex:1; background: transparent; border: 1px solid #666;" onclick="prevOnboardSlide()"><i class="fa-solid fa-arrow-left"></i></button>
+                                <button type="button" class="action-btn login-btn" style="flex:3;" id="btnFinishOnboard" onclick="submitOnboarding()">FINISH <i class="fa-solid fa-check"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="helpModal">
         <div class="modal-card">
             <i class="fa-solid fa-xmark close-modal" onclick="closeModals()"></i>
@@ -699,7 +761,91 @@
 
         window.addEventListener('error', function(e) { console.warn("Engine Caught Error:", e.message); e.preventDefault(); });
 
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec';
+       // --- 1. CORE CONFIGURATION ---
+        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
+        const CLOUDFLARE_WORKER_URL = 'https://tournyx-api.annaduraithilakjeevesh.workers.dev'; 
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let pendingOnboardUser = {}; 
+
+        function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
+        function triggerHaptic() { doHaptic(); }
+
+        // --- 2. AUTH ROUTING ENGINE ---
+        // Google Auth
+        async function signInWithGoogle() {
+            triggerHaptic();
+            try {
+                // Securing the redirect to the live site to avoid localhost crashes
+                const redirectUrl = window.location.origin.includes('localhost') ? window.location.href : 'https://tournyx.in/login.html';
+                const { error } = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl }});
+                if (error) throw error;
+            } catch (error) { showToast("Google Login Failed.", true); }
+        }
+
+        db.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                document.getElementById('arenaLoader').classList.add('active');
+                const email = session.user.email;
+                const name = session.user.user_metadata?.full_name || "Gamer";
+                const avatar = session.user.user_metadata?.avatar_url || "";
+
+                try {
+                    // BUG FIX: .maybeSingle() prevents a fatal crash if the user is new and doesn't exist in DB yet!
+                    const { data: dbUser, error } = await db.from('Users').select('*').eq('email', email).maybeSingle();
+                    
+                    if (dbUser) { 
+                        triggerArenaEntry(dbUser, 'index.html'); 
+                    } else {
+                        document.getElementById('arenaLoader').classList.remove('active');
+                        pendingOnboardUser = { email: email, username: name, avatar: avatar, auth_method: 'google' };
+                        closeModals(true); 
+                        openModal('googleOnboardModal');
+                        document.getElementById('obUsername').value = name; // Auto-fill their Google name!
+                    }
+                } catch(err) {
+                    document.getElementById('arenaLoader').classList.remove('active');
+                    showToast("Database sync error.", true);
+                }
+            }
+        });
+
+        // Onboarding UI & Submit
+        let obStep = 1;
+        function nextOnboardSlide() {
+            triggerHaptic();
+            if(!document.getElementById('obUsername').value || !document.getElementById('obGame').value) { showToast("Fill all fields.", true); return; }
+            obStep = 2; document.getElementById('onboardSliderTrack').style.transform = `translateX(-50%)`;
+        }
+        function prevOnboardSlide() { triggerHaptic(); obStep = 1; document.getElementById('onboardSliderTrack').style.transform = `translateX(0%)`; }
+
+        async function submitOnboarding() {
+            triggerHaptic();
+            if(!document.getElementById('obIgn').value || !document.getElementById('obUid').value || !document.getElementById('obPhone').value) { showToast("Fill all mandatory fields.", true); return; }
+            btnLoading('btnFinishOnboard', 'SAVING...');
+            try {
+                let userEmail = pendingOnboardUser.email;
+                let newUser = {
+                    email: userEmail, phone: document.getElementById('obPhone').value.trim(), username: document.getElementById('obUsername').value,
+                    game: document.getElementById('obGame').value, ign: document.getElementById('obIgn').value, uid: document.getElementById('obUid').value,
+                    avatar: pendingOnboardUser.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${document.getElementById('obIgn').value}`,
+                    role: 'player', is_premium: false, points: 0, rupees: 0
+                };
+                
+                const { error } = await db.from('Users').insert([newUser]);
+                if (error) throw error;
+
+                // Push Notification Trigger
+                await fetch(CLOUDFLARE_WORKER_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'send_push', email: userEmail, title: "Welcome to Tournyx! 🎮", message: "Your esports journey begins now. Win real cash!" })
+                }).catch(()=>{});
+
+                showToast("Profile Created! Entering Arena...");
+                triggerArenaEntry(newUser, 'index.html');
+            } catch (error) { showToast("Error creating profile.", true); btnReset('btnFinishOnboard'); }
+        }
 
         // --- 7-LANGUAGE AI ENGINE (LOCALIZATION) ---
         const langData = {
@@ -707,8 +853,8 @@
             'hi': { login: "खिलाड़ी लॉगिन", reg: "खाता बनाएं", org: "आयोजक पोर्टल", desc: "कुलीन वर्ग में शामिल हों। दैनिक स्क्रिम्स में प्रतिस्पर्धा करें और असली नकद जीतें।", logTitle: "लॉगिन", regTitle: "खाता बनाएं", help: "मदद", lang: "भाषा", acc: "खाते", enter: "मैदान में प्रवेश करें", terms: "मैंने सेवा की शर्तें पढ़ ली हैं।", tap: "प्रवेश के लिए टैप करें", applyHost: "टूर्नामेंट होस्ट करें", admin: "एडमिन सत्यापित करें", back: "पीछे", next: "आगे" },
             'ta': { login: "வீரர் உள்நுழைவு", reg: "கணக்கை உருவாக்கு", org: "அமைப்பாளர் போர்டல்", desc: "எலைட் அணியில் சேருங்கள். தினசரி போட்டிகளில் பங்கேற்று உண்மையான பணத்தை வெல்லுங்கள்.", logTitle: "உள்நுழைவு", regTitle: "உருவாக்கு", help: "உதவி", lang: "மொழி", acc: "கணக்குகள்", enter: "உள்ளே செல்லவும்", terms: "சேவை விதிமுறைகளை நான் ஏற்றுக்கொள்கிறேன்.", tap: "உள்ளே செல்ல தட்டவும்", applyHost: "போட்டியை நடத்த விண்ணப்பிக்கவும்", admin: "நிர்வாகியை சரிபார்க்கவும்", back: "பின்னால்", next: "அடுத்து" },
             'te': { login: "ప్లేయర్ లాగిన్", reg: "ఖాతా సృష్టించండి", org: "ఆర్గనైజర్ పోర్టల్", desc: "ఎలైట్‌లో చేరండి. రోజువారీ స్కిర్మ్‌లలో పోటీపడి నిజమైన నగదు గెలుచుకోండి.", logTitle: "లాగిన్", regTitle: "సృష్టించండి", help: "సహాయం", lang: "భాష", acc: "ఖాతాలు", enter: "ఎంటర్ అవ్వండి", terms: "నేను సేవా నిబంధనలను అంగీకరిస్తున్నాను.", tap: "ప్రవేశించడానికి నొక్కండి", applyHost: "హోస్ట్ కోసం దరఖాస్తు చేయండి", admin: "నిర్వాహకుడిని ధృవీకరించండి", back: "వెనుకకు", next: "తదుపరి" },
-            'ml': { login: "ലോഗിൻ", reg: "അക്കൗണ്ട് സൃഷ്ടിക്കുക", org: "ഓർഗനൈസർ പോർട്ടൽ", desc: "എലൈറ്റിൽ ചേരുക. യഥാർത്ഥ പണം നേടുക.", logTitle: "ലോഗിൻ", regTitle: "സൃഷ്ടിക്കുക", help: "സഹായം", lang: "ഭാഷ", acc: "അക്കൗണ്ടുകൾ", enter: "പ്രവേശിക്കുക", terms: "ഞാൻ നിബന്ധനകൾ അംഗീകരിക്കുന്നു.", tap: "പ്രവേശിക്കാൻ ടാപ്പുചെയ്യുക", applyHost: "ഹോസ്റ്റുചെയ്യാൻ അപേക്ഷിക്കുക", admin: "പരിശോധിക്കുക", back: "തിരികെ", next: "അടുത്തത്" },
-            'kn': { login: "ಲಾಗಿನ್", reg: "ಖಾತೆ ರಚಿಸಿ", org: "ಸಂಘಟಕರ ಪೋರ್ಟಲ್", desc: "ಎಲೈಟ್ ಸೇರಿ. ನೈಜ ಹಣವನ್ನು ಗೆದ್ದಿರಿ.", logTitle: "ಲಾಗಿನ್", regTitle: "ರಚಿಸಿ", help: "ಸഹಾಯ", lang: "ಭಾಷೆ", acc: "ಖಾತೆಗಳು", enter: "ಪ್ರವೇಶಿಸಿ", terms: "ನಾನು ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೇನೆ.", tap: "ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ", applyHost: "ಹೋಸ್ಟ್ ಮಾಡಲು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", admin: "ಪರಿಶೀಲಿಸಿ", back: "ಹಿಂದೆ", next: "ಮುಂದೆ" },
+            'ml': { login: "ലോഗിൻ", reg: "അക്കൗണ്ട് സൃഷ്ടിക്കുക", org: "ഓർഗനൈസർ പോർട്ടൽ", desc: "എലൈറ്റിൽ ചേരുക. യഥാർത്ഥ പണം നേടുക.", logTitle: "ലോഗിൻ", regTitle: "സൃഷ്ടിക്കുക", help: "സഹాయം", lang: "ഭാഷ", acc: "അക്കൗണ്ടുകൾ", enter: "പ്രവേശിക്കുക", terms: "ഞാൻ നിബന്ധനകൾ അംഗീകരിക്കുന്നു.", tap: "പ്രവേശിക്കാൻ ടാപ്പുചെയ്യുക", applyHost: "ഹോസ്റ്റുചെയ്യാൻ അപേക്ഷിക്കുക", admin: "പരിശോധിക്കുക", back: "തിരികെ", next: "അടുത്തത്" },
+            'kn': { login: "ಲಾಗಿನ್", reg: "ಖಾತೆ ರಚಿಸಿ", org: "ಸಂಘಟಕರ ಪೋರ್ಟಲ್", desc: "ಎಲೈಟ್ ಸೇರಿ. ನೈಜ ಹಣವನ್ನು ಗೆದ್ದಿರಿ.", logTitle: "ಲಾಗಿನ್", regTitle: "ರಚಿಸಿ", help: "ಸಹಾಯ", lang: "ಭಾಷೆ", acc: "ಖಾತೆಗಳು", enter: "ಪ್ರವೇಶಿಸಿ", terms: "ನಾನು ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೇನೆ.", tap: "ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ", applyHost: "ಹೋಸ್ಟ್ ಮಾಡಲು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", admin: "ಪರಿಶೀಲಿಸಿ", back: "ಹಿಂದೆ", next: "ಮುಂದೆ" },
             'mr': { login: "लॉगिन", reg: "खाते तयार करा", org: "आयोजक पोर्टल", desc: "एलिटमध्ये सामील व्हा. खरी रोकड जिंका.", logTitle: "लॉगिन", regTitle: "तयार करा", help: "मदत", lang: "भाषा", acc: "खाती", enter: "प्रवेश करा", terms: "मी अटी मान्य करतो.", tap: "प्रवेश करण्यासाठी टॅप करा", applyHost: "होस्ट करण्यासाठी अर्ज करा", admin: "पडताळणी करा", back: "मागे", next: "पुढे" }
         };
 
@@ -758,11 +904,8 @@
             if (!bgVideo) return;
 
             // --- THE BULLETPROOF FIX ---
-            // iOS strictly pauses any background video that has opacity: 0. 
-            // Setting it to 0.01 tricks the mobile OS into keeping it playing silently!
             bgVideo.style.opacity = '0.01';
             
-            // Force play instantly rather than waiting 2.8 seconds
             const playPromise = bgVideo.play();
             if (playPromise !== undefined) {
                 playPromise.catch(e => console.log("Native autoplay pending interaction."));
@@ -775,7 +918,6 @@
                     cache.match(cacheUrl).then(response => {
                         if (response) {
                             response.blob().then(blob => {
-                                // Only swap to blob if we are in the first second to prevent flickering
                                 if(bgVideo.currentTime < 1) { 
                                     bgVideo.src = URL.createObjectURL(blob);
                                     bgVideo.play().catch(()=>{});
@@ -792,39 +934,32 @@
 
             // --- SEAMLESS TRANSITION FUNCTION ---
             const transitionToArena = () => {
-                // Fade out the fire logo background
                 introOverlay.style.opacity = '0';
-                setTimeout(() => { introOverlay.style.display = 'none'; }, 800); // completely remove from layout
+                setTimeout(() => { introOverlay.style.display = 'none'; }, 800); 
                 
-                // Fade in UI and BG Video 
                 uiContainer.classList.add('active'); 
                 bgVideo.style.opacity = '1';
                 
-                // Failsafe: if the browser paused the video, force play now.
                 if (bgVideo.paused) {
                     bgVideo.play().catch(e => console.warn("BG Video autoplay paused by browser."));
                 }
             };
 
-            // Run the fire logo animation for exactly 2.8 seconds, then transition
             setTimeout(transitionToArena, 2800);
 
             // --- INVISIBLE AUDIO UNLOCKER ---
-            // The millisecond they touch the screen (or hit a button), audio unlocks!
             const unlockAudioAndPlay = () => {
                 bgVideo.muted = false;
-                bgVideo.volume = 1.0; // Max Volume
+                bgVideo.volume = 1.0; 
                 
                 if (bgVideo.paused) {
                     bgVideo.play().catch(e => console.warn("Play permanently blocked by OS."));
                 }
                 
-                // Update volume icon visually
                 let nIcon = document.getElementById('notifIcon');
                 if(nIcon) nIcon.className = 'fa-solid fa-bell';
                 window.hasUnmuted = true;
 
-                // Remove listeners so it only fires once
                 document.removeEventListener('touchstart', unlockAudioAndPlay);
                 document.removeEventListener('click', unlockAudioAndPlay);
             };
@@ -846,27 +981,24 @@
             setTimeout(() => { ripple.remove(); }, 600);
         });
 
+        async function askNotificationPermission(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            doHaptic();
 
-
-async function askNotificationPermission(e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
-  doHaptic();
-
-  if (window.OneSignalDeferred) {
-    OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        await OneSignal.slidedown.promptPush();
-        showToast("Notification prompt initiated!");
-      } catch (err) {
-        console.log(err);
-        showToast("Notifications already blocked or allowed.", false);
-      }
-    });
-  } else {
-    showToast("OneSignal Engine still loading...", false);
-  }
-}
-        function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
+            if (window.OneSignalDeferred) {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.slidedown.promptPush();
+                        showToast("Notification prompt initiated!");
+                    } catch (err) {
+                        console.log(err);
+                        showToast("Notifications already blocked or allowed.", false);
+                    }
+                });
+            } else {
+                showToast("OneSignal Engine still loading...", false);
+            }
+        }
 
         function checkTermsAndOpen(modalId) {
             doHaptic();
@@ -925,7 +1057,6 @@ async function askNotificationPermission(e) {
                 stateSelect.appendChild(opt);
             });
             
-            // Append the "Other" option
             let optOther = document.createElement('option');
             optOther.value = "Other"; optOther.innerHTML = " Other (Type Manually)";
             optOther.style.color = "var(--accent-orange)";
@@ -979,10 +1110,10 @@ async function askNotificationPermission(e) {
             }
         }
 
-        // Initialize lists when DOM loads
         document.addEventListener('DOMContentLoaded', initLocations);
         
-        // --- SECURE API FETCH WRAPPER ---
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyqqTpgaflxKJ9xH0jq7mJ_jLzcoNhas3gNo0h5gvoa_6r5Ae9NFxJAJp7ZoYNnMRKl/exec';
+        
         async function secureFetch(payload) {
             try {
                 const response = await fetch(API_URL, {
@@ -991,7 +1122,10 @@ async function askNotificationPermission(e) {
                     body: JSON.stringify(payload)
                 });
                 return await response.json();
-            } catch (error) { throw error; }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                throw error;
+            }
         }
 
         function showToast(msg, isSuccess = false) {
@@ -1063,6 +1197,11 @@ async function askNotificationPermission(e) {
                 otpInput.readOnly = true; document.getElementById('regEmail').readOnly = true;
                 isEmailVerified = true;
             }, 800);
+        }
+
+        function unlockEmailInput() {
+            document.getElementById('regEmail').readOnly = false;
+            document.getElementById('regOtp').readOnly = false;
         }
 
         // --- PHONE NUMBER FORMAT LOCK ---
