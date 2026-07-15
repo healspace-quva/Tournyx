@@ -792,7 +792,7 @@
                 // BUG FIX: Intelligently dynamically detect localhost vs live domain
                 // Forces redirect to the EXACT base URL without adding local port 3000 bugs
                 const redirectUrl = window.location.href.split('#')[0].replace('127.0.0.1:5500', 'localhost:3000'); 
-                const finalRedirect = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'https://tournyx.in/login.html' : 'https://tournyx.in/login.html';
+                const finalRedirect = window.location.origin.includes('tournyx.in') || window.location.origin.includes('127.0.0.1') ? 'https://tournyx.in/login.html' : 'https://tournyx.in/login.html';
                 
                 const { error } = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: finalRedirect }});
                 if (error) throw error;
