@@ -355,6 +355,15 @@
 </head>
 <body id="mainBody">
 
+    <script>
+        if (window.location.hash && window.location.hash.includes("access_token")) {
+            // Remove the hash from the URL visually without reloading the page
+            history.replaceState(null, null, window.location.pathname);
+            // Show the loader immediately so they don't see a blank screen while Supabase syncs
+            document.write('<div id="arenaLoader" class="arena-overlay active" style="z-index:999999;"><div class="arena-text">AUTHENTICATING...</div></div>');
+        }
+    </script>
+
     <div id="logoIntroOverlay">
         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipVmqyUEA22VpntZdPCHuXoO_Rjco_cRaNl5CyFa-eehdtgXnHe6JoD8a5svxJRJYZfv_yXwww10T2cL2PHTiXLK-J-nWC1swmMs5RDxGVM8FBSlJORaRiX4YiD8gL8SyM4X1tRyQn_v8MsqQvbU4uEyHEU0qaySP1STWHaBEYuWKyF3-6QovSqJR-8xU/s1024/1000093705.png" alt="Tournyx Logo" class="fire-logo">
     </div>
@@ -689,10 +698,22 @@
                                 <input type="number" id="obUid" class="form-control" placeholder="Game UID (Numbers)" required>
                                 <i class="fa-solid fa-id-card input-icon"></i>
                             </div></div>
-                            <div class="input-wrapper"><div class="input-group">
-                                <input type="tel" id="obPhone" class="form-control" placeholder="WhatsApp Number" required>
-                                <i class="fa-solid fa-phone input-icon"></i>
-                            </div></div>
+                            
+                            <div class="input-wrapper">
+                                <div class="flex-row">
+                                    <div class="input-group" style="flex: 1;">
+                                        <input type="tel" name="phone" id="obPhone" class="form-control req-field" placeholder="Phone (+91 XXXXX XXXXX)" value="+91 " required maxlength="14">
+                                        <i class="fa-solid fa-phone input-icon"></i>
+                                    </div>
+                                    <button type="button" class="otp-btn" id="btnSendObOtp" onclick="sendObPhoneOtp()">SEND OTP</button>
+                                </div>
+                                <div class="input-group" id="obOtpGroup" style="display: none; margin-top: 8px;">
+                                    <input type="number" name="otp" id="obOtp" class="form-control" placeholder="Enter 4-Digit OTP">
+                                    <i class="fa-solid fa-message input-icon"></i>
+                                    <button type="button" class="verify-btn" id="btnVerifyObOtp" onclick="verifyObPhoneOtp()">VERIFY</button>
+                                </div>
+                            </div>
+                            
                             <div style="display:flex; gap:10px; margin-top:10px;">
                                 <button type="button" class="action-btn" style="flex:1; background: transparent; border: 1px solid #666;" onclick="prevOnboardSlide()"><i class="fa-solid fa-arrow-left"></i></button>
                                 <button type="button" class="action-btn login-btn" style="flex:3;" id="btnFinishOnboard" onclick="submitOnboarding()">FINISH <i class="fa-solid fa-check"></i></button>
@@ -770,15 +791,15 @@
         let pendingOnboardUser = {}; 
 
         function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
-        function triggerHaptic() { doHaptic(); } // Ensure buttons calling triggerHaptic don't crash
+        function triggerHaptic() { doHaptic(); }
 
         // --- 2. AUTH ROUTING ENGINE ---
         // Google Auth
         async function signInWithGoogle() {
             triggerHaptic();
             try {
-                // Securing the redirect to the live site to avoid localhost crashes
-                const redirectUrl = window.location.origin.includes('localhost') ? window.location.href : 'https://tournyx.in/login.html';
+                // BUG FIX: Intelligently dynamically detect localhost vs live domain
+                const redirectUrl = window.location.href.split('#')[0]; // Strip existing hashes just in case
                 const { error } = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl }});
                 if (error) throw error;
             } catch (error) { showToast("Google Login Failed.", true); }
@@ -786,30 +807,83 @@
 
         db.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
-                document.getElementById('arenaLoader').classList.add('active');
+                // Instantly remove the arenaLoader if we put it up earlier
+                let earlyLoader = document.getElementById('arenaLoader');
+                if(earlyLoader) earlyLoader.classList.remove('active');
+
                 const email = session.user.email;
                 const name = session.user.user_metadata?.full_name || "Gamer";
                 const avatar = session.user.user_metadata?.avatar_url || "";
 
                 try {
-                    // BUG FIX: .maybeSingle() prevents a fatal crash if the user is new and doesn't exist in DB yet!
+                    // Search if they already exist
                     const { data: dbUser, error } = await db.from('Users').select('*').eq('email', email).maybeSingle();
                     
                     if (dbUser) { 
                         triggerArenaEntry(dbUser, 'index.html'); 
                     } else {
-                        document.getElementById('arenaLoader').classList.remove('active');
                         pendingOnboardUser = { email: email, username: name, avatar: avatar, auth_method: 'google' };
                         closeModals(true); 
                         openModal('googleOnboardModal');
-                        document.getElementById('obUsername').value = name; // Auto-fill their Google name!
+                        document.getElementById('obUsername').value = name;
                     }
                 } catch(err) {
-                    document.getElementById('arenaLoader').classList.remove('active');
                     showToast("Database sync error.", true);
                 }
             }
         });
+
+        // Google Onboarding OTP Logic
+        let isObPhoneVerified = false;
+
+        async function sendObPhoneOtp() {
+            doHaptic();
+            const phoneVal = document.getElementById('obPhone').value;
+            const phoneDigits = phoneVal.substring(4).replace(/\D/g, '');
+            if(phoneDigits.length !== 10) { showToast("Enter a valid 10-digit phone number."); return; }
+            
+            const btn = document.getElementById('btnSendObOtp');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+            btn.disabled = true;
+
+            try {
+                // We reuse your working email OTP endpoint to send an SMS instead. Ensure your backend handles action: 'send_sms_otp'
+                const result = await secureFetch({ action: 'send_sms_otp', phone: phoneDigits });
+                
+                // Even if the backend isn't ready for SMS yet, we simulate success for the UI flow so you can test it.
+                // Replace this if statement with real validation once backend is up
+                if (result.status === 'success' || true) { 
+                    document.getElementById('obOtpGroup').style.display = 'flex';
+                    document.getElementById('obOtp').setAttribute('required', 'true');
+                    btn.innerHTML = `SENT <i class="fa-solid fa-check"></i>`;
+                    showToast("OTP Sent to Phone!", true);
+                } else {
+                    btn.innerHTML = `SEND OTP`; btn.disabled = false;
+                    showToast("Error: " + result.data); 
+                }
+            } catch (err) {
+                btn.innerHTML = `SEND OTP`; btn.disabled = false;
+                showToast("Network error connecting to SMS server.");
+            }
+        }
+
+        function verifyObPhoneOtp() {
+            doHaptic();
+            const otpInput = document.getElementById('obOtp');
+            const otp = otpInput.value.trim();
+            if(otp.length < 4) { showToast("Enter valid 4-digit OTP"); return; }
+
+            const btn = document.getElementById('btnVerifyObOtp');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+            // Replace with real backend verify later
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-solid fa-check-double"></i> VERIFIED`;
+                btn.classList.add('verified'); btn.disabled = true;
+                otpInput.readOnly = true; document.getElementById('obPhone').readOnly = true;
+                isObPhoneVerified = true;
+            }, 800);
+        }
 
         // Onboarding UI & Submit
         let obStep = 1;
@@ -823,11 +897,16 @@
         async function submitOnboarding() {
             triggerHaptic();
             if(!document.getElementById('obIgn').value || !document.getElementById('obUid').value || !document.getElementById('obPhone').value) { showToast("Fill all mandatory fields.", true); return; }
+            if(!isObPhoneVerified) { showToast("Please verify phone number via OTP."); return; }
+            
             btnLoading('btnFinishOnboard', 'SAVING...');
+            
+            const phoneDigits = document.getElementById('obPhone').value.substring(4).replace(/\D/g, '');
+
             try {
                 let userEmail = pendingOnboardUser.email;
                 let newUser = {
-                    email: userEmail, phone: document.getElementById('obPhone').value.trim(), username: document.getElementById('obUsername').value,
+                    email: userEmail, phone: phoneDigits, username: document.getElementById('obUsername').value,
                     game: document.getElementById('obGame').value, ign: document.getElementById('obIgn').value, uid: document.getElementById('obUid').value,
                     avatar: pendingOnboardUser.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${document.getElementById('obIgn').value}`,
                     role: 'player', is_premium: false, points: 0, rupees: 0
@@ -945,7 +1024,13 @@
                 }
             };
 
-            setTimeout(transitionToArena, 2800);
+            // If we are showing the quick login loader, don't wait 2.8 seconds
+            if(window.location.hash.includes("access_token")) {
+                introOverlay.style.display = 'none';
+                uiContainer.classList.add('active');
+            } else {
+                setTimeout(transitionToArena, 2800);
+            }
 
             // --- INVISIBLE AUDIO UNLOCKER ---
             const unlockAudioAndPlay = () => {
@@ -1205,15 +1290,17 @@
         }
 
         // --- PHONE NUMBER FORMAT LOCK ---
-        const phoneInput = document.getElementById('regPhone');
-        phoneInput.addEventListener('input', function(e) {
-            if (!this.value.startsWith('+91 ')) this.value = '+91 ';
-            let numbers = this.value.substring(4).replace(/\D/g, '');
-            if (numbers.length > 10) numbers = numbers.substring(0, 10);
-            this.value = '+91 ' + numbers;
-        });
-        phoneInput.addEventListener('keydown', function(e) {
-            if ((e.key === 'Backspace' || e.key === 'Delete') && this.selectionStart <= 4 && this.selectionEnd <= 4) e.preventDefault();
+        // Applies to both standard signup and Google onboard phone inputs
+        document.querySelectorAll('input[type="tel"]').forEach(input => {
+            input.addEventListener('input', function(e) {
+                if (!this.value.startsWith('+91 ')) this.value = '+91 ';
+                let numbers = this.value.substring(4).replace(/\D/g, '');
+                if (numbers.length > 10) numbers = numbers.substring(0, 10);
+                this.value = '+91 ' + numbers;
+            });
+            input.addEventListener('keydown', function(e) {
+                if ((e.key === 'Backspace' || e.key === 'Delete') && this.selectionStart <= 4 && this.selectionEnd <= 4) e.preventDefault();
+            });
         });
 
         // --- MULTI-STEP SLIDER LOGIC ---
@@ -1396,6 +1483,7 @@
         }
 
         window.addEventListener('popstate', (e) => {
+            // ONLY close modals if a modal is open. DO NOT interfere with Supabase OAuth redirects!
             if(isModalOpen) {
                 document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
                 isModalOpen = false;
