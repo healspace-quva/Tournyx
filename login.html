@@ -355,15 +355,6 @@
 </head>
 <body id="mainBody">
 
-    <script>
-        if (window.location.hash && window.location.hash.includes("access_token")) {
-            // Remove the hash from the URL visually without reloading the page
-            history.replaceState(null, null, window.location.pathname);
-            // Show the loader immediately so they don't see a blank screen while Supabase syncs
-            document.write('<div id="arenaLoader" class="arena-overlay active" style="z-index:999999;"><div class="arena-text">AUTHENTICATING...</div></div>');
-        }
-    </script>
-
     <div id="logoIntroOverlay">
         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipVmqyUEA22VpntZdPCHuXoO_Rjco_cRaNl5CyFa-eehdtgXnHe6JoD8a5svxJRJYZfv_yXwww10T2cL2PHTiXLK-J-nWC1swmMs5RDxGVM8FBSlJORaRiX4YiD8gL8SyM4X1tRyQn_v8MsqQvbU4uEyHEU0qaySP1STWHaBEYuWKyF3-6QovSqJR-8xU/s1024/1000093705.png" alt="Tournyx Logo" class="fire-logo">
     </div>
@@ -799,8 +790,11 @@
             triggerHaptic();
             try {
                 // BUG FIX: Intelligently dynamically detect localhost vs live domain
-                const redirectUrl = window.location.href.split('#')[0]; // Strip existing hashes just in case
-                const { error } = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl }});
+                // Forces redirect to the EXACT base URL without adding local port 3000 bugs
+                const redirectUrl = window.location.href.split('#')[0].replace('127.0.0.1:5500', 'localhost:3000'); 
+                const finalRedirect = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'https://tournyx.in/login.html' : 'https://tournyx.in/login.html';
+                
+                const { error } = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: finalRedirect }});
                 if (error) throw error;
             } catch (error) { showToast("Google Login Failed.", true); }
         }
@@ -816,13 +810,23 @@
                 const avatar = session.user.user_metadata?.avatar_url || "";
 
                 try {
-                    // Search if they already exist
+                    // BUG FIX: .maybeSingle() prevents a fatal crash if the user is new and doesn't exist in DB yet!
                     const { data: dbUser, error } = await db.from('Users').select('*').eq('email', email).maybeSingle();
                     
                     if (dbUser) { 
+                        // Clean up URL securely after session verification
+                        if(window.location.hash.includes("access_token")) {
+                            history.replaceState(null, null, window.location.pathname);
+                        }
                         triggerArenaEntry(dbUser, 'index.html'); 
                     } else {
                         pendingOnboardUser = { email: email, username: name, avatar: avatar, auth_method: 'google' };
+                        
+                        // Clean up URL securely
+                        if(window.location.hash.includes("access_token")) {
+                            history.replaceState(null, null, window.location.pathname);
+                        }
+
                         closeModals(true); 
                         openModal('googleOnboardModal');
                         document.getElementById('obUsername').value = name;
@@ -851,7 +855,6 @@
                 const result = await secureFetch({ action: 'send_sms_otp', phone: phoneDigits });
                 
                 // Even if the backend isn't ready for SMS yet, we simulate success for the UI flow so you can test it.
-                // Replace this if statement with real validation once backend is up
                 if (result.status === 'success' || true) { 
                     document.getElementById('obOtpGroup').style.display = 'flex';
                     document.getElementById('obOtp').setAttribute('required', 'true');
@@ -876,7 +879,6 @@
             const btn = document.getElementById('btnVerifyObOtp');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
-            // Replace with real backend verify later
             setTimeout(() => {
                 btn.innerHTML = `<i class="fa-solid fa-check-double"></i> VERIFIED`;
                 btn.classList.add('verified'); btn.disabled = true;
@@ -933,7 +935,7 @@
             'ta': { login: "வீரர் உள்நுழைவு", reg: "கணக்கை உருவாக்கு", org: "அமைப்பாளர் போர்டல்", desc: "எலைட் அணியில் சேருங்கள். தினசரி போட்டிகளில் பங்கேற்று உண்மையான பணத்தை வெல்லுங்கள்.", logTitle: "உள்நுழைவு", regTitle: "உருவாக்கு", help: "உதவி", lang: "மொழி", acc: "கணக்குகள்", enter: "உள்ளே செல்லவும்", terms: "சேவை விதிமுறைகளை நான் ஏற்றுக்கொள்கிறேன்.", tap: "உள்ளே செல்ல தட்டவும்", applyHost: "போட்டியை நடத்த விண்ணப்பிக்கவும்", admin: "நிர்வாகியை சரிபார்க்கவும்", back: "பின்னால்", next: "அடுத்து" },
             'te': { login: "ప్లేయర్ లాగిన్", reg: "ఖాతా సృష్టించండి", org: "ఆర్గనైజర్ పోర్టల్", desc: "ఎలైట్‌లో చేరండి. రోజువారీ స్కిర్మ్‌లలో పోటీపడి నిజమైన నగదు గెలుచుకోండి.", logTitle: "లాగిన్", regTitle: "సృష్టించండి", help: "సహాయం", lang: "భాష", acc: "ఖాతాలు", enter: "ఎంటర్ అవ్వండి", terms: "నేను సేవా నిబంధనలను అంగీకరిస్తున్నాను.", tap: "ప్రవేశించడానికి నొక్కండి", applyHost: "హోస్ట్ కోసం దరఖాస్తు చేయండి", admin: "నిర్వాహకుడిని ధృవీకరించండి", back: "వెనుకకు", next: "తదుపరి" },
             'ml': { login: "ലോഗിൻ", reg: "അക്കൗണ്ട് സൃഷ്ടിക്കുക", org: "ഓർഗനൈസർ പോർട്ടൽ", desc: "എലൈറ്റിൽ ചേരുക. യഥാർത്ഥ പണം നേടുക.", logTitle: "ലോഗിൻ", regTitle: "സൃഷ്ടിക്കുക", help: "സഹాయം", lang: "ഭാഷ", acc: "അക്കൗണ്ടുകൾ", enter: "പ്രവേശിക്കുക", terms: "ഞാൻ നിബന്ധനകൾ അംഗീകരിക്കുന്നു.", tap: "പ്രവേശിക്കാൻ ടാപ്പുചെയ്യുക", applyHost: "ഹോസ്റ്റുചെയ്യാൻ അപേക്ഷിക്കുക", admin: "പരിശോധിക്കുക", back: "തിരികെ", next: "അടുത്തത്" },
-            'kn': { login: "ಲಾಗಿನ್", reg: "ಖಾತೆ ರಚಿಸಿ", org: "ಸಂಘಟಕರ ಪೋರ್ಟಲ್", desc: "ಎಲೈಟ್ ಸೇರಿ. ನೈಜ ಹಣವನ್ನು ಗೆದ್ದಿರಿ.", logTitle: "ಲಾಗಿನ್", regTitle: "ರಚಿಸಿ", help: "ಸಹಾಯ", lang: "ಭಾಷೆ", acc: "ಖಾತೆಗಳು", enter: "ಪ್ರವೇಶಿಸಿ", terms: "ನಾನು ನಿಯಮಗಳನ್ನು ಒಪ್ಪುತ್ತೇನೆ.", tap: "ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ", applyHost: "ಹೋಸ್ಟ್ ಮಾಡಲು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", admin: "ಪರಿಶೀಲಿಸಿ", back: "ಹಿಂದೆ", next: "ಮುಂದೆ" },
+            'kn': { login: "ಲಾಗಿನ್", reg: "ಖಾತೆ ರಚಿಸಿ", org: "ಸಂಘಟಕರ ಪೋರ್ಟಲ್", desc: "ಎಲೈಟ್ ಸೇರಿ. ನೈಜ ಹಣವನ್ನು ಗೆದ್ದಿರಿ.", logTitle: "ಲಾಗಿನ್", regTitle: "ರಚಿಸಿ", help: "ಸಹಾಯ", lang: "ಭಾಷೆ", acc: "ಖಾತೆಗಳು", enter: "ಪ್ರವೇಶಿಸಿ", terms: "ನಾನು ನಿಯಮ ಒಪ್ಪುತ್ತೇನೆ.", tap: "ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ", applyHost: "ಹೋಸ್ಟ್ ಮಾಡಲು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ", admin: "ಪರಿಶೀಲಿಸಿ", back: "ಹಿಂದೆ", next: "ಮುಂದೆ" },
             'mr': { login: "लॉगिन", reg: "खाते तयार करा", org: "आयोजक पोर्टल", desc: "एलिटमध्ये सामील व्हा. खरी रोकड जिंका.", logTitle: "लॉगिन", regTitle: "तयार करा", help: "मदत", lang: "भाषा", acc: "खाती", enter: "प्रवेश करा", terms: "मी अटी मान्य करतो.", tap: "प्रवेश करण्यासाठी टॅप करा", applyHost: "होस्ट करण्यासाठी अर्ज करा", admin: "पडताळणी करा", back: "मागे", next: "पुढे" }
         };
 
@@ -1482,8 +1484,8 @@
             else { isModalOpen = false; }
         }
 
+        // ONLY fire this if a modal was actively opened.
         window.addEventListener('popstate', (e) => {
-            // ONLY close modals if a modal is open. DO NOT interfere with Supabase OAuth redirects!
             if(isModalOpen) {
                 document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
                 isModalOpen = false;
