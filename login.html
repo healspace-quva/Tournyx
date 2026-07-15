@@ -336,7 +336,7 @@
         window.OneSignal = OneSignal;
         await OneSignal.init({
           appId: "15a8e2b2-240c-4547-929e-797d7170e988",
-          notifyButton: { enable: false }, 
+          notifyButton: { enable: false },
         });
 
         try {
@@ -770,7 +770,7 @@
         let pendingOnboardUser = {}; 
 
         function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
-        function triggerHaptic() { doHaptic(); }
+        function triggerHaptic() { doHaptic(); } // Ensure buttons calling triggerHaptic don't crash
 
         // --- 2. AUTH ROUTING ENGINE ---
         // Google Auth
