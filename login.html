@@ -797,12 +797,7 @@
                 
                 const { error } = await db.auth.signInWithOAuth({ 
                     provider: 'google', 
-                    options: { 
-                        redirectTo: exactCurrentPage,
-                        queryParams: {
-                            prompt: 'select_account' // Forces the account selection screen every time!
-                        } 
-                    }
+                    options: { redirectTo: exactCurrentPage }
                 });
                 
                 if (error) throw error;
@@ -1241,7 +1236,7 @@
             }
             if (step === 2) {
                 if(document.getElementById('regGame').value === "") { showToast("Please select a game."); return; }
-                if(document.getElementById('regUser').value.trim() === "") { showToast("Unique Username required."); return; }
+                if(document.getElementById('regUser').value.trim() === "") { showToast("Display name required."); return; }
                 if(document.getElementById('regIgn').value.trim() === "") { showToast("IGN required."); return; }
                 if(document.getElementById('regUid').value.trim() === "") { showToast("Game UID required."); return; }
             }
@@ -1285,7 +1280,7 @@
             let accounts = JSON.parse(localStorage.getItem('tournyx_recent_accounts')) || [];
             let area = document.getElementById('accountsListArea');
             if(accounts.length === 0) {
-                area.innerHTML = `<div style="text-align:center; color:#888; font-size:0.8rem; margin-top:20px;">No recent accounts found.</div>`;
+                area.innerHTML = `<div style="text-align:center; color:#888; font-size:0.75rem; margin-top:20px;">No recent accounts found.</div>`;
             } else {
                 area.innerHTML = accounts.map(a => `
                     <div class="slide-btn back" style="justify-content:flex-start; height:auto; padding:12px; text-transform:none; border-color: rgba(0,242,255,0.2);" onclick="autoFillLogin('${a.email}')">
@@ -1322,13 +1317,92 @@
             }
         }
 
-        // ONLY fire this if a modal was actively opened.
+        window.addEventListener('DOMContentLoaded', () => {
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            if(user && user.email) {
+                document.getElementById('authButtons').classList.add('hidden');
+                document.getElementById('termsGateContainer').classList.add('hidden');
+                document.getElementById('tapToStartHitbox').classList.remove('hidden');
+                document.getElementById('loggedInProfile').classList.remove('hidden');
+                document.getElementById('fullScreenTap').classList.remove('hidden');
+                
+                let displayName = user.ign || user.username || "Player";
+                document.getElementById('loggedInName').innerText = displayName;
+                document.getElementById('loggedInAvatar').src = formatImageUrl(user.avatar, displayName);
+            }
+        });
+
+        function quickLogin() {
+            doHaptic();
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            if(user) triggerArenaEntry(user, user.role === 'organizer' ? 'profile.html' : 'index.html');
+        }
+
+        function logoutUser(e) {
+            if(e) { e.preventDefault(); e.stopPropagation(); } 
+            doHaptic();
+            localStorage.removeItem('tournyx_user');
+            localStorage.removeItem('tournyx_userData');
+            document.getElementById('loggedInProfile').classList.add('hidden');
+            window.location.reload();
+        }
+
+        let isModalOpen = false;
+        function openModal(id) {
+            doHaptic();
+            closeModals(true); 
+            document.getElementById(id).classList.add('active');
+            if(!isModalOpen) {
+                history.pushState({modal: 'open'}, '', window.location.pathname + '#' + id);
+                isModalOpen = true;
+            }
+        }
+        
+        function closeModals(internalCall = false) {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+            currentStep = 1;
+            document.getElementById('sliderTrack').style.transform = `translateX(0%)`;
+            updateDots();
+            if(isModalOpen && !internalCall) { history.back(); } 
+            else { isModalOpen = false; }
+        }
+
         window.addEventListener('popstate', (e) => {
             if(isModalOpen) {
                 document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
                 isModalOpen = false;
             }
         });
+
+        function triggerArenaEntry(user, redirectUrl) {
+            if(navigator.vibrate) navigator.vibrate([20, 50, 20]);
+            closeModals(true);
+            saveRecentAccount(user); 
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+            
+            if (window.OneSignalDeferred && user.email) {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.login(String(user.email).trim().toLowerCase());
+                });
+            }
+
+            const loader = document.getElementById('arenaLoader');
+            loader.classList.add('active');
+            setTimeout(() => { window.location.href = redirectUrl; }, 1900);
+        }
+
+        function btnLoading(btnId, text) {
+            if(navigator.vibrate) navigator.vibrate(15);
+            const btn = document.getElementById(btnId);
+            btn.dataset.original = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${text}`;
+            btn.disabled = true;
+        }
+        function btnReset(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.innerHTML = btn.dataset.original;
+            btn.disabled = false;
+        }
 
         // ==========================================
         // MAIN SIGNUP & LOGIN FORMS
@@ -1352,23 +1426,15 @@
             btnLoading('btnSignup', 'CREATING ACCOUNT...');
 
             try {
-                // Check if username is completely unique before saving
-                const uniqueUserCheck = document.getElementById('regUser').value;
-                const { data: userCheck } = await db.from('Users').select('username').eq('username', uniqueUserCheck).maybeSingle();
+                // If they used Supabase OTP earlier, their email is already in the Auth system. 
+                // We just insert the row into 'Users' public table to finalize registration.
                 
-                if(userCheck) {
-                    showToast("Username already taken! Choose another.", true);
-                    prevSlide(3); prevSlide(2);
-                    btnReset('btnSignup');
-                    return;
-                }
-
                 const formData = new FormData(e.target);
                 const rawData = Object.fromEntries(formData);
                 let safeEmail = rawData.email.trim().toLowerCase();
 
                 let newUser = {
-                    email: safeEmail, phone: phoneDigits, username: uniqueUserCheck,
+                    email: safeEmail, phone: phoneDigits, username: document.getElementById('regUser').value,
                     game: document.getElementById('regGame').value, ign: document.getElementById('regIgn').value, uid: document.getElementById('regUid').value,
                     avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${document.getElementById('regIgn').value}`,
                     role: 'player', is_premium: false, points: 0, rupees: 0
@@ -1429,41 +1495,6 @@
             } catch (err) { showToast("Invalid Admin Credentials"); }
             finally { btnReset('btnOrgLogin'); }
         });
-
-        // ... existing logout/quick login functions stay intact ...
-        window.addEventListener('DOMContentLoaded', () => {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            if(user && user.email) {
-                document.getElementById('authButtons').classList.add('hidden');
-                document.getElementById('termsGateContainer').classList.add('hidden');
-                document.getElementById('tapToStartHitbox').classList.remove('hidden');
-                document.getElementById('loggedInProfile').classList.remove('hidden');
-                document.getElementById('fullScreenTap').classList.remove('hidden');
-                
-                let displayName = user.ign || user.username || "Player";
-                document.getElementById('loggedInName').innerText = displayName;
-                document.getElementById('loggedInAvatar').src = formatImageUrl(user.avatar, displayName);
-            }
-        });
-
-        function quickLogin() {
-            doHaptic();
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            if(user) triggerArenaEntry(user, user.role === 'organizer' ? 'profile.html' : 'index.html');
-        }
-
-        async function logoutUser(e) {
-            if(e) { e.preventDefault(); e.stopPropagation(); } 
-            doHaptic();
-            
-            // Supabase Secure Logout
-            await db.auth.signOut();
-            
-            localStorage.removeItem('tournyx_user');
-            localStorage.removeItem('tournyx_userData');
-            document.getElementById('loggedInProfile').classList.add('hidden');
-            window.location.reload();
-        }
     </script>
 </body>
 </html>
