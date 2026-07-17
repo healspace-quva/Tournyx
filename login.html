@@ -46,16 +46,18 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center;
             transition: opacity 0.8s ease, visibility 0.8s ease;
+            will-change: opacity, transform;
         }
         .fire-logo {
             width: 120px; height: 120px; border-radius: 22%;
             animation: fire3DReveal 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            transform: translateZ(0); /* Hardware Acceleration */
         }
         @keyframes fire3DReveal {
-            0% { transform: scale(0.1); opacity: 0; filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 30px #ff9900) drop-shadow(0 0 60px #ffcc00); }
+            0% { transform: scale(0.1) translateZ(0); opacity: 0; filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 30px #ff9900) drop-shadow(0 0 60px #ffcc00); }
             40% { opacity: 1; filter: drop-shadow(0 0 25px #ff3300) drop-shadow(0 0 50px #ff9900) drop-shadow(0 0 90px #ffcc00); }
-            80% { transform: scale(1.6); filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 40px #ff9900); opacity: 1; }
-            100% { transform: scale(2.5); opacity: 0; filter: none; }
+            80% { transform: scale(1.6) translateZ(0); filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 40px #ff9900); opacity: 1; }
+            100% { transform: scale(2.5) translateZ(0); opacity: 0; filter: none; }
         }
 
         /* --- BACKGROUND VIDEO --- */
@@ -82,12 +84,27 @@
             font-weight: bold; cursor: pointer; text-shadow: 1px 1px 3px black; transition: 0.2s;
             text-transform: uppercase;
         }
-        .hud-tool-btn i {
+        
+        /* NOTIFICATION TOGGLE SWITCH UI */
+        .toggle-track {
+            width: 36px; height: 18px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px; position: relative; transition: 0.3s; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            margin-bottom: 2px;
+        }
+        .toggle-track.on { background: rgba(0, 255, 127, 0.3); border-color: var(--accent-green); box-shadow: inset 0 0 10px rgba(0,255,127,0.5); }
+        .toggle-thumb {
+            width: 14px; height: 14px; background: #ccc; border-radius: 50%;
+            position: absolute; top: 1px; left: 2px; transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4); transform: translateZ(0);
+        }
+        .toggle-track.on .toggle-thumb { left: 18px; background: var(--accent-green); }
+
+        .hud-tool-btn i.fa-solid {
             width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center;
             font-size: 0.9rem; backdrop-filter: blur(5px); transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
-        .hud-tool-btn:active i { transform: scale(0.9); background: var(--accent-cyan); color: black; border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan);}
+        .hud-tool-btn:active i.fa-solid, .hud-tool-btn:active .toggle-track { transform: scale(0.9); }
 
         .top-profile-corner {
             position: absolute; top: 65px; right: 20px; z-index: 6000;
@@ -168,6 +185,7 @@
             font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: 0.2s;
             text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;
             border: none; position: relative; overflow: hidden; z-index: 1; margin: 0;
+            transform: translateZ(0); /* Hardware Acceleration */
         }
         .action-btn::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -192,6 +210,7 @@
             letter-spacing: 4px; text-transform: uppercase; cursor: pointer;
             text-shadow: 0 0 15px var(--accent-cyan), 0 0 25px var(--accent-purple);
             animation: pulseTap 1.5s infinite alternate; padding: 20px; width: 100%; text-align: center;
+            transform: translateZ(0);
         }
         @keyframes pulseTap { 0% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
@@ -211,6 +230,7 @@
             background: rgba(0, 0, 0, 0.8); z-index: 5000; display: none;
             align-items: center; justify-content: center; backdrop-filter: blur(15px);
             opacity: 0; transition: opacity 0.3s ease; padding: 15px;
+            will-change: opacity;
         }
         .modal-overlay.active { display: flex; opacity: 1; animation: fadeInModal 0.3s forwards;}
         @keyframes fadeInModal { from{opacity:0;} to{opacity:1;} }
@@ -219,19 +239,22 @@
             background: var(--card-bg); border: 1px solid var(--card-border);
             width: 100%; max-width: 400px; border-radius: 20px; padding: 25px 20px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,242,255,0.15);
-            transform: translateY(30px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate3d(0, 30px, 0); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 90vh; display: flex; flex-direction: column; position: relative;
-            overflow-x: hidden; overflow-y: auto; 
+            overflow-x: hidden; overflow-y: auto; will-change: transform;
         }
-        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-overlay.active .modal-card { transform: translate3d(0, 0, 0); }
 
         @media (max-width: 768px) {
-            .modal-overlay { padding: 0; }
+            .modal-overlay { padding: 0; align-items: flex-end;}
             .modal-card {
-                max-width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important;
-                border-radius: 0 !important; border: none !important; justify-content: center;
-                background: rgba(10, 5, 20, 0.95); box-shadow: none; padding: 30px 20px;
+                max-width: 100vw !important; height: auto !important; max-height: 90dvh !important;
+                border-radius: 25px 25px 0 0 !important; border: none !important; border-top: 1px solid var(--accent-cyan) !important; 
+                justify-content: flex-start;
+                background: rgba(10, 5, 20, 0.98); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); padding: 30px 20px;
+                transform: translate3d(0, 100%, 0); 
             }
+            .modal-overlay.active .modal-card { transform: translate3d(0, 0, 0); }
             .close-modal { top: 20px; right: 20px; font-size: 1.5rem !important; }
         }
 
@@ -241,17 +264,17 @@
 
         #orgModal .modal-card { background: rgba(20, 5, 0, 0.95); border-color: rgba(255, 153, 0, 0.6); box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 40px rgba(255, 153, 0, 0.25); }
 
-        /* --- MULTI-STEP SLIDER --- */
-        .slider-window { width: 100%; flex: 1; overflow: hidden; position: relative; min-height: 250px; }
-        .slider-track { display: flex; width: 300%; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%; align-items: flex-start;}
-        .slide-step { width: 33.333%; padding: 5px; flex-shrink: 0; box-sizing: border-box; overflow-x: hidden; overflow-y: auto; max-height: 100%; scrollbar-width: none; opacity: 1; transition: opacity 0.3s;}
+        /* --- MULTI-STEP SLIDER --- FIX: PREVENTS SQUISHING --- */
+        .slider-window { width: 100%; flex: none; overflow: hidden; position: relative; min-height: 380px; height: auto;}
+        .slider-track { display: flex; width: 300%; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%; align-items: flex-start; will-change: transform;}
+        .slide-step { width: 33.333%; padding: 5px; flex-shrink: 0; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;}
         
         .step-indicators { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-shrink: 0;}
         .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
         .step-dot.active { background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); transform: scale(1.4); }
 
         /* --- FORMS & INPUTS --- */
-        .input-wrapper { margin-bottom: 12px; width: 100%; }
+        .input-wrapper { margin-bottom: 15px; width: 100%; flex-shrink: 0; }
         .input-group { position: relative; width: 100%; }
         .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; transition: 0.3s; pointer-events: none; font-size: 0.9rem; z-index: 10;}
         
@@ -273,15 +296,15 @@
 
         /* --- OTP UI --- */
         .flex-row { display: flex; gap: 8px; }
-        .otp-btn { flex: 1; max-width: 100px; background: rgba(189,0,255,0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 12px; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; white-space: nowrap; height: 48px; z-index: 5;}
+        .otp-btn { flex: 1; max-width: 100px; background: rgba(189,0,255,0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 12px; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; white-space: nowrap; height: 48px; z-index: 5; transform: translateZ(0);}
         .otp-btn:active { transform: scale(0.95); background: var(--accent-purple); color: #fff; box-shadow: 0 0 15px var(--accent-purple);}
         
-        .verify-btn { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--accent-green); border: none; border-radius: 8px; color: #000; font-weight: 900; padding: 0 15px; cursor: pointer; font-family: var(--font-head); font-size: 0.75rem; transition: 0.2s; z-index: 10;}
+        .verify-btn { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--accent-green); border: none; border-radius: 8px; color: #000; font-weight: 900; padding: 0 15px; cursor: pointer; font-family: var(--font-head); font-size: 0.75rem; transition: 0.2s; z-index: 10; transform: translateZ(0);}
         .verify-btn:active { transform: scale(0.95); }
         .verify-btn.verified { background: rgba(0, 255, 127, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); cursor: default; }
 
-        .slide-nav-row { display: flex; gap: 10px; margin-top: 15px; }
-        .slide-btn { flex: 1; height: 48px; border: none; border-radius: 12px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 1px;}
+        .slide-nav-row { display: flex; gap: 10px; margin-top: 5px; flex-shrink: 0;}
+        .slide-btn { flex: 1; height: 48px; border: none; border-radius: 12px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 1px; transform: translateZ(0);}
         .slide-btn.next { background: var(--accent-gradient); color: white; box-shadow: 0 5px 20px rgba(189,0,255,0.4); }
         .slide-btn.back { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #ccc; }
         .slide-btn:active { transform: scale(0.95); }
@@ -300,7 +323,7 @@
         .arena-overlay.active { display: flex; animation: fadeInBg 0.3s forwards; }
         .arena-text { font-family: var(--font-head); font-size: 1.8rem; color: #fff; font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 20px rgba(0, 242, 255, 0.6); text-align: center; text-transform: uppercase; animation: cinematicEntry 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes cinematicEntry { 0% { transform: scale(0.8); opacity: 0; filter: blur(10px); } 20% { transform: scale(1); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
+        @keyframes cinematicEntry { 0% { transform: scale(0.8) translateZ(0); opacity: 0; filter: blur(10px); } 20% { transform: scale(1) translateZ(0); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05) translateZ(0); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3) translateZ(0); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
 
         .social-btn { background: white; color: black; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border: none; }
         .google-btn { background: white; color: black; }
@@ -322,10 +345,13 @@
           notifyButton: { enable: false },
         });
         
-        // Sync Notification state with UI Icon
+        // Sync Notification state with CSS Toggle Switch UI
         OneSignal.User.PushSubscription.addEventListener("change", (event) => {
-            let nIcon = document.getElementById('notifIcon');
-            if(nIcon) nIcon.className = event.current.optedIn ? 'fa-solid fa-bell' : 'fa-solid fa-bell-slash';
+            let nTrack = document.getElementById('notifTrack');
+            if(nTrack) {
+                if(event.current.optedIn) nTrack.classList.add('on');
+                else nTrack.classList.remove('on');
+            }
         });
 
         try {
@@ -336,8 +362,11 @@
                     let cleanEmail = String(userObj.email).trim().toLowerCase();
                     await OneSignal.login(cleanEmail);
                     let isOptedIn = await OneSignal.User.PushSubscription.optedIn;
-                    let nIcon = document.getElementById('notifIcon');
-                    if(nIcon) nIcon.className = isOptedIn ? 'fa-solid fa-bell' : 'fa-solid fa-bell-slash';
+                    let nTrack = document.getElementById('notifTrack');
+                    if(nTrack) {
+                        if(isOptedIn) nTrack.classList.add('on');
+                        else nTrack.classList.remove('on');
+                    }
                 }
             }
         } catch(e) {}
@@ -376,8 +405,9 @@
     <div class="hud-top-left">Beta Version 1.2.0.</div>
     
 <div class="hud-top-right">
+  <!-- NEW NOTIFICATION TOGGLE SWITCH -->
   <div class="hud-tool-btn notif-btn" onclick="toggleNotifications(event)">
-    <i id="notifIcon" class="fa-solid fa-bell-slash"></i>
+    <div class="toggle-track" id="notifTrack"><div class="toggle-thumb"></div></div>
     <span id="txtNotif">Notify</span>
   </div>
 
@@ -543,7 +573,7 @@
                                 </div>
                             </div>
 
-                            <div class="input-wrapper" style="margin-top:15px;">
+                            <div class="input-wrapper">
                                 <div class="input-group">
                                     <input type="password" name="password" id="regPwd" class="form-control req-field" placeholder="Create Password" required>
                                     <i class="fa-solid fa-lock input-icon"></i>
@@ -565,7 +595,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="slide-btn next" onclick="nextSlide(1)" style="width:100%; margin-top:15px;"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
+                            <button type="button" class="slide-btn next" onclick="nextSlide(1)" style="width:100%; margin-top:5px;"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
 
                         <div class="slide-step">
@@ -584,13 +614,14 @@
                             
                             <div class="input-wrapper">
                                 <div class="input-group">
-                                    <input type="text" name="username" id="regUser" class="form-control req-field" placeholder="Unique Username (0-9 & hyphens only)" oninput="this.value=this.value.replace(/[^0-9-]/g,'')">
+                                    <!-- RELAXED REGEX: Allows standard names, numbers, and hyphens -->
+                                    <input type="text" name="username" id="regUser" class="form-control req-field" placeholder="Username (Letters, Numbers, Hyphens)" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
                                     <i class="fa-solid fa-user input-icon"></i>
                                 </div>
-                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Used for unique identification. Numbers & hyphens only.</div>
+                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Only letters, numbers, and hyphens allowed.</div>
                             </div>
 
-                            <div class="input-wrapper" style="margin-top:10px;">
+                            <div class="input-wrapper">
                                 <div class="input-group">
                                     <input type="text" name="ign" id="regIgn" class="form-control req-field" placeholder="In-Game Name (IGN)">
                                     <i class="fa-solid fa-gamepad input-icon"></i>
@@ -604,7 +635,7 @@
                                 </div>
                             </div>
 
-                            <div class="slide-nav-row" style="margin-top:20px;">
+                            <div class="slide-nav-row" style="margin-top:10px;">
                                 <button type="button" class="slide-btn back" onclick="prevSlide(2)"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="button" class="slide-btn next" onclick="nextSlide(2)"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
                             </div>
@@ -620,7 +651,7 @@
                                 </div>
                             </div>
 
-                            <div class="input-wrapper" id="customStateWrapper" style="display: none; margin-top: 5px;">
+                            <div class="input-wrapper" id="customStateWrapper" style="display: none;">
                                 <div class="input-group">
                                     <input type="text" id="customState" class="form-control" placeholder="Type Your State">
                                     <i class="fa-solid fa-pen input-icon"></i>
@@ -636,14 +667,14 @@
                                 </div>
                             </div>
 
-                            <div class="input-wrapper" id="customCityWrapper" style="display: none; margin-top: 5px;">
+                            <div class="input-wrapper" id="customCityWrapper" style="display: none;">
                                 <div class="input-group">
                                     <input type="text" id="customCity" class="form-control" placeholder="Type Your City">
                                     <i class="fa-solid fa-pen input-icon"></i>
                                 </div>
                             </div>
                             
-                            <div class="slide-nav-row" style="margin-top:30px;">
+                            <div class="slide-nav-row" style="margin-top:20px;">
                                 <button type="button" class="slide-btn back" onclick="prevSlide(3)"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="submit" class="slide-btn next" id="btnSignup" style="background:var(--accent-green); color:black;"><i class="fa-solid fa-check"></i> <span id="txtFinish">FINISH SETUP</span></button>
                             </div>
@@ -664,20 +695,26 @@
                     <div class="slider-track" id="onboardSliderTrack">
                         
                         <div class="slide-step">
-                            <div class="input-wrapper"><div class="input-group">
-                                <input type="text" id="obUsername" class="form-control" placeholder="Unique Username (0-9 & hyphens)" required oninput="this.value=this.value.replace(/[^0-9-]/g,'')">
-                                <i class="fa-solid fa-user input-icon"></i>
-                            </div></div>
-                            <div class="input-wrapper" style="margin-top:15px;"><div class="input-group">
-                                <select id="obGame" class="form-control" required>
-                                    <option value="" disabled selected>Select Primary Game</option>
-                                    <option value="BGMI">BGMI</option>
-                                    <option value="Free Fire">Free Fire</option>
-                                    <option value="COD Mobile">Call of Duty Mobile</option>
-                                </select>
-                                <i class="fa-solid fa-crosshairs input-icon"></i>
-                            </div></div>
-                            <button type="button" class="action-btn" id="btnCheckUnique" style="background: rgba(255,255,255,0.15); color: white; margin-top:20px;" onclick="nextOnboardSlide()">NEXT STEP <i class="fa-solid fa-arrow-right"></i></button>
+                            <div class="input-wrapper">
+                                <div class="input-group">
+                                    <input type="text" id="obUsername" class="form-control" placeholder="Username (Letters, Numbers, Hyphens)" required oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                </div>
+                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Only letters, numbers, and hyphens allowed.</div>
+                            </div>
+                            
+                            <div class="input-wrapper">
+                                <div class="input-group">
+                                    <select id="obGame" class="form-control" required>
+                                        <option value="" disabled selected>Select Primary Game</option>
+                                        <option value="BGMI">BGMI</option>
+                                        <option value="Free Fire">Free Fire</option>
+                                        <option value="COD Mobile">Call of Duty Mobile</option>
+                                    </select>
+                                    <i class="fa-solid fa-crosshairs input-icon"></i>
+                                </div>
+                            </div>
+                            <button type="button" class="action-btn" id="btnCheckUnique" style="background: rgba(255,255,255,0.15); color: white; margin-top:10px;" onclick="nextOnboardSlide()">NEXT STEP <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
 
                         <div class="slide-step">
@@ -685,12 +722,13 @@
                                 <input type="text" id="obIgn" class="form-control" placeholder="In-Game Name (IGN)" required>
                                 <i class="fa-solid fa-gamepad input-icon"></i>
                             </div></div>
+                            
                             <div class="input-wrapper"><div class="input-group">
                                 <input type="number" id="obUid" class="form-control" placeholder="Game UID (Numbers)" required>
                                 <i class="fa-solid fa-id-card input-icon"></i>
                             </div></div>
                             
-                            <div class="input-wrapper" style="margin-top:15px;">
+                            <div class="input-wrapper">
                                 <div class="flex-row">
                                     <div class="input-group" style="flex: 1;">
                                         <input type="tel" name="phone" id="obPhone" class="form-control req-field" placeholder="Phone (+91 XXXXX XXXXX)" value="+91 " required maxlength="14">
@@ -710,7 +748,7 @@
                                 </div>
                             </div>
                             
-                            <div class="slide-nav-row" style="margin-top:20px;">
+                            <div class="slide-nav-row" style="margin-top:10px;">
                                 <button type="button" class="slide-btn back" onclick="prevOnboardSlide()"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="button" class="slide-btn next" id="btnFinishOnboard" onclick="submitOnboarding()">FINISH <i class="fa-solid fa-check"></i></button>
                             </div>
@@ -770,7 +808,7 @@
 
     <script>
         /* =========================================
-           TOURNYX ULTIMATE BULLETPROOF ENGINE v10.0
+           TOURNYX ULTIMATE BULLETPROOF ENGINE v10.5
            ========================================= */
 
         window.addEventListener('error', function(e) { console.warn("Engine Caught Error:", e.message); e.preventDefault(); });
@@ -782,12 +820,11 @@
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let pendingOnboardUser = {}; 
-        let isEmailVerified = false; // Restored: Fixed the missing variable crash
+        let isEmailVerified = false; 
 
         function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
         function triggerHaptic() { doHaptic(); }
 
-        // Restored: Function used by UI buttons to open Modals legally
         function checkTermsAndOpen(modalId) {
             if(!document.getElementById('masterTerms').checked) {
                 showToast("You must accept the Terms of Service first.");
@@ -797,7 +834,7 @@
         }
 
         // --- 2. AUTH ROUTING ENGINE ---
-        // Google Auth
+        // Google Auth - FORCES ACCOUNT PICKER EVERY TIME
         async function signInWithGoogle() {
             if(!document.getElementById('masterTerms').checked) {
                 showToast("You must accept the Terms of Service first.");
@@ -811,7 +848,7 @@
                     provider: 'google', 
                     options: { 
                         redirectTo: exactCurrentPage,
-                        queryParams: { prompt: 'select_account' } 
+                        queryParams: { prompt: 'consent select_account' } // Guaranteed to stop the loop!
                     }
                 });
                 if (error) throw error;
@@ -828,24 +865,24 @@
                 const avatar = session.user.user_metadata?.avatar_url || "";
 
                 try {
-                    // Search DB for existing user
                     const { data: dbUser, error } = await db.from('Users').select('*').eq('email', email).maybeSingle();
                     
                     if (dbUser) { 
-                        // Clean up URL securely after session verification
                         if(window.location.hash.includes("access_token")) {
                             history.replaceState(null, null, window.location.pathname);
                         }
-                        // Route organizers to profile, players to index
                         if(dbUser.role === 'organizer') triggerArenaEntry(dbUser, 'profile.html');
                         else triggerArenaEntry(dbUser, 'index.html'); 
                     } else {
                         pendingOnboardUser = { email: email, avatar: avatar, auth_method: 'google' };
                         
-                        // Clean up URL securely
                         if(window.location.hash.includes("access_token")) {
                             history.replaceState(null, null, window.location.pathname);
                         }
+                        
+                        // Prefill Name
+                        let baseGoogleName = name.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                        document.getElementById('obUsername').value = baseGoogleName;
 
                         closeModals(true); 
                         openModal('googleOnboardModal');
@@ -856,13 +893,13 @@
             }
         });
 
-        // --- GOOGLE ONBOARDING OTP LOGIC WITH BYPASS TIMER ---
+        // --- PHONE OTP LOGIC (STRICT SUPABASE AUTH) ---
         let isObPhoneVerified = false;
         let obTimerInterval;
 
         async function sendObPhoneOtp() {
             doHaptic();
-            const phoneVal = document.getElementById('obPhone').value;
+            const phoneVal = document.getElementById('obPhone').value.trim();
             const phoneDigits = phoneVal.substring(4).replace(/\D/g, '');
             if(phoneDigits.length !== 10) { showToast("Enter a valid 10-digit phone number."); return; }
             
@@ -871,13 +908,15 @@
             btn.disabled = true;
 
             try {
-                // Simulate SMS Send or call real backend here
+                // REAL SMS SEND: Assuming you have Supabase SMS Provider configured
+                const { error } = await db.auth.signInWithOtp({ phone: phoneVal });
+                if (error) throw error;
+                
                 document.getElementById('obOtpGroup').style.display = 'flex';
                 document.getElementById('obOtp').setAttribute('required', 'true');
                 btn.innerHTML = `SENT <i class="fa-solid fa-check"></i>`;
                 showToast("OTP Sent to Phone!", true);
 
-                // Start 60s Timer for Bypass
                 let timeLeft = 60;
                 document.getElementById('btnObVerifyLater').style.display = 'none';
                 document.getElementById('obOtpTimerText').innerText = `Resend in ${timeLeft}s`;
@@ -890,27 +929,33 @@
                         clearInterval(obTimerInterval);
                         document.getElementById('obOtpTimerText').innerText = '';
                         document.getElementById('btnObVerifyLater').style.display = 'block';
+                        btn.innerHTML = `RESEND OTP`; btn.disabled = false;
                     }
                 }, 1000);
 
             } catch (err) {
                 btn.innerHTML = `SEND OTP`; btn.disabled = false;
-                showToast("Network error connecting to SMS server.");
+                console.warn("SMS Error Details:", err.message);
+                showToast("SMS Failed. Need Supabase SMS Provider Setup.", true);
+                // IF SMS FAILS, Show verify later so developers aren't locked out during testing
+                document.getElementById('btnObVerifyLater').style.display = 'block';
             }
         }
 
         async function verifyObPhoneOtp() {
             doHaptic();
+            const phoneVal = document.getElementById('obPhone').value.trim();
             const otpInput = document.getElementById('obOtp');
             const otp = otpInput.value.trim();
-            if(otp.length < 4) { showToast("Enter valid OTP", true); return; }
+            if(otp.length < 6) { showToast("Enter valid 6-digit OTP", true); return; }
 
             const btn = document.getElementById('btnVerifyObOtp');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
             try {
-                // Restored: Replaced the crashing Firebase call with a safe verification block
-                await new Promise(resolve => setTimeout(resolve, 800));
+                // REAL SMS VERIFY: Strict backend check via Supabase!
+                const { data, error } = await db.auth.verifyOtp({ phone: phoneVal, token: otp, type: 'sms' });
+                if (error) throw error;
 
                 btn.innerHTML = `<i class="fa-solid fa-check-double"></i> VERIFIED`;
                 btn.classList.add('verified'); btn.disabled = true;
@@ -940,11 +985,11 @@
             triggerHaptic();
             const usernameInput = document.getElementById('obUsername').value;
             
-            // 1. Strict Validation Rule
+            // 1. RELAXED Validation Rule (Alphanumeric and Hyphens allowed. No forced numbers!)
             const nameRegex = /^[a-zA-Z0-9-]+$/;
             if(!usernameInput || !document.getElementById('obGame').value) { showToast("Fill all fields.", true); return; }
-            if(!nameRegex.test(usernameInput) || !/\d/.test(usernameInput) || !/-/.test(usernameInput)) {
-                showToast("Username MUST contain letters, a hyphen (-), and a number! Ex: tournyx-38", true); 
+            if(!nameRegex.test(usernameInput)) {
+                showToast("Username can only contain letters, numbers, and hyphens (-)", true); 
                 return;
             }
             
@@ -954,13 +999,15 @@
             btnReset('btnCheckUnique');
             
             if(data) { 
-                showToast("Username already exists! Please add a different number.", true); 
+                let suggested = usernameInput + '-' + Math.floor(Math.random() * 999);
+                document.getElementById('obUsername').value = suggested;
+                showToast("Username taken! Try this one: " + suggested, true); 
                 return; 
             }
 
-            obStep = 2; document.getElementById('onboardSliderTrack').style.transform = `translateX(-50%)`;
+            obStep = 2; document.getElementById('onboardSliderTrack').style.transform = `translate3d(-50%, 0, 0)`;
         }
-        function prevOnboardSlide() { triggerHaptic(); obStep = 1; document.getElementById('onboardSliderTrack').style.transform = `translateX(0%)`; }
+        function prevOnboardSlide() { triggerHaptic(); obStep = 1; document.getElementById('onboardSliderTrack').style.transform = `translate3d(0%, 0, 0)`; }
 
         async function submitOnboarding() {
             triggerHaptic();
@@ -1002,15 +1049,15 @@
             if (!window.OneSignal) return;
 
             const isOptedIn = await OneSignal.User.PushSubscription.optedIn;
-            let nIcon = document.getElementById('notifIcon');
+            let nTrack = document.getElementById('notifTrack');
 
             if(isOptedIn) {
                 await OneSignal.User.PushSubscription.optOut();
-                if(nIcon) nIcon.className = 'fa-solid fa-bell-slash';
+                if(nTrack) nTrack.classList.remove('on');
                 showToast("Notifications Disabled");
             } else {
                 await OneSignal.slidedown.promptPush();
-                // Icon changes automatically via the listener in the head tag
+                // Toggle state updates automatically via the SDK listener in <head>
                 showToast("Requesting Permission...", true);
             }
         }
@@ -1231,7 +1278,7 @@
             const email = document.getElementById('regEmail').value.trim();
             const otpInput = document.getElementById('regOtp');
             const otp = otpInput.value.trim();
-            if(otp.length < 6) { showToast("Enter valid 6-digit OTP"); return; } // Supabase default is 6 digits
+            if(otp.length < 6) { showToast("Enter valid 6-digit OTP"); return; } 
 
             const btn = document.getElementById('btnVerifyOtp');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
@@ -1272,8 +1319,8 @@
 
                 if(document.getElementById('regGame').value === "") { showToast("Please select a game.", true); return; }
                 if(usernameInput === "") { showToast("Unique Username required.", true); return; }
-                if(!nameRegex.test(usernameInput) || !/\d/.test(usernameInput) || !/-/.test(usernameInput)) {
-                    showToast("Username MUST contain letters, a hyphen (-), and a number! Ex: tournyx-38", true); 
+                if(!nameRegex.test(usernameInput)) {
+                    showToast("Username can only contain letters, numbers, and hyphens (-)", true); 
                     return;
                 }
                 if(document.getElementById('regIgn').value.trim() === "") { showToast("IGN required.", true); return; }
@@ -1281,18 +1328,23 @@
 
                 // Check DB for standard signup uniqueness
                 const { data } = await db.from('Users').select('username').eq('username', usernameInput).maybeSingle();
-                if(data) { showToast("Username already exists! Please add a different number.", true); return; }
+                if(data) { 
+                    let suggested = usernameInput + '-' + Math.floor(Math.random() * 9999);
+                    document.getElementById('regUser').value = suggested;
+                    showToast("Username taken! Try this one: " + suggested, true); 
+                    return; 
+                }
             }
 
             currentStep = step + 1;
-            document.getElementById('sliderTrack').style.transform = `translateX(-${(currentStep - 1) * 33.333}%)`;
+            document.getElementById('sliderTrack').style.transform = `translate3d(-${(currentStep - 1) * 33.333}%, 0, 0)`;
             updateDots();
         }
 
         function prevSlide(step) {
             doHaptic();
             currentStep = step - 1;
-            document.getElementById('sliderTrack').style.transform = `translateX(-${(currentStep - 1) * 33.333}%)`;
+            document.getElementById('sliderTrack').style.transform = `translate3d(-${(currentStep - 1) * 33.333}%, 0, 0)`;
             updateDots();
         }
 
@@ -1387,6 +1439,11 @@
             
             await db.auth.signOut(); // Completely kills the Supabase session securely
             
+            // Wipe browser cookies completely to un-stick Google Auth
+            document.cookie.split(";").forEach((c) => {
+              document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+
             localStorage.removeItem('tournyx_user');
             localStorage.removeItem('tournyx_userData');
             document.getElementById('loggedInProfile').classList.add('hidden');
@@ -1407,7 +1464,7 @@
         function closeModals(internalCall = false) {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
             currentStep = 1;
-            document.getElementById('sliderTrack').style.transform = `translateX(0%)`;
+            document.getElementById('sliderTrack').style.transform = `translate3d(0%, 0, 0)`;
             updateDots();
             if(isModalOpen && !internalCall) { history.back(); } 
             else { isModalOpen = false; }
@@ -1420,7 +1477,7 @@
             }
         });
 
-        // Restored: Help Form Submit Logic
+        // Restored Help Form Logic
         function submitHelp(e) {
             e.preventDefault();
             doHaptic();
@@ -1485,9 +1542,6 @@
             btnLoading('btnSignup', 'CREATING ACCOUNT...');
 
             try {
-                // If they used Supabase OTP earlier, their email is already in the Auth system. 
-                // We just insert the row into 'Users' public table to finalize registration.
-                
                 const formData = new FormData(e.target);
                 const rawData = Object.fromEntries(formData);
                 let safeEmail = rawData.email.trim().toLowerCase();
