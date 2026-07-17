@@ -6,7 +6,7 @@
     <link rel="apple-touch-icon" href="https://tournyx.in/apple-touch-icon.png">
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
     <title>Login / Register - Tournyx Esports</title>
     <meta name="description" content="Sign in to your Tournyx account to join premium BGMI and Free Fire esports tournaments.">
 
@@ -17,13 +17,14 @@
     <style>
         :root {
             --primary-bg: #070311;
-            --card-bg: rgba(10, 5, 20, 0.85);
-            --input-bg: rgba(5, 2, 12, 0.9);
-            --card-border: rgba(0, 242, 255, 0.3);
+            --card-bg: rgba(10, 5, 20, 0.93);
+            --input-bg: rgba(5, 2, 12, 0.95);
+            --card-border: rgba(0, 242, 255, 0.35);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-green: #00ff7f;
             --accent-orange: #ff9900;
+            --accent-red: #ff4d4d;
             --accent-gradient: linear-gradient(135deg, #bd00ff, #00f2ff);
             --text-main: #ffffff;
             --font-head: 'Orbitron', sans-serif;
@@ -46,18 +47,16 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center;
             transition: opacity 0.8s ease, visibility 0.8s ease;
-            will-change: opacity, transform;
         }
         .fire-logo {
             width: 120px; height: 120px; border-radius: 22%;
             animation: fire3DReveal 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            transform: translateZ(0); /* Hardware Acceleration */
         }
         @keyframes fire3DReveal {
-            0% { transform: scale(0.1) translateZ(0); opacity: 0; filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 30px #ff9900) drop-shadow(0 0 60px #ffcc00); }
+            0% { transform: scale(0.1); opacity: 0; filter: drop-shadow(0 0 10px #ff3300) drop-shadow(0 0 30px #ff9900) drop-shadow(0 0 60px #ffcc00); }
             40% { opacity: 1; filter: drop-shadow(0 0 25px #ff3300) drop-shadow(0 0 50px #ff9900) drop-shadow(0 0 90px #ffcc00); }
-            80% { transform: scale(1.6) translateZ(0); filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 40px #ff9900); opacity: 1; }
-            100% { transform: scale(2.5) translateZ(0); opacity: 0; filter: none; }
+            80% { transform: scale(1.6); filter: drop-shadow(0 0 15px #ff3300) drop-shadow(0 0 40px #ff9900); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; filter: none; }
         }
 
         /* --- BACKGROUND VIDEO --- */
@@ -84,27 +83,30 @@
             font-weight: bold; cursor: pointer; text-shadow: 1px 1px 3px black; transition: 0.2s;
             text-transform: uppercase;
         }
-        
-        /* NOTIFICATION TOGGLE SWITCH UI */
-        .toggle-track {
-            width: 36px; height: 18px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 20px; position: relative; transition: 0.3s; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-            margin-bottom: 2px;
-        }
-        .toggle-track.on { background: rgba(0, 255, 127, 0.3); border-color: var(--accent-green); box-shadow: inset 0 0 10px rgba(0,255,127,0.5); }
-        .toggle-thumb {
-            width: 14px; height: 14px; background: #ccc; border-radius: 50%;
-            position: absolute; top: 1px; left: 2px; transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4); transform: translateZ(0);
-        }
-        .toggle-track.on .toggle-thumb { left: 18px; background: var(--accent-green); }
-
-        .hud-tool-btn i.fa-solid {
+        .hud-tool-btn i {
             width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.6);
             border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center;
             font-size: 0.9rem; backdrop-filter: blur(5px); transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
         }
-        .hud-tool-btn:active i.fa-solid, .hud-tool-btn:active .toggle-track { transform: scale(0.9); }
+        .hud-tool-btn:active i { transform: scale(0.9); background: var(--accent-cyan); color: black; border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan);}
+
+        /* NOTIFICATION TOGGLE SWITCH STYLING */
+        .notif-switch-container {
+            display: flex; align-items: center; justify-content: center; position: relative; width: 44px; height: 24px;
+            background: rgba(0,0,0,0.6); border-radius: 50px; border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .notif-switch-container.active {
+            background: rgba(0, 255, 127, 0.2); border-color: var(--accent-green); box-shadow: 0 0 10px rgba(0, 255, 127, 0.4);
+        }
+        .notif-switch-handle {
+            position: absolute; left: 3px; width: 16px; height: 16px; background: #ffffff; border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .notif-switch-container.active .notif-switch-handle {
+            transform: translateX(20px); background: var(--accent-green);
+        }
 
         .top-profile-corner {
             position: absolute; top: 65px; right: 20px; z-index: 6000;
@@ -185,7 +187,6 @@
             font-size: 0.85rem; font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: 0.2s;
             text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;
             border: none; position: relative; overflow: hidden; z-index: 1; margin: 0;
-            transform: translateZ(0); /* Hardware Acceleration */
         }
         .action-btn::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -210,7 +211,6 @@
             letter-spacing: 4px; text-transform: uppercase; cursor: pointer;
             text-shadow: 0 0 15px var(--accent-cyan), 0 0 25px var(--accent-purple);
             animation: pulseTap 1.5s infinite alternate; padding: 20px; width: 100%; text-align: center;
-            transform: translateZ(0);
         }
         @keyframes pulseTap { 0% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
@@ -227,34 +227,30 @@
         /* --- FULLSCREEN MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            background: rgba(0, 0, 0, 0.8); z-index: 5000; display: none;
+            background: rgba(0, 0, 0, 0.85); z-index: 5000; display: none;
             align-items: center; justify-content: center; backdrop-filter: blur(15px);
             opacity: 0; transition: opacity 0.3s ease; padding: 15px;
-            will-change: opacity;
         }
         .modal-overlay.active { display: flex; opacity: 1; animation: fadeInModal 0.3s forwards;}
         @keyframes fadeInModal { from{opacity:0;} to{opacity:1;} }
         
         .modal-card {
             background: var(--card-bg); border: 1px solid var(--card-border);
-            width: 100%; max-width: 400px; border-radius: 20px; padding: 25px 20px;
+            width: 100%; max-width: 420px; border-radius: 20px; padding: 25px 20px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,242,255,0.15);
-            transform: translate3d(0, 30px, 0); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-height: 90vh; display: flex; flex-direction: column; position: relative;
-            overflow-x: hidden; overflow-y: auto; will-change: transform;
+            transform: translateY(30px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 92vh; display: flex; flex-direction: column; position: relative;
+            overflow-x: hidden; overflow-y: auto; 
         }
-        .modal-overlay.active .modal-card { transform: translate3d(0, 0, 0); }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
 
         @media (max-width: 768px) {
-            .modal-overlay { padding: 0; align-items: flex-end;}
+            .modal-overlay { padding: 0; }
             .modal-card {
-                max-width: 100vw !important; height: auto !important; max-height: 90dvh !important;
-                border-radius: 25px 25px 0 0 !important; border: none !important; border-top: 1px solid var(--accent-cyan) !important; 
-                justify-content: flex-start;
-                background: rgba(10, 5, 20, 0.98); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); padding: 30px 20px;
-                transform: translate3d(0, 100%, 0); 
+                max-width: 100vw !important; height: 100dvh !important; max-height: 100dvh !important;
+                border-radius: 0 !important; border: none !important; justify-content: center;
+                background: rgba(10, 5, 20, 0.98); box-shadow: none; padding: 30px 20px;
             }
-            .modal-overlay.active .modal-card { transform: translate3d(0, 0, 0); }
             .close-modal { top: 20px; right: 20px; font-size: 1.5rem !important; }
         }
 
@@ -264,17 +260,28 @@
 
         #orgModal .modal-card { background: rgba(20, 5, 0, 0.95); border-color: rgba(255, 153, 0, 0.6); box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 40px rgba(255, 153, 0, 0.25); }
 
-        /* --- MULTI-STEP SLIDER --- FIX: PREVENTS SQUISHING --- */
-        .slider-window { width: 100%; flex: none; overflow: hidden; position: relative; min-height: 380px; height: auto;}
-        .slider-track { display: flex; width: 300%; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%; align-items: flex-start; will-change: transform;}
-        .slide-step { width: 33.333%; padding: 5px; flex-shrink: 0; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;}
+        /* --- MULTI-STEP SLIDER (ANTI-OVERFLOW ENGINE) --- */
+        .slider-window { width: 100%; flex: 1; overflow: hidden; position: relative; min-height: 320px; max-height: 100%; display: flex; flex-direction: column; }
+        .slider-track { display: flex; width: 300%; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); flex: 1; height: 100%; }
+        .slide-step { width: 33.333%; padding: 5px; flex-shrink: 0; box-sizing: border-box; overflow-x: hidden; overflow-y: auto; max-height: 100%; scrollbar-width: none; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; }
         
-        .step-indicators { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-shrink: 0;}
+        /* Language download pack interface */
+        .lang-download-overlay {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center; padding: 20px 10px;
+        }
+        .progress-container {
+            width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 50px; border: 1px solid rgba(0,242,255,0.2); overflow: hidden; position: relative; margin-top: 10px;
+        }
+        .progress-bar-fill {
+            height: 100%; width: 0%; background: var(--accent-gradient); box-shadow: 0 0 12px var(--accent-cyan); transition: width 0.1s linear;
+        }
+
+        .step-indicators { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
         .step-dot.active { background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); transform: scale(1.4); }
 
         /* --- FORMS & INPUTS --- */
-        .input-wrapper { margin-bottom: 15px; width: 100%; flex-shrink: 0; }
+        .input-wrapper { margin-bottom: 10px; width: 100%; flex-shrink: 0; }
         .input-group { position: relative; width: 100%; }
         .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; transition: 0.3s; pointer-events: none; font-size: 0.9rem; z-index: 10;}
         
@@ -295,16 +302,16 @@
         .pwd-toggle:active { transform: translateY(-50%) scale(0.9); }
 
         /* --- OTP UI --- */
-        .flex-row { display: flex; gap: 8px; }
-        .otp-btn { flex: 1; max-width: 100px; background: rgba(189,0,255,0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 12px; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; white-space: nowrap; height: 48px; z-index: 5; transform: translateZ(0);}
+        .flex-row { display: flex; gap: 8px; width: 100%; align-items: center; }
+        .otp-btn { flex: 1; max-width: 100px; background: rgba(189,0,255,0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); border-radius: 12px; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; white-space: nowrap; height: 48px; z-index: 5;}
         .otp-btn:active { transform: scale(0.95); background: var(--accent-purple); color: #fff; box-shadow: 0 0 15px var(--accent-purple);}
         
-        .verify-btn { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--accent-green); border: none; border-radius: 8px; color: #000; font-weight: 900; padding: 0 15px; cursor: pointer; font-family: var(--font-head); font-size: 0.75rem; transition: 0.2s; z-index: 10; transform: translateZ(0);}
+        .verify-btn { position: absolute; right: 5px; top: 5px; bottom: 5px; background: var(--accent-green); border: none; border-radius: 8px; color: #000; font-weight: 900; padding: 0 15px; cursor: pointer; font-family: var(--font-head); font-size: 0.75rem; transition: 0.2s; z-index: 10;}
         .verify-btn:active { transform: scale(0.95); }
         .verify-btn.verified { background: rgba(0, 255, 127, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); cursor: default; }
 
-        .slide-nav-row { display: flex; gap: 10px; margin-top: 5px; flex-shrink: 0;}
-        .slide-btn { flex: 1; height: 48px; border: none; border-radius: 12px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 1px; transform: translateZ(0);}
+        .slide-nav-row { display: flex; gap: 10px; margin-top: auto; padding-top: 10px; width: 100%; flex-shrink: 0; }
+        .slide-btn { flex: 1; height: 48px; border: none; border-radius: 12px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 1px;}
         .slide-btn.next { background: var(--accent-gradient); color: white; box-shadow: 0 5px 20px rgba(189,0,255,0.4); }
         .slide-btn.back { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #ccc; }
         .slide-btn:active { transform: scale(0.95); }
@@ -323,7 +330,7 @@
         .arena-overlay.active { display: flex; animation: fadeInBg 0.3s forwards; }
         .arena-text { font-family: var(--font-head); font-size: 1.8rem; color: #fff; font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 20px rgba(0, 242, 255, 0.6); text-align: center; text-transform: uppercase; animation: cinematicEntry 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes cinematicEntry { 0% { transform: scale(0.8) translateZ(0); opacity: 0; filter: blur(10px); } 20% { transform: scale(1) translateZ(0); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05) translateZ(0); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3) translateZ(0); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
+        @keyframes cinematicEntry { 0% { transform: scale(0.8); opacity: 0; filter: blur(10px); } 20% { transform: scale(1); opacity: 1; filter: blur(0); letter-spacing: 4px; } 80% { transform: scale(1.05); opacity: 1; filter: blur(0); letter-spacing: 6px; } 100% { transform: scale(1.3); opacity: 0; filter: blur(15px); letter-spacing: 10px; } }
 
         .social-btn { background: white; color: black; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border: none; }
         .google-btn { background: white; color: black; }
@@ -344,32 +351,23 @@
           appId: "15a8e2b2-240c-4547-929e-797d7170e988",
           notifyButton: { enable: false },
         });
-        
-        // Sync Notification state with CSS Toggle Switch UI
-        OneSignal.User.PushSubscription.addEventListener("change", (event) => {
-            let nTrack = document.getElementById('notifTrack');
-            if(nTrack) {
-                if(event.current.optedIn) nTrack.classList.add('on');
-                else nTrack.classList.remove('on');
+
+        const updateToggleView = (optedIn) => {
+            const toggleTrack = document.getElementById('notifToggleTrack');
+            if (toggleTrack) {
+                if (optedIn) toggleTrack.classList.add('active');
+                else toggleTrack.classList.remove('active');
             }
+        };
+        
+        OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+            updateToggleView(event.current.optedIn);
         });
 
         try {
-            let userStr = localStorage.getItem('tournyx_user');
-            if (userStr) {
-                let userObj = JSON.parse(userStr);
-                if (userObj && userObj.email) {
-                    let cleanEmail = String(userObj.email).trim().toLowerCase();
-                    await OneSignal.login(cleanEmail);
-                    let isOptedIn = await OneSignal.User.PushSubscription.optedIn;
-                    let nTrack = document.getElementById('notifTrack');
-                    if(nTrack) {
-                        if(isOptedIn) nTrack.classList.add('on');
-                        else nTrack.classList.remove('on');
-                    }
-                }
-            }
-        } catch(e) {}
+            let isOptedIn = await OneSignal.User.PushSubscription.optedIn;
+            updateToggleView(isOptedIn);
+        } catch(e){}
       });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -405,9 +403,10 @@
     <div class="hud-top-left">Beta Version 1.2.0.</div>
     
 <div class="hud-top-right">
-  <!-- NEW NOTIFICATION TOGGLE SWITCH -->
   <div class="hud-tool-btn notif-btn" onclick="toggleNotifications(event)">
-    <div class="toggle-track" id="notifTrack"><div class="toggle-thumb"></div></div>
+    <div class="notif-switch-container" id="notifToggleTrack">
+        <div class="notif-switch-handle"></div>
+    </div>
     <span id="txtNotif">Notify</span>
   </div>
 
@@ -595,7 +594,9 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="slide-btn next" onclick="nextSlide(1)" style="width:100%; margin-top:5px;"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
+                            <div class="slide-nav-row">
+                                <button type="button" class="slide-btn next" onclick="nextSlide(1)"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
                         </div>
 
                         <div class="slide-step">
@@ -614,11 +615,10 @@
                             
                             <div class="input-wrapper">
                                 <div class="input-group">
-                                    <!-- RELAXED REGEX: Allows standard names, numbers, and hyphens -->
-                                    <input type="text" name="username" id="regUser" class="form-control req-field" placeholder="Username (Letters, Numbers, Hyphens)" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+                                    <input type="text" name="username" id="regUser" class="form-control req-field" placeholder="Unique Username (letters, numbers, hyphens)" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
                                     <i class="fa-solid fa-user input-icon"></i>
                                 </div>
-                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Only letters, numbers, and hyphens allowed.</div>
+                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Only lowercase letters, numbers, and hyphens allowed.</div>
                             </div>
 
                             <div class="input-wrapper">
@@ -635,18 +635,16 @@
                                 </div>
                             </div>
 
-                            <div class="slide-nav-row" style="margin-top:10px;">
+                            <div class="slide-nav-row">
                                 <button type="button" class="slide-btn back" onclick="prevSlide(2)"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="button" class="slide-btn next" onclick="nextSlide(2)"><span class="txtNext">Next Step</span> <i class="fa-solid fa-arrow-right"></i></button>
                             </div>
                         </div>
 
                         <div class="slide-step">
-                            
                             <div class="input-wrapper">
                                 <div class="input-group">
-                                    <select name="state" id="regState" class="form-control req-field" onchange="handleStateChange()">
-                                        </select>
+                                    <select name="state" id="regState" class="form-control req-field" onchange="handleStateChange()"></select>
                                     <i class="fa-solid fa-map input-icon"></i>
                                 </div>
                             </div>
@@ -674,7 +672,7 @@
                                 </div>
                             </div>
                             
-                            <div class="slide-nav-row" style="margin-top:20px;">
+                            <div class="slide-nav-row">
                                 <button type="button" class="slide-btn back" onclick="prevSlide(3)"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="submit" class="slide-btn next" id="btnSignup" style="background:var(--accent-green); color:black;"><i class="fa-solid fa-check"></i> <span id="txtFinish">FINISH SETUP</span></button>
                             </div>
@@ -688,7 +686,7 @@
     <div class="modal-overlay" id="googleOnboardModal">
         <div class="modal-card">
             <h2 class="modal-title" style="color:var(--accent-orange)">Complete Profile</h2>
-            <p style="color:#aaa; font-size:0.85rem; text-align:center; margin-bottom: 20px;">Welcome to Tournyx! Setup your gamer profile.</p>
+            <p style="color:#aaa; font-size:0.85rem; text-align:center; margin-bottom: 15px;">Welcome to Tournyx! Setup your gamer profile.</p>
             
             <form id="onboardForm">
                 <div class="slider-window">
@@ -697,12 +695,11 @@
                         <div class="slide-step">
                             <div class="input-wrapper">
                                 <div class="input-group">
-                                    <input type="text" id="obUsername" class="form-control" placeholder="Username (Letters, Numbers, Hyphens)" required oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+                                    <input type="text" id="obUsername" class="form-control" placeholder="Unique Username (letters, numbers, hyphens)" required oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
                                     <i class="fa-solid fa-user input-icon"></i>
                                 </div>
-                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Only letters, numbers, and hyphens allowed.</div>
+                                <div style="font-size:0.65rem; color:#888; margin-top:4px; padding-left:10px;">Letters, numbers, and hyphens only. Ex: tournyx-38</div>
                             </div>
-                            
                             <div class="input-wrapper">
                                 <div class="input-group">
                                     <select id="obGame" class="form-control" required>
@@ -714,19 +711,24 @@
                                     <i class="fa-solid fa-crosshairs input-icon"></i>
                                 </div>
                             </div>
-                            <button type="button" class="action-btn" id="btnCheckUnique" style="background: rgba(255,255,255,0.15); color: white; margin-top:10px;" onclick="nextOnboardSlide()">NEXT STEP <i class="fa-solid fa-arrow-right"></i></button>
+                            <div class="slide-nav-row">
+                                <button type="button" class="slide-btn next" id="btnCheckUnique" onclick="nextOnboardSlide()">NEXT STEP <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
                         </div>
 
                         <div class="slide-step">
-                            <div class="input-wrapper"><div class="input-group">
-                                <input type="text" id="obIgn" class="form-control" placeholder="In-Game Name (IGN)" required>
-                                <i class="fa-solid fa-gamepad input-icon"></i>
-                            </div></div>
-                            
-                            <div class="input-wrapper"><div class="input-group">
-                                <input type="number" id="obUid" class="form-control" placeholder="Game UID (Numbers)" required>
-                                <i class="fa-solid fa-id-card input-icon"></i>
-                            </div></div>
+                            <div class="input-wrapper">
+                                <div class="input-group">
+                                    <input type="text" id="obIgn" class="form-control" placeholder="In-Game Name (IGN)" required>
+                                    <i class="fa-solid fa-gamepad input-icon"></i>
+                                </div>
+                            </div>
+                            <div class="input-wrapper">
+                                <div class="input-group">
+                                    <input type="number" id="obUid" class="form-control" placeholder="Game UID (Numbers)" required>
+                                    <i class="fa-solid fa-id-card input-icon"></i>
+                                </div>
+                            </div>
                             
                             <div class="input-wrapper">
                                 <div class="flex-row">
@@ -748,7 +750,7 @@
                                 </div>
                             </div>
                             
-                            <div class="slide-nav-row" style="margin-top:10px;">
+                            <div class="slide-nav-row">
                                 <button type="button" class="slide-btn back" onclick="prevOnboardSlide()"><i class="fa-solid fa-arrow-left"></i> <span class="txtBack">Back</span></button>
                                 <button type="button" class="slide-btn next" id="btnFinishOnboard" onclick="submitOnboarding()">FINISH <i class="fa-solid fa-check"></i></button>
                             </div>
@@ -781,11 +783,29 @@
         <div class="modal-card">
             <i class="fa-solid fa-xmark close-modal" onclick="closeModals()"></i>
             <h2 class="modal-title" style="color:var(--accent-cyan)"><i class="fa-solid fa-earth-americas"></i> Select Language</h2>
-            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-x: hidden; overflow-y: auto; padding-right: 5px;">
-                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="setLanguage('en')"><span style="font-size:1.4rem;">🇮🇳</span> English (India)</div>
-                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="setLanguage('hi')"><span style="font-size:1.4rem;">🇮🇳</span> हिन्दी (Hindi)</div>
-                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="setLanguage('ta')"><span style="font-size:1.4rem;">🇮🇳</span> தமிழ் (Tamil)</div>
-                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="setLanguage('te')"><span style="font-size:1.4rem;">🇮🇳</span> తెలుగు (Telugu)</div>
+            
+            <div id="langSelectionView" style="display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-x: hidden; overflow-y: auto; padding-right: 5px;">
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('en', 'English Pack', 1.2)"><span style="font-size:1.4rem;">🇮🇳</span> English (India)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('hi', 'Hindi Pack', 2.8)"><span style="font-size:1.4rem;">🇮🇳</span> हिन्दी (Hindi)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('ta', 'Tamil Pack', 3.1)"><span style="font-size:1.4rem;">🇮🇳</span> தமிழ் (Tamil)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('te', 'Telugu Pack', 2.9)"><span style="font-size:1.4rem;">🇮🇳</span> తెలుగు (Telugu)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('kn', 'Kannada Pack', 3.4)"><span style="font-size:1.4rem;">🇮🇳</span> ಕન્નಡ (Kannada)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('ml', 'Malayalam Pack', 3.2)"><span style="font-size:1.4rem;">🇮🇳</span> മലയാളம் (Malayalam)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('mr', 'Marathi Pack', 2.7)"><span style="font-size:1.4rem;">🇮🇳</span> मराठी (Marathi)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('gu', 'Gujarati Pack', 2.6)"><span style="font-size:1.4rem;">🇮🇳</span> ગુજરાતી (Gujarati)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('bn', 'Bengali Pack', 3.5)"><span style="font-size:1.4rem;">🇮🇳</span> বাংলা (Bengali)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('pa', 'Punjabi Pack', 2.4)"><span style="font-size:1.4rem;">🇮🇳</span> ਪੰਜਾਬੀ (Punjabi)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('or', 'Odia Pack', 2.9)"><span style="font-size:1.4rem;">🇮🇳</span> ଓଡ଼ିଆ (Odia)</div>
+                <div class="slide-btn back" style="justify-content:flex-start; padding: 15px;" onclick="downloadLanguagePack('as', 'Assamese Pack', 3.0)"><span style="font-size:1.4rem;">🇮🇳</span> অসমীয়া (Assamese)</div>
+            </div>
+
+            <div id="langDownloadProgressView" class="lang-download-overlay hidden">
+                <i class="fa-solid fa-cloud-arrow-down fa-bounce" style="font-size: 2.5rem; color: var(--accent-cyan);"></i>
+                <h3 id="lblDownloadStatus" style="font-family: var(--font-head); font-size: 1rem; color: white;">Fetching sources...</h3>
+                <div class="progress-container">
+                    <div class="progress-bar-fill" id="langProgressBar"></div>
+                </div>
+                <div id="lblPackDetails" style="font-size: 0.8rem; color: #888; font-weight: bold;">0% / 0.0 MB</div>
             </div>
         </div>
     </div>
@@ -807,20 +827,14 @@
     <div id="customToast"><i class="fa-solid fa-circle-exclamation"></i> <span id="toastMsg">Alert</span></div>
 
     <script>
-        /* =========================================
-           TOURNYX ULTIMATE BULLETPROOF ENGINE v10.5
-           ========================================= */
-
-        window.addEventListener('error', function(e) { console.warn("Engine Caught Error:", e.message); e.preventDefault(); });
-
-       // --- 1. CORE CONFIGURATION ---
+        // --- 1. CORE CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
         const CLOUDFLARE_WORKER_URL = 'https://tournyx-api.annaduraithilakjeevesh.workers.dev'; 
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let pendingOnboardUser = {}; 
-        let isEmailVerified = false; 
+        let isEmailVerified = false;
 
         function doHaptic() { if(navigator.vibrate) navigator.vibrate(15); }
         function triggerHaptic() { doHaptic(); }
@@ -834,7 +848,6 @@
         }
 
         // --- 2. AUTH ROUTING ENGINE ---
-        // Google Auth - FORCES ACCOUNT PICKER EVERY TIME
         async function signInWithGoogle() {
             if(!document.getElementById('masterTerms').checked) {
                 showToast("You must accept the Terms of Service first.");
@@ -843,12 +856,11 @@
             triggerHaptic();
             try {
                 const exactCurrentPage = window.location.href.split(/[?#]/)[0]; 
-                
                 const { error } = await db.auth.signInWithOAuth({ 
                     provider: 'google', 
                     options: { 
                         redirectTo: exactCurrentPage,
-                        queryParams: { prompt: 'consent select_account' } // Guaranteed to stop the loop!
+                        queryParams: { prompt: 'select_account' } 
                     }
                 });
                 if (error) throw error;
@@ -861,7 +873,8 @@
                 if(earlyLoader) earlyLoader.classList.remove('active');
 
                 const email = session.user.email;
-                const name = session.user.user_metadata?.full_name || "Gamer";
+                // FIX: Look accurately for metadata keys or fallback cleanly to email segment
+                const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split('@')[0];
                 const avatar = session.user.user_metadata?.avatar_url || "";
 
                 try {
@@ -879,10 +892,10 @@
                         if(window.location.hash.includes("access_token")) {
                             history.replaceState(null, null, window.location.pathname);
                         }
-                        
-                        // Prefill Name
-                        let baseGoogleName = name.toLowerCase().replace(/[^a-z0-9-]/g, '');
-                        document.getElementById('obUsername').value = baseGoogleName;
+
+                        // Prefill parsed metadata securely
+                        let cleanPrefill = name.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                        document.getElementById('obUsername').value = cleanPrefill;
 
                         closeModals(true); 
                         openModal('googleOnboardModal');
@@ -893,7 +906,7 @@
             }
         });
 
-        // --- PHONE OTP LOGIC (STRICT SUPABASE AUTH) ---
+        // --- PHONE OTP LOGIC ---
         let isObPhoneVerified = false;
         let obTimerInterval;
 
@@ -908,10 +921,10 @@
             btn.disabled = true;
 
             try {
-                // REAL SMS SEND: Assuming you have Supabase SMS Provider configured
+                // Strict triggering with Supabase Auth OTP channel
                 const { error } = await db.auth.signInWithOtp({ phone: phoneVal });
-                if (error) throw error;
-                
+                if(error) throw error;
+
                 document.getElementById('obOtpGroup').style.display = 'flex';
                 document.getElementById('obOtp').setAttribute('required', 'true');
                 btn.innerHTML = `SENT <i class="fa-solid fa-check"></i>`;
@@ -929,15 +942,13 @@
                         clearInterval(obTimerInterval);
                         document.getElementById('obOtpTimerText').innerText = '';
                         document.getElementById('btnObVerifyLater').style.display = 'block';
-                        btn.innerHTML = `RESEND OTP`; btn.disabled = false;
+                        btn.innerHTML = `SEND OTP`; btn.disabled = false;
                     }
                 }, 1000);
 
             } catch (err) {
                 btn.innerHTML = `SEND OTP`; btn.disabled = false;
-                console.warn("SMS Error Details:", err.message);
-                showToast("SMS Failed. Need Supabase SMS Provider Setup.", true);
-                // IF SMS FAILS, Show verify later so developers aren't locked out during testing
+                showToast("Provider configuration required for direct live SMS.");
                 document.getElementById('btnObVerifyLater').style.display = 'block';
             }
         }
@@ -947,13 +958,13 @@
             const phoneVal = document.getElementById('obPhone').value.trim();
             const otpInput = document.getElementById('obOtp');
             const otp = otpInput.value.trim();
-            if(otp.length < 6) { showToast("Enter valid 6-digit OTP", true); return; }
+            if(otp.length < 6) { showToast("Enter valid 6-digit OTP"); return; }
 
             const btn = document.getElementById('btnVerifyObOtp');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
             try {
-                // REAL SMS VERIFY: Strict backend check via Supabase!
+                // Strict check against live Supabase endpoint token resolution
                 const { data, error } = await db.auth.verifyOtp({ phone: phoneVal, token: otp, type: 'sms' });
                 if (error) throw error;
 
@@ -964,10 +975,10 @@
                 clearInterval(obTimerInterval);
                 document.getElementById('obOtpTimerText').innerText = '';
                 document.getElementById('btnObVerifyLater').style.display = 'none';
-                showToast("Phone Verified Successfully!", true);
+                showToast("Verified Successfully!", true);
             } catch (err) {
                 btn.innerHTML = `VERIFY`;
-                showToast("Invalid OTP code. Try again.", true);
+                showToast("Incorrect OTP signature matching code.", false);
             }
         }
 
@@ -983,39 +994,33 @@
         let obStep = 1;
         async function nextOnboardSlide() {
             triggerHaptic();
-            const usernameInput = document.getElementById('obUsername').value;
-            
-            // 1. RELAXED Validation Rule (Alphanumeric and Hyphens allowed. No forced numbers!)
-            const nameRegex = /^[a-zA-Z0-9-]+$/;
+            const usernameInput = document.getElementById('obUsername').value.trim();
             if(!usernameInput || !document.getElementById('obGame').value) { showToast("Fill all fields.", true); return; }
-            if(!nameRegex.test(usernameInput)) {
-                showToast("Username can only contain letters, numbers, and hyphens (-)", true); 
-                return;
-            }
             
-            // 2. Live Database Verification
+            // Check uniqueness rule
             btnLoading('btnCheckUnique', 'CHECKING...');
             const { data, error } = await db.from('Users').select('username').eq('username', usernameInput).maybeSingle();
             btnReset('btnCheckUnique');
             
             if(data) { 
-                let suggested = usernameInput + '-' + Math.floor(Math.random() * 999);
-                document.getElementById('obUsername').value = suggested;
-                showToast("Username taken! Try this one: " + suggested, true); 
+                let randomVal = Math.floor(10 + Math.random() * 90);
+                let suggestedName = usernameInput + "-" + randomVal;
+                showToast(`Taken! Try adding numbers like: ${suggestedName}`, false); 
+                document.getElementById('obUsername').value = suggestedName;
                 return; 
             }
 
-            obStep = 2; document.getElementById('onboardSliderTrack').style.transform = `translate3d(-50%, 0, 0)`;
+            obStep = 2; 
+            document.getElementById('onboardSliderTrack').style.transform = `translateX(-50%)`;
         }
-        function prevOnboardSlide() { triggerHaptic(); obStep = 1; document.getElementById('onboardSliderTrack').style.transform = `translate3d(0%, 0, 0)`; }
+        function prevOnboardSlide() { triggerHaptic(); obStep = 1; document.getElementById('onboardSliderTrack').style.transform = `translateX(0%)`; }
 
         async function submitOnboarding() {
             triggerHaptic();
             if(!document.getElementById('obIgn').value || !document.getElementById('obUid').value || !document.getElementById('obPhone').value) { showToast("Fill all mandatory fields.", true); return; }
-            if(!isObPhoneVerified) { showToast("Please verify phone number via OTP or Wait for bypass."); return; }
+            if(!isObPhoneVerified) { showToast("Verify mobile verification parameters first."); return; }
             
             btnLoading('btnFinishOnboard', 'SAVING...');
-            
             const phoneDigits = document.getElementById('obPhone').value.substring(4).replace(/\D/g, '');
 
             try {
@@ -1030,7 +1035,6 @@
                 const { error } = await db.from('Users').insert([newUser]);
                 if (error) throw error;
 
-                // Push Notification Trigger
                 await fetch(CLOUDFLARE_WORKER_URL, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'send_push', email: userEmail, title: "Welcome to Tournyx! 🎮", message: "Your esports journey begins now. Win real cash!" })
@@ -1040,34 +1044,39 @@
                 triggerArenaEntry(newUser, 'index.html');
             } catch (error) { showToast("Error creating profile.", true); btnReset('btnFinishOnboard'); }
         }
-        
-       // --- NOTIFICATION TOGGLE ENGINE ---
+
+        // --- NOTIFICATION ENGINE ---
         async function toggleNotifications(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             doHaptic();
-            
             if (!window.OneSignal) return;
 
             const isOptedIn = await OneSignal.User.PushSubscription.optedIn;
-            let nTrack = document.getElementById('notifTrack');
-
+            const toggleTrack = document.getElementById('notifToggleTrack');
+            
             if(isOptedIn) {
-                await OneSignal.User.PushSubscription.optOut();
-                if(nTrack) nTrack.classList.remove('on');
-                showToast("Notifications Disabled");
+                // Funny notice block - enforce system lock requirement
+                showToast("Real alphas don't mute notifications! Disable via mobile device settings if you dare. 😉");
             } else {
                 await OneSignal.slidedown.promptPush();
-                // Toggle state updates automatically via the SDK listener in <head>
-                showToast("Requesting Permission...", true);
+                // State dynamically changes slider styling inside background callback listeners
             }
         }
-        
-        // --- 7-LANGUAGE AI ENGINE (LOCALIZATION) ---
+
+        // --- 12-LANGUAGE ADVANCED MULTILINGUAL PACK ENGINE ---
         const langData = {
-            'en': { login: "PLAYER LOGIN", reg: "CREATE ACCOUNT", org: "ORGANIZER PORTAL", desc: "Join the elite. Compete in daily scrims, climb the leaderboard, and withdraw real cash directly to your wallet.", logTitle: "Player Login", regTitle: "Create Account", help: "Help", lang: "Lang", acc: "Accounts", enter: "ENTER ARENA", terms: "I have read and agree to the Terms of Service.", tap: "TAP TO ENTER ARENA", applyHost: "Apply to Host Tournaments", admin: "VERIFY ADMIN", back: "Back", next: "Next" },
-            'hi': { login: "खिलाड़ी लॉगिन", reg: "खाता बनाएं", org: "आयोजक पोर्टल", desc: "कुलीन वर्ग में शामिल हों। दैनिक स्क्रिम्स में प्रतिस्पर्धा करें और असली नकद जीतें।", logTitle: "लॉगिन", regTitle: "खाता बनाएं", help: "मदद", lang: "भाषा", acc: "खाते", enter: "मैदान में प्रवेश करें", terms: "मैंने सेवा की शर्तें पढ़ ली हैं।", tap: "प्रवेश के लिए टैप करें", applyHost: "टूर्नामेंट होस्ट करें", admin: "एडमिन सत्यापित करें", back: "पीछे", next: "आगे" },
-            'ta': { login: "வீரர் உள்நுழைவு", reg: "கணக்கை உருவாக்கு", org: "அமைப்பாளர் போர்டல்", desc: "எலைட் அணியில் சேருங்கள். தினசரி போட்டிகளில் பங்கேற்று உண்மையான பணத்தை வெல்லுங்கள்.", logTitle: "உள்நுழைவு", regTitle: "உருவாக்கு", help: "உதவி", lang: "மொழி", acc: "கணக்குகள்", enter: "உள்ளே செல்லவும்", terms: "சேவை விதிமுறைகளை நான் ஏற்றுக்கொள்கிறேன்.", tap: "உள்ளே செல்ல தட்டவும்", applyHost: "போட்டியை நடத்த விண்ணப்பிக்கவும்", admin: "நிர்வாகியை சரிபார்க்கவும்", back: "பின்னால்", next: "அடுத்து" },
-            'te': { login: "ప్లేయర్ లాగిన్", reg: "ఖాతా సృష్టించండి", org: "ఆర్గనైజర్ పోర్టల్", desc: "ఎలైట్‌లో చేరండి. రోజువారీ స్కిర్మ్‌లలో పోటీపడి నిజమైన నగదు గెలుచుకోండి.", logTitle: "లాగిన్", regTitle: "సృష్టించండి", help: "సహాయం", lang: "భాష", acc: "ఖాతాలు", enter: "ఎంటర్ అవ్వండి", terms: "నేను సేవా నిబంధనలను అంగీకరిస్తున్నాను.", tap: "ప్రవేశించడానికి నొక్కండి", applyHost: "హోస్ట్ కోసం దరఖాస్తు చేయండి", admin: "నిర్వాహకుడిని ధృవీకరించండి", back: "వెనుకకు", next: "తదుపరి" }
+            'en': { login: "PLAYER LOGIN", reg: "CREATE ACCOUNT", org: "ORGANIZER PORTAL", desc: "Join the elite. Compete in daily scrims, climb the leaderboard, and withdraw real cash directly to your wallet.", logTitle: "Player Login", regTitle: "Create Account", help: "Help", lang: "Lang", acc: "Accounts", enter: "ENTER ARENA", terms: "I have read and agree to the Terms of Service." },
+            'hi': { login: "खिलाड़ी लॉगिन", reg: "खाता बनाएं", org: "आयोजक पोर्टल", desc: "कुलीन वर्ग में शामिल हों। दैनिक स्क्रिम्स में प्रतिस्पर्धा करें, लीडरबोर्ड पर चढ़ें, और सीधे अपने वॉलेट में नकद निकालें।", logTitle: "प्लेयर लॉगिन", regTitle: "खाता बनाएं", help: "सहायता", lang: "भाषा", acc: "खाते", enter: "मैदान में उतरें", terms: "मैंने सेवा की शर्तों को पढ़ लिया है और उनसे सहमत हूँ।" },
+            'ta': { login: "வீரர் உள்நுழைவு", reg: "கணக்கை உருவாக்கு", org: "அமைப்பாளர் போர்டல்", desc: "எலைட் அணியில் சேருங்கள். தினசரி போட்டிகளில் பங்கேற்று, லீடர்போர்டில் ஏறி, பணத்தை நேரடியாக உங்கள் வாலட்டில் திரும்பப் பெறுங்கள்.", logTitle: "வீரர் உள்நுழைவு", regTitle: "கணக்கை உருவாக்கு", help: "உதவி", lang: "மொழி", acc: "கணக்குகள்", enter: "அரங்கிற்குள் நுழை", terms: "சேவை விதிமுறைகளை நான் படித்து ஒப்புக்கொள்கிறேன்." },
+            'te': { login: "ప్लेయర్ లాగిన్", reg: "ఖాతా సృష్టించండి", org: "ఆర్గనైజర్ పోర్టల్", desc: "ఎలైట్‌లో చేరండి. రోజువారీ స్కిర్మ్‌లలో పోటీపడి, లీడర్‌బోర్డ్ అధిరోహించి, నిజమైన నగదును నేరుగా మీ వాలెట్‌కి విత్‌డ్రా చేసుకోండి.", logTitle: "ప్లేయర్ లాగిన్", regTitle: "ఖాతా సృష్టించండి", help: "సహాయం", lang: "భాష", acc: "ఖాతాలు", enter: "అరేనాలోకి ప్రవేశించు", terms: "నేను సేవా నిబంధనలను చదివి అంగీకరిస్తున్నాను." },
+            'kn': { login: "ప్ಲೇಯರ್ ಲಾಗಿನ್", reg: "ಖಾತೆ ರಚಿಸಿ", org: "ಆಯೋಜಕ ಪೋರ್ಟಲ್", desc: "ಎಲೈಟ್ ತಂಡವನ್ನು ಸೇರಿ. ದೈನಂದಿನ ಸ್ಕ್ರಿಮ್‌ಗಳಲ್ಲಿ ಸ್ಪರ್ಧಿಸಿ, ಲೀಡರ್‌ಬೋರ್ಡ್ ಏರಿ, ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಲೆಟ್‌ಗೆ ಹಣವನ್ನು ಹಿಂಪಡೆಯಿರಿ.", logTitle: "ಪ್ಲೇಯರ್ ಲಾಗಿನ್", regTitle: "ಖಾತೆ ರಚಿಸಿ", help: "ಸಹಾಯ", lang: "ಭಾಷೆ", acc: "ಖಾತೆಗಳು", enter: "ಅಖಾಡ ಪ್ರವೇಶಿಸಿ", terms: "ನಾನು ಸೇವಾ ನಿಯಮಗಳನ್ನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಒಪ್ಪಿಗೆ ನೀಡಿದ್ದೇನೆ." },
+            'ml': { login: "പ്ലെയർ ലോഗിൻ", reg: "അക്കൗണ്ട് സൃഷ്ടിക്കുക", org: "ഓർഗനൈസർ പോർട്ടൽ", desc: "എലൈറ്റിൽ ചേരുക. ദിവസേനയുള്ള മത്സരങ്ങളിൽ പങ്കെടുക്കുക, ലീഡർബോർഡിൽ കയറുക, പണം നേരിട്ട് വാലറ്റിലേക്ക് പിൻവലിക്കുക.", logTitle: "പ്ലെയർ ലോഗിൻ", regTitle: "അക്കൗണ്ട് സൃഷ്ടിക്കുക", help: "സഹായം", lang: "ഭാഷ", acc: "അക്കൗണ്ടുകൾ", enter: "അരീനയിലേക്ക് പ്രവേശിക്കുക", terms: "ഞാൻ സേവന നിബന്ധനകൾ വായിച്ചു അംഗീകരിക്കുന്നു." },
+            'mr': { login: "प्लेअर लॉगिन", reg: "खाते तयार करा", org: "आयोजक पोर्टल", desc: "एलिटमध्ये सामील व्हा. रोजच्या सामन्यांमध्ये स्पर्धा करा, लीडरबोर्डवर चढा आणि थेट तुमच्या वॉलेटमध्ये पैसे काढा.", logTitle: "प्लेअर लॉगिन", regTitle: "खाते तयार करा", help: "मदत", lang: "भाषा", acc: "खाती", enter: "मैदानात प्रवेश करा", terms: "मी सेवा शर्ती वाचल्या आहेत आणि मान्य करत आहे." },
+            'gu': { login: "પ્લેયર લોગિન", reg: "ખાતું બનાવો", org: "આયોજક પોર્ટલ", desc: "ભદ્ર વર્ગમાં જોડાઓ. દૈનિક સ્ક્રિમ્સમાં ભાગ લો, લીડરબોર્ડ પર આગળ વધો અને તમારા વૉલેટમાં રોકડ ઉપાડો.", logTitle: "પ્લેયર લોગિન", regTitle: "ખાતું બનાવો", help: "મદદ", lang: "ભાષા", acc: "ખાતાઓ", enter: "મેદાનમાં પ્રવેશ કરો", terms: "મેં સેવાની શરતો વાંચી છે અને હું તેની સાથે સહમત છું." },
+            'bn': { login: "প্লেয়ার লগইন", reg: "অ্যাকাউন্ট তৈরি করুন", org: "অর্গানাইজার পোর্টাল", desc: "এলিটদের সাথে যোগ দিন। দৈনিক স্ক্রিমগুলিতে প্রতিদ্বন্দ্বিতা করুন, লিডারবোর্ডে আরোহণ করুন এবং সরাসরি আপনার ওয়ালেটে টাকা তুলুন।", logTitle: "প্লেয়ার লগইন", regTitle: "অ্যাকাউন্ট তৈরি করুন", help: "সাহায্য", lang: "ভাষা", acc: "অ্যাকাউন্টস", enter: "এরেনায় প্রবেশ করুন", terms: "আমি সেবার শর্তাবলী পড়েছি এবং সম্মত হয়েছি।" },
+            'pa': { login: "ਖਿਡਾਰੀ ਲੌਗਇਨ", reg: "ਖਾਤਾ ਬਣਾਓ", org: "ਪ੍ਰਬੰਧਕ ਪੋਰਟਲ", desc: "ਕੁਲੀਨ ਵਰਗ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ। ਰੋਜ਼ਾਨਾ ਮੁਕਾਬਲਿਆਂ ਵਿੱਚ ਹਿੱਸਾ ਲਓ, ਲੀਡਰਬੋਰਡ 'ਤੇ ਚੜ੍ਹੋ, ਅਤੇ ਸਿੱਧੇ ਆਪਣੇ ਵਾਲਿਟ ਵਿੱਚ ਪੈਸੇ ਕਢਵਾਓ।", logTitle: "ਖਿਡਾਰੀ ਲੌਗਇਨ", regTitle: "ਖਾਤਾ ਬਣਾਓ", help: "ਮਦਦ", lang: "ਭਾਸ਼ਾ", acc: "ਖਾਤੇ", enter: "ਮੈਦਾਨ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ", terms: "ਮੈਂ ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਪੜ੍ਹ ਲਿਆ ਹੈ ਅਤੇ ਸਹਿਮਤ ਹਾਂ।" },
+            'or': { login: "ଖେଳାଳୀ ଲଗଇନ୍", reg: "ଖାତା ଖୋଲନ୍ତୁ", org: "ଆୟୋଜକ ପୋର୍ଟାଲ", desc: "ଏଲିଟ୍‌ରେ ଯୋଗ ଦିଅନ୍ତୁ। ଦୈନିକ ସ୍କ୍ରିମ୍ସରେ ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱିତା କରନ୍ତୁ, ଲିଡରବୋର୍ଡରେ ଉପରକୁ ଯାଆନ୍ତୁ ଏବଂ ସିଧାସଳଖ ୱାଲେଟ୍‌କୁ ଟଙ୍କା ଉଠାନ୍ତୁ।", logTitle: "ଖେଳାଳୀ ଲଗଇନ୍", regTitle: "ଖାତା ଖୋଲନ୍ତୁ", help: "ସହାୟତା", lang: "ଭାଷା", acc: "ଖାତାଗୁଡ଼ିକ", enter: "ଆରେନାରେ ପ୍ରବେଶ କରନ୍ତୁ", terms: "ମୁଁ ସେବା ସର୍ତ୍ତାବଳୀ ପଢିଛି ଏବଂ ସହମତ ଅଛି।" },
+            'as': { login: "খেলুৱৈ লগইন", reg: "একাউণ্ট খোলক", org: "আয়োজক পৰ্টেল", desc: "অভিজাত শ্ৰেণীত যোগদান কৰক। দৈনিক স্ক্ৰিমত প্ৰতিযোগিতা কৰক, লিডাৰবোৰ্ডত ওপৰলৈ উঠক আৰু পোনপটীয়াকৈ ৱালেটলৈ ধন উলিয়াওক।", logTitle: "খেলুৱৈ লগইন", regTitle: "একাউণ্ট খোলক", help: "সহায়", lang: "ভাষা", acc: "একাউণ্টসমূহ", enter: "আৰেনাত প্ৰৱেশ কৰক", terms: "মই সেৱাৰ চৰ্তাৱলী পঢ়িছো আৰু সন্মত হৈছো।" }
         };
 
         function applyLanguageEngine() {
@@ -1084,25 +1093,44 @@
                     document.getElementById('txtLang').innerText = langData[lang].lang;
                     document.getElementById('txtAcc').innerText = langData[lang].acc;
                     document.getElementById('txtEnterArena').innerText = langData[lang].enter;
-                    document.getElementById('txtTapEnter').innerText = langData[lang].tap;
-                    document.getElementById('txtVerifyAdmin').innerText = langData[lang].admin;
-                    document.getElementById('txtApplyHost').innerText = langData[lang].applyHost;
-                    
-                    document.querySelectorAll('.txtBack').forEach(el => el.innerText = langData[lang].back);
-                    document.querySelectorAll('.txtNext').forEach(el => el.innerText = langData[lang].next);
+                    document.getElementById('txtTermsText').childNodes[0].textContent = langData[lang].terms + " ";
                 } catch(e) {}
             }
         }
         document.addEventListener("DOMContentLoaded", applyLanguageEngine);
 
-        function setLanguage(langCode) {
+        function downloadLanguagePack(langCode, packName, sizeMb) {
             doHaptic();
-            showToast("Downloading language pack...");
-            setTimeout(() => {
-                localStorage.setItem('tournyx_lang', langCode);
-                showToast("Language applied successfully!", true);
-                setTimeout(() => window.location.reload(), 800);
-            }, 1000);
+            document.getElementById('langSelectionView').classList.add('hidden');
+            const progressView = document.getElementById('langDownloadProgressView');
+            progressView.classList.remove('hidden');
+
+            let currentProgress = 0;
+            const barFill = document.getElementById('langProgressBar');
+            const statusLabel = document.getElementById('lblDownloadStatus');
+            const detailsLabel = document.getElementById('lblPackDetails');
+
+            statusLabel.innerText = `Downloading ${packName}...`;
+
+            const interval = setInterval(() => {
+                currentProgress += Math.floor(Math.random() * 8) + 4;
+                if(currentProgress >= 100) {
+                    currentProgress = 100;
+                    clearInterval(interval);
+                    barFill.style.width = `100%`;
+                    detailsLabel.innerText = `100% / ${sizeMb.toFixed(1)} MB`;
+                    statusLabel.innerText = "Extracting language string mapping assets...";
+                    
+                    setTimeout(() => {
+                        localStorage.setItem('tournyx_lang', langCode);
+                        window.location.reload();
+                    }, 800);
+                } else {
+                    barFill.style.width = `${currentProgress}%`;
+                    let currentMb = (sizeMb * (currentProgress / 100)).toFixed(1);
+                    detailsLabel.innerText = `${currentProgress}% / ${currentMb} MB of ${sizeMb.toFixed(1)} MB`;
+                }
+            }, 80);
         }
 
         function initMasterVideoEngine() {
@@ -1115,7 +1143,7 @@
             
             const playPromise = bgVideo.play();
             if (playPromise !== undefined) {
-                playPromise.catch(e => console.log("Native autoplay pending interaction."));
+                playPromise.catch(e => console.log("Autoplay context initialization."));
             }
 
             const cacheUrl = bgVideo.src;
@@ -1152,22 +1180,10 @@
             } else {
                 setTimeout(transitionToArena, 2800);
             }
-
-            const unlockAudioAndPlay = () => {
-                bgVideo.muted = false; bgVideo.volume = 1.0; 
-                if (bgVideo.paused) bgVideo.play().catch(()=>{});
-                window.hasUnmuted = true;
-                document.removeEventListener('touchstart', unlockAudioAndPlay);
-                document.removeEventListener('click', unlockAudioAndPlay);
-            };
-
-            document.addEventListener('touchstart', unlockAudioAndPlay, {once:true, passive: true});
-            document.addEventListener('click', unlockAudioAndPlay, {once:true, passive: true});
         }
-
         initMasterVideoEngine();
 
-        // SMART INDIAN CITIES & STATES ENGINE
+        // INDIAN LOCATIONS LOOKUP DATA
         const indiaData = {
             "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur"],
             "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru"],
@@ -1180,6 +1196,7 @@
 
         function initLocations() {
             const stateSelect = document.getElementById('regState');
+            if(!stateSelect) return;
             stateSelect.innerHTML = '<option value="" disabled selected id="txtSelState">Select State</option>';
             Object.keys(indiaData).forEach(state => {
                 let opt = document.createElement('option'); opt.value = state; opt.innerHTML = state;
@@ -1248,7 +1265,7 @@
             }
         }
 
-        // --- SUPABASE NATIVE EMAIL OTP LOGIC ---
+        // --- SUPABASE EMAIL AUTH SIGNUP ---
         async function sendOtp() {
             doHaptic();
             const emailInput = document.getElementById('regEmail');
@@ -1278,7 +1295,7 @@
             const email = document.getElementById('regEmail').value.trim();
             const otpInput = document.getElementById('regOtp');
             const otp = otpInput.value.trim();
-            if(otp.length < 6) { showToast("Enter valid 6-digit OTP"); return; } 
+            if(otp.length < 6) { showToast("Enter valid 6-digit OTP"); return; }
 
             const btn = document.getElementById('btnVerifyOtp');
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
@@ -1291,10 +1308,9 @@
                 btn.classList.add('verified'); btn.disabled = true;
                 otpInput.readOnly = true; document.getElementById('regEmail').readOnly = true;
                 isEmailVerified = true;
-                
             } catch (err) {
                 btn.innerHTML = `VERIFY`;
-                showToast("Invalid OTP code.", true);
+                showToast("Invalid OTP token mapping.", true);
             }
         }
 
@@ -1315,47 +1331,36 @@
             }
             if (step === 2) {
                 const usernameInput = document.getElementById('regUser').value.trim();
-                const nameRegex = /^[a-zA-Z0-9-]+$/;
+                if(document.getElementById('regGame').value === "") { showToast("Please select a game."); return; }
+                if(usernameInput === "") { showToast("Display name required."); return; }
+                if(document.getElementById('regIgn').value.trim() === "") { showToast("IGN required."); return; }
+                if(document.getElementById('regUid').value.trim() === "") { showToast("Game UID required."); return; }
 
-                if(document.getElementById('regGame').value === "") { showToast("Please select a game.", true); return; }
-                if(usernameInput === "") { showToast("Unique Username required.", true); return; }
-                if(!nameRegex.test(usernameInput)) {
-                    showToast("Username can only contain letters, numbers, and hyphens (-)", true); 
-                    return;
-                }
-                if(document.getElementById('regIgn').value.trim() === "") { showToast("IGN required.", true); return; }
-                if(document.getElementById('regUid').value.trim() === "") { showToast("Game UID required.", true); return; }
-
-                // Check DB for standard signup uniqueness
+                // Check uniqueness rule
                 const { data } = await db.from('Users').select('username').eq('username', usernameInput).maybeSingle();
-                if(data) { 
-                    let suggested = usernameInput + '-' + Math.floor(Math.random() * 9999);
-                    document.getElementById('regUser').value = suggested;
-                    showToast("Username taken! Try this one: " + suggested, true); 
-                    return; 
+                if(data) {
+                    let alternateVal = usernameInput + "-" + Math.floor(10 + Math.random() * 90);
+                    showToast(`Username taken! Try adding numbers like: ${alternateVal}`, false);
+                    document.getElementById('regUser').value = alternateVal;
+                    return;
                 }
             }
 
             currentStep = step + 1;
-            document.getElementById('sliderTrack').style.transform = `translate3d(-${(currentStep - 1) * 33.333}%, 0, 0)`;
+            document.getElementById('sliderTrack').style.transform = `translateX(-${(currentStep - 1) * 33.333}%)`;
             updateDots();
         }
 
         function prevSlide(step) {
             doHaptic();
             currentStep = step - 1;
-            document.getElementById('sliderTrack').style.transform = `translate3d(-${(currentStep - 1) * 33.333}%, 0, 0)`;
+            document.getElementById('sliderTrack').style.transform = `translateX(-${(currentStep - 1) * 33.333}%)`;
             updateDots();
         }
 
         function formatImageUrl(url, fallbackName) {
             let safeName = fallbackName || "User";
-            let animeFallback = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(safeName)}&size=150&backgroundColor=0a0520,0d0825`;
-            if (!url) return animeFallback;
-            let strUrl = String(url).trim().replace(/[\r\n\t]/g, '');
-            if (strUrl.length < 5) return animeFallback;
-            if (strUrl.startsWith('data:image') || strUrl.includes('imgbb') || strUrl.includes('ibb.co')) return strUrl;
-            return strUrl;
+            return url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(safeName)}&size=150&backgroundColor=0a0520,0d0825`;
         }
 
         function saveRecentAccount(userObj) {
@@ -1363,7 +1368,6 @@
                 let accounts = JSON.parse(localStorage.getItem('tournyx_recent_accounts')) || [];
                 accounts = accounts.filter(a => a.email !== userObj.email); 
                 let safeName = userObj.ign || userObj.username || "Player";
-                
                 accounts.unshift({ ign: safeName, email: userObj.email, avatar: formatImageUrl(userObj.avatar, safeName), userObj: userObj });
                 if(accounts.length > 5) accounts.pop(); 
                 localStorage.setItem('tournyx_recent_accounts', JSON.stringify(accounts));
@@ -1395,20 +1399,11 @@
             doHaptic();
             let accounts = JSON.parse(localStorage.getItem('tournyx_recent_accounts')) || [];
             let acc = accounts.find(a => a.email === email);
-            
-            // 1-CLICK INSTANT LOGIN BYPASS
             if(acc && acc.userObj) {
                 closeModals(true);
                 showToast("Welcome Back! Entering Arena...", true);
                 let targetUrl = acc.userObj.role === 'organizer' ? 'profile.html' : 'index.html';
                 setTimeout(() => triggerArenaEntry(acc.userObj, targetUrl), 800);
-            } else {
-                // Fallback if data is corrupted
-                closeModals(true);
-                document.getElementById('masterTerms').checked = true;
-                openModal('loginModal');
-                document.getElementById('loginEmail').value = email;
-                document.getElementById('loginPwd').focus();
             }
         }
 
@@ -1436,14 +1431,7 @@
         async function logoutUser(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); } 
             doHaptic();
-            
-            await db.auth.signOut(); // Completely kills the Supabase session securely
-            
-            // Wipe browser cookies completely to un-stick Google Auth
-            document.cookie.split(";").forEach((c) => {
-              document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-            });
-
+            try { await db.auth.signOut(); } catch(err){}
             localStorage.removeItem('tournyx_user');
             localStorage.removeItem('tournyx_userData');
             document.getElementById('loggedInProfile').classList.add('hidden');
@@ -1463,8 +1451,11 @@
         
         function closeModals(internalCall = false) {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+            // FIX: Restore clean view state when lang packs drop out
+            document.getElementById('langSelectionView').classList.remove('hidden');
+            document.getElementById('langDownloadProgressView').classList.add('hidden');
             currentStep = 1;
-            document.getElementById('sliderTrack').style.transform = `translate3d(0%, 0, 0)`;
+            document.getElementById('sliderTrack').style.transform = `translateX(0%)`;
             updateDots();
             if(isModalOpen && !internalCall) { history.back(); } 
             else { isModalOpen = false; }
@@ -1477,7 +1468,6 @@
             }
         });
 
-        // Restored Help Form Logic
         function submitHelp(e) {
             e.preventDefault();
             doHaptic();
@@ -1507,22 +1497,6 @@
             setTimeout(() => { window.location.href = redirectUrl; }, 1900);
         }
 
-        function btnLoading(btnId, text) {
-            if(navigator.vibrate) navigator.vibrate(15);
-            const btn = document.getElementById(btnId);
-            btn.dataset.original = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${text}`;
-            btn.disabled = true;
-        }
-        function btnReset(btnId) {
-            const btn = document.getElementById(btnId);
-            btn.innerHTML = btn.dataset.original;
-            btn.disabled = false;
-        }
-
-        // ==========================================
-        // MAIN SIGNUP & LOGIN FORMS
-        // ==========================================
         document.getElementById('playerSignupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             let finalState = document.getElementById('regState').value;
@@ -1559,7 +1533,6 @@
 
                 if(navigator.vibrate) navigator.vibrate(30);
                 showToast("Account Created! Securely entering arena...", true);
-                
                 setTimeout(() => { triggerArenaEntry(newUser, 'index.html'); }, 1500);
             } catch (err) { 
                 showToast(err.message || "Connection Error or system unavailable."); 
@@ -1570,7 +1543,6 @@
         document.getElementById('playerLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             btnLoading('btnLogin', 'AUTHENTICATING...');
-
             const email = e.target.email.value.trim().toLowerCase();
             const password = e.target.password.value;
             
@@ -1579,19 +1551,18 @@
                 if(error) throw error;
 
                 const { data: dbUser } = await db.from('Users').select('*').eq('email', email).single();
-
                 if (dbUser) {
                     if (dbUser.role === 'organizer') showToast("Organizers must log in through the Organizer Portal.");
                     else triggerArenaEntry(dbUser, 'index.html');
                 } else { showToast("User profile not found."); }
             } catch (err) { showToast("Invalid Credentials"); }
-            finally { btnReset('btnLogin'); }
+            document.getElementById('playerLoginForm').reset();
+            btnReset('btnLogin');
         });
 
         document.getElementById('organizerLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             btnLoading('btnOrgLogin', 'VERIFYING...');
-
             const email = e.target.email.value.trim().toLowerCase();
             const password = e.target.password.value;
             
@@ -1600,13 +1571,13 @@
                 if(error) throw error;
 
                 const { data: dbUser } = await db.from('Users').select('*').eq('email', email).single();
-
                 if (dbUser) {
                     if (dbUser.role === 'organizer') triggerArenaEntry(dbUser, 'profile.html');
                     else showToast("Players must log in through the Player Portal.");
                 } else { showToast("Admin profile not found."); }
             } catch (err) { showToast("Invalid Admin Credentials"); }
-            finally { btnReset('btnOrgLogin'); }
+            document.getElementById('organizerLoginForm').reset();
+            btnReset('btnOrgLogin');
         });
     </script>
 </body>
