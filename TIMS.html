@@ -3,450 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TIMS - Tournyx Management System</title>
+    <title>TIMS Engine - Unified Gateway</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-main: #080A10;
-            --bg-card: rgba(15, 18, 30, 0.75);
+            --bg-main: #05020c;
+            --bg-card: rgba(15, 7, 30, 0.65);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff4d4d;
             --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --glass-border: rgba(0, 242, 255, 0.15);
+            --glass-border: rgba(0, 242, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+            --sidebar-width: 260px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #080A10 100%); pointer-events: none;}
-
-        .container { width: 100%; max-width: 900px; background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,242,255,0.05); position: relative; z-index: 10; animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 30px; display: none;}
-        .container.active { display: block; }
+        body { 
+            background-color: var(--bg-main); 
+            color: white; 
+            font-family: var(--font-body); 
+            overflow-x: hidden; 
+            min-height: 100vh; 
+            margin: 0;
+        }
         
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Animated Background */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #05020c 100%); pointer-events: none;}
 
-        /* Typography & Headers */
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 4px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem;}
+        /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
+        #view-login {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10;
+        }
 
-        /* Form Elements */
-        .form-group { margin-bottom: 15px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.8rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 10px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
-        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2);}
-        textarea.form-control { resize: vertical; min-height: 80px; }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: var(--glass-shadow), inset 0 0 20px rgba(0,242,255,0.05);
+            animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; }
-        .btn-primary:active { transform: scale(0.96); }
-        .btn-outline { background: rgba(0,0,0,0.5); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); margin-top: 10px;}
-        .btn-outline:hover { background: rgba(0,242,255,0.1); }
-        .btn-success { background: rgba(0,255,127,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); }
+        @keyframes fadeInScale { 
+            from { opacity: 0; transform: scale(0.95) translateY(20px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
 
-        /* Login Toggles */
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 5px;}
-        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 8px; transition: 0.3s;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); font-weight: bold;}
+        .header-logo { text-align: center; margin-bottom: 30px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 2.2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 5px;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;}
 
-        /* Dashboards */
-        .dash-header { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;}
-        .stat-badge { text-align: center; }
-        .stat-badge span { display: block; font-size: 0.75rem; color: #aaa; text-transform: uppercase;}
-        .stat-badge strong { font-size: 1.3rem; color: var(--accent-cyan); font-family: var(--font-head);}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.6); border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05); padding: 6px; width: 100%; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #666; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); font-weight: bold; box-shadow: 0 0 15px rgba(0,242,255,0.1);}
 
-        /* Progress Engine */
-        .progress-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 20px; border-radius: 12px; margin-bottom: 20px;}
-        .progress-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin: 15px 0; overflow: hidden;}
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); width: 20%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 10px var(--accent-cyan);}
-        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.8rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 16px; border-radius: 12px; font-family: var(--font-body); font-size: 1.05rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-        /* AI Chat UI */
-        .ai-hub { background: rgba(0,0,0,0.4); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 12px; margin-top: 20px;}
-        .ai-hub h3 { color: var(--accent-purple); font-family: var(--font-head); font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;}
-        .ai-response { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; font-size: 0.9rem; color: #ddd; margin-top: 10px; min-height: 50px; border-left: 3px solid var(--accent-purple); display: none;}
+        .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 15px; }
+        .btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,242,255,0.4); }
 
-        /* Officer Table */
-        .task-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;}
-        .task-table th, .task-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .task-table th { color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase;}
+        /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
+        #view-dashboard {
+            display: none; /* Hidden by default */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            flex-direction: row;
+            background: transparent;
+            z-index: 20;
+            position: absolute;
+            top: 0; left: 0;
+        }
 
-        /* Toast */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 10px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s; z-index: 9999; box-shadow: 0 5px 20px rgba(0,242,255,0.4); text-transform: uppercase; display: flex; align-items: center; gap: 8px; font-size: 0.85rem;}
+        /* SIDEBAR (Glassmorphism Drawer) */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: rgba(10, 5, 20, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 25px 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Hide scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar { width: 0px; }
+
+        .sidebar-brand { text-align: center; margin-bottom: 30px; padding: 0 20px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;}
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
+        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #999; font-family: var(--font-head); font-size: 0.9rem; text-transform: uppercase; transition: all 0.3s ease;}
+        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
+        .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
+
+        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,77,77,0.4);}
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 30px 40px;
+            position: relative;
+        }
+
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+
+        /* MOBILE OVERLAY & BUTTON */
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 110; background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+
+        /* DASHBOARD HEADER */
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 25px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; backdrop-filter: blur(15px); box-shadow: var(--glass-shadow);}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.8rem; color: white; margin-bottom: 5px;}
+        .dash-greeting p { color: #aaa; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .stat-badge { text-align: right; }
+        .stat-badge span { display: block; font-size: 0.85rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 5px;}
+        .stat-badge strong { font-size: 2.2rem; color: var(--accent-cyan); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,242,255,0.3);}
+
+        /* PANELS */
+        .content-panel { display: none; animation: slideUp 0.4s ease; width: 100%; max-width: 1000px; margin: 0 auto;}
+        .content-panel.active { display: block; }
+
+        .panel-card { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 30px; border-radius: 16px; margin-bottom: 25px; backdrop-filter: blur(15px); box-shadow: var(--glass-shadow);}
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
+
+        /* TOAST NOTIFICATION */
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 16px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 25px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
-        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase;}
+        /* --- RESPONSIVE MOBILE FIXES --- */
+        @media (max-width: 850px) {
+            .mobile-menu-btn { display: flex; }
+            .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-overlay.open { display: block; opacity: 1; }
+            
+            .main-content { padding: 90px 20px 20px 20px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px;}
+            .stat-badge { text-align: left;}
+            
+            .login-card { padding: 30px 20px; }
+            .header-logo h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Global Background -->
     <canvas id="particles-canvas"></canvas>
-    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span>Message</span></div>
+    
+    <!-- System Toast -->
+    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
 
-    <!-- VIEW 1: AUTHENTICATION GATEWAY -->
-    <div class="container active" id="view-login">
-        <div class="header-logo">
-            <h1>TIMS ENGINE</h1>
-            <p>Unified Operational Gateway</p>
-        </div>
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN GATEWAY                      -->
+    <!-- ========================================== -->
+    <div id="view-login">
+        <div class="login-card">
+            <div class="header-logo">
+                <h1>TIMS ENGINE</h1>
+                <p>Unified Operational Gateway</p>
+            </div>
 
-        <div class="auth-toggle">
-            <div id="tab-intern" class="active" onclick="toggleAuth('intern')">Intern Login</div>
-            <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
-        </div>
+            <!-- Login Toggles -->
+            <div class="auth-toggle">
+                <div id="tab-intern" class="active" onclick="toggleAuth('intern')">Intern Login</div>
+                <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
+            </div>
 
-        <!-- Intern Login Form -->
-        <form id="form-intern" onsubmit="event.preventDefault(); loginIntern();">
-            <div class="form-group">
-                <label class="form-label">Intern Name</label>
-                <input type="text" id="loginInternName" class="form-control" placeholder="e.g. Harsha" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Task ID</label>
-                <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-012" required>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
-        </form>
-
-        <!-- Officer Login Form -->
-        <form id="form-officer" style="display:none;" onsubmit="event.preventDefault(); loginOfficer();">
-            <div class="form-group">
-                <label class="form-label">Officer Name</label>
-                <input type="text" id="loginOfficerName" class="form-control" placeholder="e.g. Rajesh" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Secure PIN</label>
-                <input type="password" id="loginPin" class="form-control" placeholder="****" required>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-halved"></i> Authenticate</button>
-        </form>
-    </div>
-
-    <!-- VIEW 2: INTERN DASHBOARD -->
-    <div class="container" id="view-intern-dashboard">
-        <div class="dash-header">
-            <div>
-                <h2 style="font-size: 1.2rem; margin-bottom: 4px;">Welcome, <span id="intName" style="color:var(--accent-cyan);">Intern</span></h2>
-                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
-            </div>
-            <div class="stat-badge">
-                <span>Prod. Score</span>
-                <strong id="intScore">20%</strong>
-            </div>
-        </div>
-
-        <div class="progress-box">
-            <h3 style="font-family: var(--font-head); color: var(--accent-purple); font-size: 1rem;" id="taskTitle">Task: Loading...</h3>
-            <p style="font-size: 0.9rem; color: #bbb; margin-top: 10px;" id="taskDesc">Description loading...</p>
-            <a href="#" id="taskSop" target="_blank" style="color: var(--accent-cyan); font-size: 0.85rem; display: block; margin-top: 10px;"><i class="fa-solid fa-link"></i> View SOP Document</a>
-
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBar"></div>
-            </div>
-            <div style="text-align: right; font-size: 0.8rem; color: #888; margin-bottom: 15px;">Status: <span id="taskStatus" style="color: white; font-weight: bold;">Pending</span></div>
-
-            <div class="action-grid">
-                <button class="btn btn-outline" onclick="updateTaskStatus('Started', 40)" style="font-size: 0.75rem;">Start Task</button>
-                <button class="btn btn-outline" onclick="updateTaskStatus('Updated', 60)" style="font-size: 0.75rem;">Update Progress</button>
-                <button class="btn btn-success" onclick="updateTaskStatus('Submitted', 80)" style="font-size: 0.75rem;">Submit</button>
-            </div>
-        </div>
-
-        <!-- AI Assistant Module -->
-        <div class="ai-hub">
-            <h3><i class="fa-solid fa-robot"></i> Tournyx AI Hub</h3>
-            <div class="form-group" style="margin-bottom: 10px;">
-                <input type="text" id="aiInput" class="form-control" placeholder="Ask a technical question regarding this task...">
-            </div>
-            <button class="btn btn-primary" onclick="askTournyxAI()" style="padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-microchip"></i> Ask AI Assistant</button>
-            <div class="ai-response" id="aiResponse"></div>
-        </div>
-    </div>
-
-    <!-- VIEW 3: OFFICER DASHBOARD -->
-    <div class="container" id="view-officer-dashboard">
-        <div class="dash-header">
-            <div>
-                <h2 style="font-size: 1.2rem; margin-bottom: 4px;">Commander, <span id="offName" style="color:var(--accent-purple);">Officer</span></h2>
-                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
-            </div>
-            <div class="stat-badge">
-                <span>System Status</span>
-                <strong style="color:var(--accent-green);">ONLINE</strong>
-            </div>
-        </div>
-
-        <!-- Assign Task Form -->
-        <div class="progress-box">
-            <h3 style="font-family: var(--font-head); color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> Assign New Task</h3>
-            <form onsubmit="event.preventDefault(); assignTask();">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <label class="form-label">Intern Name</label>
-                        <input type="text" id="newTaskIntern" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Task ID</label>
-                        <input type="text" id="newTaskId" class="form-control" placeholder="e.g. DEV-015" required>
-                    </div>
+            <!-- Intern Form -->
+            <form id="form-intern" onsubmit="event.preventDefault(); initiateLogin('intern');">
+                <div class="form-group">
+                    <label class="form-label">Intern Name</label>
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Intern Name" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Task Title</label>
-                    <input type="text" id="newTaskTitle" class="form-control" required>
+                    <label class="form-label">Task ID</label>
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="Task ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn-login-intern">
+                    <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
+                </button>
+            </form>
+
+            <!-- Officer Form -->
+            <form id="form-officer" style="display:none;" onsubmit="event.preventDefault(); initiateLogin('officer');">
+                <div class="form-group">
+                    <label class="form-label">Officer Name</label>
+                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Officer Name" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Task Description</label>
-                    <textarea id="newTaskDesc" class="form-control" required></textarea>
+                    <label class="form-label">Secure PIN</label>
+                    <input type="password" id="loginPin" class="form-control" placeholder="Secure PIN" required>
                 </div>
-                <button type="submit" class="btn btn-primary" id="btnAssign"><i class="fa-solid fa-share-node"></i> Dispatch Task</button>
+                <button type="submit" class="btn btn-primary" id="btn-login-officer">
+                    <i class="fa-solid fa-shield-halved"></i> Authenticate
+                </button>
             </form>
         </div>
+    </div>
 
-        <!-- Review Queue -->
-        <h3 style="font-family: var(--font-head); color: white; font-size: 1rem; margin-top: 25px;"><i class="fa-solid fa-list-check"></i> Pending Approvals</h3>
-        <div style="overflow-x: auto;">
-            <table class="task-table">
-                <thead><tr><th>Task ID</th><th>Intern</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody id="officerTaskTable">
-                    <!-- Loaded via JS -->
-                </tbody>
-            </table>
+    <!-- ========================================== -->
+    <!-- VIEW 2: MASTER DASHBOARD                   -->
+    <!-- ========================================== -->
+    
+    <!-- Mobile Controls -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    
+    <div id="view-dashboard">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h2>TIMS HUB</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
+                <li class="nav-item" onclick="switchPanel('panel-tasks', this)"><i class="fa-solid fa-clipboard-list"></i> My Tasks</li>
+                <li class="nav-item" onclick="switchPanel('panel-attendance', this)"><i class="fa-solid fa-calendar-check"></i> Attendance</li>
+                <li class="nav-item" onclick="switchPanel('panel-progress', this)"><i class="fa-solid fa-chart-line"></i> Progress</li>
+                <li class="nav-item" onclick="switchPanel('panel-learning', this)"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</li>
+                <li class="nav-item" onclick="switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+                <li class="nav-item" onclick="switchPanel('panel-sop', this)"><i class="fa-solid fa-file-contract"></i> SOP</li>
+                <li class="nav-item" onclick="switchPanel('panel-ted', this)"><i class="fa-solid fa-book"></i> TED</li>
+                <li class="nav-item" onclick="switchPanel('panel-videos', this)"><i class="fa-solid fa-video"></i> Videos</li>
+                <li class="nav-item" onclick="switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Team</li>
+                <li class="nav-item" onclick="switchPanel('panel-contacts', this)"><i class="fa-solid fa-phone"></i> Contacts</li>
+                <li class="nav-item" onclick="switchPanel('panel-announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+                <li class="nav-item" onclick="switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC CONTENT -->
+        <div class="main-content" id="mainContentScroll">
+            
+            <div class="dash-top-bar">
+                <div class="dash-greeting">
+                    <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2>
+                    <p id="dashRole">Role Data</p>
+                </div>
+                <div class="stat-badge">
+                    <span>System Status</span>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.3);">ONLINE</strong>
+                </div>
+            </div>
+
+            <!-- Panel 1: Dashboard Home -->
+            <div id="panel-dashboard" class="content-panel active">
+                <div class="panel-card">
+                    <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
+                    <p style="color: #ccc; line-height: 1.6; font-size: 1.05rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Use the navigation sidebar to access your assigned tasks, architectural documentation, and the Tournyx AI Hub.</p>
+                </div>
+            </div>
+
+            <!-- Panel 2: Tasks -->
+            <div id="panel-tasks" class="content-panel">
+                <div class="panel-card">
+                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Task Deployment</h3>
+                    <p style="color:#aaa;">Connect Supabase to render live tasks.</p>
+                </div>
+            </div>
+            
+            <!-- Panel 3: AI Hub -->
+            <div id="panel-ai" class="content-panel">
+                <div class="panel-card" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 30px rgba(189,0,255,0.1);">
+                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
+                    <p style="color:#ccc; margin-bottom: 20px; line-height: 1.5;">Direct link to the Gemini 3.1 Pro Edge Function. Ask technical architecture questions here.</p>
+                    <div class="form-group">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: var(--accent-purple);">
+                    </div>
+                    <button class="btn btn-primary" style="padding:16px; font-size:0.95rem; background: var(--accent-purple); box-shadow: 0 4px 15px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                </div>
+            </div>
+
+            <!-- Placeholder Panels (Prevents errors on click) -->
+            <div id="panel-attendance" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</h3></div></div>
+            <div id="panel-progress" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Global Progress</h3></div></div>
+            <div id="panel-learning" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</h3></div></div>
+            <div id="panel-sop" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-file-contract"></i> SOP Documents</h3></div></div>
+            <div id="panel-ted" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-book"></i> TED Library</h3></div></div>
+            <div id="panel-videos" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-video"></i> Video Archives</h3></div></div>
+            <div id="panel-team" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-users"></i> Team Roster</h3></div></div>
+            <div id="panel-contacts" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-phone"></i> Global Contacts</h3></div></div>
+            <div id="panel-announcements" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-bullhorn"></i> Server Announcements</h3></div></div>
+            <div id="panel-settings" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Settings</h3></div></div>
+
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MASTER JAVASCRIPT ENGINE                   -->
+    <!-- ========================================== -->
     <script>
-        // ==========================================
-        // 🚨 CONFIGURATION: PASTE SUPABASE KEYS HERE
-        // ==========================================
-        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-        const SUPABASE_KEY = 'YOUR_ANON_KEY';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // --- 1. Supabase Initialization (Replace Keys Before Production) ---
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ==========================================
-        // UI & ANIMATION LOGIC
-        // ==========================================
+        // --- 2. Particle Engine (Background Animation) ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let pArray = [];
-        class P { constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.s=Math.random()*2; this.c=Math.random()>0.5?'#bd00ff':'#00f2ff'; this.v = (Math.random()*0.5) + 0.2; } u(){ this.y-=this.v; if(this.y<0)this.y=canvas.height; } d(){ ctx.fillStyle=this.c; ctx.globalAlpha=0.3; ctx.beginPath(); ctx.arc(Math.floor(this.x),Math.floor(this.y),this.s,0,Math.PI*2); ctx.fill(); } }
-        for(let i=0; i<30; i++) pArray.push(new P());
-        function anim(){ ctx.clearRect(0,0,canvas.width,canvas.height); pArray.forEach(p=>{p.u();p.d()}); requestAnimationFrame(anim); }
-        anim();
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        let width, height, pArray;
 
-        function showToast(msg, isError = false) {
-            const t = document.getElementById('toast');
-            t.querySelector('span').innerText = msg;
-            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+        function initParticles() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            pArray = [];
+            for(let i = 0; i < 40; i++) {
+                pArray.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    s: Math.random() * 2.5,
+                    c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
+                    v: (Math.random() * 0.4) + 0.2
+                });
+            }
         }
 
+        function drawParticles() {
+            ctx.clearRect(0, 0, width, height);
+            pArray.forEach(p => {
+                p.y -= p.v;
+                if(p.y < 0) p.y = height;
+                ctx.fillStyle = p.c;
+                ctx.globalAlpha = 0.4;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        initParticles(); drawParticles();
+        window.addEventListener('resize', initParticles);
+
+        // --- 3. UI Helpers ---
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            const icon = t.querySelector('i');
+            document.getElementById('toastMsg').innerText = msg;
+            
+            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
+            icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        // --- 4. Login Form Toggle (Fixed) ---
         function toggleAuth(type) {
+            // Remove active states
             document.getElementById('tab-intern').classList.remove('active');
             document.getElementById('tab-officer').classList.remove('active');
             document.getElementById('form-intern').style.display = 'none';
             document.getElementById('form-officer').style.display = 'none';
             
+            // Add active states to selected
             document.getElementById(`tab-${type}`).classList.add('active');
             document.getElementById(`form-${type}`).style.display = 'block';
         }
 
-        function switchView(viewId) {
-            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-        }
-
-        // ==========================================
-        // AUTHENTICATION LOGIC
-        // ==========================================
-        async function loginIntern() {
-            const name = document.getElementById('loginInternName').value;
-            const taskId = document.getElementById('loginTaskId').value;
+        // --- 5. Authentication Engine ---
+        async function initiateLogin(role) {
+            let nameInput = "";
+            let btnId = "";
             
-            const { data, error } = await supabase.from('tims_tasks').select('*').eq('task_id', taskId).eq('intern_name', name).single();
-            
-            if (data) {
-                localStorage.setItem('tims_session', JSON.stringify({ role: 'intern', name: name, task: data }));
-                loadInternDashboard();
-                showToast("Authentication Successful");
+            if(role === 'intern') {
+                nameInput = document.getElementById('loginInternName').value;
+                btnId = 'btn-login-intern';
             } else {
-                showToast("Invalid Task ID or Name mismatch.", true);
+                nameInput = document.getElementById('loginOfficerName').value;
+                btnId = 'btn-login-officer';
             }
-        }
 
-        async function loginOfficer() {
-            const name = document.getElementById('loginOfficerName').value;
-            const pin = document.getElementById('loginPin').value;
-            
-            const { data, error } = await supabase.from('tims_users').select('*').eq('name', name).eq('access_pin', pin).single();
-            
-            if (data) {
-                localStorage.setItem('tims_session', JSON.stringify({ role: 'officer', name: name }));
-                loadOfficerDashboard();
-                showToast("Commander Access Granted");
-            } else {
-                showToast("Invalid Credentials.", true);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('tims_session');
-            switchView('view-login');
-            showToast("Session Terminated");
-        }
-
-        // ==========================================
-        // INTERN DASHBOARD LOGIC
-        // ==========================================
-        function loadInternDashboard() {
-            switchView('view-intern-dashboard');
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const t = session.task;
-            
-            document.getElementById('intName').innerText = session.name;
-            document.getElementById('taskTitle').innerText = t.task_id + ": " + t.title;
-            document.getElementById('taskDesc').innerText = t.description;
-            document.getElementById('taskStatus').innerText = t.status;
-            document.getElementById('intScore').innerText = t.productivity_score + "%";
-            document.getElementById('progressBar').style.width = t.productivity_score + "%";
-        }
-
-        async function updateTaskStatus(newStatus, newScore) {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            
-            // Optimistic UI Update
-            document.getElementById('taskStatus').innerText = newStatus;
-            document.getElementById('progressBar').style.width = newScore + "%";
-            document.getElementById('intScore').innerText = newScore + "%";
-
-            // Database Update
-            await supabase.from('tims_tasks').update({ status: newStatus, productivity_score: newScore }).eq('task_id', session.task.task_id);
-            
-            // Update Local Storage Cache
-            session.task.status = newStatus;
-            session.task.productivity_score = newScore;
-            localStorage.setItem('tims_session', JSON.stringify(session));
-            
-            showToast("Progress Updated to " + newScore + "%");
-        }
-
-        // --- AI HUB: COMPRESSED PROMPT ROUTER ---
-        async function askTournyxAI() {
-            const input = document.getElementById('aiInput').value;
-            if(!input) return;
-
-            const resBox = document.getElementById('aiResponse');
-            resBox.style.display = 'block';
-            resBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing compressed prompt...';
-            
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const compressedPrompt = `Context: Task ${session.task.task_id} - ${session.task.title}. Intern Question: "${input}". Answer in under 3 sentences direct technical fix.`;
+            const btn = document.getElementById(btnId);
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+            btn.disabled = true;
 
             try {
-                // 🚨 Replace this fetch with your exact Cloudflare Worker URL
-                // const res = await fetch('https://YOUR_WORKER.workers.dev', {
-                //     method: 'POST', body: JSON.stringify({ action: 'tims_ai_chat', prompt: compressedPrompt })
-                // });
-                // const data = await res.json();
-                
-                // MOCK RESPONSE FOR PROTOTYPE
+                /* 
+                 * REPLACE THIS MOCK TIMEOUT WITH SUPABASE LOGIC ONCE KEYS ARE ADDED
+                 * Example: await supabase.from('tims_users').select('*').eq('name', nameInput) 
+                 */
                 setTimeout(() => {
-                    resBox.innerHTML = `<strong>Tournyx AI:</strong> Based on task ${session.task.task_id}, to resolve your issue ensure your HTML structure uses <code>box-sizing: border-box;</code> to prevent overflow.`;
-                }, 1500);
+                    // Save Session
+                    localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role }));
+                    
+                    // Swap Views
+                    document.getElementById('view-login').style.display = 'none';
+                    document.getElementById('view-dashboard').style.display = 'flex';
+                    
+                    // Populate Dashboard Info
+                    document.getElementById('dashName').innerText = nameInput;
+                    document.getElementById('dashRole').innerText = `${role} access level`;
+                    document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    
+                    showToast("System Access Granted.");
+                    
+                    // Reset Button
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }, 1200);
 
-            } catch (e) {
-                resBox.innerHTML = "<span style='color:red;'>System overload. Please ping your Lead Officer.</span>";
+            } catch (err) {
+                showToast("Database Connection Failed.", true);
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
             }
         }
 
-        // ==========================================
-        // OFFICER DASHBOARD LOGIC
-        // ==========================================
-        function loadOfficerDashboard() {
-            switchView('view-officer-dashboard');
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            document.getElementById('offName').innerText = session.name;
-            fetchPendingTasks(session.name);
-        }
+        // --- 6. Dashboard Navigation Engine ---
+        function switchPanel(panelId, navElement) {
+            // Highlight active menu item
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
 
-        async function assignTask() {
-            const btn = document.getElementById('btnAssign');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...`;
-            
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const payload = {
-                task_id: document.getElementById('newTaskId').value,
-                intern_name: document.getElementById('newTaskIntern').value,
-                assigned_officer: session.name,
-                title: document.getElementById('newTaskTitle').value,
-                description: document.getElementById('newTaskDesc').value,
-                productivity_score: 20
-            };
+            // Show active panel
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
 
-            await supabase.from('tims_tasks').insert([payload]);
-            showToast("Task Dispatched Successfully");
-            
-            document.getElementById('newTaskIntern').value = '';
-            document.getElementById('newTaskId').value = '';
-            document.getElementById('newTaskTitle').value = '';
-            document.getElementById('newTaskDesc').value = '';
-            btn.innerHTML = `<i class="fa-solid fa-share-node"></i> Dispatch Task`;
-            fetchPendingTasks(session.name);
-        }
+            // Scroll to top of content
+            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
 
-        async function fetchPendingTasks(officerName) {
-            const { data, error } = await supabase.from('tims_tasks').select('*').eq('assigned_officer', officerName).order('created_at', { ascending: false });
-            const tbody = document.getElementById('officerTaskTable');
-            tbody.innerHTML = '';
-
-            if(data) {
-                data.forEach(t => {
-                    let btnHtml = t.status === 'Submitted' 
-                        ? `<button onclick="approveTask('${t.task_id}')" style="background:#00ff7f; color:black; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">Approve (100%)</button>`
-                        : `<span style="color:#aaa; font-size:0.8rem;">Waiting...</span>`;
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${t.task_id}</strong></td>
-                            <td>${t.intern_name}</td>
-                            <td style="color:var(--accent-cyan);">${t.status} (${t.productivity_score}%)</td>
-                            <td>${btnHtml}</td>
-                        </tr>
-                    `;
-                });
+            // Auto-close sidebar on mobile
+            if(window.innerWidth <= 850) {
+                toggleSidebar();
             }
         }
 
-        async function approveTask(taskId) {
-            await supabase.from('tims_tasks').update({ status: 'Approved', productivity_score: 100 }).eq('task_id', taskId);
-            showToast(`Task ${taskId} Approved! Intern receives 100%.`);
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            fetchPendingTasks(session.name);
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
         }
 
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
+        // --- 7. Session Termination ---
+        function logout() {
+            localStorage.removeItem('tims_session');
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-login').style.display = 'flex';
+            
+            // Clear inputs
+            document.getElementById('loginInternName').value = '';
+            document.getElementById('loginTaskId').value = '';
+            document.getElementById('loginOfficerName').value = '';
+            document.getElementById('loginPin').value = '';
+            
+            // Close mobile menu if open
+            const sidebar = document.getElementById('sidebar');
+            if(sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                document.getElementById('mobileOverlay').classList.remove('open');
+            }
+
+            showToast("Session Terminated Securely.");
+        }
+
+        // --- 8. Auto-Login Check on Load ---
         window.onload = () => {
             const session = localStorage.getItem('tims_session');
-            if (session) {
+            if(session) {
                 const s = JSON.parse(session);
-                if (s.role === 'intern') loadInternDashboard();
-                if (s.role === 'officer') loadOfficerDashboard();
+                document.getElementById('view-login').style.display = 'none';
+                document.getElementById('view-dashboard').style.display = 'flex';
+                
+                document.getElementById('dashName').innerText = s.name;
+                document.getElementById('dashRole').innerText = `${s.role} access level`;
+                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
             }
-        }
+        };
     </script>
 </body>
 </html>
