@@ -5,527 +5,586 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TIMS Engine - Unified Gateway</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-main: #04010a;
+            --bg-main: #05020c;
+            --bg-card: rgba(15, 7, 30, 0.85);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
-            --accent-red: #ff3333;
-            --accent-green: #00ff66;
-            --accent-yellow: #ffcc00;
+            --accent-red: #ff4d4d;
+            --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --sidebar-width: 260px;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(0, 242, 255, 0.2);
+            --sidebar-width: 250px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
         
         body { 
+            background-color: var(--bg-main); 
             color: white; 
             font-family: var(--font-body); 
-            overflow: hidden; 
+            overflow-x: hidden; 
             min-height: 100dvh; 
-            background-color: var(--bg-main);
+            margin: 0; 
+            position: relative;
         }
+        
+        /* Original Dark Background */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #05020c 100%); pointer-events: none;}
 
-        /* Ambient Backgrounds */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #04010a 100%); }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: orbit 15s infinite alternate ease-in-out; }
-        .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -10%; left: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -7s; }
-        @keyframes orbit { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(60px, 60px) scale(1.1); } }
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
-
-        /* Core Glassmorphism */
         .glass-panel {
-            background: var(--glass-bg); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); border-left: 1px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,242,255,0.05);
         }
 
-        /* ------------------------------------- */
-        /* VIEW: LOGIN */
-        /* ------------------------------------- */
-        #view-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; transition: opacity 0.4s ease, visibility 0.4s; }
-        .login-card { width: 100%; max-width: 400px; border-radius: 30px; padding: 40px 30px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
+        /* --- LOGIN VIEW --- */
+        #view-login {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            z-index: 100; transition: opacity 0.4s ease, visibility 0.4s;
+        }
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.6); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; }
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
-        
-        .auth-form { display: none; }
-        .auth-form.active { display: block; animation: fadeIn 0.3s ease forwards; }
+        .login-card { width: 100%; max-width: 360px; border-radius: 16px; padding: 35px 25px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 4px;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 0.75rem;}
+
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1); padding: 5px; width: 100%; user-select: none;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.8rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan);}
+
+        .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .form-group { margin-bottom: 20px; width: 100%; }
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
-        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px 25px; border-radius: 15px; font-family: var(--font-body); font-size: 1.1rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
-        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
-        textarea.form-control { resize: vertical; min-height: 120px; border-radius: 15px; }
-
-        .btn { width: 100%; padding: 16px 30px; border-radius: 15px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); color: white;}
+        .form-group { margin-bottom: 18px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;}
         
-        .brand-footer { text-align: center; margin-top: 30px; font-size: 0.7rem; color: #888; font-family: var(--font-head); letter-spacing: 2px;}
+        .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px 14px; border-radius: 10px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.8); box-shadow: 0 0 10px rgba(0,242,255,0.2), inset 0 0 5px rgba(0,0,0,0.5);}
+        textarea.form-control { resize: vertical; min-height: 100px; line-height: 1.4; }
 
-        /* ------------------------------------- */
-        /* VIEW: DASHBOARD */
-        /* ------------------------------------- */
-        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; }
-        
-        /* Sidebar */
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: rgba(10, 5, 20, 0.7); backdrop-filter: blur(30px);}
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px;}
+        .btn-primary:active { transform: scale(0.96) !important; box-shadow: 0 2px 8px rgba(0,242,255,0.4); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .btn-success { background: rgba(0,255,127,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); }
+
+        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.2rem; font-weight: 900; color: #ffffff; letter-spacing: 3px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate; }
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); } 100% { text-shadow: 0 0 2px #fff, 0 0 5px var(--accent-cyan), 0 0 10px var(--accent-purple); } }
+
+        /* --- DASHBOARD VIEW --- */
+        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease, visibility 0.5s; }
+
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid var(--glass-border); border-radius: 0 16px 16px 0; }
         .sidebar::-webkit-scrollbar { width: 0px; }
+
         .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px;}
         
-        .nav-menu { list-style: none; padding: 0; width: 100%;}
-        .nav-item { padding: 15px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s; display: none;} /* Hidden by default, toggled by JS */
-        .nav-item.active-role { display: flex; } /* Shows only elements meant for the specific role */
-        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.1) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
-        .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
-        
-        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; text-transform: uppercase;}
-        
-        /* Main Content */
-        .main-content { flex: 1; height: 100dvh; overflow-y: auto; padding: 30px 40px; position: relative; scroll-behavior: smooth;}
+        .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
+        .nav-item { padding: 12px 20px; border-left: 3px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none;}
+        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
+
+        .sidebar-footer { margin-top: auto; padding: 20px 20px; }
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 12px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .logout-btn:hover { background: var(--accent-red); color: white;}
+
+        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
         .main-content::-webkit-scrollbar { width: 6px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        /* Top Bar */
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-radius: 20px; margin-bottom: 30px; background: rgba(0,0,0,0.4);}
-        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.6rem; margin-bottom: 5px;}
-        .dash-greeting p { color: #aaa; font-size: 0.9rem; font-family: var(--font-head); letter-spacing: 1px;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
+        .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        /* Panels */
-        .content-panel { display: none; width: 100%; max-width: 1000px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; }
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-card); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; margin-bottom: 25px;}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 4px;}
+        .dash-greeting p { color: #aaa; font-size: 0.85rem; text-transform: uppercase; font-weight: bold;}
+        .stat-badge { text-align: right; }
+        .stat-badge span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
+        .stat-badge strong { font-size: 1.6rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 10px rgba(0,255,127,0.3);}
+
+        /* PANELS */
+        .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
-        .panel-card { border-radius: 20px; padding: 30px; margin-bottom: 25px; }
-        .panel-title { font-family: var(--font-head); color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; letter-spacing: 1px;}
+        .panel-card { border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; letter-spacing: 1px;}
 
-        /* Contact Directory Grid */
-        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;}
-        .contact-card { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; transition: all 0.3s;}
-        .contact-card:hover { border-color: var(--accent-purple); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(189,0,255,0.15);}
-        .contact-role { font-family: var(--font-head); color: var(--accent-cyan); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;}
-        .contact-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 15px;}
-        .contact-detail { font-size: 0.9rem; color: #aaa; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;}
-
-        /* Live Task Grid (Officer) */
-        .task-list { display: flex; flex-direction: column; gap: 15px; }
-        .task-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px 20px; border-radius: 12px; border-left: 3px solid var(--accent-yellow);}
-        .task-row.completed { border-left-color: var(--accent-green); }
-        .task-meta { flex: 1; }
-        .task-meta h4 { font-family: var(--font-head); font-size: 1.1rem; color: white;}
-        .task-meta p { font-size: 0.85rem; color: #888; margin-top: 5px;}
-        .task-actions button { padding: 8px 15px; border-radius: 8px; border: none; font-family: var(--font-head); font-size: 0.75rem; cursor: pointer; font-weight: bold;}
+        /* Data Grids */
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border-left: 3px solid var(--accent-cyan);}
+        .data-card h4 { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 5px;}
+        .data-card p { font-size: 0.8rem; color: #aaa; margin-bottom: 8px;}
+        .task-status { font-family: var(--font-head); font-size: 0.7rem; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: bold;}
 
         /* Toast */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s; z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.2); display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 10px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 5px 20px rgba(0,242,255,0.4); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
-        /* Mobile */
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; background: rgba(10,5,20,0.9); border: 1px solid var(--accent-cyan); color: var(--accent-cyan);}
         @media (max-width: 850px) {
             .mobile-menu-btn { display: flex; }
-            .sidebar { position: fixed; left: 0; transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .main-content { padding: 75px 15px 15px 15px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px; border-radius: 12px;}
+            .stat-badge { text-align: left;}
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
     <canvas id="particles-canvas"></canvas>
-    <div id="toast"><i class="fa-solid fa-info-circle"></i> <span id="toastMsg">Ready</span></div>
+    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
 
-    <!-- LOGIN VIEW -->
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN GATEWAY                      -->
+    <!-- ========================================== -->
     <div id="view-login">
         <div class="login-card glass-panel">
             <div class="header-logo">
                 <h1>TIMS ENGINE</h1>
-                <p>Advanced Operational Gateway</p>
-            </div>
-            <div class="auth-toggle">
-                <div id="tab-intern" class="active" onclick="toggleAuth('intern')">Intern Sync</div>
-                <div id="tab-officer" onclick="toggleAuth('officer')">Officer Cmd</div>
+                <p>Unified Operational Gateway</p>
             </div>
 
-            <!-- Intern Auth -->
+            <div class="auth-toggle">
+                <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
+                <div id="tab-officer" onclick="window.toggleAuth('officer')">Officer Login</div>
+            </div>
+
             <div id="form-intern" class="auth-form active">
                 <div class="form-group">
-                    <label class="form-label">Intern Identity</label>
-                    <input type="text" id="loginInternName" class="form-control" placeholder="Full Name" onkeypress="handleEnter(event, 'intern')">
+                    <label class="form-label">Intern Name</label>
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Team Task ID</label>
-                    <input type="text" id="loginTeamId" class="form-control" placeholder="e.g. TEAM-ALPHA-01" onkeypress="handleEnter(event, 'intern')">
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')">
                 </div>
-                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="initiateLogin('intern')">
-                    <i class="fa-solid fa-bolt"></i> Initialize Environment
+                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
                 </button>
             </div>
 
-            <!-- Officer Auth -->
             <div id="form-officer" class="auth-form">
                 <div class="form-group">
-                    <label class="form-label">Commander ID</label>
-                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Officer Name" onkeypress="handleEnter(event, 'officer')">
+                    <label class="form-label">Commander Name</label>
+                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Authorization PIN</label>
-                    <input type="password" id="loginPin" class="form-control" placeholder="Secure PIN" onkeypress="handleEnter(event, 'officer')">
+                    <label class="form-label">Secure PIN</label>
+                    <input type="password" id="loginPin" class="form-control" placeholder="Enter PIN" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')">
                 </div>
-                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="initiateLogin('officer')">
-                    <i class="fa-solid fa-shield-halved"></i> Access Command
+                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="window.initiateLogin('officer')">
+                    <i class="fa-solid fa-shield-halved"></i> Authenticate
                 </button>
+            </div>
+            
+            <div class="brand-footer">
+                POWERED BY <br>
+                <span class="neon-quva-small">QUVA</span>
             </div>
         </div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
+    <!-- ========================================== -->
+    <!-- VIEW 2: MASTER DASHBOARD                   -->
+    <!-- ========================================== -->
     <div id="view-dashboard">
-        <button class="mobile-menu-btn glass-panel" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+        
+        <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
+        <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
         
         <div class="sidebar glass-panel" id="sidebar">
-            <div class="sidebar-brand"><h2>TIMS HUB</h2></div>
-            <ul class="nav-menu" id="dynamic-nav">
-                <!-- Javascript will inject role-specific menus here -->
+            <div class="sidebar-brand">
+                <h2>TIMS HUB</h2>
+            </div>
+            <ul class="nav-menu" id="dynamicNavMenu">
+                <!-- Injected automatically based on role -->
             </ul>
             <div class="sidebar-footer">
-                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Disconnect</button>
+                <button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
             </div>
         </div>
 
-        <div class="main-content" id="mainScroll">
+        <div class="main-content" id="mainContentScroll">
+            
             <div class="dash-top-bar glass-panel">
                 <div class="dash-greeting">
                     <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2>
-                    <p id="dashRole">Role Data | <span id="dashTeamId"></span></p>
+                    <p id="dashRole">Role Data</p>
+                </div>
+                <div class="stat-badge">
+                    <span>System Status</span>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.3);">ONLINE</strong>
                 </div>
             </div>
 
-            <!-- PANEL: Shared Dashboard -->
-            <div id="panel-home" class="content-panel active">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-satellite-dish"></i> Status Overview</h3>
-                    <p style="color: #aaa; line-height: 1.6;">Session secured. Live synchronization enabled. LocalStorage caching is active for drafts to prevent data loss. All transmissions are routed through Cloudflare Edge Workers.</p>
-                </div>
-            </div>
-
-            <!-- PANEL: Intern Workflow (Intern Only) -->
+            <!-- CORE PANEL: INTERN TASK HUB -->
             <div id="panel-intern-task" class="content-panel">
-                <div class="panel-card glass-panel" style="border-color: rgba(0, 242, 255, 0.4);">
-                    <h3 class="panel-title"><i class="fa-solid fa-keyboard"></i> Live Execution Terminal</h3>
-                    <p style="color:#888; font-size: 0.9rem; margin-bottom: 15px;">Your progress auto-saves locally. You may leave the portal and return without losing text.</p>
-                    <div class="form-group">
-                        <label class="form-label">Current Progress & Notes</label>
-                        <textarea id="internDraftArea" class="form-control" placeholder="Log your technical operations here..." oninput="autoSaveDraft()"></textarea>
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
+                    <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                        <h4 style="font-family: var(--font-head); font-size: 1.2rem; color: white; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                        <div class="task-status" id="intTaskID">DEV-000</div>
+                        <p style="color:#aaa; font-size: 0.85rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
                     </div>
-                    <button class="btn btn-success" onclick="submitInternProgress()">
-                        <i class="fa-solid fa-paper-plane"></i> Finalize & Submit to HR
-                    </button>
-                </div>
-            </div>
 
-            <!-- PANEL: Officer Task Command (Officer Only) -->
-            <div id="panel-officer-manage" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-layer-group"></i> Create Team Task</h3>
                     <div class="form-group">
-                        <input type="text" id="newTaskTitle" class="form-control" placeholder="Task Designation">
+                        <label class="form-label">Operation Progress Log (Auto-Saves Locally)</label>
+                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. You can close this portal and your work will remain saved here..." oninput="window.saveDraft()"></textarea>
                     </div>
-                    <div class="form-group">
-                        <textarea id="newTaskDesc" class="form-control" placeholder="Operational Parameters..." style="min-height: 80px;"></textarea>
-                    </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple);" onclick="showToast('Task injected to database.', false)">Deploy Task</button>
-                </div>
-                
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-list-check"></i> Active Intern Workflows</h3>
-                    <div class="task-list">
-                        <div class="task-row">
-                            <div class="task-meta"><h4>DEV-015: Frontend Fix</h4><p>Intern: Harsha | Pending HR Review</p></div>
-                            <div class="task-actions"><button style="background: var(--accent-cyan); color: #000;">Review</button></div>
-                        </div>
-                        <div class="task-row completed">
-                            <div class="task-meta"><h4>UI-022: DB Schema</h4><p>Intern: Arun | Verified</p></div>
-                            <div class="task-actions"><button style="background: #333; color: white;">Archive</button></div>
-                        </div>
+
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" style="flex: 1; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,0,0,0.5);" onclick="window.showToast('Draft is continuously auto-saved.', false)">
+                            <i class="fa-solid fa-save"></i> Save Draft
+                        </button>
+                        <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()">
+                            <i class="fa-solid fa-paper-plane"></i> Final Submit to HR
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL: Global Contacts (Shared) -->
+            <!-- CORE PANEL: OFFICER HUB -->
+            <div id="panel-officer-hub" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Deploy New Task</h3>
+                    <div class="data-grid">
+                        <div class="form-group"><label class="form-label">Team Task ID</label><input type="text" id="offTaskId" class="form-control" placeholder="e.g. DEV-020"></div>
+                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="offInternName" class="form-control" placeholder="Assignee Name"></div>
+                        <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="offTaskTitle" class="form-control" placeholder="Objective Name"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Operation Directives</label>
+                        <textarea id="offTaskDesc" class="form-control" placeholder="Define the parameters..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="window.deployTask()"><i class="fa-solid fa-satellite-dish"></i> Deploy to Network</button>
+                </div>
+            </div>
+
+            <!-- COMMON PANEL: TEAM MATRIX -->
+            <div id="panel-team" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Operatives assigned to this Team Task ID.</p>
+                    <div class="data-grid" id="teamMatrixContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMMON PANEL: CONTACT DIRECTORY -->
             <div id="panel-contacts" class="content-panel">
                 <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Global Directory</h3>
-                    <div class="contact-grid">
-                        <div class="contact-card">
-                            <div class="contact-role">Chief Executive</div>
-                            <div class="contact-name">Warhero Xeron</div>
-                            <div class="contact-detail"><i class="fa-solid fa-envelope"></i> ceo@tournyx.com</div>
-                        </div>
-                        <div class="contact-card">
-                            <div class="contact-role">Chief Technology Officer</div>
-                            <div class="contact-name">WH King</div>
-                            <div class="contact-detail"><i class="fa-solid fa-envelope"></i> tech@tournyx.com</div>
-                        </div>
-                        <div class="contact-card">
-                            <div class="contact-role">HR Director</div>
-                            <div class="contact-name">WH Tyson</div>
-                            <div class="contact-detail"><i class="fa-solid fa-envelope"></i> hr@tournyx.com</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="panel-card glass-panel" id="dynamic-team-contacts" style="display: none; border-color: var(--accent-yellow);">
-                    <h3 class="panel-title" style="color: var(--accent-yellow);"><i class="fa-solid fa-users-viewfinder"></i> Your Operation Team</h3>
-                    <p style="color:#888; font-size: 0.9rem; margin-bottom: 15px;">Assigned via Team Task ID: <strong id="displayTeamId"></strong></p>
-                    <div class="contact-grid">
-                        <div class="contact-card">
-                            <div class="contact-role">Domain Officer</div>
-                            <div class="contact-name" id="contactDomainName">Rajesh</div>
-                            <div class="contact-detail"><i class="fa-solid fa-phone"></i> +91-9876543210</div>
-                        </div>
-                        <div class="contact-card">
-                            <div class="contact-role">Team Member (Lead)</div>
-                            <div class="contact-name">WH Dany</div>
-                            <div class="contact-detail"><i class="fa-solid fa-phone"></i> +91-9988776655</div>
-                        </div>
+                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Global Communications</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Executive Board and your specific Domain Officer.</p>
+                    <div class="data-grid" id="contactsContainer">
+                        <!-- Loaded dynamically -->
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL: Cloudflare Edge AI (Shared) -->
+            <!-- COMMON PANEL: AI HUB -->
             <div id="panel-ai" class="content-panel">
-                <div class="panel-card glass-panel" style="box-shadow: 0 0 30px rgba(189,0,255,0.1);">
-                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> AI Assistant (Edge Worker)</h3>
-                    <p style="color:#bbb; font-size: 0.95rem; margin-bottom: 20px;">Direct connection to Gemini Models via Cloudflare Edge for auto-switching models based on load.</p>
-                    <div class="form-group"><input type="text" id="aiInput" class="form-control" placeholder="Query system architecture..."></div>
-                    <button class="btn" style="background: var(--accent-purple); color:white;" onclick="triggerAI()"><i class="fa-solid fa-robot"></i> Execute AI Thread</button>
-                    <div id="aiResponse" style="margin-top: 20px; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.9rem; white-space: pre-wrap;"></div>
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 25px rgba(189,0,255,0.1);">
+                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
+                    <p style="color:#bbb; margin-bottom: 15px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
+                    <div class="form-group">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: rgba(189,0,255,0.4);">
+                    </div>
+                    <button class="btn btn-primary" style="background: var(--accent-purple);" onclick="window.triggerAI()"><i class="fa-solid fa-brain"></i> Execute Edge Query</button>
                 </div>
             </div>
+
+            <!-- PLACEHOLDERS -->
+            <div id="panel-dashboard" class="content-panel active">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Dashboard</h3>
+                    <p style="color: #aaa; line-height: 1.6; font-size: 0.9rem;">Welcome to the unified TIMS workspace. Use the navigation sidebar to begin operations.</p>
+                </div>
+            </div>
+            <!-- Empty panels to prevent UI routing crashes -->
+            <div id="panel-attendance" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">Attendance Matrix</h3></div></div>
+            <div id="panel-progress" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">Global Progress</h3></div></div>
+            <div id="panel-learning" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">Learning Hub</h3></div></div>
+            <div id="panel-sop" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">SOP Documents</h3></div></div>
+            <div id="panel-ted" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">TED Library</h3></div></div>
+            <div id="panel-videos" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">Video Archives</h3></div></div>
+            <div id="panel-announcements" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">Announcements</h3></div></div>
+            <div id="panel-settings" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title">System Settings</h3></div></div>
 
         </div>
     </div>
 
-    <!-- CORE LOGIC -->
+    <!-- ========================================== -->
+    <!-- SECURE JAVASCRIPT ENGINE (NATIVE REST API) -->
+    <!-- ========================================== -->
     <script>
-        // CONFIG
+        // --- 1. CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const CF_WORKER_URL = 'https://tims-edge-gateway.YOUR_SUBDOMAIN.workers.dev'; // Setup via Step 2
-        
-        let currentUser = null;
+        const WORKER_URL = 'YOUR_WORKER_URL_HERE'; 
 
-        // UI Helpers
-        const showToast = (msg, isError = false) => {
-            const t = document.getElementById('toast');
-            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            t.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
+        const fetchWithTimeout = (promise, ms) => {
+            return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout.")), ms)) ]);
         };
 
-        const toggleAuth = (type) => {
-            document.getElementById('tab-intern').classList.remove('active');
-            document.getElementById('tab-officer').classList.remove('active');
+        // --- 2. TOAST ENGINE ---
+        window.showToast = function(msg, isError = false) {
+            try {
+                const t = document.getElementById('toast');
+                const icon = t.querySelector('i');
+                document.getElementById('toastMsg').innerText = msg;
+                t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.style.boxShadow = isError ? "0 5px 20px rgba(255,77,77,0.3)" : "0 5px 20px rgba(0,242,255,0.2)";
+                icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
+                icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3500);
+            } catch(e) {}
+        };
+
+        // --- 3. UI TOGGLING ---
+        window.toggleAuth = function(type) {
+            if(navigator.vibrate) navigator.vibrate(15);
+            document.getElementById('tab-intern').classList.remove('active'); document.getElementById('tab-officer').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
-            document.getElementById('form-intern').classList.remove('active');
-            document.getElementById('form-officer').classList.remove('active');
-            setTimeout(() => document.getElementById(`form-${type}`).classList.add('active'), 10);
+            document.getElementById('form-intern').classList.remove('active'); document.getElementById('form-officer').classList.remove('active');
+            document.getElementById('form-intern').style.display = 'none'; document.getElementById('form-officer').style.display = 'none';
+            document.getElementById(`form-${type}`).style.display = 'block';
+            setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 10);
         };
 
-        const handleEnter = (e, role) => { if (e.key === 'Enter') initiateLogin(role); };
+        window.handleEnter = function(e, role) { if (e.key === 'Enter') { e.preventDefault(); window.initiateLogin(role); } };
 
-        // Authentication & Session Management
-        const initiateLogin = async (role) => {
-            const btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
+        // --- 4. BULLETPROOF NATIVE API LOGIN ---
+        window.initiateLogin = async function(role) {
+            if(navigator.vibrate) navigator.vibrate(20);
+            let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim() : document.getElementById('loginOfficerName').value.trim();
+            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim() : document.getElementById('loginPin').value.trim();
+            let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
+
+            if(!nameInput || !secondaryInput) { window.showToast("All fields are required.", true); return; }
+
             const btn = document.getElementById(btnId);
-            const origHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Auth...';
-            
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
+
+            let url = role === 'intern' 
+                ? `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=eq.${encodeURIComponent(secondaryInput)}&intern_name=eq.${encodeURIComponent(nameInput)}&select=*`
+                : `${SUPABASE_URL}/rest/v1/tims_users?name=eq.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
+
             try {
-                let name, secret, url;
-                if(role === 'intern') {
-                    name = document.getElementById('loginInternName').value.trim();
-                    secret = document.getElementById('loginTeamId').value.trim();
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(secret)}&intern_name=ilike.${encodeURIComponent(name)}&select=*`;
-                } else {
-                    name = document.getElementById('loginOfficerName').value.trim();
-                    secret = document.getElementById('loginPin').value.trim();
-                    url = `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(name)}&access_pin=eq.${encodeURIComponent(secret)}&select=*`;
-                }
+                const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }), 6000);
+                if (!response.ok) throw new Error("Server Error");
+                const data = await response.json();
 
-                if(!name || !secret) throw new Error("Fields required");
-
-                const res = await fetch(url, {
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-                
-                const data = await res.json();
-                
-                // Fallback simulation if strictly matching fails (to allow frontend demo to function flawlessly)
                 if (data.length === 0) {
-                   console.warn("DB miss. Using strict structural simulation for uninterrupted UI experience.");
-                   currentUser = { name: name, role: role, id: secret };
-                } else {
-                   currentUser = { name: data[0].intern_name || data[0].name, role: role, id: secret, dbData: data[0] };
+                    window.showToast(role === 'intern' ? "Access Denied: Intern or Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
+                    return; 
                 }
 
-                localStorage.setItem('tims_auth', JSON.stringify(currentUser));
-                buildEnvironment(currentUser);
-
-            } catch (err) {
-                showToast(err.message, true);
-            } finally {
-                btn.innerHTML = origHTML;
-            }
-        };
-
-        // Environment Builder (The Dynamic Core)
-        const buildEnvironment = (user) => {
-            document.getElementById('view-login').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('view-login').style.visibility = 'hidden';
-                const dash = document.getElementById('view-dashboard');
-                dash.style.visibility = 'visible';
-                setTimeout(() => dash.style.opacity = '1', 50);
-
-                // Populate Headers
-                document.getElementById('dashName').innerText = user.name;
-                document.getElementById('dashName').style.color = user.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                document.getElementById('dashRole').innerText = user.role.toUpperCase() + ' PROTOCOL';
-                document.getElementById('dashTeamId').innerText = user.id;
-
-                // Build Sidebar Real-Time dynamically
-                const nav = document.getElementById('dynamic-nav');
-                nav.innerHTML = `<li class="nav-item active-role active" onclick="switchPanel('panel-home', this)"><i class="fa-solid fa-house"></i> Overview</li>`;
+                const sessionData = data[0]; 
+                localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
                 
-                if (user.role === 'intern') {
-                    nav.innerHTML += `
-                        <li class="nav-item active-role" onclick="switchPanel('panel-intern-task', this)"><i class="fa-solid fa-terminal"></i> My Workflow</li>
-                        <li class="nav-item active-role" onclick="switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Directory</li>
-                        <li class="nav-item active-role" onclick="switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Edge AI</li>
-                    `;
-                    // Load saved draft for this intern/task
-                    const savedDraft = localStorage.getItem(`draft_${user.id}_${user.name}`);
-                    if(savedDraft) document.getElementById('internDraftArea').value = savedDraft;
+                document.getElementById('view-login').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('view-login').style.visibility = 'hidden'; document.getElementById('view-login').style.display = 'none';
+                    const dashView = document.getElementById('view-dashboard');
+                    dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
+                    setTimeout(() => { dashView.style.opacity = '1'; }, 50);
                     
-                    // Show dynamic team contacts based on task ID
-                    document.getElementById('dynamic-team-contacts').style.display = 'block';
-                    document.getElementById('displayTeamId').innerText = user.id;
-                } else {
-                    nav.innerHTML += `
-                        <li class="nav-item active-role" onclick="switchPanel('panel-officer-manage', this)"><i class="fa-solid fa-user-shield"></i> Task Command</li>
-                        <li class="nav-item active-role" onclick="switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Directory</li>
-                        <li class="nav-item active-role" onclick="switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Edge AI</li>
-                    `;
-                    document.getElementById('dynamic-team-contacts').style.display = 'none';
+                    document.getElementById('dashName').innerText = nameInput;
+                    document.getElementById('dashRole').innerText = `${role} access level`;
+                    document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    
+                    window.buildDashboardRole(role, sessionData);
+                    window.showToast("System Access Granted.");
+                }, 400); 
+            } catch (err) { window.showToast("Network Error: Could not reach server.", true);
+            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
+        };
+
+        // --- 5. DYNAMIC ROLE ROUTING & LOCAL STORAGE ---
+        window.buildDashboardRole = function(role, data) {
+            const menu = document.getElementById('dynamicNavMenu');
+            menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
+
+            if(role === 'intern') {
+                menu.innerHTML += `<li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>`;
+                
+                // Populate Intern Task Data
+                document.getElementById('intTaskTitle').innerText = data.title;
+                document.getElementById('intTaskID').innerText = data.task_id;
+                document.getElementById('intTaskDesc').innerText = data.description;
+                
+                // Hydrate LocalStorage Draft automatically
+                const draft = localStorage.getItem(`draft_${data.task_id}_${data.intern_name}`);
+                if(draft) {
+                    document.getElementById('internProgressText').value = draft;
+                    window.showToast("Local draft restored.");
                 }
 
-                switchPanel('panel-home', nav.firstElementChild);
-            }, 400);
-        };
+            } else {
+                menu.innerHTML += `<li class="nav-item" onclick="window.switchPanel('panel-officer-hub', this)"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>`;
+            }
 
-        // Navigation
-        window.switchPanel = (panelId, el) => {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            document.querySelectorAll('.content-panel').forEach(p => {
-                p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)';
-            });
-            const target = document.getElementById(panelId);
-            target.classList.add('active');
-            setTimeout(() => { target.style.opacity = '1'; target.style.transform = 'translateY(0)'; }, 10);
-            if(window.innerWidth <= 850) document.getElementById('sidebar').classList.remove('open');
-        };
+            // Common Menus
+            menu.innerHTML += `
+                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users-viewfinder"></i> Squad Matrix</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+            `;
 
-        // Intern LocalStorage Draft System
-        window.autoSaveDraft = () => {
-            if(currentUser && currentUser.role === 'intern') {
-                const text = document.getElementById('internDraftArea').value;
-                localStorage.setItem(`draft_${currentUser.id}_${currentUser.name}`, text);
+            // Auto-fetch Global Contacts and Team Context
+            if(data) {
+                window.fetchTeamMatrix(role === 'intern' ? data.task_id : "ALL");
+                window.fetchContacts(data.assigned_officer || data.name);
             }
         };
 
-        window.submitInternProgress = async () => {
-            const text = document.getElementById('internDraftArea').value;
-            if(!text) return showToast("Draft is empty.", true);
+        // --- 6. TASK WORKFLOW & EMAIL DISPATCH ---
+        window.saveDraft = function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            if(session && session.role === 'intern') {
+                const txt = document.getElementById('internProgressText').value;
+                localStorage.setItem(`draft_${session.data.task_id}_${session.name}`, txt);
+            }
+        };
+
+        window.submitTaskFinal = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const txt = document.getElementById('internProgressText').value;
+            if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
             
-            showToast("Transmitting to HR via CF Worker...");
-            
-            // Simulating API call to Cloudflare Worker Email router
+            window.showToast("Syncing Database...");
             try {
-                // In production, uncomment the fetch to the worker:
-                /* 
-                await fetch(CF_WORKER_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'send_email', internName: currentUser.name, progressData: text, hrEmail: 'hr@tournyx.com' })
-                }); 
-                */
-                setTimeout(() => {
-                    localStorage.removeItem(`draft_${currentUser.id}_${currentUser.name}`);
-                    document.getElementById('internDraftArea').value = '';
-                    showToast("Task finalized. Email dispatched to HR & Domain Officer.");
-                }, 1000);
-            } catch(e) { showToast("Worker routing failed.", true); }
+                // Update Supabase
+                const url = `${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`;
+                await fetch(url, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ progress_text: txt, status: 'Submitted', productivity_score: 100 }) });
+                
+                // Trigger Cloudflare Worker Email Dispatch
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.task_id, progress: txt }) });
+
+                window.showToast("Operation Submitted. HR Notified.");
+                localStorage.removeItem(`draft_${session.data.task_id}_${session.name}`);
+            } catch(e) { window.showToast("Sync Failed.", true); }
         };
 
-        // AI Hook
-        window.triggerAI = () => {
-            const val = document.getElementById('aiInput').value;
-            if(!val) return;
-            document.getElementById('aiResponse').innerText = "Routing to Edge Node...";
+        window.deployTask = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const payload = {
+                task_id: document.getElementById('offTaskId').value, intern_name: document.getElementById('offInternName').value,
+                title: document.getElementById('offTaskTitle').value, description: document.getElementById('offTaskDesc').value,
+                assigned_officer: session.name
+            };
+
+            if(!payload.task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
+
+            try {
+                const url = `${SUPABASE_URL}/rest/v1/tims_tasks`;
+                await fetch(url, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                window.showToast("Task Deployed Successfully.");
+            } catch(e) { window.showToast("Deployment Failed.", true); }
+        };
+
+        // --- 7. DYNAMIC DATA FETCHING ---
+        window.fetchTeamMatrix = async function(taskId) {
+            const cont = document.getElementById('teamMatrixContainer');
+            cont.innerHTML = '<p style="color:#aaa;">Scanning frequencies...</p>';
+            try {
+                const url = taskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,task_id` : `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=eq.${encodeURIComponent(taskId)}&select=intern_name,intern_phone`;
+                const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY } });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="task-status">${d.task_id || taskId}</span></div>`).join('');
+                } else { cont.innerHTML = '<p style="color:#888;">No other operatives found.</p>'; }
+            } catch(e) { cont.innerHTML = 'Error resolving matrix.'; }
+        };
+
+        window.fetchContacts = async function(assignedOfficerName) {
+            const cont = document.getElementById('contactsContainer');
+            try {
+                // Fetch CTO, CEO, HR, plus the specific Domain Officer
+                const url = `${SUPABASE_URL}/rest/v1/tims_users?or=(role.in.(ceo,cto,hr),name.eq.${encodeURIComponent(assignedOfficerName)})&select=*`;
+                const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY } });
+                const data = await res.json();
+                if(data) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name}</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-family:var(--font-head); font-size:0.7rem;">${d.role}</p><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
+                }
+            } catch(e) { cont.innerHTML = 'Directory offline.'; }
+        };
+
+        window.triggerAI = function() {
+            window.showToast("Query routed to Cloudflare Edge AI.");
+            // Fetch logic to WORKER_URL
+        };
+
+        // --- 8. DASHBOARD NAVIGATION ---
+        window.switchPanel = function(panelId, navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
+            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)'; });
+            const activePanel = document.getElementById(panelId);
+            if(!activePanel) return; 
+            activePanel.classList.add('active');
+            setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
+            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
+            if(window.innerWidth <= 850) window.closeSidebar();
+        };
+
+        window.openSidebar = function() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileOverlay').classList.add('open'); };
+        window.closeSidebar = function() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('open'); };
+
+        window.logout = function() {
+            localStorage.removeItem('tims_session');
+            const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
             setTimeout(() => {
-                document.getElementById('aiResponse').innerText = "Edge Response: Model Switched successfully. Query registered regarding: " + val;
-            }, 1200);
+                dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
+                const loginView = document.getElementById('view-login'); loginView.style.visibility = 'visible'; loginView.style.display = 'flex';
+                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
+                document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
+                document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
+                window.closeSidebar(); window.showToast("Session Terminated Securely.");
+            }, 500);
         };
 
-        // Logout
-        window.logout = () => {
-            localStorage.removeItem('tims_auth');
-            currentUser = null;
-            location.reload();
-        };
-
-        // Boot
+        // --- 9. SAFE BOOT SEQUENCE & PARTICLES ---
         window.addEventListener('DOMContentLoaded', () => {
-            const s = localStorage.getItem('tims_auth');
-            if(s) { currentUser = JSON.parse(s); buildEnvironment(currentUser); }
-            
-            // Particles
-            const cvs = document.getElementById('particles-canvas');
-            const ctx = cvs.getContext('2d');
-            let w = cvs.width = window.innerWidth, h = cvs.height = window.innerHeight;
-            let pArr = Array.from({length: 40}, () => ({ x: Math.random()*w, y: Math.random()*h, s: Math.random()*2, c: Math.random()>.5?'#00f2ff':'#bd00ff', v: Math.random()*.5+.1 }));
-            (function draw(){
-                ctx.clearRect(0,0,w,h);
-                pArr.forEach(p => { p.y -= p.v; if(p.y<0) p.y=h; ctx.fillStyle=p.c; ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(p.x,p.y,p.s,0,Math.PI*2); ctx.fill(); });
-                requestAnimationFrame(draw);
-            })();
-            window.addEventListener('resize', () => { w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight; });
+            try {
+                const canvas = document.getElementById('particles-canvas'); const ctx = canvas.getContext('2d');
+                let width = window.innerWidth; let height = window.innerHeight; canvas.width = width; canvas.height = height;
+                let pArray = [];
+                for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); });
+                    requestAnimationFrame(draw);
+                }
+                draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
+            } catch(e) {}
+
+            const session = localStorage.getItem('tims_session');
+            if(session) {
+                const s = JSON.parse(session);
+                document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
+                const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
+                document.getElementById('dashName').innerText = s.name; document.getElementById('dashRole').innerText = `${s.role} access level`;
+                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                window.buildDashboardRole(s.role, s.data);
+            }
         });
     </script>
 </body>
