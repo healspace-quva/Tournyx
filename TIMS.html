@@ -24,21 +24,28 @@
             --sidebar-width: 250px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            /* Fixes the text-highlighting bug on mobile */
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-touch-callout: none;
+        }
         
         body { 
             color: white; 
             font-family: var(--font-body); 
             overflow-x: hidden; 
-            min-height: 100vh; 
+            min-height: 100dvh; 
             margin: 0;
             background-color: var(--bg-main);
             position: relative;
         }
 
         /* --- DYNAMIC AMBIENT BACKGROUND --- */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #06020f 100%); }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: orbit 12s infinite alternate ease-in-out; }
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #06020f 100%); pointer-events: none; }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: orbit 12s infinite alternate ease-in-out; pointer-events: none; }
         .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -10%; left: -10%; }
         .orb-2 { width: 500px; height: 500px; background: var(--accent-cyan); bottom: -20%; right: -10%; animation-delay: -5s; }
         
@@ -49,21 +56,21 @@
 
         /* --- ULTIMATE TRUE GLASSMORPHISM --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); /* Ultra-sheer base */
+            background: rgba(255, 255, 255, 0.03); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Edge light effect */
-            border-left: 1px solid rgba(255, 255, 255, 0.15); /* Edge light effect */
+            border-top: 1px solid rgba(255, 255, 255, 0.15); 
+            border-left: 1px solid rgba(255, 255, 255, 0.15); 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
         /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
         #view-login {
-            position: fixed; 
+            position: absolute; 
             top: 0; left: 0;
             width: 100vw;
-            height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,7 +97,8 @@
         .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
         .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%;}
+        /* FIXED: Added user-select: none to prevent mobile text highlighting */
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
         .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.8rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.1);}
 
@@ -106,13 +114,14 @@
         .form-control { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 12px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
         .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-        .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px;}
+        /* FIXED: Added user-select: none */
+        .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none; -webkit-user-select: none;}
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.4);}
         .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
 
         /* BRANDING FOOTER */
-        .brand-footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #888; font-family: var(--font-head); letter-spacing: 1px;}
+        .brand-footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #888; font-family: var(--font-head); letter-spacing: 1px; user-select: none;}
         .brand-footer span { color: white; font-weight: 900; }
 
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
@@ -120,7 +129,7 @@
             display: none; 
             visibility: hidden;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             overflow: hidden; 
             flex-direction: row;
             z-index: 20;
@@ -133,7 +142,7 @@
         /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-width);
-            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             padding: 25px 0;
@@ -150,19 +159,19 @@
         .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease;}
-        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.1) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
+        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none; -webkit-user-select: none;}
+        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
         .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
         .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
-        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,77,77,0.4);}
+        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
         .logout-btn:active { transform: scale(0.95); }
 
         /* MAIN CONTENT AREA */
         .main-content {
             flex: 1;
-            height: 100vh;
+            height: 100dvh;
             overflow-y: auto;
             overflow-x: hidden;
             padding: 30px 40px;
@@ -173,7 +182,7 @@
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
         /* MOBILE OVERLAY & BUTTON */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
         .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 110; width: 45px; height: 45px; border-radius: 14px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
@@ -206,7 +215,7 @@
             .sidebar.open { transform: translateX(0); }
             
             .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px;}
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px;}
             .stat-badge { text-align: left;}
         }
     </style>
@@ -239,35 +248,35 @@
                 <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
             </div>
 
-            <!-- Intern Form -->
-            <form id="form-intern" class="auth-form active" onsubmit="event.preventDefault(); initiateLogin('intern');">
+            <!-- 🚨 FIX: Replaced <form> with <div> to prevent browser hijack/freeze -->
+            <div id="form-intern" class="auth-form active">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
-                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" required autocomplete="off">
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Assigned Task ID</label>
-                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" required autocomplete="off">
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off">
                 </div>
-                <button type="submit" class="btn btn-primary" id="btn-login-intern">
+                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="initiateLogin('intern')">
                     <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
                 </button>
-            </form>
+            </div>
 
-            <!-- Officer Form -->
-            <form id="form-officer" class="auth-form" onsubmit="event.preventDefault(); initiateLogin('officer');">
+            <!-- 🚨 FIX: Replaced <form> with <div> -->
+            <div id="form-officer" class="auth-form">
                 <div class="form-group">
                     <label class="form-label">Commander Name</label>
-                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" required autocomplete="off">
+                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Secure PIN</label>
-                    <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" required autocomplete="off">
+                    <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" autocomplete="off">
                 </div>
-                <button type="submit" class="btn btn-primary" id="btn-login-officer">
+                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="initiateLogin('officer')">
                     <i class="fa-solid fa-shield-halved"></i> Authenticate
                 </button>
-            </form>
+            </div>
             
             <div class="brand-footer">
                 POWERED BY <br><span>QUVA TECHNOLOGIES</span>
@@ -367,7 +376,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MASTER JAVASCRIPT ENGINE (100% FAIL-PROOF) -->
+    <!-- MASTER JAVASCRIPT ENGINE                   -->
     <!-- ========================================== -->
     <script>
         // --- 1. GLOBAL VARIABLES & SECURE CONFIG ---
@@ -375,8 +384,7 @@
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
-        // --- 2. FAIL-SAFE TIMEOUT PROMISE ---
-        // This guarantees the UI will never freeze even if the database hangs.
+        // Timeout Promise Wrapper: Guarantees the UI never freezes
         const fetchWithTimeout = (promise, ms) => {
             return Promise.race([
                 promise,
@@ -384,7 +392,7 @@
             ]);
         };
 
-        // --- 3. Particle Engine (Background Animation) ---
+        // --- 2. Particle Engine (Background Animation) ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, pArray;
@@ -420,7 +428,7 @@
             requestAnimationFrame(drawParticles);
         }
 
-        // --- 4. UI Helpers ---
+        // --- 3. UI Helpers ---
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
             const icon = t.querySelector('i');
@@ -436,7 +444,6 @@
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
-        // --- 5. Form Switcher (Bulletproof logic) ---
         function toggleAuth(type) {
             document.getElementById('tab-intern').classList.remove('active');
             document.getElementById('tab-officer').classList.remove('active');
@@ -450,13 +457,12 @@
             
             document.getElementById(`form-${type}`).style.display = 'block';
             
-            // Timeout allows CSS animation to trigger properly
             setTimeout(() => {
                 document.getElementById(`form-${type}`).classList.add('active');
             }, 10);
         }
 
-        // --- 6. BULLETPROOF AUTHENTICATION ENGINE ---
+        // --- 4. BULLETPROOF AUTHENTICATION ENGINE ---
         async function initiateLogin(role) {
             let nameInput = "";
             let secondaryInput = "";
@@ -483,13 +489,11 @@
             btn.disabled = true;
 
             try {
-                // Failsafe 1: Was Supabase loaded?
                 if (!supabase) throw new Error("Database link disconnected. Check your network.");
 
                 let sessionData = null;
 
                 if (role === 'intern') {
-                    // Failsafe 2: 5-second max timeout on DB query
                     const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).single();
                     const { data, error } = await fetchWithTimeout(query, 5000);
 
@@ -508,10 +512,9 @@
                     }
                 }
 
-                // If code reaches here, authentication was a verified 100% success
+                // Authentication Success
                 localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
                 
-                // Smooth Fade Transition
                 document.getElementById('view-login').style.opacity = '0';
                 
                 setTimeout(() => {
@@ -524,7 +527,6 @@
                     
                     setTimeout(() => { dashView.style.opacity = '1'; }, 50);
                     
-                    // Populate Dashboard
                     document.getElementById('dashName').innerText = nameInput;
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
@@ -533,18 +535,16 @@
                 }, 400); 
 
             } catch (err) {
-                // Catches ALL errors (Network drops, timeouts, CDN failures)
                 console.error(err);
                 showToast(err.message === "Connection Timeout" ? "Database Timeout. Try again." : "Network Error: Could not reach database.", true);
             } finally {
-                // THE ULTIMATE FAILSAFE: This executes NO MATTER WHAT happens above.
-                // It absolutely guarantees the button will unlock.
+                // THE ULTIMATE FAILSAFE: Guarantees button unlocks
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
         }
 
-        // --- 7. Dashboard Navigation & Sidebar Logic ---
+        // --- 5. Dashboard Navigation & Sidebar Logic ---
         function switchPanel(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
@@ -578,7 +578,7 @@
             document.getElementById('mobileOverlay').classList.remove('open');
         }
 
-        // --- 8. Session Termination ---
+        // --- 6. Session Termination ---
         function logout() {
             localStorage.removeItem('tims_session');
             
@@ -605,13 +605,12 @@
             }, 500);
         }
 
-        // --- 9. Safe Boot Sequence ---
+        // --- 7. Safe Boot Sequence ---
         window.addEventListener('DOMContentLoaded', () => {
             initParticles(); 
             drawParticles();
             window.addEventListener('resize', initParticles);
 
-            // Safely initialize Supabase
             try {
                 if (window.supabase) {
                     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -622,7 +621,6 @@
                 console.error("Database connection failed on boot:", e);
             }
 
-            // Session check
             const session = localStorage.getItem('tims_session');
             if(session) {
                 const s = JSON.parse(session);
