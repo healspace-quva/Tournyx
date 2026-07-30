@@ -3,234 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TIMS Evaluation - Tournyx</title>
+    <title>TIMS - Tournyx Management System</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- PDF Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-main: #05020c;
-            --bg-card: rgba(15, 7, 30, 0.85);
+            --bg-main: #080A10;
+            --bg-card: rgba(15, 18, 30, 0.75);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff4d4d;
             --accent-green: #00ff7f;
-            --accent-orange: #ff9900;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --glass-border: rgba(0, 242, 255, 0.2);
+            --glass-border: rgba(0, 242, 255, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
+        body { background-color: var(--bg-main); color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #05020c 100%); pointer-events: none;}
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #080A10 100%); pointer-events: none;}
 
-        .container { width: 100%; max-width: 750px; background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,242,255,0.05); position: relative; z-index: 10; animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 30px;}
+        .container { width: 100%; max-width: 900px; background: var(--bg-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,242,255,0.05); position: relative; z-index: 10; animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 30px; display: none;}
+        .container.active { display: block; }
+        
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header-logo { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
-        .header-logo img { width: 50px; height: 50px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 0 10px var(--accent-purple); border: 1px solid rgba(255,255,255,0.2);}
-        .header-logo h1 { font-family: var(--font-head); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 4px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 0.8rem;}
+        /* Typography & Headers */
+        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 4px;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem;}
 
-        .form-row { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; margin-bottom: 12px;}
-        .form-group { flex: 1; min-width: 220px; position: relative;}
-        
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;}
-        
-        .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px 14px; border-radius: 10px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);}
-        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2), inset 0 0 5px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8);}
-        textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.4;}
+        /* Form Elements */
+        .form-group { margin-bottom: 15px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.8rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px; border-radius: 10px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
+        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.2);}
+        textarea.form-control { resize: vertical; min-height: 80px; }
 
-        /* Select Dropdown Arrow Fix */
-        select.form-control { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f2ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; cursor: pointer;}
-        select.form-control option { background: var(--bg-main); color: white; }
+        /* Buttons */
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-outline { background: rgba(0,0,0,0.5); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); margin-top: 10px;}
+        .btn-outline:hover { background: rgba(0,242,255,0.1); }
+        .btn-success { background: rgba(0,255,127,0.1); border: 1px solid var(--accent-green); color: var(--accent-green); }
 
-        /* CHECKLIST GRID */
-        .checklist-header { margin-top: 20px; border-bottom: 1px solid var(--accent-purple); padding-bottom: 6px; margin-bottom: 15px; color: white; font-family: var(--font-head); font-size: 1.05rem; display: flex; align-items: center; gap: 8px;}
-        
-        .eval-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .eval-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; transition: 0.3s;}
-        .eval-item:hover { border-color: rgba(255,255,255,0.15); background: rgba(0,0,0,0.6); box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
-        .eval-item h4 { font-size: 0.9rem; color: white; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; font-weight: 800;}
-        
-        .radio-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-        .radio-chips label { flex: 1; min-width: 45%; }
-        .radio-chips input[type="radio"] { display: none; }
-        .radio-chips span { display: block; text-align: center; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #888; background: rgba(255,255,255,0.02); letter-spacing: 0.5px;}
-        
-        /* Highlight states */
-        .radio-chips input[type="radio"]:checked + span.exc { background: rgba(0,255,127,0.1); color: var(--accent-green); border-color: var(--accent-green); box-shadow: 0 0 8px rgba(0,255,127,0.2); transform: scale(1.03);}
-        .radio-chips input[type="radio"]:checked + span.gd { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-color: var(--accent-cyan); box-shadow: 0 0 8px rgba(0,242,255,0.2); transform: scale(1.03);}
-        .radio-chips input[type="radio"]:checked + span.mod { background: rgba(255,153,0,0.1); color: var(--accent-orange); border-color: var(--accent-orange); box-shadow: 0 0 8px rgba(255,153,0,0.2); transform: scale(1.03);}
-        .radio-chips input[type="radio"]:checked + span.wk { background: rgba(255,77,77,0.1); color: var(--accent-red); border-color: var(--accent-red); box-shadow: 0 0 8px rgba(255,77,77,0.2); transform: scale(1.03);}
+        /* Login Toggles */
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 5px;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 8px; transition: 0.3s;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); font-weight: bold;}
 
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 8px; }
-        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(0,242,255,0.4); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .btn-outline { background: rgba(0,0,0,0.5); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); margin-top: 15px;}
-        .btn-outline:active { background: rgba(0,242,255,0.1); transform: scale(0.96);}
+        /* Dashboards */
+        .dash-header { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;}
+        .stat-badge { text-align: center; }
+        .stat-badge span { display: block; font-size: 0.75rem; color: #aaa; text-transform: uppercase;}
+        .stat-badge strong { font-size: 1.3rem; color: var(--accent-cyan); font-family: var(--font-head);}
 
-        /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 20px rgba(0,242,255,0.4); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem;}
+        /* Progress Engine */
+        .progress-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 20px; border-radius: 12px; margin-bottom: 20px;}
+        .progress-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin: 15px 0; overflow: hidden;}
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); width: 20%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 10px var(--accent-cyan);}
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+        /* AI Chat UI */
+        .ai-hub { background: rgba(0,0,0,0.4); border: 1px solid var(--accent-purple); padding: 15px; border-radius: 12px; margin-top: 20px;}
+        .ai-hub h3 { color: var(--accent-purple); font-family: var(--font-head); font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;}
+        .ai-response { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 8px; font-size: 0.9rem; color: #ddd; margin-top: 10px; min-height: 50px; border-left: 3px solid var(--accent-purple); display: none;}
+
+        /* Officer Table */
+        .task-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;}
+        .task-table th, .task-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .task-table th { color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase;}
+
+        /* Toast */
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 10px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s; z-index: 9999; box-shadow: 0 5px 20px rgba(0,242,255,0.4); text-transform: uppercase; display: flex; align-items: center; gap: 8px; font-size: 0.85rem;}
         #toast.show { transform: translateX(0); }
 
-        @media (max-width: 600px) {
-            .container { padding: 20px 15px; border-radius: 12px; margin-bottom: 15px;}
-            .eval-grid { grid-template-columns: 1fr; }
-            .form-row { flex-direction: column; gap: 0;}
-            .form-group { width: 100%; min-width: 100%;}
-        }
-
-        /* --- PDF HIDDEN TEMPLATE (BORDERLESS, DARK MODE, A4 RATIO) --- */
-        #pdfContainerWrapper { position: absolute; left: -9999px; top: 0; width: 800px; z-index: -9999; pointer-events: none; opacity: 0; }
-        #pdfTemplate { background: #05020c; color: #ffffff; padding: 40px 30px; width: 800px; min-height: 1131px; font-family: 'Helvetica Neue', Arial, sans-serif; box-sizing: border-box; border: none;}
-        .pdf-header { border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;}
-        .pdf-header h1 { font-size: 24px; color: #ffffff; margin: 0; letter-spacing: 1.5px; font-weight: 900; text-transform: uppercase; background: linear-gradient(90deg, #bd00ff, #00f2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .pdf-header p { color: #888; font-size: 11px; margin: 4px 0 0 0; text-transform: uppercase; letter-spacing: 1px;}
-        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-        .pdf-table th, .pdf-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-size: 12px;}
-        .pdf-table th { background: rgba(0,242,255,0.05); color: #00f2ff; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;}
-        .pdf-table td { font-weight: bold; color: #ffffff; }
-        .pdf-remarks { background: rgba(255,255,255,0.03); padding: 15px; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 30px; min-height: 80px; white-space: pre-wrap; font-size: 12px; line-height: 1.5; color: #ddd;}
-        .pdf-footer { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; align-items: flex-end;}
+        .logout-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase;}
     </style>
 </head>
 <body>
 
-    <!-- ANIMATED BACKGROUND -->
     <canvas id="particles-canvas"></canvas>
+    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span>Message</span></div>
 
-    <div id="toast"><i class="fa-solid fa-circle-check" style="color:var(--accent-cyan);"></i> <span>System Message</span></div>
-
-    <div class="container" id="mainUI">
+    <!-- VIEW 1: AUTHENTICATION GATEWAY -->
+    <div class="container active" id="view-login">
         <div class="header-logo">
-            <img src="https://tournyx.in/favicon.png" alt="Tournyx Logo">
-            <h1>TIMS PORTAL</h1>
-            <p>Interview Management System</p>
+            <h1>TIMS ENGINE</h1>
+            <p>Unified Operational Gateway</p>
         </div>
 
-        <form id="evalForm">
-            <!-- 1. IDENTIFICATION -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Interviewer Name <span style="color:#ff4d4d;">*</span></label>
-                    <input type="text" id="officerName" class="form-control" placeholder="Your Name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Candidate Name <span style="color:#ff4d4d;">*</span></label>
-                    <input type="text" id="candidateName" class="form-control" placeholder="Intern's Full Name" required>
-                </div>
-            </div>
+        <div class="auth-toggle">
+            <div id="tab-intern" class="active" onclick="toggleAuth('intern')">Intern Login</div>
+            <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Candidate Email <span style="color:#ff4d4d;">*</span></label>
-                    <input type="email" id="candidateEmail" class="form-control" placeholder="intern@email.com (For auto-updates)" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Target Role <span style="color:#ff4d4d;">*</span></label>
-                    <input type="text" id="targetRole" class="form-control" placeholder="e.g. Frontend Developer" required>
-                </div>
-            </div>
-
-            <!-- 2. CHECKLIST GRID -->
-            <div class="checklist-header">
-                <i class="fa-solid fa-list-check" style="color:var(--accent-cyan);"></i> Performance Checklist
-            </div>
-            
-            <div class="eval-grid" id="checklistArea">
-                <!-- Injected via JS to keep HTML clean -->
-            </div>
-
-            <!-- 3. DECISION & REMARKS -->
-            <div class="form-group" style="margin-top: 5px;">
-                <label class="form-label" style="color:var(--accent-orange);"><i class="fa-solid fa-gavel"></i> Final Official Decision <span style="color:#ff4d4d;">*</span></label>
-                <select id="finalDecision" class="form-control" required>
-                    <option value="" disabled selected>Select Final Verdict...</option>
-                    <option value="Selected">🟢 Selected (Hire)</option>
-                    <option value="Moderately Selected">🟡 Moderately Selected</option>
-                    <option value="Waitlisted">🟠 Waitlisted (Hold)</option>
-                    <option value="Re-Interview Required">🔵 Re-Interview Required</option>
-                    <option value="Rejected">🔴 Rejected</option>
-                </select>
-            </div>
-
+        <!-- Intern Login Form -->
+        <form id="form-intern" onsubmit="event.preventDefault(); loginIntern();">
             <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-pen-clip"></i> Detailed Officer Remarks <span style="color:#ff4d4d;">*</span></label>
-                <textarea id="officerRemarks" class="form-control" placeholder="Enter specific observations, strengths, weaknesses, and why you chose the decision above..." required></textarea>
+                <label class="form-label">Intern Name</label>
+                <input type="text" id="loginInternName" class="form-control" placeholder="e.g. Harsha" required>
             </div>
+            <div class="form-group">
+                <label class="form-label">Task ID</label>
+                <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-012" required>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
+        </form>
 
-            <!-- ACTIONS -->
-            <button type="button" class="btn btn-outline" onclick="generateAndDownloadPDF()"><i class="fa-solid fa-file-pdf"></i> Preview Report PDF</button>
-            <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitEvaluation()"><i class="fa-solid fa-paper-plane"></i> Finalize & Send Emails</button>
+        <!-- Officer Login Form -->
+        <form id="form-officer" style="display:none;" onsubmit="event.preventDefault(); loginOfficer();">
+            <div class="form-group">
+                <label class="form-label">Officer Name</label>
+                <input type="text" id="loginOfficerName" class="form-control" placeholder="e.g. Rajesh" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Secure PIN</label>
+                <input type="password" id="loginPin" class="form-control" placeholder="****" required>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-halved"></i> Authenticate</button>
         </form>
     </div>
 
-    <!-- HIDDEN PDF TEMPLATE (Strictly formatted for 800x1131px A4 printing) -->
-    <div id="pdfContainerWrapper">
-        <div id="pdfTemplate">
-            <div class="pdf-header">
-                <div>
-                    <h1>TOURNYX ESPORTS</h1>
-                    <p>Official Interview Evaluation Report | TIMS</p>
+    <!-- VIEW 2: INTERN DASHBOARD -->
+    <div class="container" id="view-intern-dashboard">
+        <div class="dash-header">
+            <div>
+                <h2 style="font-size: 1.2rem; margin-bottom: 4px;">Welcome, <span id="intName" style="color:var(--accent-cyan);">Intern</span></h2>
+                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+            </div>
+            <div class="stat-badge">
+                <span>Prod. Score</span>
+                <strong id="intScore">20%</strong>
+            </div>
+        </div>
+
+        <div class="progress-box">
+            <h3 style="font-family: var(--font-head); color: var(--accent-purple); font-size: 1rem;" id="taskTitle">Task: Loading...</h3>
+            <p style="font-size: 0.9rem; color: #bbb; margin-top: 10px;" id="taskDesc">Description loading...</p>
+            <a href="#" id="taskSop" target="_blank" style="color: var(--accent-cyan); font-size: 0.85rem; display: block; margin-top: 10px;"><i class="fa-solid fa-link"></i> View SOP Document</a>
+
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem; color: #888; margin-bottom: 15px;">Status: <span id="taskStatus" style="color: white; font-weight: bold;">Pending</span></div>
+
+            <div class="action-grid">
+                <button class="btn btn-outline" onclick="updateTaskStatus('Started', 40)" style="font-size: 0.75rem;">Start Task</button>
+                <button class="btn btn-outline" onclick="updateTaskStatus('Updated', 60)" style="font-size: 0.75rem;">Update Progress</button>
+                <button class="btn btn-success" onclick="updateTaskStatus('Submitted', 80)" style="font-size: 0.75rem;">Submit</button>
+            </div>
+        </div>
+
+        <!-- AI Assistant Module -->
+        <div class="ai-hub">
+            <h3><i class="fa-solid fa-robot"></i> Tournyx AI Hub</h3>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <input type="text" id="aiInput" class="form-control" placeholder="Ask a technical question regarding this task...">
+            </div>
+            <button class="btn btn-primary" onclick="askTournyxAI()" style="padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-microchip"></i> Ask AI Assistant</button>
+            <div class="ai-response" id="aiResponse"></div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: OFFICER DASHBOARD -->
+    <div class="container" id="view-officer-dashboard">
+        <div class="dash-header">
+            <div>
+                <h2 style="font-size: 1.2rem; margin-bottom: 4px;">Commander, <span id="offName" style="color:var(--accent-purple);">Officer</span></h2>
+                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+            </div>
+            <div class="stat-badge">
+                <span>System Status</span>
+                <strong style="color:var(--accent-green);">ONLINE</strong>
+            </div>
+        </div>
+
+        <!-- Assign Task Form -->
+        <div class="progress-box">
+            <h3 style="font-family: var(--font-head); color: var(--accent-cyan); font-size: 1rem; margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> Assign New Task</h3>
+            <form onsubmit="event.preventDefault(); assignTask();">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label">Intern Name</label>
+                        <input type="text" id="newTaskIntern" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Task ID</label>
+                        <input type="text" id="newTaskId" class="form-control" placeholder="e.g. DEV-015" required>
+                    </div>
                 </div>
-                <div style="text-align: right; color: #888; font-weight: bold; font-size: 12px;" id="pdf-date">Date</div>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Task Title</label>
+                    <input type="text" id="newTaskTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Task Description</label>
+                    <textarea id="newTaskDesc" class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnAssign"><i class="fa-solid fa-share-node"></i> Dispatch Task</button>
+            </form>
+        </div>
 
-            <div class="pdf-grid">
-                <div><span style="color:#888; font-size:10px; display:block; text-transform:uppercase;">Candidate Name</span><strong id="pdf-cand" style="font-size:16px; color:#fff;">-</strong></div>
-                <div><span style="color:#888; font-size:10px; display:block; text-transform:uppercase;">Evaluating Officer</span><strong id="pdf-off" style="font-size:16px; color:#fff;">-</strong></div>
-                <div><span style="color:#888; font-size:10px; display:block; text-transform:uppercase;">Target Role</span><strong id="pdf-role" style="font-size:14px; color:#fff;">-</strong></div>
-                <div><span style="color:#888; font-size:10px; display:block; text-transform:uppercase;">Candidate Email</span><strong id="pdf-email" style="font-size:14px; color:#fff;">-</strong></div>
-            </div>
-
-            <table class="pdf-table">
-                <thead><tr><th>Evaluation Metric</th><th style="text-align:right;">Rating Achieved</th></tr></thead>
-                <tbody id="pdf-table-body">
-                    <!-- Handled by JS -->
+        <!-- Review Queue -->
+        <h3 style="font-family: var(--font-head); color: white; font-size: 1rem; margin-top: 25px;"><i class="fa-solid fa-list-check"></i> Pending Approvals</h3>
+        <div style="overflow-x: auto;">
+            <table class="task-table">
+                <thead><tr><th>Task ID</th><th>Intern</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="officerTaskTable">
+                    <!-- Loaded via JS -->
                 </tbody>
             </table>
-
-            <div style="color:#00f2ff; font-size:10px; font-weight:bold; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">OFFICER REMARKS & OBSERVATIONS</div>
-            <div class="pdf-remarks" id="pdf-rem">-</div>
-
-            <div class="pdf-footer">
-                <div>
-                    <span style="color:#888; font-size:10px; display:block; text-transform:uppercase; margin-bottom:4px;">Final Recommended Status</span>
-                    <strong id="pdf-dec" style="font-size:20px; color:#fff;">-</strong>
-                </div>
-                <div style="text-align: right;">
-                    <span style="color:#888; font-size:10px; display:block; text-transform:uppercase; margin-bottom:4px;">Digital Signature Authorized</span>
-                    <strong style="font-size:14px; color:#00f2ff; font-family:'Courier New', Courier, monospace;">Tournyx Operations</strong>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
-        // 🚨 CRITICAL: PASTE YOUR APPS SCRIPT WEB APP URL HERE 🚨
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_DtMi0n79prvBCIVDePeo2wYC4NXNO01zcIrUcIZCHWwljUZWAGdxKFT2XBPQE8E/exec";
+        // ==========================================
+        // 🚨 CONFIGURATION: PASTE SUPABASE KEYS HERE
+        // ==========================================
+        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_KEY = 'YOUR_ANON_KEY';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Expanded Checklist Metrics
-        const metrics = [
-            { id: "tech", label: "Technical Knowledge" },
-            { id: "comm", label: "Communication Skills" },
-            { id: "conf", label: "Confidence Level" },
-            { id: "team", label: "Teamwork & Culture Fit" },
-            { id: "prob", label: "Problem Solving" },
-            { id: "eng", label: "English Fluency" },
-            { id: "commit", label: "Commitment & Availability" }
-        ];
-
-        // Background Animation (Particles)
+        // ==========================================
+        // UI & ANIMATION LOGIC
+        // ==========================================
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -241,203 +245,206 @@
         anim();
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-        // Build Checklist UI Dynamically
-        const clArea = document.getElementById('checklistArea');
-        metrics.forEach(m => {
-            clArea.innerHTML += `
-                <div class="eval-item">
-                    <h4>${m.label}</h4>
-                    <div class="radio-chips">
-                        <label><input type="radio" name="${m.id}" value="Excellent" required><span class="exc">Excellent</span></label>
-                        <label><input type="radio" name="${m.id}" value="Good"><span class="gd">Good</span></label>
-                        <label><input type="radio" name="${m.id}" value="Moderate"><span class="mod">Moderate</span></label>
-                        <label><input type="radio" name="${m.id}" value="Weak"><span class="wk">Weak</span></label>
-                    </div>
-                </div>
-            `;
-        });
-
-        // Toast Notification Function
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
             t.querySelector('span').innerText = msg;
-            t.querySelector('i').className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
             t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            t.style.boxShadow = isError ? "0 5px 20px rgba(255,77,77,0.4)" : "0 5px 20px rgba(0,242,255,0.4)";
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // Add visual haptic feedback (Mobile)
-        function triggerHaptic() {
-            if (navigator.vibrate) navigator.vibrate(30);
-        }
-        document.querySelectorAll('input, select, textarea, button, label').forEach(el => {
-            el.addEventListener('click', triggerHaptic);
-        });
-
-        // Map form data perfectly to hidden PDF container
-        function syncDataToPDF() {
-            document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('en-GB');
-            document.getElementById('pdf-off').innerText = document.getElementById('officerName').value || "Not Set";
-            document.getElementById('pdf-cand').innerText = document.getElementById('candidateName').value || "Not Set";
-            document.getElementById('pdf-email').innerText = document.getElementById('candidateEmail').value || "Not Set";
-            document.getElementById('pdf-role').innerText = document.getElementById('targetRole').value || "Not Set";
+        function toggleAuth(type) {
+            document.getElementById('tab-intern').classList.remove('active');
+            document.getElementById('tab-officer').classList.remove('active');
+            document.getElementById('form-intern').style.display = 'none';
+            document.getElementById('form-officer').style.display = 'none';
             
-            let rawDec = document.getElementById('finalDecision').value || "Pending";
-            document.getElementById('pdf-dec').innerText = rawDec;
-            
-            // Color code the decision on the PDF
-            let decEl = document.getElementById('pdf-dec');
-            if(rawDec.includes("Selected")) decEl.style.color = "#00ff7f";
-            else if(rawDec.includes("Waitlist") || rawDec.includes("Re-Interview")) decEl.style.color = "#ff9900";
-            else if(rawDec.includes("Rejected")) decEl.style.color = "#ff4d4d";
-            else decEl.style.color = "#ffffff";
-
-            document.getElementById('pdf-rem').innerText = document.getElementById('officerRemarks').value || "No remarks provided.";
-
-            let tbody = document.getElementById('pdf-table-body');
-            tbody.innerHTML = "";
-            metrics.forEach(m => {
-                let radio = document.querySelector(`input[name="${m.id}"]:checked`);
-                let val = radio ? radio.value : "Not Evaluated";
-                let color = val === "Excellent" ? "#00ff7f" : (val === "Weak" ? "#ff4d4d" : "#ffffff");
-                tbody.innerHTML += `<tr><td>${m.label}</td><td style="color:${color}; text-align:right;">${val}</td></tr>`;
-            });
+            document.getElementById(`tab-${type}`).classList.add('active');
+            document.getElementById(`form-${type}`).style.display = 'block';
         }
 
-        // --- THE DISPLAY SWAP ENGINE (FIX FOR MOBILE BLANK PDF) ---
-        async function capturePDF(action = 'download') {
-            syncDataToPDF();
-            
-            const mainContainer = document.getElementById('mainUI');
-            const pdfWrapper = document.getElementById('pdfContainerWrapper');
-            const canvasBg = document.getElementById('particles-canvas');
-            
-            // 🔥 FIX 1: Reset scroll instantly so html2canvas doesn't capture blank offset space
-            window.scrollTo(0, 0);
-            
-            // 1. Temporarily bring PDF to front to force browser rendering
-            mainContainer.style.display = 'none';
-            canvasBg.style.display = 'none';
-            // 🔥 FIX 2: Use Absolute positioning to bypass mobile body padding limits
-            pdfWrapper.style.position = 'absolute';
-            pdfWrapper.style.top = '0';
-            pdfWrapper.style.left = '0';
-            pdfWrapper.style.opacity = '1';
-            pdfWrapper.style.zIndex = '9999';
-            
-            // Wait for DOM repaint
-            await new Promise(resolve => setTimeout(resolve, 150));
+        function switchView(viewId) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
 
-            const el = document.getElementById('pdfTemplate');
-            const name = document.getElementById('candidateName').value.replace(/\s+/g, '_') || 'Candidate';
+        // ==========================================
+        // AUTHENTICATION LOGIC
+        // ==========================================
+        async function loginIntern() {
+            const name = document.getElementById('loginInternName').value;
+            const taskId = document.getElementById('loginTaskId').value;
             
-            const opt = { 
-                margin: 0, 
-                filename: `TIMS_${name}.pdf`, 
-                image: { type: 'jpeg', quality: 1 }, 
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: '#05020c', 
-                    windowWidth: 800,
-                    scrollY: 0, // 🔥 FIX 3: Force rendering engine to start capturing from true zero
-                    scrollX: 0
-                }, 
-                jsPDF: { unit: 'px', format: [800, 1131], orientation: 'portrait' }
+            const { data, error } = await supabase.from('tims_tasks').select('*').eq('task_id', taskId).eq('intern_name', name).single();
+            
+            if (data) {
+                localStorage.setItem('tims_session', JSON.stringify({ role: 'intern', name: name, task: data }));
+                loadInternDashboard();
+                showToast("Authentication Successful");
+            } else {
+                showToast("Invalid Task ID or Name mismatch.", true);
+            }
+        }
+
+        async function loginOfficer() {
+            const name = document.getElementById('loginOfficerName').value;
+            const pin = document.getElementById('loginPin').value;
+            
+            const { data, error } = await supabase.from('tims_users').select('*').eq('name', name).eq('access_pin', pin).single();
+            
+            if (data) {
+                localStorage.setItem('tims_session', JSON.stringify({ role: 'officer', name: name }));
+                loadOfficerDashboard();
+                showToast("Commander Access Granted");
+            } else {
+                showToast("Invalid Credentials.", true);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('tims_session');
+            switchView('view-login');
+            showToast("Session Terminated");
+        }
+
+        // ==========================================
+        // INTERN DASHBOARD LOGIC
+        // ==========================================
+        function loadInternDashboard() {
+            switchView('view-intern-dashboard');
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const t = session.task;
+            
+            document.getElementById('intName').innerText = session.name;
+            document.getElementById('taskTitle').innerText = t.task_id + ": " + t.title;
+            document.getElementById('taskDesc').innerText = t.description;
+            document.getElementById('taskStatus').innerText = t.status;
+            document.getElementById('intScore').innerText = t.productivity_score + "%";
+            document.getElementById('progressBar').style.width = t.productivity_score + "%";
+        }
+
+        async function updateTaskStatus(newStatus, newScore) {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            
+            // Optimistic UI Update
+            document.getElementById('taskStatus').innerText = newStatus;
+            document.getElementById('progressBar').style.width = newScore + "%";
+            document.getElementById('intScore').innerText = newScore + "%";
+
+            // Database Update
+            await supabase.from('tims_tasks').update({ status: newStatus, productivity_score: newScore }).eq('task_id', session.task.task_id);
+            
+            // Update Local Storage Cache
+            session.task.status = newStatus;
+            session.task.productivity_score = newScore;
+            localStorage.setItem('tims_session', JSON.stringify(session));
+            
+            showToast("Progress Updated to " + newScore + "%");
+        }
+
+        // --- AI HUB: COMPRESSED PROMPT ROUTER ---
+        async function askTournyxAI() {
+            const input = document.getElementById('aiInput').value;
+            if(!input) return;
+
+            const resBox = document.getElementById('aiResponse');
+            resBox.style.display = 'block';
+            resBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing compressed prompt...';
+            
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const compressedPrompt = `Context: Task ${session.task.task_id} - ${session.task.title}. Intern Question: "${input}". Answer in under 3 sentences direct technical fix.`;
+
+            try {
+                // 🚨 Replace this fetch with your exact Cloudflare Worker URL
+                // const res = await fetch('https://YOUR_WORKER.workers.dev', {
+                //     method: 'POST', body: JSON.stringify({ action: 'tims_ai_chat', prompt: compressedPrompt })
+                // });
+                // const data = await res.json();
+                
+                // MOCK RESPONSE FOR PROTOTYPE
+                setTimeout(() => {
+                    resBox.innerHTML = `<strong>Tournyx AI:</strong> Based on task ${session.task.task_id}, to resolve your issue ensure your HTML structure uses <code>box-sizing: border-box;</code> to prevent overflow.`;
+                }, 1500);
+
+            } catch (e) {
+                resBox.innerHTML = "<span style='color:red;'>System overload. Please ping your Lead Officer.</span>";
+            }
+        }
+
+        // ==========================================
+        // OFFICER DASHBOARD LOGIC
+        // ==========================================
+        function loadOfficerDashboard() {
+            switchView('view-officer-dashboard');
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            document.getElementById('offName').innerText = session.name;
+            fetchPendingTasks(session.name);
+        }
+
+        async function assignTask() {
+            const btn = document.getElementById('btnAssign');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching...`;
+            
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const payload = {
+                task_id: document.getElementById('newTaskId').value,
+                intern_name: document.getElementById('newTaskIntern').value,
+                assigned_officer: session.name,
+                title: document.getElementById('newTaskTitle').value,
+                description: document.getElementById('newTaskDesc').value,
+                productivity_score: 20
             };
 
-            let result = null;
-            try {
-                if(action === 'download') {
-                    await html2pdf().set(opt).from(el).save();
-                } else {
-                    const pdfBase64 = await html2pdf().set(opt).from(el).outputPdf('datauristring');
-                    result = pdfBase64.split(',')[1];
-                }
-            } catch(e) {
-                console.error(e);
-            }
-
-            // 2. Hide PDF and restore Main UI
-            pdfWrapper.style.position = 'absolute';
-            pdfWrapper.style.left = '-9999px';
-            pdfWrapper.style.opacity = '0';
-            pdfWrapper.style.zIndex = '-9999';
-            mainContainer.style.display = 'block';
-            canvasBg.style.display = 'block';
-
-            return result;
-        }
-
-        async function createPDFBase64() {
-            return await capturePDF('base64');
-        }
-
-        async function generateAndDownloadPDF() {
-            if(!document.getElementById('evalForm').checkValidity()) {
-                document.getElementById('evalForm').reportValidity();
-                return;
-            }
-            showToast("Generating Full PDF Report...");
-            await capturePDF('download');
-            showToast("PDF Downloaded!");
-        }
-
-        async function submitEvaluation() {
-            const form = document.getElementById('evalForm');
-            if(!form.checkValidity()) { form.reportValidity(); return; }
-
-            const btn = document.getElementById('submitBtn');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Compiling & Encrypting...`;
-            btn.disabled = true;
-
-            showToast("Rendering official PDF document...");
+            await supabase.from('tims_tasks').insert([payload]);
+            showToast("Task Dispatched Successfully");
             
-            try {
-                let rData = {};
-                metrics.forEach(m => { rData[m.id] = document.querySelector(`input[name="${m.id}"]:checked`).value; });
+            document.getElementById('newTaskIntern').value = '';
+            document.getElementById('newTaskId').value = '';
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskDesc').value = '';
+            btn.innerHTML = `<i class="fa-solid fa-share-node"></i> Dispatch Task`;
+            fetchPendingTasks(session.name);
+        }
 
-                // Capture PDF Data
-                const generatedPdfData = await createPDFBase64();
+        async function fetchPendingTasks(officerName) {
+            const { data, error } = await supabase.from('tims_tasks').select('*').eq('assigned_officer', officerName).order('created_at', { ascending: false });
+            const tbody = document.getElementById('officerTaskTable');
+            tbody.innerHTML = '';
 
-                const payload = {
-                    interviewer: document.getElementById('officerName').value,
-                    candidate: document.getElementById('candidateName').value,
-                    candEmail: document.getElementById('candidateEmail').value,
-                    role: document.getElementById('targetRole').value,
-                    decision: document.getElementById('finalDecision').value,
-                    notes: document.getElementById('officerRemarks').value,
-                    ratings: rData,
-                    pdfBase64: generatedPdfData
-                };
+            if(data) {
+                data.forEach(t => {
+                    let btnHtml = t.status === 'Submitted' 
+                        ? `<button onclick="approveTask('${t.task_id}')" style="background:#00ff7f; color:black; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">Approve (100%)</button>`
+                        : `<span style="color:#aaa; font-size:0.8rem;">Waiting...</span>`;
 
-                showToast("Uploading to Server & Firing Emails...");
-
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' }, 
-                    body: JSON.stringify(payload)
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${t.task_id}</strong></td>
+                            <td>${t.intern_name}</td>
+                            <td style="color:var(--accent-cyan);">${t.status} (${t.productivity_score}%)</td>
+                            <td>${btnHtml}</td>
+                        </tr>
+                    `;
                 });
+            }
+        }
 
-                const out = await res.json();
-                if(out.result === "success") {
-                    showToast("Success! Database Updated & Emails Sent.");
-                    setTimeout(() => {
-                        form.reset();
-                        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Finalize & Send Emails`;
-                        btn.disabled = false;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 2500);
-                } else {
-                    throw new Error(out.error);
-                }
-            } catch(e) {
-                console.error(e);
-                showToast("Network Error: Ensure Script URL is correct.", true);
-                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Finalize & Send Emails`;
-                btn.disabled = false;
+        async function approveTask(taskId) {
+            await supabase.from('tims_tasks').update({ status: 'Approved', productivity_score: 100 }).eq('task_id', taskId);
+            showToast(`Task ${taskId} Approved! Intern receives 100%.`);
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            fetchPendingTasks(session.name);
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.onload = () => {
+            const session = localStorage.getItem('tims_session');
+            if (session) {
+                const s = JSON.parse(session);
+                if (s.role === 'intern') loadInternDashboard();
+                if (s.role === 'officer') loadOfficerDashboard();
             }
         }
     </script>
