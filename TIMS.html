@@ -8,10 +8,10 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
-            --bg-main: #04010a;
+            --bg-main: #06020f;
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff3333;
@@ -25,7 +25,6 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            /* Fixes the mobile text-highlighting bug */
             -webkit-tap-highlight-color: transparent; 
             -webkit-touch-callout: none;
         }
@@ -36,20 +35,26 @@
             overflow-x: hidden; 
             min-height: 100dvh; 
             margin: 0;
-            background-color: var(--bg-main);
+            background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             position: relative;
         }
 
-        /* --- DYNAMIC AMBIENT BACKGROUND --- */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #04010a 100%); pointer-events: none; }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: orbit 12s infinite alternate ease-in-out; pointer-events: none; }
-        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
-        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         
-        @keyframes orbit { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
+        /* --- AMBIENT GLOW ORBS --- */
+        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; }
+        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: var(--accent-purple); }
+        .orb-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: var(--accent-cyan); animation-delay: -5s; }
+        
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
 
-        /* Animated Particles */
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
 
         /* --- ULTIMATE TRUE GLASSMORPHISM --- */
         .glass-panel {
@@ -79,7 +84,7 @@
         .login-card {
             width: 100%;
             max-width: 380px; 
-            border-radius: 24px;
+            border-radius: 30px; /* Enhanced rounded corners for card */
             padding: 40px 30px;
             animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -94,8 +99,9 @@
         .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
         .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        /* PILL SHAPED TOGGLE */
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
         /* SMOOTH FORM SWITCHING */
@@ -105,44 +111,33 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .form-group { margin-bottom: 20px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
         
-        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px; border-radius: 12px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        /* PILL SHAPED INPUTS */
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 16px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
         .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-        .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none; -webkit-user-select: none;}
+        /* PILL SHAPED BUTTONS */
+        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none; -webkit-user-select: none;}
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
         .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
 
-        /* NEON QUVA FOOTER */
-        .brand-footer { text-align: center; margin-top: 35px; user-select: none; }
-        .neon-quva {
-            font-family: var(--font-head);
-            font-size: 2.2rem;
+        /* NEON QUVA FOOTER CREDITS */
+        .brand-footer { text-align: center; margin-top: 35px; user-select: none; font-size: 0.7rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small {
+            display: inline-block;
+            font-size: 1.4rem;
             font-weight: 900;
             color: #ffffff;
             letter-spacing: 4px;
-            animation: pulsate 2s infinite alternate;
+            margin-top: 5px;
+            animation: pulsateSmall 2s infinite alternate;
         }
 
-        @keyframes pulsate {
-            0% {
-                text-shadow: 
-                    0 0 5px #fff,
-                    0 0 10px #fff,
-                    0 0 20px var(--accent-cyan),
-                    0 0 40px var(--accent-cyan),
-                    0 0 80px var(--accent-purple);
-            }
-            100% {
-                text-shadow: 
-                    0 0 2px #fff,
-                    0 0 5px #fff,
-                    0 0 10px var(--accent-cyan),
-                    0 0 20px var(--accent-cyan),
-                    0 0 40px var(--accent-purple);
-            }
+        @keyframes pulsateSmall {
+            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); }
+            100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); }
         }
 
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
@@ -185,9 +180,8 @@
         .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
         .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
-        .logout-btn:active { transform: scale(0.95); }
 
         /* MAIN CONTENT AREA */
         .main-content {
@@ -206,27 +200,26 @@
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 150; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 14px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
-        .mobile-menu-btn:active { transform: scale(0.95); }
+        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 50px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
 
         /* DASHBOARD HEADER */
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 18px; margin-bottom: 30px;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 50px; margin-bottom: 30px;}
         .dash-greeting h2 { font-family: var(--font-head); font-size: 1.7rem; color: white; margin-bottom: 4px;}
         .dash-greeting p { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         
         .stat-badge { text-align: right; }
         .stat-badge span { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.3);}
+        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4);}
 
         /* PANELS WITH SMOOTH TRANSITIONS */
         .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .panel-card { border-radius: 18px; padding: 30px; margin-bottom: 25px; }
+        .panel-card { border-radius: 24px; padding: 30px; margin-bottom: 25px; }
         .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
         /* BULLETPROOF TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -236,7 +229,7 @@
             .sidebar.open { transform: translateX(0); }
             
             .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px;}
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px; border-radius: 20px;}
             .stat-badge { text-align: left;}
         }
     </style>
@@ -269,7 +262,7 @@
                 <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
             </div>
 
-            <!-- 🚨 FIX: Used simple <div> to prevent mobile browser form hijacking/freezing -->
+            <!-- Intern Form -->
             <div id="form-intern" class="auth-form active">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
@@ -284,7 +277,7 @@
                 </button>
             </div>
 
-            <!-- 🚨 FIX: Officer Div -->
+            <!-- Officer Form -->
             <div id="form-officer" class="auth-form">
                 <div class="form-group">
                     <label class="form-label">Commander Name</label>
@@ -300,7 +293,8 @@
             </div>
             
             <div class="brand-footer">
-                <div class="neon-quva">QUVA</div>
+                POWERED BY<br>
+                <span class="neon-quva-small">QUVA</span>
             </div>
         </div>
     </div>
@@ -377,7 +371,7 @@
                     <div class="form-group">
                         <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="window.showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
@@ -397,29 +391,15 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SECURE JAVASCRIPT ENGINE & CDN LOADER      -->
+    <!-- SECURE JAVASCRIPT ENGINE (100% NATIVE REST API) -->
     <!-- ========================================== -->
-    
-    <!-- 🚨 FIX: Load Supabase at the very bottom asynchronously so it NEVER blocks the UI rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="initDB()" defer></script>
-
     <script>
-        // --- 1. GLOBAL VARIABLES & SECURE CONFIG ---
-        let supabase = null;
+        // --- 1. SECURE CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
-        // --- 2. FAIL-SAFE TIMEOUT PROMISE ---
-        // Guarantees the database query will never hang infinitely
-        const fetchWithTimeout = (promise, ms) => {
-            return Promise.race([
-                promise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), ms))
-            ]);
-        };
-
-        // --- 3. TOAST ENGINE (Global Scope to prevent crashes) ---
-        window.showToast = function(msg, isError = false) {
+        // --- 2. TOAST ENGINE (Fail-Proof) ---
+        function showToast(msg, isError = false) {
             try {
                 const t = document.getElementById('toast');
                 const icon = t.querySelector('i');
@@ -434,114 +414,97 @@
                 t.classList.add('show');
                 setTimeout(() => t.classList.remove('show'), 3500);
             } catch(e) {
-                console.error("Toast Failed:", e.message);
+                console.error("Toast Error:", e);
                 if(isError) alert("Error: " + msg);
             }
-        };
+        }
 
-        // --- 4. FORM TOGGLE ENGINE (Crash-Proof) ---
-        window.toggleAuth = function(type) {
-            try {
-                if(navigator.vibrate) navigator.vibrate(15);
-                
-                document.getElementById('tab-intern').classList.remove('active');
-                document.getElementById('tab-officer').classList.remove('active');
-                document.getElementById(`tab-${type}`).classList.add('active');
+        // --- 3. TAB TOGGLING ENGINE ---
+        function toggleAuth(type) {
+            if(navigator.vibrate) navigator.vibrate(15);
+            
+            document.getElementById('tab-intern').classList.remove('active');
+            document.getElementById('tab-officer').classList.remove('active');
+            document.getElementById(`tab-${type}`).classList.add('active');
 
-                // Force DOM hide to prevent ghosting
+            document.getElementById('form-intern').classList.remove('active');
+            document.getElementById('form-officer').classList.remove('active');
+            
+            setTimeout(() => {
                 document.getElementById('form-intern').style.display = 'none';
-                document.getElementById('form-intern').classList.remove('active');
                 document.getElementById('form-officer').style.display = 'none';
-                document.getElementById('form-officer').classList.remove('active');
                 
                 document.getElementById(`form-${type}`).style.display = 'block';
-                setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 20);
-            } catch(e) {
-                console.error("Toggle Auth Error:", e.message);
-            }
-        };
+                setTimeout(() => {
+                    document.getElementById(`form-${type}`).classList.add('active');
+                }, 10);
+            }, 100); // Small delay to allow fade out
+        }
 
-        // --- 5. INITIALIZE DATABASE ---
-        window.initDB = function() {
-            try {
-                if (typeof window.supabase !== 'undefined') {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    console.log("Supabase V2 Connection Established.");
-                } else {
-                    console.error("Supabase CDN failed to load.");
-                }
-            } catch(e) {
-                console.error("DB Init Error:", e);
-            }
-        };
+        // --- 4. ULTIMATE NATIVE AUTHENTICATION (Bypasses CDN completely) ---
+        async function initiateLogin(role) {
+            if(navigator.vibrate) navigator.vibrate(20);
 
-        // --- 6. BULLETPROOF AUTHENTICATION ENGINE ---
-        window.initiateLogin = async function(role) {
             let nameInput = "";
             let secondaryInput = "";
             let btnId = "";
+            let url = "";
             
+            if(role === 'intern') {
+                nameInput = document.getElementById('loginInternName').value.trim();
+                secondaryInput = document.getElementById('loginTaskId').value.trim();
+                btnId = 'btn-login-intern';
+                
+                // Construct Native REST URL for Tasks
+                url = `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`;
+            } else {
+                nameInput = document.getElementById('loginOfficerName').value.trim();
+                secondaryInput = document.getElementById('loginPin').value.trim();
+                btnId = 'btn-login-officer';
+                
+                // Construct Native REST URL for Officers
+                url = `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
+            }
+
+            if(!nameInput || !secondaryInput) {
+                showToast("All fields are strictly required.", true);
+                return;
+            }
+
+            const btn = document.getElementById(btnId);
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+            btn.disabled = true;
+
             try {
-                if(navigator.vibrate) navigator.vibrate(20);
+                // Fetch directly to server using Native API - 100% Bulletproof
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-                if(role === 'intern') {
-                    nameInput = document.getElementById('loginInternName').value.trim();
-                    secondaryInput = document.getElementById('loginTaskId').value.trim();
-                    btnId = 'btn-login-intern';
-                } else {
-                    nameInput = document.getElementById('loginOfficerName').value.trim();
-                    secondaryInput = document.getElementById('loginPin').value.trim();
-                    btnId = 'btn-login-officer';
-                }
+                if (!response.ok) throw new Error("Database Server Error");
 
-                if(!nameInput || !secondaryInput) {
-                    window.showToast("All fields are strictly required.", true);
+                const data = await response.json();
+
+                // If Array is empty, no match was found
+                if (data.length === 0) {
+                    if(role === 'intern') {
+                        showToast("Access Denied: Intern or Task ID not found!", true);
+                    } else {
+                        showToast("Access Denied: Invalid Commander Credentials!", true);
+                    }
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
                     return;
                 }
 
-                const btn = document.getElementById(btnId);
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
-                btn.disabled = true;
-
-                // Failsafe 1: Wait for Supabase to load if user clicks too fast
-                if (!supabase) {
-                    window.initDB();
-                    if(!supabase) {
-                        window.showToast("System connecting... please wait a moment.", true);
-                        btn.innerHTML = originalHTML;
-                        btn.disabled = false;
-                        return;
-                    }
-                }
-
-                let sessionData = null;
-
-                if (role === 'intern') {
-                    // Failsafe 2: 5-second DB timeout limit
-                    const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).single();
-                    const { data, error } = await fetchWithTimeout(query, 5000);
-
-                    if (error || !data) {
-                        window.showToast("Access Denied: Invalid Task ID or Intern Name!", true);
-                        btn.innerHTML = originalHTML;
-                        btn.disabled = false;
-                        return;
-                    }
-                    sessionData = data;
-                } else {
-                    const query = supabase.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput).single();
-                    const { data, error } = await fetchWithTimeout(query, 5000);
-
-                    if (error || !data) {
-                        window.showToast("Access Denied: Invalid Commander Credentials!", true);
-                        btn.innerHTML = originalHTML;
-                        btn.disabled = false;
-                        return; 
-                    }
-                }
-
                 // Authentication Success
+                const sessionData = data[0]; 
                 localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
                 
                 document.getElementById('view-login').style.opacity = '0';
@@ -560,28 +523,23 @@
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
-                    window.showToast("System Access Granted.");
+                    showToast("System Access Granted.");
                     
-                    // Reset Button internally
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
                 }, 400); 
 
             } catch (err) {
                 console.error("FATAL LOGIN ERROR:", err);
-                window.showToast(err.message || "Network Error: Could not reach database.", true);
+                showToast(err.message || "Network Error: Could not reach server.", true);
                 
-                // Absolute Failsafe Recovery
-                const btn = document.getElementById(btnId);
-                if(btn) {
-                    btn.innerHTML = role === 'intern' ? '<i class="fa-solid fa-right-to-bracket"></i> Initiate Session' : '<i class="fa-solid fa-shield-halved"></i> Authenticate';
-                    btn.disabled = false;
-                }
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
             }
-        };
+        }
 
-        // --- 7. Dashboard Navigation & Sidebar Logic ---
-        window.switchPanel = function(panelId, navElement) {
+        // --- 5. Dashboard Navigation & Sidebar Logic ---
+        function switchPanel(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
 
@@ -601,21 +559,20 @@
 
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
 
-            if(window.innerWidth <= 850) window.closeSidebar();
-        };
+            if(window.innerWidth <= 850) closeSidebar();
+        }
 
-        window.openSidebar = function() {
+        function openSidebar() {
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('mobileOverlay').classList.add('open');
-        };
+        }
 
-        window.closeSidebar = function() {
+        function closeSidebar() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('mobileOverlay').classList.remove('open');
-        };
+        }
 
-        // --- 8. Session Termination ---
-        window.logout = function() {
+        function logout() {
             localStorage.removeItem('tims_session');
             
             const dashView = document.getElementById('view-dashboard');
@@ -636,15 +593,14 @@
                 document.getElementById('loginOfficerName').value = '';
                 document.getElementById('loginPin').value = '';
                 
-                window.closeSidebar(); 
-                window.showToast("Session Terminated Securely.");
+                closeSidebar(); 
+                showToast("Session Terminated Securely.");
             }, 500);
-        };
+        }
 
-        // --- 9. Safe Boot Sequence & Particles ---
+        // --- 6. Safe Boot Sequence & Particles ---
         window.addEventListener('DOMContentLoaded', () => {
             try {
-                // Initialize Particles safely
                 const canvas = document.getElementById('particles-canvas');
                 const ctx = canvas.getContext('2d');
                 let width = window.innerWidth;
@@ -683,7 +639,6 @@
                 console.warn("Particles skipped on this device.");
             }
 
-            // Session check
             const session = localStorage.getItem('tims_session');
             if(session) {
                 const s = JSON.parse(session);
