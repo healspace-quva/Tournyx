@@ -11,14 +11,14 @@
 
     <style>
         :root {
-            --bg-main: #06020f;
+            --bg-main: #04010a;
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff3333;
             --accent-green: #00ff66;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --sidebar-width: 260px;
+            --sidebar-width: 250px;
         }
 
         * { 
@@ -35,36 +35,31 @@
             overflow-x: hidden; 
             min-height: 100dvh; 
             margin: 0;
-            background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: var(--bg-main);
             position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* --- DYNAMIC AMBIENT BACKGROUND --- */
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #04010a 100%); pointer-events: none; }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: orbit 12s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
+        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
         
-        /* --- AMBIENT GLOW ORBS --- */
-        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.5; animation: float 12s infinite alternate ease-in-out; pointer-events: none; }
-        .orb-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: var(--accent-purple); }
-        .orb-2 { bottom: -10%; right: -10%; width: 450px; height: 450px; background: var(--accent-cyan); animation-delay: -6s; }
-        
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
+        @keyframes orbit { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
 
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
+        /* Animated Particles */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
 
         /* --- ULTIMATE TRUE GLASSMORPHISM --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); 
+            background: rgba(255, 255, 255, 0.04); 
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-top: 1px solid rgba(255, 255, 255, 0.2); 
             border-left: 1px solid rgba(255, 255, 255, 0.2); 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0); /* Hardware acceleration */
         }
 
         /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
@@ -78,48 +73,46 @@
             justify-content: center;
             padding: 20px;
             z-index: 100;
-            transition: opacity 0.5s ease, visibility 0.5s;
+            transition: opacity 0.4s ease, visibility 0.4s;
         }
 
         .login-card {
             width: 100%;
             max-width: 380px; 
-            border-radius: 35px; 
-            padding: 45px 30px;
-            animation: slideFadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 30px; 
+            padding: 40px 30px;
+            animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
 
         @keyframes slideFadeIn { 
-            from { opacity: 0; transform: scale(0.9) translateY(25px); } 
+            from { opacity: 0; transform: scale(0.92) translateY(20px); } 
             to { opacity: 1; transform: scale(1) translateY(0); } 
         }
 
         .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 5px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
         .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        /* PILL SHAPED TOGGLE */
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 6px; width: 100%; user-select: none;}
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.15);}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.2s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
-        /* SMOOTH FORM SWITCHING (Zero Shift) */
-        .form-container-wrapper { position: relative; min-height: 250px; }
-        .auth-form { position: absolute; top: 0; left: 0; width: 100%; visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1;}
-        .auth-form.active { visibility: visible; opacity: 1; z-index: 2; }
+        /* INSTANT FORM SWITCHING */
+        .auth-form { display: none; }
+        .auth-form.active { display: block; animation: fadeIn 0.3s ease forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .form-group { margin-bottom: 20px; width: 100%; position: relative;}
         .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
         
-        /* PILL SHAPED INPUTS */
-        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 16px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
-        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 20px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-        /* PILL SHAPED BUTTONS */
-        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);}
-        .btn-primary:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
+        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none; -webkit-user-select: none;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+        .btn-primary:active { transform: scale(0.95) !important; box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
 
         /* NEON QUVA FOOTER CREDITS */
@@ -131,7 +124,7 @@
             color: #ffffff;
             letter-spacing: 5px;
             margin-top: 8px;
-            animation: pulsateSmall 2s infinite alternate;
+            animation: pulsateSmall 1.5s infinite alternate;
         }
 
         @keyframes pulsateSmall {
@@ -139,7 +132,7 @@
             100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); }
         }
 
-        /* --- 2. DASHBOARD VIEW --- */
+        /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
         #view-dashboard {
             display: none; 
             visibility: hidden;
@@ -164,7 +157,7 @@
             overflow-y: auto;
             flex-shrink: 0;
             z-index: 200;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border-right: 1px solid var(--glass-border);
             border-radius: 0 24px 24px 0;
         }
@@ -174,12 +167,12 @@
         .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none;}
+        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none; -webkit-user-select: none;}
         .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
         .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
         .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
         .logout-btn:active { transform: scale(0.95); }
 
@@ -210,20 +203,17 @@
         
         .stat-badge { text-align: right; }
         .stat-badge span { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4); animation: pulseGlow 2s infinite alternate;}
-        
-        @keyframes pulseGlow { 0% { text-shadow: 0 0 10px rgba(0,255,127,0.3); } 100% { text-shadow: 0 0 25px rgba(0,255,127,0.8); } }
+        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4);}
 
         /* PANELS WITH SMOOTH TRANSITIONS */
         .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .panel-card { border-radius: 24px; padding: 30px; margin-bottom: 25px; transition: transform 0.3s ease; }
-        .panel-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,242,255,0.1); }
-        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
+        .panel-card { border-radius: 24px; padding: 30px; margin-bottom: 25px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
         /* BULLETPROOF TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 5px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -233,7 +223,7 @@
             .sidebar.open { transform: translateX(0); }
             
             .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 25px; border-radius: 25px;}
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px; border-radius: 24px;}
             .stat-badge { text-align: left;}
         }
     </style>
@@ -262,42 +252,38 @@
 
             <!-- Login Toggles -->
             <div class="auth-toggle">
-                <div id="tab-intern" class="active" onclick="toggleAuth('intern')">Intern Login</div>
-                <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
+                <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
+                <div id="tab-officer" onclick="window.toggleAuth('officer')">Officer Login</div>
             </div>
 
-            <!-- Wrapper ensures no layout shift when changing tabs -->
-            <div class="form-container-wrapper">
-                <!-- Intern Form -->
-                <div id="form-intern" class="auth-form active">
-                    <div class="form-group">
-                        <label class="form-label">Intern Name</label>
-                        <!-- Autocapitalize off to prevent mobile keyboard syntax errors -->
-                        <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" autocomplete="off" autocapitalize="none">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Assigned Task ID</label>
-                        <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off" autocapitalize="characters">
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="initiateLogin('intern')">
-                        <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
-                    </button>
+            <!-- Intern Form -->
+            <div id="form-intern" class="auth-form active">
+                <div class="form-group">
+                    <label class="form-label">Intern Name</label>
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" autocomplete="off" onkeypress="handleEnter(event, 'intern')">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Assigned Task ID</label>
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off" onkeypress="handleEnter(event, 'intern')">
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
+                </button>
+            </div>
 
-                <!-- Officer Form -->
-                <div id="form-officer" class="auth-form">
-                    <div class="form-group">
-                        <label class="form-label">Commander Name</label>
-                        <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off" autocapitalize="none">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Secure PIN</label>
-                        <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" autocomplete="off">
-                    </div>
-                    <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="initiateLogin('officer')">
-                        <i class="fa-solid fa-shield-halved"></i> Authenticate
-                    </button>
+            <!-- Officer Form -->
+            <div id="form-officer" class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Commander Name</label>
+                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="handleEnter(event, 'officer')">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Secure PIN</label>
+                    <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" autocomplete="off" onkeypress="handleEnter(event, 'officer')">
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="window.initiateLogin('officer')">
+                    <i class="fa-solid fa-shield-halved"></i> Authenticate
+                </button>
             </div>
             
             <div class="brand-footer">
@@ -313,8 +299,8 @@
     <div id="view-dashboard">
         
         <!-- Mobile Controls -->
-        <div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
-        <button class="mobile-menu-btn glass-panel" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
+        <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
         
         <!-- SIDEBAR NAVIGATION -->
         <div class="sidebar glass-panel" id="sidebar">
@@ -322,22 +308,22 @@
                 <h2>TIMS HUB</h2>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item active" onclick="switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
-                <li class="nav-item" onclick="switchPanel('panel-tasks', this)"><i class="fa-solid fa-clipboard-list"></i> My Tasks</li>
-                <li class="nav-item" onclick="switchPanel('panel-attendance', this)"><i class="fa-solid fa-calendar-check"></i> Attendance</li>
-                <li class="nav-item" onclick="switchPanel('panel-progress', this)"><i class="fa-solid fa-chart-line"></i> Progress</li>
-                <li class="nav-item" onclick="switchPanel('panel-learning', this)"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</li>
-                <li class="nav-item" onclick="switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
-                <li class="nav-item" onclick="switchPanel('panel-sop', this)"><i class="fa-solid fa-file-contract"></i> SOP</li>
-                <li class="nav-item" onclick="switchPanel('panel-ted', this)"><i class="fa-solid fa-book"></i> TED</li>
-                <li class="nav-item" onclick="switchPanel('panel-videos', this)"><i class="fa-solid fa-video"></i> Videos</li>
-                <li class="nav-item" onclick="switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Team</li>
-                <li class="nav-item" onclick="switchPanel('panel-contacts', this)"><i class="fa-solid fa-phone"></i> Contacts</li>
-                <li class="nav-item" onclick="switchPanel('panel-announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
-                <li class="nav-item" onclick="switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
+                <li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-tasks', this)"><i class="fa-solid fa-clipboard-list"></i> My Tasks</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-attendance', this)"><i class="fa-solid fa-calendar-check"></i> Attendance</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-progress', this)"><i class="fa-solid fa-chart-line"></i> Progress</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-learning', this)"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-sop', this)"><i class="fa-solid fa-file-contract"></i> SOP</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ted', this)"><i class="fa-solid fa-book"></i> TED</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-videos', this)"><i class="fa-solid fa-video"></i> Videos</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Team</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-phone"></i> Contacts</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
             </ul>
             <div class="sidebar-footer">
-                <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+                <button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
             </div>
         </div>
 
@@ -351,17 +337,14 @@
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong>ONLINE</strong>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.4);">ONLINE</strong>
                 </div>
             </div>
 
             <!-- Panel 1: Dashboard Home -->
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel">
-                    <h3 class="panel-title">
-                        <span><i class="fa-solid fa-bolt"></i> Operational Overview</span>
-                        <span id="liveClock" style="font-size: 0.8rem; color: #888;">00:00:00</span>
-                    </h3>
+                    <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
                     <p style="color: #aaa; line-height: 1.7; font-size: 1rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored via Supabase. Use the navigation sidebar to access your assigned tasks and technical architecture documentation.</p>
                 </div>
             </div>
@@ -380,7 +363,7 @@
                     <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
                     <p style="color:#bbb; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions or request code debugging here.</p>
                     <div class="form-group">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4); border-radius: 50px;">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
                     <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="window.showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
@@ -429,7 +412,7 @@
             }
         };
 
-        // --- 3. TAB TOGGLING ENGINE (Absolute Positioning Fix) ---
+        // --- 3. INSTANT TAB TOGGLING ENGINE (No Delays) ---
         window.toggleAuth = function(type) {
             if(navigator.vibrate) navigator.vibrate(15);
             
@@ -437,16 +420,29 @@
             document.getElementById('tab-officer').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
 
+            // Instant DOM manipulation prevents freezing and overlapping
             document.getElementById('form-intern').classList.remove('active');
             document.getElementById('form-officer').classList.remove('active');
+            document.getElementById('form-intern').style.display = 'none';
+            document.getElementById('form-officer').style.display = 'none';
             
-            // Allow CSS transition to finish before swapping
+            document.getElementById(`form-${type}`).style.display = 'block';
+            
+            // Micro-delay to trigger CSS animation correctly
             setTimeout(() => {
                 document.getElementById(`form-${type}`).classList.add('active');
-            }, 50); 
+            }, 10);
         };
 
-        // --- 4. ULTIMATE NATIVE AUTHENTICATION (Strict Eq Match) ---
+        // --- 4. ENTER KEY HANDLER ---
+        window.handleEnter = function(e, role) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                window.initiateLogin(role);
+            }
+        };
+
+        // --- 5. ULTIMATE NATIVE AUTHENTICATION (100% BULLETPROOF) ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
 
@@ -460,15 +456,15 @@
                 secondaryInput = document.getElementById('loginTaskId').value.trim();
                 btnId = 'btn-login-intern';
                 
-                // STRICT EXACT MATCH for Interns (eq instead of ilike)
-                url = `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=eq.${encodeURIComponent(secondaryInput)}&intern_name=eq.${encodeURIComponent(nameInput)}&select=*`;
+                // Construct Native REST URL for Tasks
+                url = `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`;
             } else {
                 nameInput = document.getElementById('loginOfficerName').value.trim();
                 secondaryInput = document.getElementById('loginPin').value.trim();
                 btnId = 'btn-login-officer';
                 
-                // STRICT EXACT MATCH for Officers
-                url = `${SUPABASE_URL}/rest/v1/tims_users?name=eq.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
+                // Construct Native REST URL for Officers
+                url = `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
             }
 
             if(!nameInput || !secondaryInput) {
@@ -482,7 +478,7 @@
             btn.disabled = true;
 
             try {
-                // Fetch directly to server using Native API - 100% Bulletproof
+                // Fetch directly to server using Native API 
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -496,16 +492,14 @@
 
                 const data = await response.json();
 
-                // If Array is empty, no match was found (or RLS blocked it)
+                // If Array is empty, no match was found
                 if (data.length === 0) {
                     if(role === 'intern') {
-                        window.showToast("Access Denied: Intern or Task ID not found in Database!", true);
+                        window.showToast("Access Denied: Intern or Task ID not found!", true);
                     } else {
                         window.showToast("Access Denied: Invalid Commander Credentials!", true);
                     }
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                    return;
+                    return; // EXITS TRY BLOCK, JUMPS TO FINALLY BLOCK
                 }
 
                 // Authentication Success
@@ -516,6 +510,7 @@
                 
                 setTimeout(() => {
                     document.getElementById('view-login').style.visibility = 'hidden';
+                    document.getElementById('view-login').style.display = 'none';
                     
                     const dashView = document.getElementById('view-dashboard');
                     dashView.style.visibility = 'visible';
@@ -528,21 +523,21 @@
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
                     window.showToast("System Access Granted.");
-                    
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
                 }, 400); 
 
             } catch (err) {
                 console.error("FATAL LOGIN ERROR:", err);
                 window.showToast("Network Error: Could not reach server.", true);
-                
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
+            } finally {
+                // 🚨 ABSOLUTE FAILSAFE: NO MATTER WHAT HAPPENS, THE BUTTON RESETS 🚨
+                if(btn) {
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
             }
         };
 
-        // --- 5. Dashboard Navigation & Sidebar Logic ---
+        // --- 6. Dashboard Navigation & Sidebar Logic ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
@@ -588,6 +583,7 @@
                 
                 const loginView = document.getElementById('view-login');
                 loginView.style.visibility = 'visible';
+                loginView.style.display = 'flex';
                 
                 setTimeout(() => { loginView.style.opacity = '1'; }, 50);
                 
@@ -600,13 +596,6 @@
                 window.showToast("Session Terminated Securely.");
             }, 500);
         };
-
-        // --- 6. Live Clock Engine ---
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', { hour12: true });
-        }
-        setInterval(updateClock, 1000);
 
         // --- 7. Safe Boot Sequence & Particles ---
         window.addEventListener('DOMContentLoaded', () => {
