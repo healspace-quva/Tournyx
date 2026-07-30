@@ -15,16 +15,18 @@
     <style>
         :root {
             --bg-main: #05020c;
-            --bg-card: rgba(15, 7, 30, 0.65);
+            /* Premium Transparent Glass Backgrounds */
+            --bg-glass: rgba(10, 5, 20, 0.35);
+            --bg-glass-hover: rgba(255, 255, 255, 0.05);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff4d4d;
             --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --glass-border: rgba(0, 242, 255, 0.2);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
-            --sidebar-width: 260px;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --sidebar-width: 240px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -39,11 +41,20 @@
         }
         
         /* Animated Background */
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #110822 0%, #05020c 100%); pointer-events: none;}
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 0%, #0d0616 0%, #05020c 100%); pointer-events: none;}
+
+        /* --- GLOBAL GLASSMORPHISM CLASSES --- */
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
 
         /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
         #view-login {
-            position: absolute;
+            position: fixed; /* Ensures it stays dead center */
             top: 0; left: 0;
             width: 100vw;
             height: 100vh;
@@ -52,87 +63,86 @@
             justify-content: center;
             padding: 20px;
             z-index: 10;
+            transition: opacity 0.5s ease;
         }
 
         .login-card {
             width: 100%;
-            max-width: 420px;
-            background: var(--bg-card);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: var(--glass-shadow), inset 0 0 20px rgba(0,242,255,0.05);
+            max-width: 380px; /* Minimal size */
+            border-radius: 16px;
+            padding: 35px 25px;
             animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         @keyframes fadeInScale { 
-            from { opacity: 0; transform: scale(0.95) translateY(20px); } 
+            from { opacity: 0; transform: scale(0.92) translateY(15px); } 
             to { opacity: 1; transform: scale(1) translateY(0); } 
         }
 
-        .header-logo { text-align: center; margin-bottom: 30px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 2.2rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 5px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;}
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.6); border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05); padding: 6px; width: 100%; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);}
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #666; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); font-weight: bold; box-shadow: 0 0 15px rgba(0,242,255,0.1);}
+        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 15px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 5px;}
+        .header-logo p { color: #888; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.8rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 16px; border-radius: 12px; font-family: var(--font-body); font-size: 1.05rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
-        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.4); border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.03); padding: 4px; width: 100%;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.75rem; cursor: pointer; color: #666; border-radius: 6px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.05);}
 
-        .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 15px; }
-        .btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,242,255,0.4); }
+        .form-group { margin-bottom: 18px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .form-control { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); color: white; padding: 12px 15px; border-radius: 10px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.6); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
+
+        .btn { width: 100%; padding: 12px; border-radius: 10px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(0,242,255,0.3); }
 
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
         #view-dashboard {
             display: none; /* Hidden by default */
             width: 100vw;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden; /* Strict NO scrollbars globally */
             flex-direction: row;
-            background: transparent;
             z-index: 20;
             position: absolute;
             top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
         /* SIDEBAR (Glassmorphism Drawer) */
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
-            background: rgba(10, 5, 20, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
-            padding: 25px 0;
+            padding: 20px 0;
             overflow-y: auto;
             flex-shrink: 0;
             z-index: 100;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-right: 1px solid var(--glass-border);
+            border-radius: 0 16px 16px 0;
         }
-
-        /* Hide scrollbar for sidebar */
         .sidebar::-webkit-scrollbar { width: 0px; }
 
-        .sidebar-brand { text-align: center; margin-bottom: 30px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;}
+        .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #999; font-family: var(--font-head); font-size: 0.9rem; text-transform: uppercase; transition: all 0.3s ease;}
-        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
-        .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
+        .nav-item { padding: 12px 20px; border-left: 3px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #999; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; transition: all 0.3s ease;}
+        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.1) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
+        .nav-item i { width: 18px; text-align: center; font-size: 1.1rem;}
 
-        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,77,77,0.4);}
+        .sidebar-footer { margin-top: auto; padding: 15px 20px; }
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.05); border: 1px solid rgba(255,77,77,0.2); color: var(--accent-red); padding: 12px; border-radius: 8px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
+        .logout-btn:hover { background: var(--accent-red); color: white;}
 
         /* MAIN CONTENT AREA */
         .main-content {
@@ -140,35 +150,35 @@
             height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 30px 40px;
+            padding: 25px 35px;
             position: relative;
         }
 
-        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar { width: 4px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        /* MOBILE OVERLAY & BUTTON */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 110; background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+        /* MOBILE OVERLAY & BUTTON (STRICTLY INSIDE DASHBOARD NOW) */
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 110; background: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
 
         /* DASHBOARD HEADER */
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 25px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; backdrop-filter: blur(15px); box-shadow: var(--glass-shadow);}
-        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.8rem; color: white; margin-bottom: 5px;}
-        .dash-greeting p { color: #aaa; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 14px; margin-bottom: 25px;}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 4px;}
+        .dash-greeting p { color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         
         .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.85rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 5px;}
-        .stat-badge strong { font-size: 2.2rem; color: var(--accent-cyan); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,242,255,0.3);}
+        .stat-badge span { display: block; font-size: 0.7rem; color: #777; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
+        .stat-badge strong { font-size: 1.6rem; color: var(--accent-cyan); font-family: var(--font-head); text-shadow: 0 0 10px rgba(0,242,255,0.2);}
 
-        /* PANELS */
-        .content-panel { display: none; animation: slideUp 0.4s ease; width: 100%; max-width: 1000px; margin: 0 auto;}
-        .content-panel.active { display: block; }
+        /* PANELS WITH SMOOTH TRANSITIONS */
+        .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .panel-card { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 30px; border-radius: 16px; margin-bottom: 25px; backdrop-filter: blur(15px); box-shadow: var(--glass-shadow);}
-        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
+        .panel-card { border-radius: 14px; padding: 25px; margin-bottom: 20px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 12px; letter-spacing: 1px;}
 
         /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 16px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 25px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 14px 20px; border-radius: 10px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 20px rgba(0,242,255,0.2); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -178,12 +188,9 @@
             .sidebar.open { transform: translateX(0); }
             .mobile-overlay.open { display: block; opacity: 1; }
             
-            .main-content { padding: 90px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px;}
+            .main-content { padding: 75px 15px 15px 15px; } /* Space for mobile header button */
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px;}
             .stat-badge { text-align: left;}
-            
-            .login-card { padding: 30px 20px; }
-            .header-logo h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -199,7 +206,7 @@
     <!-- VIEW 1: LOGIN GATEWAY                      -->
     <!-- ========================================== -->
     <div id="view-login">
-        <div class="login-card">
+        <div class="login-card glass-panel">
             <div class="header-logo">
                 <h1>TIMS ENGINE</h1>
                 <p>Unified Operational Gateway</p>
@@ -215,11 +222,11 @@
             <form id="form-intern" onsubmit="event.preventDefault(); initiateLogin('intern');">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
-                    <input type="text" id="loginInternName" class="form-control" placeholder="Intern Name" required>
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Task ID</label>
-                    <input type="text" id="loginTaskId" class="form-control" placeholder="Task ID" required>
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-13" required>
                 </div>
                 <button type="submit" class="btn btn-primary" id="btn-login-intern">
                     <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
@@ -230,11 +237,11 @@
             <form id="form-officer" style="display:none;" onsubmit="event.preventDefault(); initiateLogin('officer');">
                 <div class="form-group">
                     <label class="form-label">Officer Name</label>
-                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Officer Name" required>
+                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Secure PIN</label>
-                    <input type="password" id="loginPin" class="form-control" placeholder="Secure PIN" required>
+                    <input type="password" id="loginPin" class="form-control" placeholder="Enter PIN" required>
                 </div>
                 <button type="submit" class="btn btn-primary" id="btn-login-officer">
                     <i class="fa-solid fa-shield-halved"></i> Authenticate
@@ -246,15 +253,14 @@
     <!-- ========================================== -->
     <!-- VIEW 2: MASTER DASHBOARD                   -->
     <!-- ========================================== -->
-    
-    <!-- Mobile Controls -->
-    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
-    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-    
     <div id="view-dashboard">
         
+        <!-- Mobile Controls (Strictly inside Dashboard now) -->
+        <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        
         <!-- SIDEBAR NAVIGATION -->
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar glass-panel" id="sidebar">
             <div class="sidebar-brand">
                 <h2>TIMS HUB</h2>
             </div>
@@ -281,56 +287,56 @@
         <!-- MAIN DYNAMIC CONTENT -->
         <div class="main-content" id="mainContentScroll">
             
-            <div class="dash-top-bar">
+            <div class="dash-top-bar glass-panel">
                 <div class="dash-greeting">
                     <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2>
                     <p id="dashRole">Role Data</p>
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.3);">ONLINE</strong>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.2);">ONLINE</strong>
                 </div>
             </div>
 
             <!-- Panel 1: Dashboard Home -->
             <div id="panel-dashboard" class="content-panel active">
-                <div class="panel-card">
+                <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
-                    <p style="color: #ccc; line-height: 1.6; font-size: 1.05rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Use the navigation sidebar to access your assigned tasks, architectural documentation, and the Tournyx AI Hub.</p>
+                    <p style="color: #aaa; line-height: 1.6; font-size: 0.95rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored. Use the navigation sidebar to access your assigned tasks and architectural documentation.</p>
                 </div>
             </div>
 
             <!-- Panel 2: Tasks -->
             <div id="panel-tasks" class="content-panel">
-                <div class="panel-card">
+                <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Task Deployment</h3>
-                    <p style="color:#aaa;">Connect Supabase to render live tasks.</p>
+                    <p style="color:#888; font-size: 0.9rem;">Connected to Supabase. Tasks will populate here.</p>
                 </div>
             </div>
             
             <!-- Panel 3: AI Hub -->
             <div id="panel-ai" class="content-panel">
-                <div class="panel-card" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 30px rgba(189,0,255,0.1);">
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.3); box-shadow: 0 0 25px rgba(189,0,255,0.05);">
                     <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:#ccc; margin-bottom: 20px; line-height: 1.5;">Direct link to the Gemini 3.1 Pro Edge Function. Ask technical architecture questions here.</p>
+                    <p style="color:#aaa; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions here.</p>
                     <div class="form-group">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: var(--accent-purple);">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: rgba(189,0,255,0.3);">
                     </div>
-                    <button class="btn btn-primary" style="padding:16px; font-size:0.95rem; background: var(--accent-purple); box-shadow: 0 4px 15px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 4px 15px rgba(189,0,255,0.3);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
             <!-- Placeholder Panels (Prevents errors on click) -->
-            <div id="panel-attendance" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</h3></div></div>
-            <div id="panel-progress" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Global Progress</h3></div></div>
-            <div id="panel-learning" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</h3></div></div>
-            <div id="panel-sop" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-file-contract"></i> SOP Documents</h3></div></div>
-            <div id="panel-ted" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-book"></i> TED Library</h3></div></div>
-            <div id="panel-videos" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-video"></i> Video Archives</h3></div></div>
-            <div id="panel-team" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-users"></i> Team Roster</h3></div></div>
-            <div id="panel-contacts" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-phone"></i> Global Contacts</h3></div></div>
-            <div id="panel-announcements" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-bullhorn"></i> Server Announcements</h3></div></div>
-            <div id="panel-settings" class="content-panel"><div class="panel-card"><h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Settings</h3></div></div>
+            <div id="panel-attendance" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</h3></div></div>
+            <div id="panel-progress" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Global Progress</h3></div></div>
+            <div id="panel-learning" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</h3></div></div>
+            <div id="panel-sop" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-file-contract"></i> SOP Documents</h3></div></div>
+            <div id="panel-ted" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-book"></i> TED Library</h3></div></div>
+            <div id="panel-videos" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-video"></i> Video Archives</h3></div></div>
+            <div id="panel-team" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-users"></i> Team Roster</h3></div></div>
+            <div id="panel-contacts" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-phone"></i> Global Contacts</h3></div></div>
+            <div id="panel-announcements" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-bullhorn"></i> Server Announcements</h3></div></div>
+            <div id="panel-settings" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Settings</h3></div></div>
 
         </div>
     </div>
@@ -340,9 +346,14 @@
     <!-- ========================================== -->
     <script>
         // --- 1. Supabase Initialization (Replace Keys Before Production) ---
-        const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
-        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        // const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+        
+        let supabase;
+        // Only initialize if keys are actually provided so it doesn't crash the console
+        if (!SUPABASE_URL.includes('YOUR_SUPABASE')) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
         // --- 2. Particle Engine (Background Animation) ---
         const canvas = document.getElementById('particles-canvas');
@@ -359,9 +370,9 @@
                 pArray.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
-                    s: Math.random() * 2.5,
+                    s: Math.random() * 2,
                     c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
-                    v: (Math.random() * 0.4) + 0.2
+                    v: (Math.random() * 0.4) + 0.1
                 });
             }
         }
@@ -372,7 +383,7 @@
                 p.y -= p.v;
                 if(p.y < 0) p.y = height;
                 ctx.fillStyle = p.c;
-                ctx.globalAlpha = 0.4;
+                ctx.globalAlpha = 0.3;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
                 ctx.fill();
@@ -396,30 +407,36 @@
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
-        // --- 4. Login Form Toggle (Fixed) ---
+        // --- 4. Login Form Toggle ---
         function toggleAuth(type) {
-            // Remove active states
             document.getElementById('tab-intern').classList.remove('active');
             document.getElementById('tab-officer').classList.remove('active');
             document.getElementById('form-intern').style.display = 'none';
             document.getElementById('form-officer').style.display = 'none';
             
-            // Add active states to selected
             document.getElementById(`tab-${type}`).classList.add('active');
             document.getElementById(`form-${type}`).style.display = 'block';
         }
 
-        // --- 5. Authentication Engine ---
+        // --- 5. REAL AUTHENTICATION ENGINE (Supabase Backed) ---
         async function initiateLogin(role) {
             let nameInput = "";
+            let secondaryInput = "";
             let btnId = "";
             
             if(role === 'intern') {
-                nameInput = document.getElementById('loginInternName').value;
+                nameInput = document.getElementById('loginInternName').value.trim();
+                secondaryInput = document.getElementById('loginTaskId').value.trim();
                 btnId = 'btn-login-intern';
             } else {
-                nameInput = document.getElementById('loginOfficerName').value;
+                nameInput = document.getElementById('loginOfficerName').value.trim();
+                secondaryInput = document.getElementById('loginPin').value.trim();
                 btnId = 'btn-login-officer';
+            }
+
+            if(!nameInput || !secondaryInput) {
+                showToast("All fields are required.", true);
+                return;
             }
 
             const btn = document.getElementById(btnId);
@@ -427,18 +444,62 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
             btn.disabled = true;
 
+            // Failsafe if you haven't put your Supabase keys in yet
+            if (!supabase) {
+                showToast("DEVELOPER ALERT: Configure Supabase Keys!", true);
+                setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2000);
+                return;
+            }
+
             try {
-                /* 
-                 * REPLACE THIS MOCK TIMEOUT WITH SUPABASE LOGIC ONCE KEYS ARE ADDED
-                 * Example: await supabase.from('tims_users').select('*').eq('name', nameInput) 
-                 */
+                let sessionData = null;
+
+                if (role === 'intern') {
+                    // REAL DATABASE CHECK: Must match Task ID and Intern Name exactly
+                    const { data, error } = await supabase
+                        .from('tims_tasks')
+                        .select('*')
+                        .ilike('task_id', secondaryInput)
+                        .ilike('intern_name', nameInput)
+                        .single();
+
+                    if (error || !data) {
+                        showToast("Access Denied: Task not assigned or invalid ID!", true);
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                        return;
+                    }
+                    sessionData = data;
+                } else {
+                    // REAL DATABASE CHECK: Officer PIN
+                    const { data, error } = await supabase
+                        .from('tims_users')
+                        .select('*')
+                        .ilike('name', nameInput)
+                        .eq('access_pin', secondaryInput)
+                        .single();
+
+                    if (error || !data) {
+                        showToast("Access Denied: Invalid Commander PIN!", true);
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                        return;
+                    }
+                }
+
+                // If code reaches here, authentication was a verified 100% success
+                localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
+                
+                // Smooth Fade Transition
+                document.getElementById('view-login').style.opacity = '0';
+                
                 setTimeout(() => {
-                    // Save Session
-                    localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role }));
-                    
-                    // Swap Views
                     document.getElementById('view-login').style.display = 'none';
-                    document.getElementById('view-dashboard').style.display = 'flex';
+                    const dashView = document.getElementById('view-dashboard');
+                    dashView.style.display = 'flex';
+                    
+                    // Trigger fade in animation
+                    setTimeout(() => { dashView.style.opacity = '1'; }, 50);
                     
                     // Populate Dashboard Info
                     document.getElementById('dashName').innerText = nameInput;
@@ -447,13 +508,13 @@
                     
                     showToast("System Access Granted.");
                     
-                    // Reset Button
+                    // Reset Button internally
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
-                }, 1200);
+                }, 500); // Wait for fade out to complete
 
             } catch (err) {
-                showToast("Database Connection Failed.", true);
+                showToast("Network Error: Could not reach database.", true);
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
@@ -465,9 +526,21 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
 
-            // Show active panel
-            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(panelId).classList.add('active');
+            // Show active panel with animation
+            document.querySelectorAll('.content-panel').forEach(p => {
+                p.classList.remove('active');
+                p.style.opacity = '0';
+                p.style.transform = 'translateY(15px)';
+            });
+            
+            const activePanel = document.getElementById(panelId);
+            activePanel.classList.add('active');
+            
+            // Trigger reflow for animation
+            setTimeout(() => {
+                activePanel.style.opacity = '1';
+                activePanel.style.transform = 'translateY(0)';
+            }, 10);
 
             // Scroll to top of content
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
@@ -488,23 +561,33 @@
         // --- 7. Session Termination ---
         function logout() {
             localStorage.removeItem('tims_session');
-            document.getElementById('view-dashboard').style.display = 'none';
-            document.getElementById('view-login').style.display = 'flex';
             
-            // Clear inputs
-            document.getElementById('loginInternName').value = '';
-            document.getElementById('loginTaskId').value = '';
-            document.getElementById('loginOfficerName').value = '';
-            document.getElementById('loginPin').value = '';
+            const dashView = document.getElementById('view-dashboard');
+            dashView.style.opacity = '0';
             
-            // Close mobile menu if open
-            const sidebar = document.getElementById('sidebar');
-            if(sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                document.getElementById('mobileOverlay').classList.remove('open');
-            }
+            setTimeout(() => {
+                dashView.style.display = 'none';
+                
+                const loginView = document.getElementById('view-login');
+                loginView.style.display = 'flex';
+                
+                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
+                
+                // Clear inputs
+                document.getElementById('loginInternName').value = '';
+                document.getElementById('loginTaskId').value = '';
+                document.getElementById('loginOfficerName').value = '';
+                document.getElementById('loginPin').value = '';
+                
+                // Close mobile menu if open
+                const sidebar = document.getElementById('sidebar');
+                if(sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    document.getElementById('mobileOverlay').classList.remove('open');
+                }
 
-            showToast("Session Terminated Securely.");
+                showToast("Session Terminated Securely.");
+            }, 500);
         }
 
         // --- 8. Auto-Login Check on Load ---
@@ -512,8 +595,12 @@
             const session = localStorage.getItem('tims_session');
             if(session) {
                 const s = JSON.parse(session);
+                
                 document.getElementById('view-login').style.display = 'none';
-                document.getElementById('view-dashboard').style.display = 'flex';
+                
+                const dashView = document.getElementById('view-dashboard');
+                dashView.style.display = 'flex';
+                dashView.style.opacity = '1';
                 
                 document.getElementById('dashName').innerText = s.name;
                 document.getElementById('dashRole').innerText = `${s.role} access level`;
