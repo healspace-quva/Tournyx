@@ -11,7 +11,7 @@
 
     <style>
         :root {
-            --bg-main: #06020f;
+            --bg-main: #04010a;
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff3333;
@@ -35,30 +35,26 @@
             overflow-x: hidden; 
             min-height: 100dvh; 
             margin: 0;
-            background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: var(--bg-main);
             position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* --- DYNAMIC AMBIENT BACKGROUND --- */
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #04010a 100%); pointer-events: none; }
         
-        /* --- AMBIENT GLOW ORBS --- */
-        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; }
-        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: var(--accent-purple); }
-        .orb-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: var(--accent-cyan); animation-delay: -5s; }
+        /* 🚨 FIX: Massive CSS Blur bug fixed for mobile devices */
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); -webkit-filter: blur(100px); opacity: 0.15; pointer-events: none; }
+        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; animation: float 10s infinite alternate ease-in-out;}
+        .orb-2 { width: 400px; height: 400px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation: float 12s infinite alternate-reverse ease-in-out; animation-delay: -5s; }
         
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 30px) scale(1.1); } }
 
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
+        /* Animated Particles */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
 
         /* --- ULTIMATE TRUE GLASSMORPHISM --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.04); 
+            background: rgba(20, 15, 35, 0.4); 
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -84,7 +80,7 @@
         .login-card {
             width: 100%;
             max-width: 380px; 
-            border-radius: 30px; /* Enhanced rounded corners for card */
+            border-radius: 30px; 
             padding: 40px 30px;
             animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -182,6 +178,7 @@
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
         .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
         .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
+        .logout-btn:active { transform: scale(0.95); }
 
         /* MAIN CONTENT AREA */
         .main-content {
@@ -201,6 +198,7 @@
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
         .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 50px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        .mobile-menu-btn:active { transform: scale(0.95); }
 
         /* DASHBOARD HEADER */
         .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 50px; margin-bottom: 30px;}
@@ -219,7 +217,7 @@
         .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
         /* BULLETPROOF TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -236,7 +234,7 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Background (True Glassmorphism Needs Light!) -->
+    <!-- Ambient Glowing Background -->
     <div class="ambient-bg">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
@@ -293,7 +291,7 @@
             </div>
             
             <div class="brand-footer">
-                POWERED BY<br>
+                POWERED BY <br>
                 <span class="neon-quva-small">QUVA</span>
             </div>
         </div>
@@ -371,7 +369,7 @@
                     <div class="form-group">
                         <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="window.showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
@@ -399,7 +397,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
         // --- 2. TOAST ENGINE (Fail-Proof) ---
-        function showToast(msg, isError = false) {
+        window.showToast = function(msg, isError = false) {
             try {
                 const t = document.getElementById('toast');
                 const icon = t.querySelector('i');
@@ -415,12 +413,11 @@
                 setTimeout(() => t.classList.remove('show'), 3500);
             } catch(e) {
                 console.error("Toast Error:", e);
-                if(isError) alert("Error: " + msg);
             }
-        }
+        };
 
         // --- 3. TAB TOGGLING ENGINE ---
-        function toggleAuth(type) {
+        window.toggleAuth = function(type) {
             if(navigator.vibrate) navigator.vibrate(15);
             
             document.getElementById('tab-intern').classList.remove('active');
@@ -438,11 +435,11 @@
                 setTimeout(() => {
                     document.getElementById(`form-${type}`).classList.add('active');
                 }, 10);
-            }, 100); // Small delay to allow fade out
-        }
+            }, 100); 
+        };
 
         // --- 4. ULTIMATE NATIVE AUTHENTICATION (Bypasses CDN completely) ---
-        async function initiateLogin(role) {
+        window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
 
             let nameInput = "";
@@ -467,7 +464,7 @@
             }
 
             if(!nameInput || !secondaryInput) {
-                showToast("All fields are strictly required.", true);
+                window.showToast("All fields are strictly required.", true);
                 return;
             }
 
@@ -494,9 +491,9 @@
                 // If Array is empty, no match was found
                 if (data.length === 0) {
                     if(role === 'intern') {
-                        showToast("Access Denied: Intern or Task ID not found!", true);
+                        window.showToast("Access Denied: Intern or Task ID not found!", true);
                     } else {
-                        showToast("Access Denied: Invalid Commander Credentials!", true);
+                        window.showToast("Access Denied: Invalid Commander Credentials!", true);
                     }
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
@@ -523,7 +520,7 @@
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
-                    showToast("System Access Granted.");
+                    window.showToast("System Access Granted.");
                     
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
@@ -531,15 +528,15 @@
 
             } catch (err) {
                 console.error("FATAL LOGIN ERROR:", err);
-                showToast(err.message || "Network Error: Could not reach server.", true);
+                window.showToast("Network Error: Could not reach server.", true);
                 
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
-        }
+        };
 
         // --- 5. Dashboard Navigation & Sidebar Logic ---
-        function switchPanel(panelId, navElement) {
+        window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
 
@@ -559,20 +556,20 @@
 
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
 
-            if(window.innerWidth <= 850) closeSidebar();
-        }
+            if(window.innerWidth <= 850) window.closeSidebar();
+        };
 
-        function openSidebar() {
+        window.openSidebar = function() {
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('mobileOverlay').classList.add('open');
-        }
+        };
 
-        function closeSidebar() {
+        window.closeSidebar = function() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('mobileOverlay').classList.remove('open');
-        }
+        };
 
-        function logout() {
+        window.logout = function() {
             localStorage.removeItem('tims_session');
             
             const dashView = document.getElementById('view-dashboard');
@@ -593,10 +590,10 @@
                 document.getElementById('loginOfficerName').value = '';
                 document.getElementById('loginPin').value = '';
                 
-                closeSidebar(); 
-                showToast("Session Terminated Securely.");
+                window.closeSidebar(); 
+                window.showToast("Session Terminated Securely.");
             }, 500);
-        }
+        };
 
         // --- 6. Safe Boot Sequence & Particles ---
         window.addEventListener('DOMContentLoaded', () => {
@@ -636,7 +633,7 @@
                     canvas.width = width; canvas.height = height;
                 });
             } catch(e) {
-                console.warn("Particles skipped on this device.");
+                console.warn("Particles skipped.");
             }
 
             const session = localStorage.getItem('tims_session');
