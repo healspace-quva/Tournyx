@@ -9,12 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client (Synchronous load for stability) -->
+    <!-- Supabase JS Client (Loaded Synchronously to prevent UI freezing) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-glass: rgba(15, 10, 25, 0.25);
+            --bg-main: #05020c;
+            /* Ultra-Premium Frosted Glass */
+            --bg-glass: rgba(20, 15, 35, 0.45);
             --bg-glass-btn: rgba(255, 255, 255, 0.05);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
@@ -22,14 +24,14 @@
             --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            --sidebar-width: 240px;
+            --glass-border: rgba(0, 242, 255, 0.2);
+            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(189, 0, 255, 0.1);
+            --sidebar-width: 250px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* --- DYNAMIC ANIMATED BACKGROUND --- */
+        /* --- DYNAMIC ESPORTS BACKGROUND --- */
         body { 
             color: white; 
             font-family: var(--font-body); 
@@ -42,23 +44,29 @@
             position: relative;
         }
 
+        /* Cyber Grid Overlay */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 30px 30px; z-index: -3; pointer-events: none;
+        }
+
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         
-        /* --- AMBIENT GLOW ORBS (Fixed: pointer-events: none prevents click blocking) --- */
-        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; }
-        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: var(--accent-purple); }
-        .orb-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: var(--accent-cyan); animation-delay: -5s; }
+        /* --- AMBIENT GLOW ORBS --- */
+        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -2; opacity: 0.7; animation: float 8s infinite alternate ease-in-out; pointer-events: none; }
+        .orb-1 { top: -5%; left: -5%; width: 400px; height: 400px; background: var(--accent-purple); }
+        .orb-2 { bottom: -10%; right: -5%; width: 450px; height: 450px; background: var(--accent-cyan); animation-delay: -4s; }
         
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(50px) scale(1.15); } }
 
-        /* Animated Particles */
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
 
-        /* --- GLOBAL PREMIUM GLASSMORPHISM --- */
+        /* --- GLOBAL GLASSMORPHISM CLASSES --- */
         .glass-panel {
             background: var(--bg-glass);
             backdrop-filter: blur(25px);
@@ -83,40 +91,45 @@
 
         .login-card {
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             border-radius: 20px;
-            padding: 35px 25px;
-            animation: slideFadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 40px 30px;
+            animation: slideFadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
-            z-index: 2; /* Ensures it sits above any stray background elements */
+            z-index: 2; 
         }
 
         @keyframes slideFadeIn { 
-            from { opacity: 0; transform: scale(0.9) translateY(20px); } 
+            from { opacity: 0; transform: scale(0.9) translateY(30px); } 
             to { opacity: 1; transform: scale(1) translateY(0); } 
         }
 
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; line-height: 1.1; margin-bottom: 5px;}
-        .header-logo p { color: #ccc; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 0.7rem;}
+        .header-logo { text-align: center; margin-bottom: 30px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
+        .header-logo p { color: #ccc; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%;}
-        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.75rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.6); border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.8rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.1);}
 
         /* SMOOTH FORM SWITCHING */
         .auth-form { display: none; opacity: 0; }
         .auth-form.active { display: block; opacity: 1; animation: slideFadeIn 0.4s ease forwards; }
 
-        .form-group { margin-bottom: 18px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 14px 16px; border-radius: 12px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
-        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 14px 16px; border-radius: 12px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none;}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.8); box-shadow: 0 0 20px rgba(0,242,255,0.25);}
 
-        .btn { width: 100%; padding: 14px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);}
+        .btn { width: 100%; padding: 15px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);}
         .btn-primary:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
+
+        /* BRANDING FOOTER */
+        .brand-footer { text-align: center; margin-top: 25px; font-size: 0.7rem; color: #666; font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase;}
+        .brand-footer span { color: var(--accent-cyan); font-weight: bold; }
 
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
         #view-dashboard {
@@ -139,7 +152,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 20px 0;
+            padding: 25px 0;
             overflow-y: auto;
             flex-shrink: 0;
             z-index: 100;
@@ -149,17 +162,18 @@
         }
         .sidebar::-webkit-scrollbar { width: 0px; }
 
-        .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px;}
+        .sidebar-brand { text-align: center; margin-bottom: 30px; padding: 0 20px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 12px 20px; border-left: 3px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #aaa; font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase; transition: all 0.3s ease;}
+        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; transition: all 0.3s ease;}
         .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
-        .nav-item i { width: 18px; text-align: center; font-size: 1.1rem;}
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
 
-        .sidebar-footer { margin-top: auto; padding: 15px 20px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 12px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
-        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,77,77,0.4);}
+        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
+        .logout-btn:active { transform: scale(0.95); }
 
         /* MAIN CONTENT AREA */
         .main-content {
@@ -167,37 +181,40 @@
             height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 25px 35px;
+            padding: 30px 40px;
             position: relative;
         }
 
-        .main-content::-webkit-scrollbar { width: 4px; }
+        .main-content::-webkit-scrollbar { width: 6px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
         /* MOBILE OVERLAY & BUTTON */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 110; width: 42px; height: 42px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass-btn); border: 1px solid var(--glass-border); color: var(--accent-cyan); backdrop-filter: blur(10px);}
+        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 110; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); backdrop-filter: blur(15px); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
 
         /* DASHBOARD HEADER */
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 16px; margin-bottom: 25px;}
-        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.6rem; color: white; margin-bottom: 2px;}
-        .dash-greeting p { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 16px; margin-bottom: 30px;}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.8rem; color: white; margin-bottom: 4px;}
+        .dash-greeting p { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         
         .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 2px;}
-        .stat-badge strong { font-size: 1.6rem; color: var(--accent-cyan); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,242,255,0.3);}
+        .stat-badge span { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
+        
+        /* Neon Pulse Animation for "ONLINE" */
+        @keyframes pulseGlow { 0% { text-shadow: 0 0 10px rgba(0,255,127,0.3); } 100% { text-shadow: 0 0 25px rgba(0,255,127,0.8); } }
+        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); animation: pulseGlow 2s infinite alternate;}
 
         /* PANELS WITH SMOOTH TRANSITIONS */
-        .content-panel { display: none; width: 100%; max-width: 850px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .panel-card { border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; letter-spacing: 1px;}
+        .panel-card { border-radius: 18px; padding: 30px; margin-bottom: 25px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
         /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 14px 20px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 25px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); color: white; padding: 16px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -206,15 +223,15 @@
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             
-            .main-content { padding: 75px 15px 15px 15px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 18px;}
+            .main-content { padding: 85px 20px 20px 20px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px;}
             .stat-badge { text-align: left;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Ambient Glowing Orbs -->
+    <!-- Ambient Glowing Orbs (True Glassmorphism Backing) -->
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
     <canvas id="particles-canvas"></canvas>
@@ -242,11 +259,11 @@
             <form id="form-intern" class="auth-form active" onsubmit="event.preventDefault(); initiateLogin('intern');">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
-                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" required autocomplete="off">
+                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Task ID</label>
-                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-13" required autocomplete="off">
+                    <label class="form-label">Assigned Task ID</label>
+                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" required autocomplete="off">
                 </div>
                 <button type="submit" class="btn btn-primary" id="btn-login-intern">
                     <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
@@ -256,17 +273,21 @@
             <!-- Officer Form -->
             <form id="form-officer" class="auth-form" onsubmit="event.preventDefault(); initiateLogin('officer');">
                 <div class="form-group">
-                    <label class="form-label">Officer Name</label>
+                    <label class="form-label">Commander Name</label>
                     <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" required autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Secure PIN</label>
-                    <input type="password" id="loginPin" class="form-control" placeholder="Enter PIN" required autocomplete="off">
+                    <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" required autocomplete="off">
                 </div>
                 <button type="submit" class="btn btn-primary" id="btn-login-officer">
                     <i class="fa-solid fa-shield-halved"></i> Authenticate
                 </button>
             </form>
+            
+            <div class="brand-footer">
+                POWERED BY <span>WARHERO XERON</span> ESPORTS
+            </div>
         </div>
     </div>
 
@@ -314,7 +335,7 @@
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.2);">ONLINE</strong>
+                    <strong>ONLINE</strong>
                 </div>
             </div>
 
@@ -322,7 +343,7 @@
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
-                    <p style="color: #aaa; line-height: 1.6; font-size: 0.9rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored. Use the navigation sidebar to access your assigned tasks and architectural documentation.</p>
+                    <p style="color: #aaa; line-height: 1.7; font-size: 0.95rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored via Supabase. Use the navigation sidebar to access your assigned tasks and technical architecture documentation.</p>
                 </div>
             </div>
 
@@ -330,19 +351,19 @@
             <div id="panel-tasks" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Task Deployment</h3>
-                    <p style="color:#888; font-size: 0.85rem;">Connected to Supabase. Tasks will populate here.</p>
+                    <p style="color:#888; font-size: 0.9rem;">Connected to Supabase V2. Real-time tasks will render here.</p>
                 </div>
             </div>
             
             <!-- Panel 3: AI Hub -->
             <div id="panel-ai" class="content-panel">
-                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.3); box-shadow: 0 0 25px rgba(189,0,255,0.05);">
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 35px rgba(189,0,255,0.1);">
                     <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:#aaa; margin-bottom: 15px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions here.</p>
+                    <p style="color:#bbb; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions or request code debugging here.</p>
                     <div class="form-group">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: rgba(189,0,255,0.3);">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 4px 15px rgba(189,0,255,0.3);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 4px 20px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
@@ -362,14 +383,24 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MASTER JAVASCRIPT ENGINE                   -->
+    <!-- MASTER JAVASCRIPT ENGINE (FAIL-PROOF)      -->
     <!-- ========================================== -->
     <script>
-        // --- 1. Supabase Initialization (REAL KEYS ACTIVE) ---
+        // --- 1. GLOBAL VARIABLES & FAIL-SAFE DB CONNECTION ---
+        let supabase = null;
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        
-        let supabase = null;
+
+        // Initialize Supabase immediately, safely catching any network failures
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } else {
+                console.warn("CRITICAL: Supabase CDN Blocked or Offline.");
+            }
+        } catch (e) {
+            console.error("Database connection failed on boot:", e);
+        }
 
         // --- 2. Particle Engine (Background Animation) ---
         const canvas = document.getElementById('particles-canvas');
@@ -386,7 +417,7 @@
                 pArray.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
-                    s: Math.random() * 2,
+                    s: Math.random() * 2.5,
                     c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
                     v: (Math.random() * 0.4) + 0.1
                 });
@@ -399,7 +430,7 @@
                 p.y -= p.v;
                 if(p.y < 0) p.y = height;
                 ctx.fillStyle = p.c;
-                ctx.globalAlpha = 0.3;
+                ctx.globalAlpha = 0.35;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
                 ctx.fill();
@@ -407,48 +438,14 @@
             requestAnimationFrame(drawParticles);
         }
 
-        // --- 3. Fail-Safe Boot System ---
-        window.addEventListener('DOMContentLoaded', () => {
-            initParticles(); 
-            drawParticles();
-            window.addEventListener('resize', initParticles);
-
-            // Safely initialize Supabase without crashing the UI if network drops
-            try {
-                if (window.supabase) {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                } else {
-                    console.warn("Supabase CDN Failed to load. Check network.");
-                }
-            } catch (e) {
-                console.error("Database connection error:", e);
-            }
-
-            // Auto-Login Check
-            const session = localStorage.getItem('tims_session');
-            if(session) {
-                const s = JSON.parse(session);
-                document.getElementById('view-login').style.display = 'none';
-                document.getElementById('view-login').style.visibility = 'hidden';
-                
-                const dashView = document.getElementById('view-dashboard');
-                dashView.style.visibility = 'visible';
-                dashView.style.display = 'flex';
-                dashView.style.opacity = '1';
-                
-                document.getElementById('dashName').innerText = s.name;
-                document.getElementById('dashRole').innerText = `${s.role} access level`;
-                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-            }
-        });
-
-        // --- 4. UI Helpers ---
+        // --- 3. UI Helpers ---
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
             const icon = t.querySelector('i');
             document.getElementById('toastMsg').innerText = msg;
             
             t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            t.style.boxShadow = isError ? "0 8px 30px rgba(255,77,77,0.3)" : "0 8px 30px rgba(0,242,255,0.3)";
             icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
             icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
             
@@ -456,20 +453,19 @@
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
-        // --- 5. Fix: Smooth CSS Class Toggling for Buttons ---
         function toggleAuth(type) {
-            // Toggle Tab Buttons
+            // Button styles
             document.getElementById('tab-intern').classList.remove('active');
             document.getElementById('tab-officer').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
 
-            // Toggle Forms smoothly
+            // Form animations
             document.getElementById('form-intern').classList.remove('active');
             document.getElementById('form-officer').classList.remove('active');
             document.getElementById(`form-${type}`).classList.add('active');
         }
 
-        // --- 6. REAL AUTHENTICATION ENGINE ---
+        // --- 4. BULLETPROOF AUTHENTICATION ENGINE ---
         async function initiateLogin(role) {
             let nameInput = "";
             let secondaryInput = "";
@@ -486,7 +482,7 @@
             }
 
             if(!nameInput || !secondaryInput) {
-                showToast("All fields are required.", true);
+                showToast("All fields are strictly required.", true);
                 return;
             }
 
@@ -495,15 +491,10 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
             btn.disabled = true;
 
-            // Failsafe if script didn't load
-            if (!supabase) {
-                showToast("Network Error: Database link disconnected.", true);
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-                return;
-            }
-
             try {
+                // If Supabase failed to load completely
+                if (!supabase) throw new Error("Database link disconnected. Check your connection.");
+
                 let sessionData = null;
 
                 if (role === 'intern') {
@@ -516,7 +507,7 @@
                         .single();
 
                     if (error || !data) {
-                        showToast("Access Denied: Task not assigned to Intern!", true);
+                        showToast("Access Denied: Task not assigned to this Intern!", true);
                         btn.innerHTML = originalHTML;
                         btn.disabled = false;
                         return; // BLOCKS FAKE LOGINS COMPLETELY
@@ -532,7 +523,7 @@
                         .single();
 
                     if (error || !data) {
-                        showToast("Access Denied: Invalid Commander PIN!", true);
+                        showToast("Access Denied: Invalid Commander Credentials!", true);
                         btn.innerHTML = originalHTML;
                         btn.disabled = false;
                         return; // BLOCKS FAKE LOGINS COMPLETELY
@@ -563,19 +554,20 @@
                     
                     showToast("System Access Granted.");
                     
-                    // Reset Button internally
+                    // Reset Button internally for future logouts
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
                 }, 500); 
 
             } catch (err) {
-                showToast("Network Error: Could not reach database.", true);
+                // Failsafe Catch Block: This prevents the UI from freezing
+                showToast(err.message || "Network Error: Could not reach database.", true);
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }
         }
 
-        // --- 7. Dashboard Navigation & Sidebar Logic ---
+        // --- 5. Dashboard Navigation & Sidebar Logic ---
         function switchPanel(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
@@ -583,7 +575,7 @@
             document.querySelectorAll('.content-panel').forEach(p => {
                 p.classList.remove('active');
                 p.style.opacity = '0';
-                p.style.transform = 'translateY(15px)';
+                p.style.transform = 'translateY(20px)';
             });
             
             const activePanel = document.getElementById(panelId);
@@ -609,7 +601,7 @@
             document.getElementById('mobileOverlay').classList.remove('open');
         }
 
-        // --- 8. Session Termination ---
+        // --- 6. Session Termination ---
         function logout() {
             localStorage.removeItem('tims_session');
             
@@ -635,6 +627,29 @@
                 showToast("Session Terminated Securely.");
             }, 500);
         }
+
+        // --- 7. Boot Sequence ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initParticles(); 
+            drawParticles();
+            window.addEventListener('resize', initParticles);
+
+            const session = localStorage.getItem('tims_session');
+            if(session) {
+                const s = JSON.parse(session);
+                document.getElementById('view-login').style.display = 'none';
+                document.getElementById('view-login').style.visibility = 'hidden';
+                
+                const dashView = document.getElementById('view-dashboard');
+                dashView.style.visibility = 'visible';
+                dashView.style.display = 'flex';
+                dashView.style.opacity = '1';
+                
+                document.getElementById('dashName').innerText = s.name;
+                document.getElementById('dashRole').innerText = `${s.role} access level`;
+                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+            }
+        });
     </script>
 </body>
 </html>
