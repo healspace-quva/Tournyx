@@ -9,16 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
-            --bg-main: #06020f;
+            --bg-main: #04010a;
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
-            --accent-red: #ff4d4d;
-            --accent-green: #00ff7f;
+            --accent-red: #ff3333;
+            --accent-green: #00ff66;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
             --sidebar-width: 250px;
@@ -28,7 +25,7 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            /* Fixes the text-highlighting bug on mobile */
+            /* Fixes the mobile text-highlighting bug */
             -webkit-tap-highlight-color: transparent; 
             -webkit-touch-callout: none;
         }
@@ -44,38 +41,38 @@
         }
 
         /* --- DYNAMIC AMBIENT BACKGROUND --- */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #06020f 100%); pointer-events: none; }
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; background: radial-gradient(circle at 50% 0%, #110822 0%, #04010a 100%); pointer-events: none; }
         .glow-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5; animation: orbit 12s infinite alternate ease-in-out; pointer-events: none; }
-        .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -10%; left: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: var(--accent-cyan); bottom: -20%; right: -10%; animation-delay: -5s; }
+        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
         
-        @keyframes orbit { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.2); } }
+        @keyframes orbit { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
 
         /* Animated Particles */
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
 
         /* --- ULTIMATE TRUE GLASSMORPHISM --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); 
-            border-left: 1px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.04); 
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            border-left: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
         }
 
         /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
         #view-login {
-            position: absolute; 
+            position: fixed; 
             top: 0; left: 0;
             width: 100vw;
-            min-height: 100dvh;
+            height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            z-index: 10;
+            z-index: 100;
             transition: opacity 0.4s ease, visibility 0.4s;
         }
 
@@ -84,23 +81,22 @@
             max-width: 380px; 
             border-radius: 24px;
             padding: 40px 30px;
-            animation: slideFadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
 
         @keyframes slideFadeIn { 
-            from { opacity: 0; transform: scale(0.9) translateY(20px); } 
+            from { opacity: 0; transform: scale(0.92) translateY(20px); } 
             to { opacity: 1; transform: scale(1) translateY(0); } 
         }
 
         .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
         .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.75rem;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        /* FIXED: Added user-select: none to prevent mobile text highlighting */
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.8rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.1);}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; -webkit-user-select: none;}
+        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
         /* SMOOTH FORM SWITCHING */
         .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
@@ -111,18 +107,43 @@
         .form-group { margin-bottom: 20px; width: 100%; position: relative;}
         .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .form-control { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 12px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
-        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(0,242,255,0.2), inset 0 2px 5px rgba(0,0,0,0.5);}
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px; border-radius: 12px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
 
-        /* FIXED: Added user-select: none */
         .btn { width: 100%; padding: 16px; border-radius: 12px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none; -webkit-user-select: none;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.4);}
-        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
 
-        /* BRANDING FOOTER */
-        .brand-footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #888; font-family: var(--font-head); letter-spacing: 1px; user-select: none;}
-        .brand-footer span { color: white; font-weight: 900; }
+        /* NEON QUVA FOOTER */
+        .brand-footer { text-align: center; margin-top: 35px; user-select: none; }
+        .neon-quva {
+            font-family: var(--font-head);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 4px;
+            animation: pulsate 2s infinite alternate;
+        }
+
+        @keyframes pulsate {
+            0% {
+                text-shadow: 
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px var(--accent-cyan),
+                    0 0 40px var(--accent-cyan),
+                    0 0 80px var(--accent-purple);
+            }
+            100% {
+                text-shadow: 
+                    0 0 2px #fff,
+                    0 0 5px #fff,
+                    0 0 10px var(--accent-cyan),
+                    0 0 20px var(--accent-cyan),
+                    0 0 40px var(--accent-purple);
+            }
+        }
 
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
         #view-dashboard {
@@ -148,7 +169,7 @@
             padding: 25px 0;
             overflow-y: auto;
             flex-shrink: 0;
-            z-index: 100;
+            z-index: 200;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border-right: 1px solid var(--glass-border);
             border-radius: 0 24px 24px 0;
@@ -156,7 +177,7 @@
         .sidebar::-webkit-scrollbar { width: 0px; }
 
         .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
         .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none; -webkit-user-select: none;}
@@ -182,10 +203,10 @@
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
         /* MOBILE OVERLAY & BUTTON */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 150; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 110; width: 45px; height: 45px; border-radius: 14px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 14px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
         .mobile-menu-btn:active { transform: scale(0.95); }
 
         /* DASHBOARD HEADER */
@@ -204,8 +225,8 @@
         .panel-card { border-radius: 18px; padding: 30px; margin-bottom: 25px; }
         .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
-        /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        /* BULLETPROOF TOAST NOTIFICATION */
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 12px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- RESPONSIVE MOBILE FIXES --- */
@@ -222,7 +243,7 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Background -->
+    <!-- Ambient Glowing Background (True Glassmorphism Needs Light!) -->
     <div class="ambient-bg">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
@@ -248,7 +269,7 @@
                 <div id="tab-officer" onclick="toggleAuth('officer')">Officer Login</div>
             </div>
 
-            <!-- 🚨 FIX: Replaced <form> with <div> to prevent browser hijack/freeze -->
+            <!-- 🚨 FIX: Used simple <div> to prevent mobile browser form hijacking/freezing -->
             <div id="form-intern" class="auth-form active">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
@@ -263,7 +284,7 @@
                 </button>
             </div>
 
-            <!-- 🚨 FIX: Replaced <form> with <div> -->
+            <!-- 🚨 FIX: Officer Div -->
             <div id="form-officer" class="auth-form">
                 <div class="form-group">
                     <label class="form-label">Commander Name</label>
@@ -279,7 +300,7 @@
             </div>
             
             <div class="brand-footer">
-                POWERED BY <br><span>QUVA TECHNOLOGIES</span>
+                <div class="neon-quva">QUVA</div>
             </div>
         </div>
     </div>
@@ -356,7 +377,7 @@
                     <div class="form-group">
                         <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="window.showToast('Query routed to Cloudflare Edge API.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
@@ -376,130 +397,136 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MASTER JAVASCRIPT ENGINE                   -->
+    <!-- SECURE JAVASCRIPT ENGINE & CDN LOADER      -->
     <!-- ========================================== -->
+    
+    <!-- 🚨 FIX: Load Supabase at the very bottom asynchronously so it NEVER blocks the UI rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="initDB()" defer></script>
+
     <script>
         // --- 1. GLOBAL VARIABLES & SECURE CONFIG ---
         let supabase = null;
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
-        // Timeout Promise Wrapper: Guarantees the UI never freezes
+        // --- 2. FAIL-SAFE TIMEOUT PROMISE ---
+        // Guarantees the database query will never hang infinitely
         const fetchWithTimeout = (promise, ms) => {
             return Promise.race([
                 promise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Connection Timeout")), ms))
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), ms))
             ]);
         };
 
-        // --- 2. Particle Engine (Background Animation) ---
-        const canvas = document.getElementById('particles-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, pArray;
-
-        function initParticles() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            pArray = [];
-            for(let i = 0; i < 40; i++) {
-                pArray.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    s: Math.random() * 2.5,
-                    c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
-                    v: (Math.random() * 0.4) + 0.1
-                });
+        // --- 3. TOAST ENGINE (Global Scope to prevent crashes) ---
+        window.showToast = function(msg, isError = false) {
+            try {
+                const t = document.getElementById('toast');
+                const icon = t.querySelector('i');
+                document.getElementById('toastMsg').innerText = msg;
+                
+                t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.style.boxShadow = isError ? "0 8px 30px rgba(255,77,77,0.3)" : "0 8px 30px rgba(0,242,255,0.3)";
+                icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
+                icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3500);
+            } catch(e) {
+                console.error("Toast Failed:", e.message);
+                if(isError) alert("Error: " + msg);
             }
-        }
+        };
 
-        function drawParticles() {
-            ctx.clearRect(0, 0, width, height);
-            pArray.forEach(p => {
-                p.y -= p.v;
-                if(p.y < 0) p.y = height;
-                ctx.fillStyle = p.c;
-                ctx.globalAlpha = 0.35;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            requestAnimationFrame(drawParticles);
-        }
+        // --- 4. FORM TOGGLE ENGINE (Crash-Proof) ---
+        window.toggleAuth = function(type) {
+            try {
+                if(navigator.vibrate) navigator.vibrate(15);
+                
+                document.getElementById('tab-intern').classList.remove('active');
+                document.getElementById('tab-officer').classList.remove('active');
+                document.getElementById(`tab-${type}`).classList.add('active');
 
-        // --- 3. UI Helpers ---
-        function showToast(msg, isError = false) {
-            const t = document.getElementById('toast');
-            const icon = t.querySelector('i');
-            document.getElementById('toastMsg').innerText = msg;
-            
-            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            t.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            t.style.boxShadow = isError ? "0 8px 30px rgba(255,77,77,0.3)" : "0 8px 30px rgba(0,242,255,0.3)";
-            icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
-            icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
-        }
+                // Force DOM hide to prevent ghosting
+                document.getElementById('form-intern').style.display = 'none';
+                document.getElementById('form-intern').classList.remove('active');
+                document.getElementById('form-officer').style.display = 'none';
+                document.getElementById('form-officer').classList.remove('active');
+                
+                document.getElementById(`form-${type}`).style.display = 'block';
+                setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 20);
+            } catch(e) {
+                console.error("Toggle Auth Error:", e.message);
+            }
+        };
 
-        function toggleAuth(type) {
-            document.getElementById('tab-intern').classList.remove('active');
-            document.getElementById('tab-officer').classList.remove('active');
-            document.getElementById(`tab-${type}`).classList.add('active');
+        // --- 5. INITIALIZE DATABASE ---
+        window.initDB = function() {
+            try {
+                if (typeof window.supabase !== 'undefined') {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log("Supabase V2 Connection Established.");
+                } else {
+                    console.error("Supabase CDN failed to load.");
+                }
+            } catch(e) {
+                console.error("DB Init Error:", e);
+            }
+        };
 
-            // Forcefully hide to prevent mobile browser ghosting
-            document.getElementById('form-intern').style.display = 'none';
-            document.getElementById('form-intern').classList.remove('active');
-            document.getElementById('form-officer').style.display = 'none';
-            document.getElementById('form-officer').classList.remove('active');
-            
-            document.getElementById(`form-${type}`).style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById(`form-${type}`).classList.add('active');
-            }, 10);
-        }
-
-        // --- 4. BULLETPROOF AUTHENTICATION ENGINE ---
-        async function initiateLogin(role) {
+        // --- 6. BULLETPROOF AUTHENTICATION ENGINE ---
+        window.initiateLogin = async function(role) {
             let nameInput = "";
             let secondaryInput = "";
             let btnId = "";
             
-            if(role === 'intern') {
-                nameInput = document.getElementById('loginInternName').value.trim();
-                secondaryInput = document.getElementById('loginTaskId').value.trim();
-                btnId = 'btn-login-intern';
-            } else {
-                nameInput = document.getElementById('loginOfficerName').value.trim();
-                secondaryInput = document.getElementById('loginPin').value.trim();
-                btnId = 'btn-login-officer';
-            }
-
-            if(!nameInput || !secondaryInput) {
-                showToast("All fields are strictly required.", true);
-                return;
-            }
-
-            const btn = document.getElementById(btnId);
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
-            btn.disabled = true;
-
             try {
-                if (!supabase) throw new Error("Database link disconnected. Check your network.");
+                if(navigator.vibrate) navigator.vibrate(20);
+
+                if(role === 'intern') {
+                    nameInput = document.getElementById('loginInternName').value.trim();
+                    secondaryInput = document.getElementById('loginTaskId').value.trim();
+                    btnId = 'btn-login-intern';
+                } else {
+                    nameInput = document.getElementById('loginOfficerName').value.trim();
+                    secondaryInput = document.getElementById('loginPin').value.trim();
+                    btnId = 'btn-login-officer';
+                }
+
+                if(!nameInput || !secondaryInput) {
+                    window.showToast("All fields are strictly required.", true);
+                    return;
+                }
+
+                const btn = document.getElementById(btnId);
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+                btn.disabled = true;
+
+                // Failsafe 1: Wait for Supabase to load if user clicks too fast
+                if (!supabase) {
+                    window.initDB();
+                    if(!supabase) {
+                        window.showToast("System connecting... please wait a moment.", true);
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                        return;
+                    }
+                }
 
                 let sessionData = null;
 
                 if (role === 'intern') {
+                    // Failsafe 2: 5-second DB timeout limit
                     const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).single();
                     const { data, error } = await fetchWithTimeout(query, 5000);
 
                     if (error || !data) {
-                        showToast("Access Denied: Invalid Task ID or Intern Name!", true);
-                        return; // Exits try block, triggers finally block
+                        window.showToast("Access Denied: Invalid Task ID or Intern Name!", true);
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
+                        return;
                     }
                     sessionData = data;
                 } else {
@@ -507,7 +534,9 @@
                     const { data, error } = await fetchWithTimeout(query, 5000);
 
                     if (error || !data) {
-                        showToast("Access Denied: Invalid Commander Credentials!", true);
+                        window.showToast("Access Denied: Invalid Commander Credentials!", true);
+                        btn.innerHTML = originalHTML;
+                        btn.disabled = false;
                         return; 
                     }
                 }
@@ -531,21 +560,28 @@
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
-                    showToast("System Access Granted.");
+                    window.showToast("System Access Granted.");
+                    
+                    // Reset Button internally
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
                 }, 400); 
 
             } catch (err) {
-                console.error(err);
-                showToast(err.message === "Connection Timeout" ? "Database Timeout. Try again." : "Network Error: Could not reach database.", true);
-            } finally {
-                // THE ULTIMATE FAILSAFE: Guarantees button unlocks
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
+                console.error("FATAL LOGIN ERROR:", err);
+                window.showToast(err.message || "Network Error: Could not reach database.", true);
+                
+                // Absolute Failsafe Recovery
+                const btn = document.getElementById(btnId);
+                if(btn) {
+                    btn.innerHTML = role === 'intern' ? '<i class="fa-solid fa-right-to-bracket"></i> Initiate Session' : '<i class="fa-solid fa-shield-halved"></i> Authenticate';
+                    btn.disabled = false;
+                }
             }
-        }
+        };
 
-        // --- 5. Dashboard Navigation & Sidebar Logic ---
-        function switchPanel(panelId, navElement) {
+        // --- 7. Dashboard Navigation & Sidebar Logic ---
+        window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
 
@@ -565,21 +601,21 @@
 
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
 
-            if(window.innerWidth <= 850) closeSidebar();
-        }
+            if(window.innerWidth <= 850) window.closeSidebar();
+        };
 
-        function openSidebar() {
+        window.openSidebar = function() {
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('mobileOverlay').classList.add('open');
-        }
+        };
 
-        function closeSidebar() {
+        window.closeSidebar = function() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('mobileOverlay').classList.remove('open');
-        }
+        };
 
-        // --- 6. Session Termination ---
-        function logout() {
+        // --- 8. Session Termination ---
+        window.logout = function() {
             localStorage.removeItem('tims_session');
             
             const dashView = document.getElementById('view-dashboard');
@@ -600,27 +636,54 @@
                 document.getElementById('loginOfficerName').value = '';
                 document.getElementById('loginPin').value = '';
                 
-                closeSidebar(); 
-                showToast("Session Terminated Securely.");
+                window.closeSidebar(); 
+                window.showToast("Session Terminated Securely.");
             }, 500);
-        }
+        };
 
-        // --- 7. Safe Boot Sequence ---
+        // --- 9. Safe Boot Sequence & Particles ---
         window.addEventListener('DOMContentLoaded', () => {
-            initParticles(); 
-            drawParticles();
-            window.addEventListener('resize', initParticles);
-
             try {
-                if (window.supabase) {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                } else {
-                    console.warn("CRITICAL: Supabase CDN Blocked or Offline.");
+                // Initialize Particles safely
+                const canvas = document.getElementById('particles-canvas');
+                const ctx = canvas.getContext('2d');
+                let width = window.innerWidth;
+                let height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                let pArray = [];
+                for(let i = 0; i < 35; i++) {
+                    pArray.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        s: Math.random() * 2.5,
+                        c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
+                        v: (Math.random() * 0.4) + 0.1
+                    });
                 }
-            } catch (e) {
-                console.error("Database connection failed on boot:", e);
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    pArray.forEach(p => {
+                        p.y -= p.v;
+                        if(p.y < 0) p.y = height;
+                        ctx.fillStyle = p.c;
+                        ctx.globalAlpha = 0.4;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    requestAnimationFrame(draw);
+                }
+                draw();
+                window.addEventListener('resize', () => {
+                    width = window.innerWidth; height = window.innerHeight;
+                    canvas.width = width; canvas.height = height;
+                });
+            } catch(e) {
+                console.warn("Particles skipped on this device.");
             }
 
+            // Session check
             const session = localStorage.getItem('tims_session');
             if(session) {
                 const s = JSON.parse(session);
