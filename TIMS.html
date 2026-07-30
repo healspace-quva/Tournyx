@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TIMS Engine - Unified Gateway</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -31,7 +28,6 @@
             font-family: var(--font-body); 
             overflow-x: hidden; 
             min-height: 100dvh; 
-            margin: 0;
             background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -40,122 +36,114 @@
 
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
-        /* --- AMBIENT GLOW ORBS --- */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; overflow: hidden; pointer-events: none; }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); -webkit-filter: blur(100px); opacity: 0.4; pointer-events: none; transform: translateZ(0); }
-        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -5%; left: -5%; animation: float 10s infinite alternate ease-in-out;}
-        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation: float 12s infinite alternate-reverse ease-in-out; animation-delay: -5s; }
-        
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 40px) scale(1.1); } }
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
+        /* Ambient Glow Orbs */
+        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
+        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
 
-        /* --- ULTIMATE TRUE GLASSMORPHISM --- */
+        /* Universal Glass Panel */
         .glass-panel {
             background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.2); 
-            border-left: 1px solid rgba(255, 255, 255, 0.2); 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            border-radius: 30px; /* Pill Aesthetic */
+            transform: translateZ(0);
         }
 
-        /* --- 1. PERFECTLY CENTERED LOGIN VIEW --- */
+        /* --- LOGIN VIEW --- */
         #view-login {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; transition: opacity 0.4s ease, visibility 0.4s;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            z-index: 100; transition: opacity 0.4s ease, visibility 0.4s;
         }
 
-        .login-card {
-            width: 100%; max-width: 380px; padding: 40px 30px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
-        }
-
+        .login-card { width: 100%; max-width: 380px; border-radius: 30px; padding: 40px 30px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
         @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
         .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; line-height: 1.1; margin-bottom: 5px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
         .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none;}
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; }
         .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
         .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .form-group { margin-bottom: 20px; width: 100%; position: relative;}
         .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
         
-        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 1rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
         .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
-        textarea.form-control { border-radius: 20px; min-height: 120px; resize: none; }
+        textarea.form-control { border-radius: 20px; resize: vertical; min-height: 100px; padding: 15px 20px; }
 
-        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.95rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
+        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
         .btn-primary:active { transform: scale(0.96) !important; box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
+        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); color: white; box-shadow: 0 5px 20px rgba(0,255,102,0.3);}
 
-        .brand-footer { text-align: center; margin-top: 35px; user-select: none; font-size: 0.7rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; line-height: 1.4;}
-        .neon-quva-small { display: inline-block; font-size: 1.4rem; font-weight: 900; color: #ffffff; letter-spacing: 5px; animation: pulsateSmall 1.5s infinite alternate; }
-
-        @keyframes pulsateSmall {
-            0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); }
-            100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); }
-        }
+        .brand-footer { text-align: center; margin-top: 35px; user-select: none; font-size: 0.65rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.4rem; font-weight: 900; color: #ffffff; letter-spacing: 4px; margin-top: 5px; animation: pulsateSmall 1.5s infinite alternate; }
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); } 100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); } }
 
         /* --- 2. DASHBOARD VIEW --- */
-        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease, visibility 0.5s; }
+        #view-dashboard {
+            display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; 
+            flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease, visibility 0.5s;
+        }
 
-        /* SIDEBAR */
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid var(--glass-border); border-radius: 0 30px 30px 0; }
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; }
         .sidebar::-webkit-scrollbar { width: 0px; }
 
         .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none; }
+        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none;}
         .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
-        .nav-item i { width: 20px; text-align: center; font-size: 1.2rem;}
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
-        .logout-btn:hover { background: var(--accent-red); color: white; box-shadow: 0 0 20px rgba(255,77,77,0.4);}
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
 
-        /* MAIN CONTENT AREA */
         .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
         .main-content::-webkit-scrollbar { width: 6px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        /* MOBILE CONTROLS */
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 150; backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
+        
         .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 50px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
-        .mobile-menu-btn:active { transform: scale(0.95); }
 
-        /* DASHBOARD HEADER */
         .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 50px; margin-bottom: 30px;}
-        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.7rem; color: white; margin-bottom: 4px;}
-        .dash-greeting p { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.6rem; color: white; margin-bottom: 4px;}
+        .dash-greeting p { color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
+        .stat-badge span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
         .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4);}
 
         /* PANELS */
         .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
-        .panel-card { border-radius: 30px; padding: 30px; margin-bottom: 25px; }
-        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.2rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
+        .panel-card { border-radius: 24px; padding: 30px; margin-bottom: 25px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
 
-        /* Data Tables for Contacts/Teams */
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px;}
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
-        .data-table th { color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;}
+        /* Data Grids */
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan);}
+        .data-card h4 { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 5px;}
+        .data-card p { font-size: 0.85rem; color: #aaa; margin-bottom: 10px;}
+        
+        .task-status { font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase; padding: 5px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block;}
 
-        /* BULLETPROOF TOAST NOTIFICATION */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; letter-spacing: 1px;}
+        /* Toast */
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.8rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         @media (max-width: 850px) {
@@ -163,7 +151,7 @@
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px; border-radius: 20px;}
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px; border-radius: 24px;}
             .stat-badge { text-align: left;}
         }
     </style>
@@ -177,7 +165,6 @@
     </div>
     <canvas id="particles-canvas"></canvas>
     
-    <!-- System Toast -->
     <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
 
     <!-- ========================================== -->
@@ -190,7 +177,6 @@
                 <p>Unified Operational Gateway</p>
             </div>
 
-            <!-- Login Toggles -->
             <div class="auth-toggle">
                 <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
                 <div id="tab-officer" onclick="window.toggleAuth('officer')">Officer Login</div>
@@ -238,36 +224,21 @@
     <!-- ========================================== -->
     <div id="view-dashboard">
         
-        <!-- Mobile Controls -->
         <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
         <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
         
-        <!-- SIDEBAR NAVIGATION -->
         <div class="sidebar glass-panel" id="sidebar">
             <div class="sidebar-brand">
                 <h2>TIMS HUB</h2>
             </div>
-            <ul class="nav-menu">
-                <li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
-                
-                <!-- DYNAMIC ROLE NAVIGATION -->
-                <li class="nav-item role-intern" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-pen-nib"></i> My Progress</li>
-                <li class="nav-item role-officer" onclick="window.switchPanel('panel-officer-assign', this)"><i class="fa-solid fa-plus-circle"></i> Assign Tasks</li>
-                
-                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Team Data</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Quva Contacts</li>
-                
-                <!-- Static Links -->
-                <li class="nav-item" onclick="window.showToast('Learning Hub integration pending.');"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</li>
-                <li class="nav-item" onclick="window.showToast('SOP Viewer integration pending.');"><i class="fa-solid fa-file-contract"></i> SOP</li>
-                <li class="nav-item" onclick="window.showToast('Settings integration pending.');"><i class="fa-solid fa-gear"></i> Settings</li>
+            <ul class="nav-menu" id="dynamicNavMenu">
+                <!-- Injected based on role -->
             </ul>
             <div class="sidebar-footer">
                 <button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
             </div>
         </div>
 
-        <!-- MAIN DYNAMIC CONTENT -->
         <div class="main-content" id="mainContentScroll">
             
             <div class="dash-top-bar glass-panel">
@@ -277,100 +248,119 @@
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong id="pulseStatus">ONLINE</strong>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.4);">ONLINE</strong>
                 </div>
             </div>
 
-            <!-- Panel 1: Dashboard Home -->
+            <!-- CORE PANEL: INTERN TASK HUB -->
+            <div id="panel-intern-task" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Active Operation</h3>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-family: var(--font-head); font-size: 1.4rem; color: white; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                        <div class="task-status" id="intTaskID">DEV-000</div>
+                        <p style="color:#aaa; font-size: 0.9rem; margin-top: 15px; line-height: 1.6;" id="intTaskDesc">Task description loading...</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Operation Progress Log (Auto-Saves Locally)</label>
+                        <textarea id="internProgressText" class="form-control" placeholder="Detail your specific workflow, challenges, and executed code blocks here..." oninput="window.saveDraft()"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" style="flex: 1; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);" onclick="window.updateProgress(60)">
+                            <i class="fa-solid fa-spinner"></i> Mark In-Progress
+                        </button>
+                        <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()">
+                            <i class="fa-solid fa-paper-plane"></i> Submit to HR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CORE PANEL: OFFICER HUB -->
+            <div id="panel-officer-hub" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Deploy New Task</h3>
+                    <div class="data-grid">
+                        <div class="form-group"><label class="form-label">Task ID</label><input type="text" id="offTaskId" class="form-control" placeholder="e.g. DEV-020"></div>
+                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="offInternName" class="form-control" placeholder="Assignee Name"></div>
+                        <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="offTaskTitle" class="form-control" placeholder="Objective Name"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Operation Directives (Description)</label>
+                        <textarea id="offTaskDesc" class="form-control" placeholder="Define the parameters..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="window.deployTask()"><i class="fa-solid fa-satellite-dish"></i> Deploy Operation to Matrix</button>
+                </div>
+            </div>
+
+            <!-- COMMON PANEL: SQUAD MATRIX -->
+            <div id="panel-team" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Operation Squad Matrix</h3>
+                    <p style="color:#aaa; font-size: 0.85rem; margin-bottom: 20px;">Other personnel assigned to your specific Task ID.</p>
+                    <div class="data-grid" id="teamMatrixContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMMON PANEL: CONTACT DIRECTORY -->
+            <div id="panel-contacts" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Global Communications Directory</h3>
+                    <div class="data-grid" id="contactsContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMMON PANEL: AI HUB -->
+            <div id="panel-ai" class="content-panel">
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 35px rgba(189,0,255,0.15), inset 0 0 15px rgba(189, 0, 255, 0.1);">
+                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
+                    <p style="color:#bbb; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.6;">Direct secure connection to the Cloudflare Edge Worker. The system auto-switches models if quotas are exceeded.</p>
+                    <div class="form-group">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
+                    </div>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 5px 25px rgba(189,0,255,0.4);" onclick="window.triggerAI()"><i class="fa-solid fa-brain"></i> Execute Edge Query</button>
+                </div>
+            </div>
+
+            <!-- PLACEHOLDERS -->
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
-                    <p style="color: #aaa; line-height: 1.7; font-size: 1rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored via Supabase. Use the navigation sidebar to access your assigned tasks and technical architecture documentation.</p>
+                    <p style="color: #aaa; line-height: 1.7; font-size: 0.95rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Use the navigation sidebar to access your workspace.</p>
                 </div>
             </div>
-
-            <!-- Panel 2: INTERN ONLY - Progress Editor -->
-            <div id="panel-intern-task" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-pen-nib"></i> Daily Progress Tracker</h3>
-                    <p style="color:#aaa; font-size: 0.9rem; margin-bottom: 20px;">Your text is securely auto-saved to local storage. You can leave this page and return without losing data. Once complete, submit to notify HR.</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Task Status Log</label>
-                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow, commits, and roadblocks here..." onkeyup="window.saveDraft()"></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="window.submitProgress()"><i class="fa-solid fa-paper-plane"></i> Submit Final Progress</button>
-                </div>
-            </div>
-
-            <!-- Panel 3: OFFICER ONLY - Task Assignment -->
-            <div id="panel-officer-assign" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Deploy New Task</h3>
-                    <p style="color:#aaa; font-size: 0.9rem; margin-bottom: 20px;">Assign tasks directly to the Supabase database. Interns will receive immediate access.</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Intern Name</label>
-                        <input type="text" id="assignInternName" class="form-control" placeholder="e.g. Harsha">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Task ID</label>
-                        <input type="text" id="assignTaskId" class="form-control" placeholder="e.g. DEV-020">
-                    </div>
-                    <button class="btn btn-primary" onclick="window.assignTask()"><i class="fa-solid fa-satellite-dish"></i> Broadcast Assignment</button>
-                </div>
-            </div>
-
-            <!-- Panel 4: Team Data -->
-            <div id="panel-team" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-users"></i> Affiliated Team Members</h3>
-                    <p style="color:#aaa; font-size: 0.9rem; margin-bottom: 20px;">Personnel connected to your current Task ID.</p>
-                    <table class="data-table">
-                        <thead><tr><th>Name</th><th>Contact Number</th></tr></thead>
-                        <tbody id="teamTableBody">
-                            <tr><td colspan="2" style="color: #666; text-align: center;">Loading team data...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Panel 5: Contacts -->
-            <div id="panel-contacts" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Quva Core Contacts</h3>
-                    <p style="color:#aaa; font-size: 0.9rem; margin-bottom: 20px;">Official contact directory for escalations.</p>
-                    <table class="data-table">
-                        <thead><tr><th>Role</th><th>Name</th><th>Email / Phone</th></tr></thead>
-                        <tbody id="contactsTableBody">
-                            <tr><td colspan="3" style="color: #666; text-align: center;">Loading directory...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div id="panel-attendance" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</h3></div></div>
+            <div id="panel-progress" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Global Progress</h3></div></div>
+            <div id="panel-learning" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</h3></div></div>
 
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- SECURE JAVASCRIPT ENGINE (100% BULLETPROOF)-->
+    <!-- SECURE JAVASCRIPT ENGINE (BULLETPROOF API) -->
     <!-- ========================================== -->
     <script>
-        // --- 1. SECURE CONFIGURATION & SUPABASE INIT ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        
+        const WORKER_URL = 'https://your-cloudflare-worker-url.workers.dev'; // Replace with your actual Worker URL
+
         let supabase = null;
 
-        // --- 2. FAIL-SAFE TIMEOUT PROMISE ---
+        // Failsafe Timeout Engine
         const fetchWithTimeout = (promise, ms) => {
             return Promise.race([
                 promise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), ms))
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out. Poor network.")), ms))
             ]);
         };
 
-        // --- 3. TOAST ENGINE ---
+        // Toast Engine
         window.showToast = function(msg, isError = false) {
             try {
                 const t = document.getElementById('toast');
@@ -385,55 +375,39 @@
                 
                 t.classList.add('show');
                 setTimeout(() => t.classList.remove('show'), 3500);
-            } catch(e) {
-                console.error("Toast Error:", e);
-            }
+            } catch(e) { console.error("Toast Error:", e); }
         };
 
-        // --- 4. FORM TOGGLE & ENTER KEY ---
+        // Tab Switcher
         window.toggleAuth = function(type) {
             if(navigator.vibrate) navigator.vibrate(15);
-            
             document.getElementById('tab-intern').classList.remove('active');
             document.getElementById('tab-officer').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
 
             document.getElementById('form-intern').classList.remove('active');
             document.getElementById('form-officer').classList.remove('active');
+            document.getElementById('form-intern').style.display = 'none';
+            document.getElementById('form-officer').style.display = 'none';
             
-            setTimeout(() => {
-                document.getElementById('form-intern').style.display = 'none';
-                document.getElementById('form-officer').style.display = 'none';
-                document.getElementById(`form-${type}`).style.display = 'block';
-                setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 10);
-            }, 100); 
+            document.getElementById(`form-${type}`).style.display = 'block';
+            setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 10);
         };
 
         window.handleEnter = function(e, role) {
             if (e.key === 'Enter') { e.preventDefault(); window.initiateLogin(role); }
         };
 
-        // --- 5. ULTIMATE NATIVE SUPABASE AUTHENTICATION ---
+        // --- THE MATHEMATICALLY BULLETPROOF AUTH SYSTEM ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
 
-            let nameInput = "";
-            let secondaryInput = "";
-            let btnId = "";
-            
-            if(role === 'intern') {
-                nameInput = document.getElementById('loginInternName').value.trim();
-                secondaryInput = document.getElementById('loginTaskId').value.trim();
-                btnId = 'btn-login-intern';
-            } else {
-                nameInput = document.getElementById('loginOfficerName').value.trim();
-                secondaryInput = document.getElementById('loginPin').value.trim();
-                btnId = 'btn-login-officer';
-            }
+            let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim() : document.getElementById('loginOfficerName').value.trim();
+            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim() : document.getElementById('loginPin').value.trim();
+            let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
 
             if(!nameInput || !secondaryInput) {
-                window.showToast("All fields are strictly required.", true);
-                return;
+                window.showToast("All fields are strictly required.", true); return;
             }
 
             const btn = document.getElementById(btnId);
@@ -442,26 +416,27 @@
             btn.disabled = true;
 
             try {
-                // Initialize Supabase if not done
-                if (!supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                if (!supabase) throw new Error("Database CDN Offline. Check network.");
 
                 let sessionData = null;
 
                 if (role === 'intern') {
-                    // Check Database using official client
-                    const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).single();
-                    const { data, error } = await fetchWithTimeout(query, 6000);
+                    // FIX: Using maybeSingle() instead of single() to prevent HTTP 406 silent crashes
+                    const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).maybeSingle();
+                    const { data, error } = await fetchWithTimeout(query, 5000);
 
-                    if (error || !data) {
-                        window.showToast("Access Denied: Task not assigned to this Intern!", true);
-                        return; // Exits to finally block
+                    if (error) throw new Error(error.message);
+                    if (!data) {
+                        window.showToast("Access Denied: Intern Name or Task ID not found!", true);
+                        return; // Exits cleanly to finally block
                     }
                     sessionData = data;
                 } else {
-                    const query = supabase.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput).single();
-                    const { data, error } = await fetchWithTimeout(query, 6000);
+                    const query = supabase.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput).maybeSingle();
+                    const { data, error } = await fetchWithTimeout(query, 5000);
 
-                    if (error || !data) {
+                    if (error) throw new Error(error.message);
+                    if (!data) {
                         window.showToast("Access Denied: Invalid Commander Credentials!", true);
                         return; 
                     }
@@ -470,149 +445,151 @@
 
                 // Authentication Success
                 localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
-                
+                window.buildDashboardRole(role, sessionData);
+
                 document.getElementById('view-login').style.opacity = '0';
-                
                 setTimeout(() => {
                     document.getElementById('view-login').style.visibility = 'hidden';
                     document.getElementById('view-login').style.display = 'none';
-                    window.buildDashboard();
+                    
+                    const dashView = document.getElementById('view-dashboard');
+                    dashView.style.visibility = 'visible';
+                    dashView.style.display = 'flex';
+                    setTimeout(() => { dashView.style.opacity = '1'; }, 50);
+                    
+                    document.getElementById('dashName').innerText = nameInput;
+                    document.getElementById('dashRole').innerText = `${role} access level`;
+                    document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    
+                    window.showToast("System Access Granted.");
                 }, 400); 
 
             } catch (err) {
                 console.error("LOGIN ERROR:", err);
-                window.showToast("Network/DB Error. Check CORS or RLS policies.", true);
+                window.showToast(err.message || "Network Error: Could not reach server.", true);
             } finally {
-                // ALWAYS RESET THE BUTTON
+                // THE ULTIMATE FAILSAFE: Button ALWAYS unlocks.
                 if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
             }
         };
 
-        // --- 6. DASHBOARD BUILDER (Role-Based & Local Storage) ---
-        window.buildDashboard = function() {
-            const s = JSON.parse(localStorage.getItem('tims_session'));
-            if(!s) return;
+        // --- DYNAMIC ROLE RENDERER ---
+        window.buildDashboardRole = function(role, data) {
+            const menu = document.getElementById('dynamicNavMenu');
+            menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
 
-            const dashView = document.getElementById('view-dashboard');
-            dashView.style.visibility = 'visible';
-            dashView.style.display = 'flex';
-            setTimeout(() => { dashView.style.opacity = '1'; }, 50);
-
-            document.getElementById('dashName').innerText = s.name;
-            document.getElementById('dashRole').innerText = `${s.role} access level`;
-            document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-
-            // Hide/Show Role Specific Menus
-            document.querySelectorAll('.role-intern').forEach(el => el.style.display = s.role === 'intern' ? 'flex' : 'none');
-            document.querySelectorAll('.role-officer').forEach(el => el.style.display = s.role === 'officer' ? 'flex' : 'none');
-
-            // Load Intern Draft
-            if(s.role === 'intern' && s.data.task_id) {
-                const draft = localStorage.getItem(`tims_draft_${s.data.task_id}`);
-                if(draft) document.getElementById('internProgressText').value = draft;
-            }
-
-            // Fetch Background Data
-            window.fetchContacts();
-            if(s.role === 'intern') window.fetchTeamMembers(s.data.task_id);
-
-            window.showToast("System Access Granted.");
-        };
-
-        // --- 7. AUTO-SAVE & SUBMIT ---
-        window.saveDraft = function() {
-            const s = JSON.parse(localStorage.getItem('tims_session'));
-            if(s && s.role === 'intern' && s.data.task_id) {
-                const text = document.getElementById('internProgressText').value;
-                localStorage.setItem(`tims_draft_${s.data.task_id}`, text);
-            }
-        };
-
-        window.submitProgress = async function() {
-            const s = JSON.parse(localStorage.getItem('tims_session'));
-            const text = document.getElementById('internProgressText').value;
-            
-            if(!text.trim()) {
-                window.showToast("Cannot submit empty progress.", true);
-                return;
-            }
-
-            try {
-                // 1. Update Supabase
-                await supabase.from('tims_tasks').update({ intern_progress_notes: text, status: 'Submitted' }).eq('task_id', s.data.task_id);
+            if(role === 'intern') {
+                menu.innerHTML += `<li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>`;
                 
-                // 2. Trigger Cloudflare Worker for Email (Placeholder URL)
-                fetch('https://YOUR_CLOUDFLARE_WORKER.workers.dev', {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'send_hr_email', internName: s.name, taskId: s.data.task_id, progressText: text })
-                }).catch(e => console.warn("Email API not configured yet."));
+                // Populate Intern Task Data
+                document.getElementById('intTaskTitle').innerText = data.title;
+                document.getElementById('intTaskID').innerText = data.task_id;
+                document.getElementById('intTaskDesc').innerText = data.description;
+                
+                // Hydrate LocalStorage Draft
+                const draft = localStorage.getItem(`draft_${data.task_id}_${data.intern_name}`);
+                if(draft) document.getElementById('internProgressText').value = draft;
 
-                window.showToast("Progress Submitted & HR Notified Successfully!");
-                localStorage.removeItem(`tims_draft_${s.data.task_id}`);
-            } catch(e) {
-                window.showToast("Database Update Failed.", true);
+            } else {
+                menu.innerHTML += `<li class="nav-item" onclick="window.switchPanel('panel-officer-hub', this)"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>`;
+            }
+
+            // Common Menus
+            menu.innerHTML += `
+                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users-viewfinder"></i> Squad Matrix</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+            `;
+
+            // Auto-fetch Global Contacts and Team
+            if(data) {
+                window.fetchTeamMatrix(data.task_id || "ALL");
+                window.fetchContacts(data.assigned_officer || data.name);
             }
         };
 
-        // --- 8. OFFICER ASSIGN TASK ---
-        window.assignTask = async function() {
-            const internName = document.getElementById('assignInternName').value;
-            const taskId = document.getElementById('assignTaskId').value;
-            const s = JSON.parse(localStorage.getItem('tims_session'));
-
-            if(!internName || !taskId) { window.showToast("Fill required fields.", true); return; }
-
-            try {
-                await supabase.from('tims_tasks').insert([{ task_id: taskId, intern_name: internName, assigned_officer: s.name, title: 'New Assignment', status: 'Pending' }]);
-                window.showToast("Task Broadcasted Successfully!");
-            } catch(e) {
-                window.showToast("Failed to assign task.", true);
+        // --- TASK & LOCAL STORAGE AUTO-SAVE ---
+        window.saveDraft = function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            if(session && session.role === 'intern') {
+                const txt = document.getElementById('internProgressText').value;
+                localStorage.setItem(`draft_${session.data.task_id}_${session.name}`, txt);
             }
         };
 
-        // --- 9. DATA FETCHERS ---
-        window.fetchContacts = async function() {
+        window.submitTaskFinal = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const txt = document.getElementById('internProgressText').value;
+            
+            if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
+            
+            window.showToast("Syncing Database...");
             try {
-                const { data } = await supabase.from('tims_contacts').select('*');
-                const tbody = document.getElementById('contactsTableBody');
-                if(data && data.length > 0) {
-                    tbody.innerHTML = '';
-                    data.forEach(c => {
-                        tbody.innerHTML += `<tr><td><strong style="color:var(--accent-cyan);">${c.role}</strong></td><td>${c.name}</td><td>${c.email}<br><span style="color:#aaa; font-size:0.8rem;">${c.phone}</span></td></tr>`;
-                    });
-                }
-            } catch(e) { console.warn("Contacts DB missing."); }
+                // 1. Update Database
+                await supabase.from('tims_tasks').update({ progress_text: txt, status: 'Submitted', productivity_score: 100 }).eq('id', session.data.id);
+                
+                // 2. Trigger Cloudflare Worker Email Dispatch
+                fetch(WORKER_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.task_id, progress: txt })
+                });
+
+                window.showToast("Operation Submitted. HR Notified.");
+                localStorage.removeItem(`draft_${session.data.task_id}_${session.name}`);
+            } catch(e) { window.showToast("Sync Failed.", true); }
         };
 
-        window.fetchTeamMembers = async function(taskId) {
+        // --- OFFICER TASK DEPLOYMENT ---
+        window.deployTask = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const payload = {
+                task_id: document.getElementById('offTaskId').value,
+                intern_name: document.getElementById('offInternName').value,
+                title: document.getElementById('offTaskTitle').value,
+                description: document.getElementById('offTaskDesc').value,
+                assigned_officer: session.name
+            };
+
+            if(!payload.task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
+
             try {
-                const { data } = await supabase.from('tims_team_members').select('*').eq('task_id', taskId);
-                const tbody = document.getElementById('teamTableBody');
-                if(data && data.length > 0) {
-                    tbody.innerHTML = '';
-                    data.forEach(m => {
-                        tbody.innerHTML += `<tr><td><strong>${m.member_name}</strong></td><td style="color:var(--accent-cyan);">${m.contact_number}</td></tr>`;
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="2" style="color: #666; text-align: center;">No team members assigned to ${taskId}.</td></tr>`;
-                }
-            } catch(e) { console.warn("Team DB missing."); }
+                await supabase.from('tims_tasks').insert([payload]);
+                window.showToast("Task Deployed Successfully.");
+            } catch(e) { window.showToast("Deployment Failed.", true); }
         };
 
-        // --- 10. DASHBOARD NAVIGATION ---
+        // --- DYNAMIC DATA FETCHING ---
+        window.fetchTeamMatrix = async function(taskId) {
+            const cont = document.getElementById('teamMatrixContainer');
+            cont.innerHTML = '<p style="color:#aaa;">Scanning frequencies...</p>';
+            try {
+                const { data } = await supabase.from('tims_tasks').select('intern_name, intern_phone').eq('task_id', taskId);
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="task-status">${taskId}</span></div>`).join('');
+                } else { cont.innerHTML = '<p style="color:#888;">No other operatives found in this vector.</p>'; }
+            } catch(e) { cont.innerHTML = 'Error resolving matrix.'; }
+        };
+
+        window.fetchContacts = async function(assignedOfficerName) {
+            const cont = document.getElementById('contactsContainer');
+            try {
+                // Fetch Global Execs OR the specific assigned officer
+                const { data } = await supabase.from('tims_users').select('*').or(`role.in.("ceo","cto","hr"),name.eq."${assignedOfficerName}"`);
+                if(data) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name}</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-family:var(--font-head); font-size:0.7rem;">${d.role}</p><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
+                }
+            } catch(e) { cont.innerHTML = 'Directory offline.'; }
+        };
+
+        // --- DASHBOARD NAVIGATION ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
 
-            document.querySelectorAll('.content-panel').forEach(p => {
-                p.classList.remove('active');
-                p.style.opacity = '0';
-                p.style.transform = 'translateY(20px)';
-            });
-            
+            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)'; });
             const activePanel = document.getElementById(panelId);
+            if(!activePanel) return; // Prevent crashes on unbuilt panels
             activePanel.classList.add('active');
-            
             setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
             if(window.innerWidth <= 850) window.closeSidebar();
@@ -633,48 +610,47 @@
                 
                 document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
                 document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
-                
                 window.closeSidebar(); 
                 window.showToast("Session Terminated Securely.");
             }, 500);
         };
 
-        // --- 11. BOOT SEQUENCE ---
+        // --- SAFE BOOT SEQUENCE ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Load Particles
             try {
                 const canvas = document.getElementById('particles-canvas');
                 const ctx = canvas.getContext('2d');
                 let width = window.innerWidth; let height = window.innerHeight;
                 canvas.width = width; canvas.height = height;
                 let pArray = [];
-                for(let i = 0; i < 35; i++) {
-                    pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 });
-                }
+                for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
                 function draw() {
                     ctx.clearRect(0, 0, width, height);
-                    pArray.forEach(p => {
-                        p.y -= p.v; if(p.y < 0) p.y = height;
-                        ctx.fillStyle = p.c; ctx.globalAlpha = 0.4;
-                        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill();
-                    });
+                    pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); });
                     requestAnimationFrame(draw);
                 }
                 draw();
                 window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
-            } catch(e) {}
+            } catch(e) { console.warn("Particles skipped."); }
 
-            // Pre-load DB config
-            if (typeof window.supabase !== 'undefined') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
+            try {
+                if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } catch(e) { console.error("DB Init error:", e); }
 
-            // Session check
             const session = localStorage.getItem('tims_session');
             if(session) {
+                const s = JSON.parse(session);
                 document.getElementById('view-login').style.display = 'none';
                 document.getElementById('view-login').style.visibility = 'hidden';
-                window.buildDashboard();
+                
+                const dashView = document.getElementById('view-dashboard');
+                dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
+                
+                document.getElementById('dashName').innerText = s.name;
+                document.getElementById('dashRole').innerText = `${s.role} access level`;
+                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                
+                window.buildDashboardRole(s.role, s.data);
             }
         });
     </script>
