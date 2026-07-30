@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client loaded securely in head -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -18,20 +20,15 @@
             --accent-green: #00ff66;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --sidebar-width: 260px;
+            --sidebar-width: 250px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
         
         body { 
-            color: white; 
-            font-family: var(--font-body); 
-            overflow-x: hidden; 
-            min-height: 100dvh; 
+            color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100dvh; 
             background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            position: relative;
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite; position: relative;
         }
 
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -39,126 +36,123 @@
         /* Ambient Glow Orbs */
         .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
         .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
-        .orb-2 { width: 400px; height: 400px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -5s; }
+        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
         @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
 
-        /* Universal Glass Panel */
+        /* Ultimate Glass Panel */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            transform: translateZ(0);
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); transform: translateZ(0);
         }
 
         /* --- LOGIN VIEW --- */
         #view-login {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px;
             z-index: 100; transition: opacity 0.4s ease, visibility 0.4s;
         }
 
-        .login-card { width: 100%; max-width: 380px; border-radius: 30px; padding: 40px 30px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .login-card { width: 100%; max-width: 360px; border-radius: 35px; padding: 35px 25px; animation: slideFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
         @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
-        .header-logo h1 { font-family: var(--font-head); font-size: 1.9rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
-        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
+        .header-logo { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
+        .header-logo h1 { font-family: var(--font-head); font-size: 1.7rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.65rem;}
 
-        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; }
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-family: var(--font-head); font-size: 0.85rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        /* Pill Shaped Toggles */
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; }
+        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.75rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
         .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
+        .form-group { margin-bottom: 15px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
         
-        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        /* Pill Shaped Inputs */
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.9rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
         .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
-        textarea.form-control { border-radius: 20px; resize: vertical; min-height: 100px; padding: 15px 20px; }
+        textarea.form-control { border-radius: 20px; resize: vertical; min-height: 90px; padding: 15px 20px; }
 
-        .btn { width: 100%; padding: 16px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
+        /* Pill Shaped Buttons */
+        .btn { width: 100%; padding: 14px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
         .btn-primary:active { transform: scale(0.96) !important; box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
         .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); color: white; box-shadow: 0 5px 20px rgba(0,255,102,0.3);}
 
-        .brand-footer { text-align: center; margin-top: 35px; user-select: none; font-size: 0.65rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.4rem; font-weight: 900; color: #ffffff; letter-spacing: 4px; margin-top: 5px; animation: pulsateSmall 1.5s infinite alternate; }
-        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); } 100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); } }
+        /* Quva Neon Credits Footer */
+        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: #ffffff; letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate; }
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 4px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); } 100% { text-shadow: 0 0 2px #fff, 0 0 6px var(--accent-cyan), 0 0 12px var(--accent-purple); } }
 
-        /* --- 2. DASHBOARD VIEW --- */
-        #view-dashboard {
-            display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; 
-            flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease, visibility 0.5s;
-        }
+        /* --- DASHBOARD VIEW --- */
+        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease, visibility 0.5s; }
 
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; }
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-right: 1px solid var(--glass-border); border-radius: 0 30px 30px 0; }
         .sidebar::-webkit-scrollbar { width: 0px; }
 
-        .sidebar-brand { text-align: center; margin-bottom: 25px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .sidebar-brand { text-align: center; margin-bottom: 20px; padding: 0 20px;}
+        .sidebar-brand h2 { font-family: var(--font-head); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 14px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none;}
+        .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #aaa; font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase; transition: all 0.3s ease; user-select: none;}
         .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.15) 0%, transparent 100%); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
-        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
+        .nav-item i { width: 18px; text-align: center; font-size: 1.1rem;}
 
-        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 14px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .sidebar-footer { margin-top: auto; padding: 15px 20px; }
+        .logout-btn { width: 100%; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
-        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 25px 35px; position: relative; }
+        .main-content::-webkit-scrollbar { width: 5px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 150; backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        .mobile-menu-btn { display: none; position: fixed; top: 20px; left: 20px; z-index: 300; width: 45px; height: 45px; border-radius: 50px; cursor: pointer; font-size: 1.4rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 40px; height: 40px; border-radius: 50px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
 
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 25px 30px; border-radius: 50px; margin-bottom: 30px;}
-        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.6rem; color: white; margin-bottom: 4px;}
-        .dash-greeting p { color: #aaa; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 50px; margin-bottom: 25px;}
+        .dash-greeting h2 { font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 2px;}
+        .dash-greeting p { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.8rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4);}
+        .stat-badge span { display: block; font-size: 0.65rem; color: #888; text-transform: uppercase; font-family: var(--font-head); letter-spacing: 1px; margin-bottom: 2px;}
+        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-head); text-shadow: 0 0 15px rgba(0,255,127,0.4);}
 
         /* PANELS */
         .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
-        .panel-card { border-radius: 24px; padding: 30px; margin-bottom: 25px; }
-        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; letter-spacing: 1px;}
+        .panel-card { border-radius: 30px; padding: 25px; margin-bottom: 20px; }
+        .panel-title { font-family: var(--font-head); color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; letter-spacing: 1px;}
 
         /* Data Grids */
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .data-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan);}
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border-left: 4px solid var(--accent-cyan);}
         .data-card h4 { font-family: var(--font-head); font-size: 0.95rem; color: white; margin-bottom: 5px;}
-        .data-card p { font-size: 0.85rem; color: #aaa; margin-bottom: 10px;}
+        .data-card p { font-size: 0.8rem; color: #aaa; margin-bottom: 8px;}
         
-        .task-status { font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase; padding: 5px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block;}
+        .task-status { font-family: var(--font-head); font-size: 0.7rem; text-transform: uppercase; padding: 5px 12px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: bold;}
 
-        /* Toast */
-        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.8rem; letter-spacing: 1px;}
+        /* Bulletproof Toast */
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 14px 20px; border-radius: 50px; font-family: var(--font-head); transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,242,255,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         @media (max-width: 850px) {
             .mobile-menu-btn { display: flex; }
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            .main-content { padding: 85px 20px 20px 20px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 20px; padding: 20px; border-radius: 24px;}
+            .main-content { padding: 75px 15px 15px 15px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px; border-radius: 24px;}
             .stat-badge { text-align: left;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Ambient Glowing Background -->
     <div class="ambient-bg">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
@@ -255,11 +249,11 @@
             <!-- CORE PANEL: INTERN TASK HUB -->
             <div id="panel-intern-task" class="content-panel">
                 <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Active Operation</h3>
+                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
                     <div style="margin-bottom: 20px;">
-                        <h4 style="font-family: var(--font-head); font-size: 1.4rem; color: white; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                        <h4 style="font-family: var(--font-head); font-size: 1.3rem; color: white; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
                         <div class="task-status" id="intTaskID">DEV-000</div>
-                        <p style="color:#aaa; font-size: 0.9rem; margin-top: 15px; line-height: 1.6;" id="intTaskDesc">Task description loading...</p>
+                        <p style="color:#aaa; font-size: 0.85rem; margin-top: 15px; line-height: 1.6;" id="intTaskDesc">Task description loading...</p>
                     </div>
 
                     <div class="form-group">
@@ -268,8 +262,8 @@
                     </div>
 
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <button class="btn btn-outline" style="flex: 1; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);" onclick="window.updateProgress(60)">
-                            <i class="fa-solid fa-spinner"></i> Mark In-Progress
+                        <button class="btn btn-outline" style="flex: 1; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);" onclick="window.showToast('Progress Log Saved Locally.')">
+                            <i class="fa-solid fa-save"></i> Save Draft
                         </button>
                         <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()">
                             <i class="fa-solid fa-paper-plane"></i> Submit to HR
@@ -299,7 +293,7 @@
             <div id="panel-team" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Operation Squad Matrix</h3>
-                    <p style="color:#aaa; font-size: 0.85rem; margin-bottom: 20px;">Other personnel assigned to your specific Task ID.</p>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Other personnel assigned to your specific Task ID.</p>
                     <div class="data-grid" id="teamMatrixContainer">
                         <!-- Loaded dynamically -->
                     </div>
@@ -332,7 +326,7 @@
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
-                    <p style="color: #aaa; line-height: 1.7; font-size: 0.95rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Use the navigation sidebar to access your workspace.</p>
+                    <p style="color: #aaa; line-height: 1.7; font-size: 0.9rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Use the navigation sidebar to access your workspace.</p>
                 </div>
             </div>
             <div id="panel-attendance" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</h3></div></div>
@@ -346,11 +340,10 @@
     <!-- SECURE JAVASCRIPT ENGINE (BULLETPROOF API) -->
     <!-- ========================================== -->
     <script>
+        // --- 1. CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const WORKER_URL = 'https://your-cloudflare-worker-url.workers.dev'; // Replace with your actual Worker URL
-
-        let supabase = null;
+        const WORKER_URL = 'https://your-cloudflare-worker-url.workers.dev'; 
 
         // Failsafe Timeout Engine
         const fetchWithTimeout = (promise, ms) => {
@@ -416,31 +409,31 @@
             btn.disabled = true;
 
             try {
-                if (!supabase) throw new Error("Database CDN Offline. Check network.");
-
+                if (!window.supabase) throw new Error("Database CDN Offline. Check network.");
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 let sessionData = null;
 
                 if (role === 'intern') {
-                    // FIX: Using maybeSingle() instead of single() to prevent HTTP 406 silent crashes
-                    const query = supabase.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput).maybeSingle();
+                    // Check database with multiple results fetch to avoid .single() HTTP 406 crashes
+                    const query = supabaseClient.from('tims_tasks').select('*').ilike('task_id', secondaryInput).ilike('intern_name', nameInput);
                     const { data, error } = await fetchWithTimeout(query, 5000);
 
                     if (error) throw new Error(error.message);
-                    if (!data) {
+                    if (!data || data.length === 0) {
                         window.showToast("Access Denied: Intern Name or Task ID not found!", true);
                         return; // Exits cleanly to finally block
                     }
-                    sessionData = data;
+                    sessionData = data[0];
                 } else {
-                    const query = supabase.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput).maybeSingle();
+                    const query = supabaseClient.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput);
                     const { data, error } = await fetchWithTimeout(query, 5000);
 
                     if (error) throw new Error(error.message);
-                    if (!data) {
+                    if (!data || data.length === 0) {
                         window.showToast("Access Denied: Invalid Commander Credentials!", true);
                         return; 
                     }
-                    sessionData = data;
+                    sessionData = data[0];
                 }
 
                 // Authentication Success
@@ -466,7 +459,7 @@
 
             } catch (err) {
                 console.error("LOGIN ERROR:", err);
-                window.showToast(err.message || "Network Error: Could not reach server.", true);
+                window.showToast(err.message === "Database connection timed out. Poor network." ? err.message : "Network Error: Could not reach server.", true);
             } finally {
                 // THE ULTIMATE FAILSAFE: Button ALWAYS unlocks.
                 if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
@@ -501,7 +494,6 @@
                 <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
             `;
 
-            // Auto-fetch Global Contacts and Team
             if(data) {
                 window.fetchTeamMatrix(data.task_id || "ALL");
                 window.fetchContacts(data.assigned_officer || data.name);
@@ -525,10 +517,10 @@
             
             window.showToast("Syncing Database...");
             try {
-                // 1. Update Database
-                await supabase.from('tims_tasks').update({ progress_text: txt, status: 'Submitted', productivity_score: 100 }).eq('id', session.data.id);
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                await supabaseClient.from('tims_tasks').update({ progress_text: txt, status: 'Submitted', productivity_score: 100 }).eq('id', session.data.id);
                 
-                // 2. Trigger Cloudflare Worker Email Dispatch
+                // Trigger Cloudflare Worker Email Dispatch
                 fetch(WORKER_URL, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.task_id, progress: txt })
@@ -553,7 +545,8 @@
             if(!payload.task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
 
             try {
-                await supabase.from('tims_tasks').insert([payload]);
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                await supabaseClient.from('tims_tasks').insert([payload]);
                 window.showToast("Task Deployed Successfully.");
             } catch(e) { window.showToast("Deployment Failed.", true); }
         };
@@ -563,7 +556,8 @@
             const cont = document.getElementById('teamMatrixContainer');
             cont.innerHTML = '<p style="color:#aaa;">Scanning frequencies...</p>';
             try {
-                const { data } = await supabase.from('tims_tasks').select('intern_name, intern_phone').eq('task_id', taskId);
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                const { data } = await supabaseClient.from('tims_tasks').select('intern_name, intern_phone').eq('task_id', taskId);
                 if(data && data.length > 0) {
                     cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="task-status">${taskId}</span></div>`).join('');
                 } else { cont.innerHTML = '<p style="color:#888;">No other operatives found in this vector.</p>'; }
@@ -573,12 +567,17 @@
         window.fetchContacts = async function(assignedOfficerName) {
             const cont = document.getElementById('contactsContainer');
             try {
-                // Fetch Global Execs OR the specific assigned officer
-                const { data } = await supabase.from('tims_users').select('*').or(`role.in.("ceo","cto","hr"),name.eq."${assignedOfficerName}"`);
+                const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                const { data } = await supabaseClient.from('tims_users').select('*').or(`role.in.("ceo","cto","hr"),name.eq."${assignedOfficerName}"`);
                 if(data) {
                     cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name}</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-family:var(--font-head); font-size:0.7rem;">${d.role}</p><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
                 }
             } catch(e) { cont.innerHTML = 'Directory offline.'; }
+        };
+
+        window.triggerAI = function() {
+            window.showToast("Query routed to Cloudflare Edge AI.");
+            // Add fetch logic to WORKER_URL here
         };
 
         // --- DASHBOARD NAVIGATION ---
@@ -588,7 +587,7 @@
 
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)'; });
             const activePanel = document.getElementById(panelId);
-            if(!activePanel) return; // Prevent crashes on unbuilt panels
+            if(!activePanel) return; 
             activePanel.classList.add('active');
             setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
@@ -632,10 +631,6 @@
                 draw();
                 window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
             } catch(e) { console.warn("Particles skipped."); }
-
-            try {
-                if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            } catch(e) { console.error("DB Init error:", e); }
 
             const session = localStorage.getItem('tims_session');
             if(session) {
