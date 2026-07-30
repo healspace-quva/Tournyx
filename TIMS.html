@@ -9,44 +9,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client (Loaded Asynchronously to prevent UI freezing) -->
+    <!-- Supabase JS Client (Synchronous load for stability) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-main: #05020a;
-            /* Premium Ultra-Transparent Glass Backgrounds */
-            --bg-glass: rgba(255, 255, 255, 0.05); /* Lighter for true glass effect */
-            --bg-glass-hover: rgba(255, 255, 255, 0.1);
+            --bg-glass: rgba(15, 10, 25, 0.25);
+            --bg-glass-btn: rgba(255, 255, 255, 0.05);
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff4d4d;
             --accent-green: #00ff7f;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
             --sidebar-width: 240px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
+        /* --- DYNAMIC ANIMATED BACKGROUND --- */
         body { 
-            background-color: var(--bg-main); 
             color: white; 
             font-family: var(--font-body); 
             overflow-x: hidden; 
             min-height: 100vh; 
             margin: 0;
+            background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             position: relative;
         }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         
-        /* --- AMBIENT GLOW ORBS (Makes the glassmorphism visible!) --- */
-        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; }
-        .orb-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: var(--accent-purple); }
-        .orb-2 { bottom: -10%; right: -10%; width: 350px; height: 350px; background: var(--accent-cyan); animation-delay: -5s; }
+        /* --- AMBIENT GLOW ORBS (Fixed: pointer-events: none prevents click blocking) --- */
+        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -2; opacity: 0.6; animation: float 10s infinite alternate ease-in-out; pointer-events: none; }
+        .orb-1 { top: -10%; left: -10%; width: 350px; height: 350px; background: var(--accent-purple); }
+        .orb-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: var(--accent-cyan); animation-delay: -5s; }
         
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
 
         /* Animated Particles */
         #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
@@ -54,8 +61,8 @@
         /* --- GLOBAL PREMIUM GLASSMORPHISM --- */
         .glass-panel {
             background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
         }
@@ -76,10 +83,12 @@
 
         .login-card {
             width: 100%;
-            max-width: 360px; /* Minimal compact size */
+            max-width: 360px;
             border-radius: 20px;
             padding: 35px 25px;
-            animation: slideFadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideFadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 2; /* Ensures it sits above any stray background elements */
         }
 
         @keyframes slideFadeIn { 
@@ -95,6 +104,10 @@
         .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.75rem; cursor: pointer; color: #888; border-radius: 8px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
         .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.1);}
 
+        /* SMOOTH FORM SWITCHING */
+        .auth-form { display: none; opacity: 0; }
+        .auth-form.active { display: block; opacity: 1; animation: slideFadeIn 0.4s ease forwards; }
+
         .form-group { margin-bottom: 18px; width: 100%; position: relative;}
         .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
         
@@ -105,17 +118,13 @@
         .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);}
         .btn-primary:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
 
-        .btn-glass { background: var(--bg-glass-btn); border: 1px solid var(--glass-border); color: var(--accent-cyan); backdrop-filter: blur(10px); }
-        .btn-glass:hover { background: rgba(0,242,255,0.15); }
-        .btn-glass:active { transform: scale(0.95); }
-
         /* --- 2. DASHBOARD VIEW (Zero Overflow) --- */
         #view-dashboard {
             display: none; 
             visibility: hidden;
             width: 100vw;
             height: 100vh;
-            overflow: hidden; /* Strict NO scrollbars globally */
+            overflow: hidden; 
             flex-direction: row;
             z-index: 20;
             position: absolute;
@@ -166,10 +175,10 @@
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
         /* MOBILE OVERLAY & BUTTON */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease, visibility 0.3s;}
         .mobile-overlay.open { display: block; opacity: 1; visibility: visible; }
         
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 110; width: 42px; height: 42px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0;}
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 110; width: 42px; height: 42px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass-btn); border: 1px solid var(--glass-border); color: var(--accent-cyan); backdrop-filter: blur(10px);}
 
         /* DASHBOARD HEADER */
         .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 16px; margin-bottom: 25px;}
@@ -197,7 +206,7 @@
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             
-            .main-content { padding: 75px 15px 15px 15px; } /* Space for mobile header button */
+            .main-content { padding: 75px 15px 15px 15px; }
             .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 18px;}
             .stat-badge { text-align: left;}
         }
@@ -205,7 +214,7 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Orbs to power the Glassmorphism -->
+    <!-- Ambient Glowing Orbs -->
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
     <canvas id="particles-canvas"></canvas>
@@ -230,7 +239,7 @@
             </div>
 
             <!-- Intern Form -->
-            <form id="form-intern" onsubmit="event.preventDefault(); initiateLogin('intern');">
+            <form id="form-intern" class="auth-form active" onsubmit="event.preventDefault(); initiateLogin('intern');">
                 <div class="form-group">
                     <label class="form-label">Intern Name</label>
                     <input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" required autocomplete="off">
@@ -245,7 +254,7 @@
             </form>
 
             <!-- Officer Form -->
-            <form id="form-officer" style="display:none;" onsubmit="event.preventDefault(); initiateLogin('officer');">
+            <form id="form-officer" class="auth-form" onsubmit="event.preventDefault(); initiateLogin('officer');">
                 <div class="form-group">
                     <label class="form-label">Officer Name</label>
                     <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" required autocomplete="off">
@@ -268,7 +277,7 @@
         
         <!-- Mobile Controls -->
         <div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebar()"></div>
-        <button class="mobile-menu-btn glass-panel" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <button class="mobile-menu-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
         
         <!-- SIDEBAR NAVIGATION -->
         <div class="sidebar glass-panel" id="sidebar">
@@ -305,7 +314,7 @@
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.3);">ONLINE</strong>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.2);">ONLINE</strong>
                 </div>
             </div>
 
@@ -313,7 +322,7 @@
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-bolt"></i> Operational Overview</h3>
-                    <p style="color: #ccc; line-height: 1.6; font-size: 0.9rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored. Use the navigation sidebar to access your assigned tasks and architectural documentation.</p>
+                    <p style="color: #aaa; line-height: 1.6; font-size: 0.9rem;">Welcome to the unified Tournyx Internship Management System (TIMS). Your session is actively monitored. Use the navigation sidebar to access your assigned tasks and architectural documentation.</p>
                 </div>
             </div>
 
@@ -327,13 +336,13 @@
             
             <!-- Panel 3: AI Hub -->
             <div id="panel-ai" class="content-panel">
-                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); box-shadow: 0 0 30px rgba(189,0,255,0.15);">
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.3); box-shadow: 0 0 25px rgba(189,0,255,0.05);">
                     <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:#bbb; margin-bottom: 15px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions here.</p>
+                    <p style="color:#aaa; margin-bottom: 15px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to the Gemini Edge Worker. Ask technical architecture questions here.</p>
                     <div class="form-group">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: rgba(189,0,255,0.4);">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize query..." style="border-color: rgba(189,0,255,0.3);">
                     </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 4px 20px rgba(189,0,255,0.4);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
+                    <button class="btn btn-primary" style="background: var(--accent-purple); box-shadow: 0 4px 15px rgba(189,0,255,0.3);" onclick="showToast('Query routed to Cloudflare Edge.')"><i class="fa-solid fa-paper-plane"></i> Execute Query</button>
                 </div>
             </div>
 
@@ -356,36 +365,13 @@
     <!-- MASTER JAVASCRIPT ENGINE                   -->
     <!-- ========================================== -->
     <script>
-        // --- 1. GLOBAL VARIABLES & FAIL-SAFE ---
-        let supabase = null;
+        // --- 1. Supabase Initialization (REAL KEYS ACTIVE) ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+        
+        let supabase = null;
 
-        // --- 2. UI Helpers (These run safely even if DB fails) ---
-        function showToast(msg, isError = false) {
-            const t = document.getElementById('toast');
-            const icon = t.querySelector('i');
-            document.getElementById('toastMsg').innerText = msg;
-            
-            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
-            icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-            
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
-        }
-
-        function toggleAuth(type) {
-            document.getElementById('tab-intern').classList.remove('active');
-            document.getElementById('tab-officer').classList.remove('active');
-            document.getElementById('form-intern').style.display = 'none';
-            document.getElementById('form-officer').style.display = 'none';
-            
-            document.getElementById(`tab-${type}`).classList.add('active');
-            document.getElementById(`form-${type}`).style.display = 'block';
-        }
-
-        // --- 3. Particle Engine (Background Animation) ---
+        // --- 2. Particle Engine (Background Animation) ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, pArray;
@@ -396,13 +382,13 @@
             canvas.width = width;
             canvas.height = height;
             pArray = [];
-            for(let i = 0; i < 35; i++) {
+            for(let i = 0; i < 40; i++) {
                 pArray.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
                     s: Math.random() * 2,
                     c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff',
-                    v: (Math.random() * 0.3) + 0.1
+                    v: (Math.random() * 0.4) + 0.1
                 });
             }
         }
@@ -413,7 +399,7 @@
                 p.y -= p.v;
                 if(p.y < 0) p.y = height;
                 ctx.fillStyle = p.c;
-                ctx.globalAlpha = 0.4;
+                ctx.globalAlpha = 0.3;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
                 ctx.fill();
@@ -421,12 +407,13 @@
             requestAnimationFrame(drawParticles);
         }
 
-        // --- 4. Database Initialization (WRAPPED IN TRY-CATCH TO PREVENT CRASHES) ---
+        // --- 3. Fail-Safe Boot System ---
         window.addEventListener('DOMContentLoaded', () => {
             initParticles(); 
             drawParticles();
             window.addEventListener('resize', initParticles);
 
+            // Safely initialize Supabase without crashing the UI if network drops
             try {
                 if (window.supabase) {
                     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -455,7 +442,34 @@
             }
         });
 
-        // --- 5. REAL AUTHENTICATION ENGINE ---
+        // --- 4. UI Helpers ---
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            const icon = t.querySelector('i');
+            document.getElementById('toastMsg').innerText = msg;
+            
+            t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
+            icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+            
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        // --- 5. Fix: Smooth CSS Class Toggling for Buttons ---
+        function toggleAuth(type) {
+            // Toggle Tab Buttons
+            document.getElementById('tab-intern').classList.remove('active');
+            document.getElementById('tab-officer').classList.remove('active');
+            document.getElementById(`tab-${type}`).classList.add('active');
+
+            // Toggle Forms smoothly
+            document.getElementById('form-intern').classList.remove('active');
+            document.getElementById('form-officer').classList.remove('active');
+            document.getElementById(`form-${type}`).classList.add('active');
+        }
+
+        // --- 6. REAL AUTHENTICATION ENGINE ---
         async function initiateLogin(role) {
             let nameInput = "";
             let secondaryInput = "";
@@ -502,10 +516,10 @@
                         .single();
 
                     if (error || !data) {
-                        showToast("Access Denied: Task not assigned to this Intern!", true);
+                        showToast("Access Denied: Task not assigned to Intern!", true);
                         btn.innerHTML = originalHTML;
                         btn.disabled = false;
-                        return; // BLOCKS THE USER
+                        return; // BLOCKS FAKE LOGINS COMPLETELY
                     }
                     sessionData = data;
                 } else {
@@ -521,7 +535,7 @@
                         showToast("Access Denied: Invalid Commander PIN!", true);
                         btn.innerHTML = originalHTML;
                         btn.disabled = false;
-                        return; // BLOCKS THE USER
+                        return; // BLOCKS FAKE LOGINS COMPLETELY
                     }
                 }
 
@@ -561,7 +575,7 @@
             }
         }
 
-        // --- 6. Dashboard Navigation & Sidebar Logic ---
+        // --- 7. Dashboard Navigation & Sidebar Logic ---
         function switchPanel(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             navElement.classList.add('active');
@@ -595,7 +609,7 @@
             document.getElementById('mobileOverlay').classList.remove('open');
         }
 
-        // --- 7. Session Termination ---
+        // --- 8. Session Termination ---
         function logout() {
             localStorage.removeItem('tims_session');
             
