@@ -5,178 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TIMS Engine - Unified Gateway</title>
     
-    <!-- Premium Professional Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Supabase JS Client (Loaded synchronously) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- DYNAMIC THEME ENGINE --- */
         :root {
-            /* Default Dark Theme Variables */
             --bg-main: #04010a;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --bg-glass: rgba(15, 10, 25, 0.45);
-            --bg-glass-solid: rgba(20, 15, 30, 0.85);
-            --bg-input: rgba(0, 0, 0, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            --sidebar-width: 260px;
-            
-            /* Accents */
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-red: #ff3333;
             --accent-green: #00ff66;
-            
-            /* Typography */
             --font-head: 'Inter', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-logo: 'Orbitron', sans-serif;
-        }
-
-        /* Light Theme Override */
-        body.light-theme {
-            --bg-main: #f0f4f8;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --bg-glass: rgba(255, 255, 255, 0.65);
-            --bg-glass-solid: rgba(255, 255, 255, 0.95);
-            --bg-input: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --accent-cyan: #0284c7; /* Darker blue for readability in light mode */
+            --sidebar-width: 250px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
         
         body { 
-            color: var(--text-main); font-family: var(--font-body); overflow-x: hidden; min-height: 100dvh; 
-            background-color: var(--bg-main); position: relative; transition: background-color 0.4s ease, color 0.4s ease;
+            color: white; font-family: var(--font-body); overflow-x: hidden; min-height: 100dvh; 
+            background: linear-gradient(-45deg, #05020c, #110822, #0d0616, #05020c);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite; position: relative;
         }
 
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
         /* Ambient Glow Orbs */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 12s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
-        .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -10%; left: -10%; }
-        .orb-2 { width: 500px; height: 500px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.05); } }
+        .ambient-orb { position: fixed; border-radius: 50%; filter: blur(90px); -webkit-filter: blur(90px); z-index: -2; opacity: 0.4; animation: float 10s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
+        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(30px) scale(1.05); } }
 
-        /* Premium Glass Panel Framework */
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;}
+
+        /* Ultimate Glass Panel */
         .glass-panel {
-            background: var(--bg-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-top: 1px solid rgba(255, 255, 255, 0.15); border-left: 1px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: var(--glass-shadow); transform: translateZ(0); transition: background 0.4s ease;
+            background: rgba(20, 15, 30, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); transform: translateZ(0);
         }
 
-        /* --- 1. LOGIN GATEWAY --- */
-        #view-login {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 15px;
-            z-index: 100; transition: opacity 0.4s ease, visibility 0.4s;
-        }
-
-        .login-card { width: 100%; max-width: 400px; border-radius: 24px; padding: 40px 30px; animation: slideFadeIn 0.5s ease; position: relative; background: var(--bg-glass-solid); }
+        /* --- LOGIN VIEW --- */
+        #view-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 100; transition: opacity 0.4s ease, visibility 0.4s; }
+        .login-card { width: 100%; max-width: 380px; border-radius: 24px; padding: 35px 25px; animation: slideFadeIn 0.5s ease; position: relative; }
         @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed var(--glass-border); padding-bottom: 20px;}
+        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px;}
         .header-logo h1 { font-family: var(--font-logo); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
-        .header-logo p { color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
+        .header-logo p { color: #aaa; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        /* Pill Shaped Toggles */
-        .auth-toggle { display: flex; background: var(--bg-input); border-radius: 50px; margin-bottom: 25px; border: 1px solid var(--glass-border); padding: 5px; width: 100%; user-select: none; }
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: 700;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan);}
-        body.light-theme .auth-toggle div.active { background: var(--accent-cyan); color: white; }
+        .auth-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 50px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 5px; width: 100%; user-select: none; }
+        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-family: var(--font-head); font-size: 0.8rem; cursor: pointer; color: #888; border-radius: 50px; transition: all 0.3s ease; text-transform: uppercase; font-weight: bold;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0,242,255,0.15);}
 
         .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; padding-left: 15px;}
+        .form-group { margin-bottom: 18px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.75rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; padding-left: 15px;}
         
-        .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease; outline: none; }
-        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
-        textarea.form-control { border-radius: 16px; resize: vertical; min-height: 100px; padding: 15px 20px; }
+        .form-control { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.95rem; font-weight: bold; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);}
+        .form-control:focus { border-color: var(--accent-cyan); background: rgba(0,0,0,0.7); box-shadow: 0 0 15px rgba(0,242,255,0.3), inset 0 2px 5px rgba(0,0,0,0.5);}
+        textarea.form-control { border-radius: 20px; resize: vertical; min-height: 100px; padding: 15px 20px; }
 
-        .btn { width: 100%; padding: 15px 30px; border-radius: 50px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; color: white;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
-        .btn-primary:active { transform: scale(0.96) !important; }
+        .btn { width: 100%; padding: 14px 30px; border-radius: 50px; font-family: var(--font-head); font-weight: 900; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; user-select: none;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); color: white; margin-top: 5px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+        .btn-primary:active { transform: scale(0.96) !important; box-shadow: 0 2px 10px rgba(0,242,255,0.4); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
-        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
+        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); color: white;}
         .btn-outline { background: transparent; border: 2px solid var(--accent-cyan); color: var(--accent-cyan); }
-        body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
 
-        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.4rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 5px; animation: pulsateSmall 2s infinite alternate; }
-        
-        @keyframes pulsateSmall { 
-            0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 
-            100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } 
-        }
+        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: #888; font-family: var(--font-head); letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: #ffffff; letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate; font-family: var(--font-logo);}
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px #fff, 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-purple); } 100% { text-shadow: 0 0 2px #fff, 0 0 8px var(--accent-cyan), 0 0 15px var(--accent-purple); } }
 
-        /* --- 2. DASHBOARD VIEW --- */
+        /* --- DASHBOARD VIEW --- */
         #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; }
 
-        /* Sidebar Matrix */
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: var(--bg-glass-solid); }
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; }
         .sidebar::-webkit-scrollbar { width: 0px; }
 
         .sidebar-brand { text-align: center; margin-bottom: 20px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none; margin-bottom: 4px;}
-        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: 800;}
-        body.light-theme .nav-item:hover, body.light-theme .nav-item.active { background: rgba(2, 132, 199, 0.1); }
+        .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #aaa; font-family: var(--font-head); font-size: 0.8rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none;}
+        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: bold;}
         .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
-        .logout-btn:hover { background: var(--accent-red); color: white;}
+        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
 
-        /* Main Content Container */
-        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
-        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 25px 35px; position: relative; }
+        .main-content::-webkit-scrollbar { width: 5px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        /* Mobile Controls */
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
         .mobile-overlay.open { display: block; opacity: 1; }
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass-solid); border: 1px solid var(--glass-border); color: var(--accent-cyan); }
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
 
-        /* Header Bar */
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-radius: 20px; margin-bottom: 25px; background: var(--bg-glass-solid);}
-        .dash-greeting h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px;}
-        .dash-greeting p { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 20px; margin-bottom: 25px;}
+        .dash-greeting h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;}
+        .dash-greeting p { color: #aaa; font-size: 0.8rem; text-transform: uppercase; font-weight: bold;}
         .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.6rem; color: var(--accent-green); font-family: var(--font-logo); }
+        .stat-badge span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px;}
+        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); text-shadow: 0 0 10px rgba(0,255,127,0.3);}
 
-        /* Data Panels */
-        .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; }
+        /* PANELS */
+        .content-panel { display: none; width: 100%; max-width: 900px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
-        .panel-card { border-radius: 20px; padding: 25px; margin-bottom: 20px; background: var(--bg-glass-solid); }
-        .panel-title { color: var(--text-main); font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
+        .panel-card { border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .panel-title { color: white; font-size: 1.1rem; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px;}
         .panel-title i { color: var(--accent-purple); }
 
         /* Grids & Cards */
         .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .data-card { background: var(--bg-input); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan);}
-        .data-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px;}
-        .data-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
-        .tag-badge { font-size: 0.7rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
+        .data-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan);}
+        .data-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px;}
+        .data-card p { font-size: 0.8rem; color: #aaa; margin-bottom: 8px;}
+        
+        /* Advanced Video Player UI */
+        .video-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        video { width: 100%; display: block; }
 
         /* Upload Area */
-        .upload-zone { border: 2px dashed var(--accent-cyan); padding: 40px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
-        .upload-zone:hover { background: rgba(0,242,255,0.1); }
-        .upload-zone i { font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 15px; }
+        .upload-zone { border: 2px dashed var(--accent-cyan); padding: 30px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
+        .upload-zone i { font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px; }
+
+        .empty-state { text-align: center; color: #888; padding: 40px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; font-style: italic; }
+
+        /* Attendance Matrix */
+        .progress-container { width: 100%; background: rgba(0,0,0,0.4); border-radius: 50px; height: 18px; margin: 15px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 1s ease; }
+        .att-metrics { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; text-transform: uppercase; }
+        .status-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
+        .status-red { background: rgba(255,51,51,0.1); color: var(--accent-red); }
+        .status-green { background: rgba(0,255,102,0.1); color: var(--accent-green); }
 
         /* Toast */
-        #toast { position: fixed; top: 20px; right: 20px; background: var(--bg-glass-solid); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: var(--text-main); padding: 15px 25px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,0,0,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;}
+        #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: white; padding: 14px 20px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
         /* --- EXTREME MOBILE COMPRESSION --- */
@@ -184,30 +154,20 @@
             .mobile-menu-btn { display: flex; }
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); border-radius: 0; }
             .sidebar.open { transform: translateX(0); }
-            
-            /* Aggressively reduce padding for small screens */
-            .main-content { padding: 75px 12px 15px 12px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px 15px; border-radius: 16px;}
-            .stat-badge { text-align: left; margin-top: 10px;}
+            /* Reduced paddings to prevent overflow */
+            .main-content { padding: 70px 10px 15px 10px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px; border-radius: 16px;}
+            .stat-badge { text-align: left; }
             .panel-card { padding: 20px 15px; border-radius: 16px; }
             .form-control { padding: 12px 18px; font-size: 0.9rem;}
         }
-
-        /* Toggle Switch for Settings */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-input); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border);}
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent-cyan); }
-        input:checked + .slider:before { transform: translateX(24px); }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-    </div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <canvas id="particles-canvas"></canvas>
     
     <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
 
@@ -273,7 +233,7 @@
                 <h2>TIMS HUB</h2>
             </div>
             <ul class="nav-menu" id="dynamicNavMenu">
-                <!-- Javascript will inject strictly tailored menus here based on role -->
+                <!-- Javascript will inject tailored menus here -->
             </ul>
             <div class="sidebar-footer">
                 <button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
@@ -289,7 +249,7 @@
                 </div>
                 <div class="stat-badge">
                     <span>System Status</span>
-                    <strong style="color:var(--accent-green);">ONLINE</strong>
+                    <strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.3);">ONLINE</strong>
                 </div>
             </div>
 
@@ -301,12 +261,12 @@
             <div id="panel-dashboard" class="content-panel active">
                 <div class="panel-card glass-panel" id="internHomeSection" style="display:none;">
                     <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Operations Check-In</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Log your attendance daily before starting your assigned operational task.</p>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">Log your attendance daily before starting your assigned operational task.</p>
                     <button class="btn btn-success" onclick="window.markAttendance()" style="max-width: 250px;"><i class="fa-solid fa-clock"></i> Mark Present Today</button>
                 </div>
                 <div class="panel-card glass-panel" id="officerHomeSection" style="display:none;">
                     <h3 class="panel-title"><i class="fa-solid fa-shield-halved"></i> Commander Overview</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Welcome to the Unified Portal. Monitor intern attendance, verify progress, and distribute structural assets (SOPs/Videos) from the sidebar.</p>
+                    <p style="color: #aaa; font-size: 0.9rem;">Welcome to the Unified Portal. Monitor intern attendance, verify progress, and distribute structural assets (SOPs/Videos) from the sidebar.</p>
                 </div>
             </div>
 
@@ -314,15 +274,15 @@
             <div id="panel-intern-task" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
-                    <div style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
-                        <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
-                        <div class="tag-badge" id="intTaskID">DEV-000</div>
-                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
+                    <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;">
+                        <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                        <div style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: bold; background: rgba(0,242,255,0.1); display: inline-block; padding: 4px 10px; border-radius: 50px;" id="intTaskID">DEV-000</div>
+                        <p style="color:#aaa; font-size: 0.85rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Operation Progress Log (Auto-Saves Locally)</label>
-                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. You can close this portal and your work will remain safely cached here..." oninput="window.saveDraft()"></textarea>
+                        <label class="form-label">Operation Progress Log</label>
+                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. You can close this portal and your work will auto-save locally." oninput="window.saveDraft()"></textarea>
                     </div>
 
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -330,8 +290,28 @@
                             <i class="fa-solid fa-save"></i> Save Draft
                         </button>
                         <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()">
-                            <i class="fa-solid fa-paper-plane"></i> Final Submit to HR
+                            <i class="fa-solid fa-paper-plane"></i> Submit to HR
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [INTERN] Attendance Matrix (10/40/20/30 Logic) -->
+            <div id="panel-intern-attendance" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Attendance Matrix</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Attendance requires full workflow completion and approvals.</p>
+                    
+                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 3rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
+                    <div class="progress-container"><div class="progress-fill" id="attProgressBar" style="width: 10%;"></div></div>
+                    
+                    <div class="att-metrics" style="margin-top: 15px;">
+                        <div>System Login <br><span class="status-badge status-green">10% Verified</span></div>
+                        <div>Task Submit <br><span class="status-badge" id="attSubmitBadge">40% Pending</span></div>
+                    </div>
+                    <div class="att-metrics" style="margin-top: 15px;">
+                        <div>HR Verification <br><span class="status-badge" id="attHRBadge">20% Pending</span></div>
+                        <div>Officer Clearance <br><span class="status-badge" id="attOfficerBadge">30% Pending</span></div>
                     </div>
                 </div>
             </div>
@@ -341,15 +321,24 @@
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Deploy New Task</h3>
                     <div class="data-grid">
-                        <div class="form-group"><label class="form-label">Team Task ID</label><input type="text" id="offTaskId" class="form-control" placeholder="e.g. DEV-020"></div>
-                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="offInternName" class="form-control" placeholder="Assignee Name"></div>
-                        <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="offTaskTitle" class="form-control" placeholder="Objective Name"></div>
+                        <div class="form-group"><label class="form-label">Team Task ID</label><input type="text" id="offTaskId" class="form-control" placeholder="e.g. DEV-020" oninput="window.generateInternId()"></div>
+                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="offInternName" class="form-control" placeholder="Assignee Name" oninput="window.generateInternId()"></div>
+                        <div class="form-group"><label class="form-label">Unique Intern Task ID</label><input type="text" id="offUniqueId" class="form-control" placeholder="Auto-Generates" disabled style="opacity: 0.5;"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Operation Directives</label>
-                        <textarea id="offTaskDesc" class="form-control" placeholder="Define parameters..."></textarea>
-                    </div>
+                    <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="offTaskTitle" class="form-control" placeholder="Objective Name"></div>
+                    <div class="form-group"><label class="form-label">Operation Directives</label><textarea id="offTaskDesc" class="form-control" placeholder="Define parameters..."></textarea></div>
                     <button class="btn btn-primary" onclick="window.deployTask()"><i class="fa-solid fa-satellite-dish"></i> Deploy to Network</button>
+                </div>
+            </div>
+
+            <!-- [OFFICER/HR] Workflow Approvals -->
+            <div id="panel-officer-approvals" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-check"></i> Pending Workflows</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 15px;">Verify intern text progress before granting attendance clearance.</p>
+                    <div id="approvalMatrixContainer">
+                        <div class="empty-state">Scanning for submitted workflows...</div>
+                    </div>
                 </div>
             </div>
 
@@ -357,7 +346,7 @@
             <div id="panel-officer-assets" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload SOPs, TED references, and Video Archives directly to the intern network.</p>
+                    <p style="color:#aaa; font-size: 0.85rem; margin-bottom: 20px;">Upload assets. The system automatically compresses images before sending to DB to reduce latency.</p>
                     
                     <div class="data-grid">
                         <div class="form-group">
@@ -374,53 +363,77 @@
                         </div>
                     </div>
                     
-                    <div class="upload-zone" onclick="window.showToast('Cloud storage linkage required. Link mock active.')">
-                        <i class="fa-solid fa-file-arrow-up"></i>
-                        <h4>Click to Upload File</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">PDF, MP4, DOCX up to 50MB</p>
+                    <div class="upload-zone" onclick="document.getElementById('fileUploader').click()">
+                        <i class="fa-solid fa-file-arrow-up" id="uploadIcon"></i>
+                        <h4 id="uploadText">Click to Select File</h4>
+                        <p style="font-size: 0.75rem; color: #888;">Images auto-compress. Videos stream natively.</p>
+                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleFileSelect(event)">
                     </div>
                     <br>
-                    <button class="btn btn-primary" onclick="window.showToast('Asset distributed to intern network successfully.')"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
+                    <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
                 </div>
             </div>
 
-            <!-- [SHARED] Global Contacts -->
-            <div id="panel-contacts" class="content-panel">
-                <!-- Head Office Execs -->
+            <!-- SHARED: Dynamic Assets (Learning, SOP, TED, Videos, Announcements) -->
+            <div id="panel-dynamic-assets" class="content-panel">
                 <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-building"></i> Head Office Executives</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Standard contact details for Tournyx core administration.</p>
-                    <div class="data-grid" id="contactsExecContainer">
-                        <!-- Loaded dynamically -->
-                    </div>
-                </div>
-
-                <!-- Assigned Domain Officer (Interns Only) -->
-                <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
-                    <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Direct supervisor contact for current task queries.</p>
-                    <div class="data-grid" id="contactsDomainContainer">
+                    <h3 class="panel-title" id="assetTitleHeader"><i class="fa-solid fa-folder-open"></i> Asset Database</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Classified structural assets.</p>
+                    <div class="data-grid" id="assetContainer">
                         <!-- Loaded dynamically -->
                     </div>
                 </div>
             </div>
 
-            <!-- [SHARED] Squad Matrix -->
+            <!-- SHARED: Squad Matrix -->
             <div id="panel-team" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Operatives assigned to your active Team Task ID.</p>
-                    <div class="data-grid" id="teamMatrixContainer">
-                        <!-- Loaded dynamically -->
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 20px;">Operatives assigned to your active Team Task ID.</p>
+                    <div class="data-grid" id="teamMatrixContainer"></div>
+                </div>
+            </div>
+
+            <!-- SHARED: Global Contacts (HARDCODED HTML) -->
+            <div id="panel-contacts" class="content-panel">
+                <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
+                    <p style="color:#aaa; font-size: 0.8rem; margin-bottom: 15px;">Direct supervisor contact for current task queries.</p>
+                    <div class="data-grid" id="contactsDomainContainer"></div>
+                </div>
+
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-building"></i> Headquarters Mail</h3>
+                    <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 20px;">
+                        <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> contact@tournyx.in</p>
+                    </div>
+                    
+                    <h3 class="panel-title"><i class="fa-solid fa-sitemap"></i> Executive Board</h3>
+                    <div class="data-grid">
+                        <div class="data-card">
+                            <h4>Shiva Kumar</h4>
+                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Chief Technology Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> cto@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000001</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Prabhu</h4>
+                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Chief Executive Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000000</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Tharun Kumar</h4>
+                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Human Resources</p>
+                            <p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000002</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- [SHARED] AI Hub -->
+            <!-- SHARED: AI Hub -->
             <div id="panel-ai" class="content-panel">
                 <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4);">
                     <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
+                    <p style="color:#aaa; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
                     <div class="form-group">
                         <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
                     </div>
@@ -428,62 +441,23 @@
                 </div>
             </div>
 
-            <!-- [SHARED] Settings Theme Switcher -->
-            <div id="panel-settings" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Preferences</h3>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
-                        <div>
-                            <h4 style="font-size: 1rem; margin-bottom: 4px;">Light / Dark Theme</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Toggle interface color matrix.</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="themeToggle" onchange="window.toggleTheme()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blank Data Panels -->
-            <div id="panel-attendance" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Attendance Records</h3><p style="color:var(--text-muted); font-size: 0.85rem;">Attendance fetched dynamically.</p></div></div>
-            <div id="panel-progress" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Global Progress</h3></div></div>
-            <div id="panel-learning" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</h3></div></div>
-            <div id="panel-sop" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-file-contract"></i> Distributed SOPs</h3></div></div>
-            <div id="panel-ted" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-book"></i> TED Library</h3></div></div>
-            <div id="panel-videos" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-video"></i> Video Archives</h3></div></div>
-            <div id="panel-announcements" class="content-panel"><div class="panel-card glass-panel"><h3 class="panel-title"><i class="fa-solid fa-bullhorn"></i> Server Announcements</h3></div></div>
-
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SECURE JAVASCRIPT ENGINE (BULLETPROOF API) -->
-    <!-- ========================================== -->
     <script>
-        // --- 1. CONFIGURATION ---
+        // --- 1. SECURE CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         const WORKER_URL = 'YOUR_WORKER_URL_HERE'; // Replace with deployed Cloudflare worker
+
+        let supabase = null;
+        let selectedFile = null;
 
         const fetchWithTimeout = (promise, ms) => {
             return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout.")), ms)) ]);
         };
 
-        // --- 2. THEME ENGINE ---
-        window.toggleTheme = function() {
-            const isLight = document.getElementById('themeToggle').checked;
-            if(isLight) {
-                document.body.classList.add('light-theme');
-                localStorage.setItem('tims_theme', 'light');
-            } else {
-                document.body.classList.remove('light-theme');
-                localStorage.setItem('tims_theme', 'dark');
-            }
-        };
-
-        // --- 3. TOAST ENGINE ---
+        // --- 2. TOAST ENGINE ---
         window.showToast = function(msg, isError = false) {
             try {
                 const t = document.getElementById('toast');
@@ -498,7 +472,7 @@
             } catch(e) {}
         };
 
-        // --- 4. UI TOGGLING ---
+        // --- 3. UI TOGGLING ---
         window.toggleAuth = function(type) {
             if(navigator.vibrate) navigator.vibrate(15);
             document.getElementById('tab-intern').classList.remove('active'); document.getElementById('tab-officer').classList.remove('active');
@@ -511,89 +485,114 @@
 
         window.handleEnter = function(e, role) { if (e.key === 'Enter') { e.preventDefault(); window.initiateLogin(role); } };
 
-        // --- 5. NATIVE AUTHENTICATION ---
+        // --- 4. 24-HOUR SESSION CHECKER ---
+        window.isSessionValid = function(session) {
+            if(!session || !session.timestamp) return false;
+            const now = new Date().getTime();
+            const diffHours = (now - session.timestamp) / (1000 * 60 * 60);
+            return diffHours < 24; // Session expires strictly after 24 hours
+        };
+
+        // --- 5. CASE-INSENSITIVE NATIVE AUTHENTICATION ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
+            
+            // Auto lowercase for case-insensitive verification
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim() : document.getElementById('loginOfficerName').value.trim();
             let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim() : document.getElementById('loginPin').value.trim();
             let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
 
-            if(!nameInput || !secondaryInput) { window.showToast("All fields are required.", true); return; }
+            if(!nameInput || !secondaryInput) { window.showToast("All fields are strictly required.", true); return; }
 
             const btn = document.getElementById(btnId);
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
 
+            // Using ilike (Case Insensitive) for Supabase REST
             let url = role === 'intern' 
-                ? `${SUPABASE_URL}/rest/v1/tims_tasks?task_id=eq.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
+                ? `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
                 : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
 
             try {
-                const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }), 6000);
-                if (!response.ok) throw new Error("Server Error");
-                const data = await response.json();
+                if (!supabase) throw new Error("Database CDN Offline. Check network.");
 
-                if (data.length === 0) {
-                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
+                // Use maybeSingle to prevent HTTP 406 silent crashes on empty returns
+                const query = role === 'intern' 
+                    ? supabase.from('tims_tasks').select('*').ilike('team_task_id', secondaryInput).ilike('intern_name', nameInput).maybeSingle()
+                    : supabase.from('tims_users').select('*').ilike('name', nameInput).eq('access_pin', secondaryInput).maybeSingle();
+                
+                const { data, error } = await fetchWithTimeout(query, 5000);
+
+                if (error) throw new Error(error.message);
+                if (!data) {
+                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Team Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
                     return; 
                 }
 
-                const sessionData = data[0]; 
-                localStorage.setItem('tims_session', JSON.stringify({ name: nameInput, role: role, data: sessionData }));
+                // Authentication Success
+                const sessionData = data; 
+                
+                // Initialize Attendance on Login (10%) for interns
+                if(role === 'intern') {
+                    const dateString = new Date().toISOString().split('T')[0];
+                    const attQuery = supabase.from('tims_attendance').select('*').ilike('intern_name', nameInput).eq('log_date', dateString).maybeSingle();
+                    const { data: attData } = await fetchWithTimeout(attQuery, 3000);
+                    
+                    if(!attData) {
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance`, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'}, body: JSON.stringify({ intern_name: data.intern_name, task_id: data.team_task_id }) });
+                    }
+                }
+
+                localStorage.setItem('tims_session', JSON.stringify({ name: data.name || data.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
                 
                 document.getElementById('view-login').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('view-login').style.visibility = 'hidden'; document.getElementById('view-login').style.display = 'none';
-                    const dashView = document.getElementById('view-dashboard');
-                    dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
+                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
                     setTimeout(() => { dashView.style.opacity = '1'; }, 50);
                     
-                    document.getElementById('dashName').innerText = nameInput;
+                    document.getElementById('dashName').innerText = data.name || data.intern_name; 
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
                     window.buildDashboardRole(role, sessionData);
                     window.showToast("System Access Granted.");
                 }, 400); 
-            } catch (err) { window.showToast("Network Error: Could not reach server.", true);
-            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
+
+            } catch (err) {
+                console.error("LOGIN ERROR:", err);
+                window.showToast(err.message || "Network Error: Could not reach server.", true);
+            } finally {
+                // THE ULTIMATE FAILSAFE: Button ALWAYS unlocks.
+                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+            }
         };
 
-        // --- 6. DYNAMIC ROLE ROUTING (STRICT SEGREGATION) ---
+        // --- 6. DYNAMIC ROLE ROUTING & PANEL MEMORY ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
-            
-            // Common Dashboard Base
             menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
 
-            // Display Correct Dashboard Elements
             document.getElementById('internHomeSection').style.display = role === 'intern' ? 'block' : 'none';
-            document.getElementById('officerHomeSection').style.display = role === 'officer' ? 'block' : 'none';
+            document.getElementById('officerHomeSection').style.display = role !== 'intern' ? 'block' : 'none';
             document.getElementById('assignedOfficerSection').style.display = role === 'intern' ? 'block' : 'none';
 
-            // STRICT ROLE SEGREGATION MENUS
             if(role === 'intern') {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-attendance', this)"><i class="fa-solid fa-calendar-check"></i> Attendance</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-progress', this)"><i class="fa-solid fa-chart-line"></i> My Progress</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-learning', this)"><i class="fa-solid fa-graduation-cap"></i> Learning Hub</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
                 `;
-                
-                // Hydrate Task Info
                 document.getElementById('intTaskTitle').innerText = data.title;
-                document.getElementById('intTaskID').innerText = data.task_id;
+                document.getElementById('intTaskID').innerText = data.intern_task_id; // Show Unique ID
                 document.getElementById('intTaskDesc').innerText = data.description;
                 
-                // Hydrate Draft
-                const draft = localStorage.getItem(`draft_${data.task_id}_${data.intern_name}`);
-                if(draft) document.getElementById('internProgressText').value = draft;
-
+                const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
+                if(draft) { document.getElementById('internProgressText').value = draft; window.showToast("Local draft restored."); }
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this)"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-attendance', this)"><i class="fa-solid fa-clipboard-user"></i> Review Attendance</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
                 `;
             }
 
@@ -605,31 +604,32 @@
                 <li class="nav-item" onclick="window.loadAssets('Video', 'Video Archives', this)"><i class="fa-solid fa-video"></i> Videos</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
-                <li class="nav-item" onclick="window.loadAssets('Announcement', 'Server Announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
             `;
 
+            // Auto-fetch Context
             if(data) {
-                window.fetchTeamMatrix(role === 'intern' ? data.task_id : "ALL");
-                window.fetchContacts(role === 'intern' ? data.assigned_officer : null);
+                window.fetchTeamMatrix(role === 'intern' ? data.team_task_id : "ALL");
+                if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
+            }
+
+            // Memory: Restore last panel
+            const lastPanel = localStorage.getItem('tims_last_panel');
+            if(lastPanel) {
+                const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
+                if(el) el.click();
             }
         };
 
         // --- 7. WORKFLOW & ATTENDANCE ---
         window.markAttendance = async function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            try {
-                const url = `${SUPABASE_URL}/rest/v1/tims_attendance`;
-                await fetch(url, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ intern_name: session.name, task_id: session.data.task_id }) });
-                window.showToast("Attendance Logged Successfully.");
-            } catch(e) { window.showToast("Failed to log attendance.", true); }
-        }
+            window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance.");
+        };
 
         window.saveDraft = function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
             if(session && session.role === 'intern') {
                 const txt = document.getElementById('internProgressText').value;
-                localStorage.setItem(`draft_${session.data.task_id}_${session.name}`, txt);
+                localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, txt);
             }
         };
 
@@ -640,35 +640,113 @@
             
             window.showToast("Syncing Database...");
             try {
-                const url = `${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`;
-                await fetch(url, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ progress_text: txt, status: 'Submitted', productivity_score: 100 }) });
+                // Update Supabase Status
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ progress_text: txt, status: 'Submitted' }) });
                 
-                // Ping Cloudflare Worker Email
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.task_id, progress: txt }) });
+                // Update Attendance (+40%)
+                const dateString = new Date().toISOString().split('T')[0];
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=eq.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
+                
+                // Trigger Cloudflare Worker Email Dispatch
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt }) });
 
-                window.showToast("Operation Submitted. HR & Domain Officer Notified.");
-                localStorage.removeItem(`draft_${session.data.task_id}_${session.name}`);
+                window.showToast("Operation Submitted. HR Notified.");
+                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
+                
+                // Purge session on completion
+                setTimeout(() => { window.logout(); }, 3000);
             } catch(e) { window.showToast("Sync Failed.", true); }
+        };
+
+        window.fetchAttendance = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            try {
+                const dateString = new Date().toISOString().split('T')[0];
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: { 'apikey': SUPABASE_KEY } });
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    const att = data[0];
+                    document.getElementById('attPercent').innerText = att.total_percentage + "%";
+                    document.getElementById('attProgressBar').style.width = att.total_percentage + "%";
+                    
+                    document.getElementById('attSubmitBadge').className = att.task_40 ? 'status-badge status-green' : 'status-badge status-red';
+                    document.getElementById('attSubmitBadge').innerText = att.task_40 ? '40% Verified' : 'Task Not Submitted';
+                    
+                    document.getElementById('attHRBadge').className = att.hr_20 ? 'status-badge status-green' : 'status-badge status-red';
+                    document.getElementById('attHRBadge').innerText = att.hr_20 ? '20% Verified' : 'HR Not Approved';
+
+                    document.getElementById('attOfficerBadge').className = att.officer_30 ? 'status-badge status-green' : 'status-badge status-red';
+                    document.getElementById('attOfficerBadge').innerText = att.officer_30 ? '30% Verified' : 'Officer Not Approved';
+                }
+            } catch(e) {}
+        };
+
+        // --- 8. OFFICER TASK DEPLOYMENT (Unique ID Generator) ---
+        window.generateInternId = function() {
+            const teamId = document.getElementById('offTaskId').value.trim().toUpperCase();
+            const intern = document.getElementById('offInternName').value.trim().toUpperCase().replace(/\s+/g, '');
+            if(teamId && intern) document.getElementById('offUniqueId').value = `${teamId}-${intern}`;
+            else document.getElementById('offUniqueId').value = "";
         };
 
         window.deployTask = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
             const payload = {
-                task_id: document.getElementById('offTaskId').value, intern_name: document.getElementById('offInternName').value,
-                title: document.getElementById('offTaskTitle').value, description: document.getElementById('offTaskDesc').value,
+                team_task_id: document.getElementById('offTaskId').value.trim(),
+                intern_task_id: document.getElementById('offUniqueId').value,
+                intern_name: document.getElementById('offInternName').value.trim(),
+                title: document.getElementById('offTaskTitle').value,
+                description: document.getElementById('offTaskDesc').value,
                 assigned_officer: session.name
             };
 
-            if(!payload.task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
+            if(!payload.team_task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
 
             try {
-                const url = `${SUPABASE_URL}/rest/v1/tims_tasks`;
-                await fetch(url, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                window.showToast("Task Deployed Successfully.");
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                window.showToast("Task Deployed to Network Successfully.");
+                document.getElementById('offInternName').value = '';
+                document.getElementById('offUniqueId').value = '';
             } catch(e) { window.showToast("Deployment Failed.", true); }
         };
 
-        // --- 9. DYNAMIC ASSET FETCHING ---
+        // --- 9. ASSET UPLOAD & COMPRESSOR (HTML5 Canvas Mock) ---
+        window.handleFileSelect = function(event) {
+            const file = event.target.files[0];
+            if(file) {
+                document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin";
+                document.getElementById('uploadText').innerText = "Compressing Asset...";
+                
+                // Simulate Client-Side File Compression (Reduces storage footprint)
+                setTimeout(() => {
+                    selectedFile = file;
+                    document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check";
+                    document.getElementById('uploadText').innerText = `${file.name} (Compressed)`;
+                }, 1500);
+            }
+        };
+
+        window.broadcastAsset = async function() {
+            if(!selectedFile) { window.showToast("Please select a file to compress and broadcast.", true); return; }
+            
+            const title = document.getElementById('assetTitle').value;
+            const type = document.getElementById('assetType').value;
+            if(!title) { window.showToast("Asset Title Required.", true); return; }
+
+            // Simulate Supabase Storage URL Return
+            const mockUrl = `https://tournyx.in/assets/${type}/${encodeURIComponent(title.toLowerCase())}.mp4`;
+            
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ asset_type: type, title: title, file_url: mockUrl }) });
+                window.showToast("Asset Compressed & Distributed to Network.");
+                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up";
+                document.getElementById('uploadText').innerText = "Click to Upload File";
+                selectedFile = null;
+            } catch(e) { window.showToast("Broadcast Failed.", true); }
+        };
+
+        // --- 10. DYNAMIC DATA FETCHING & ADVANCED VIDEO PLAYER ---
         window.loadAssets = async function(type, title, navElement) {
             document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`;
             window.switchPanel('panel-dynamic-assets', navElement);
@@ -678,50 +756,111 @@
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*`, { headers: { 'apikey': SUPABASE_KEY } });
                 const data = await res.json();
+                
                 if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.title}</h4><p>${d.description || ''}</p><a href="${d.link_url}" target="_blank" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-link"></i> Access Asset</a></div>`).join('');
+                    if(type === 'Video') {
+                        // Advanced PiP Video Player
+                        cont.innerHTML = data.map(d => `
+                            <div class="video-container" style="margin-bottom:15px; border-radius:12px; overflow:hidden; border:1px solid var(--glass-border);">
+                                <video controls preload="metadata" disablePictureInPicture="false" controlsList="nodownload" style="width:100%; display:block;">
+                                    <source src="${d.file_url}" type="video/mp4">
+                                </video>
+                                <div style="padding:10px; background:rgba(0,0,0,0.5);"><h4>${d.title}</h4></div>
+                            </div>
+                        `).join('');
+                    } else {
+                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.title}</h4><a href="${d.file_url}" target="_blank" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-link"></i> Access Asset</a></div>`).join('');
+                    }
                 } else { cont.innerHTML = `<div class="empty-state">No ${type} assets assigned to your sector yet.</div>`; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error. Cannot reach asset directory.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
         };
 
-        window.fetchContacts = async function(assignedOfficerName) {
-            const execCont = document.getElementById('contactsExecContainer');
-            const domainCont = document.getElementById('contactsDomainContainer');
-            execCont.innerHTML = '<p>Loading...</p>';
-            
+        // --- 11. OFFICER VERIFICATION ---
+        window.fetchApprovals = async function() {
+            const cont = document.getElementById('approvalMatrixContainer');
+            cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
             try {
-                const url = `${SUPABASE_URL}/rest/v1/tims_users?select=*`;
+                const session = JSON.parse(localStorage.getItem('tims_session'));
+                const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
                 const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY } });
                 const data = await res.json();
                 
-                if(data) {
-                    // Filter Execs (CEO, CTO, HR)
-                    const execs = data.filter(d => ['ceo', 'cto', 'hr'].includes(d.role));
-                    execCont.innerHTML = execs.map(d => `<div class="data-card"><h4>${d.name}</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">${d.role}</p><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card">
+                            <h4>${d.intern_name} <span class="task-status">${d.intern_task_id}</span></h4>
+                            <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);">
+                                <strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br>
+                                <p style="color:white; font-size:0.85rem;">${d.progress_text}</p>
+                            </div>
+                            <div style="display:flex; gap:10px; margin-top:15px;">
+                                <button class="btn btn-outline" style="padding:10px; font-size:0.75rem; color:var(--accent-purple); border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button>
+                                <button class="btn btn-success" style="padding:10px; font-size:0.75rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Grant Clearance</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
+        };
+
+        window.approveIntern = async function(internName) {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const dateString = new Date().toISOString().split('T')[0];
+            try {
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: { 'apikey': SUPABASE_KEY } });
+                const attData = await attRes.json();
+                
+                if(attData.length > 0) {
+                    const att = attData[0];
+                    let payload = {};
+                    if(session.role === 'hr' && !att.hr_20) payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
+                    else if (session.role === 'officer' && !att.officer_30) payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
                     
-                    // Filter Assigned Officer (Interns Only)
-                    if(assignedOfficerName) {
-                        const officer = data.find(d => d.name === assignedOfficerName);
-                        if(officer) {
-                            domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
-                        } else {
-                            domainCont.innerHTML = '<p>Assigned officer not found in directory.</p>';
-                        }
-                    }
+                    if(Object.keys(payload).length > 0) {
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?id=eq.${att.id}`, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        window.showToast("Clearance Granted Successfully.");
+                        window.fetchApprovals();
+                    } else { window.showToast("Already cleared by you.", true); }
                 }
-            } catch(e) { execCont.innerHTML = 'Directory offline.'; }
+            } catch(e) {}
         };
 
-        window.triggerAI = function() {
-            window.showToast("Query routed to Cloudflare Edge AI.");
+        // --- 12. SHARED FETCHERS (Team & Domain Officer) ---
+        window.fetchTeamMatrix = async function(teamTaskId) {
+            const cont = document.getElementById('teamMatrixContainer');
+            cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
+            try {
+                const url = teamTaskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,intern_task_id` : `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id`;
+                const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY } });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span style="font-size:0.7rem; color:var(--accent-purple);">${d.intern_task_id}</span></div>`).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
+            } catch(e) {}
         };
 
-        // --- 9. DASHBOARD NAVIGATION ---
+        window.fetchDomainOfficer = async function(assignedOfficerName) {
+            const domainCont = document.getElementById('contactsDomainContainer');
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(assignedOfficerName)}&select=*`, { headers: { 'apikey': SUPABASE_KEY } });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const officer = data[0];
+                    domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
+                }
+            } catch(e) {}
+        };
+
+        // --- 13. UI CORE ROUTING ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId);
             if(!activePanel) return; 
+            
+            // Save state
+            localStorage.setItem('tims_last_panel', panelId);
+
             activePanel.classList.add('active');
             setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
@@ -733,6 +872,7 @@
 
         window.logout = function() {
             localStorage.removeItem('tims_session');
+            localStorage.removeItem('tims_last_panel');
             const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
             setTimeout(() => {
                 dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
@@ -744,20 +884,25 @@
             }, 500);
         };
 
-        // --- 10. SAFE BOOT SEQUENCE ---
+        // --- 14. SAFE BOOT SEQUENCE & SESSION MEMORY ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Theme check
-            const savedTheme = localStorage.getItem('tims_theme');
-            if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
+            try {
+                if(window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } catch(e) { console.error(e); }
 
-            const session = localStorage.getItem('tims_session');
-            if(session) {
-                const s = JSON.parse(session);
-                document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
-                const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
-                document.getElementById('dashName').innerText = s.name; document.getElementById('dashRole').innerText = `${s.role} access level`;
-                document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                window.buildDashboardRole(s.role, s.data);
+            const sessionRaw = localStorage.getItem('tims_session');
+            if(sessionRaw) {
+                const s = JSON.parse(sessionRaw);
+                // 24 Hour Check
+                if(window.isSessionValid(s)) {
+                    document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
+                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
+                    document.getElementById('dashName').innerText = s.name; document.getElementById('dashRole').innerText = `${s.role} access level`;
+                    document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    window.buildDashboardRole(s.role, s.data);
+                } else {
+                    localStorage.removeItem('tims_session');
+                }
             }
         });
     </script>
