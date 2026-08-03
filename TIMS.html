@@ -8,8 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- 🚨 EXTERNAL SCRIPTS COMPLETELY REMOVED. ZERO CHANCE OF UI FREEZE. 🚨 -->
-
     <style>
         :root {
             --bg-main: #04010a; --text-main: #ffffff; --text-muted: #aaaaaa;
@@ -59,26 +57,23 @@
         .form-label { display: block; color: var(--accent-cyan); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; padding-left: 15px;}
         .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease; outline: none; }
         .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
-        textarea.form-control { border-radius: 16px; resize: vertical; min-height: 100px; padding: 15px 20px; }
+        select.form-control { appearance: none; cursor: pointer; }
+        textarea.form-control { border-radius: 16px; resize: vertical; min-height: 80px; padding: 15px; }
 
-        .btn { width: 100%; padding: 14px 30px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; color: white;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); margin-top: 5px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+        .btn { width: 100%; padding: 14px 20px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; color: white;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
         .btn-primary:active { transform: scale(0.96) !important; }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
         .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
         body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
 
-        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate;}
-        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
-
-        /* --- DASHBOARD VIEW --- */
+        /* DASHBOARD VIEW */
         #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; }
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: var(--bg-glass-solid); }
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: var(--bg-glass-solid); }
         .sidebar::-webkit-scrollbar { width: 0px; }
         .sidebar-brand { text-align: center; margin-bottom: 20px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
         
         .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
         .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none; margin-bottom: 4px;}
@@ -87,44 +82,46 @@
         .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
 
         .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
+        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
 
-        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 25px 35px; position: relative; }
-        .main-content::-webkit-scrollbar { width: 5px; }
+        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
+        .main-content::-webkit-scrollbar { width: 6px; }
         .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
         .mobile-overlay.open { display: block; opacity: 1; }
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass-solid); border: 1px solid var(--glass-border); color: var(--accent-cyan); }
 
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 20px; margin-bottom: 25px; background: var(--bg-glass-solid);}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-radius: 20px; margin-bottom: 25px; background: var(--bg-glass-solid);}
         .dash-greeting h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;}
         .dash-greeting p { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;}
         .stat-badge { text-align: right; }
         .stat-badge span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); text-shadow: 0 0 10px rgba(0,255,127,0.3);}
+        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); }
 
-        /* PANELS */
+        /* Panels & Cards */
         .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; }
         .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
         .panel-card { border-radius: 20px; padding: 25px; margin-bottom: 20px; background: var(--bg-glass-solid); }
         .panel-title { color: var(--text-main); font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
         .panel-title i { color: var(--accent-purple); }
 
-        /* Grids & Cards */
         .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .data-card { background: var(--bg-input); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan); position: relative;}
+        .data-card { background: var(--bg-input); border: 1px solid var(--glass-border); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent-cyan); position: relative;}
         .data-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: white;}
         .data-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
-        .tag-badge { font-size: 0.65rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
+        .tag-badge { font-size: 0.7rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
 
-        /* Video Player */
-        .video-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative;}
-        video { width: 100%; display: block; object-fit: cover; }
-        
+        /* Timer UI */
+        .timer-display { font-family: var(--font-logo); font-size: 3rem; text-align: center; color: var(--accent-green); text-shadow: 0 0 15px rgba(0,255,102,0.3); margin: 20px 0; letter-spacing: 2px;}
+
+        /* Chatbot UI */
+        .chat-container { display: flex; flex-direction: column; gap: 15px; height: 350px; overflow-y: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 15px;}
+        .chat-bubble { max-width: 85%; padding: 12px 18px; border-radius: 16px; font-size: 0.85rem; line-height: 1.5; }
+        .chat-user { align-self: flex-end; background: var(--accent-purple); color: white; border-bottom-right-radius: 2px; }
+        .chat-ai { align-self: flex-start; background: rgba(0,242,255,0.1); border: 1px solid rgba(0,242,255,0.2); color: var(--text-main); border-bottom-left-radius: 2px; }
+
         .upload-zone { border: 2px dashed var(--accent-cyan); padding: 30px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
-        .upload-zone i { font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px; }
-
         .empty-state { text-align: center; color: var(--text-muted); padding: 30px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; font-style: italic; font-size: 0.9rem;}
 
         /* Dropdown */
@@ -134,27 +131,18 @@
         .dropdown-content div:hover { background-color: rgba(0,242,255,0.2); color: var(--accent-cyan); }
         .show { display: block; }
 
-        /* Attendance Matrix */
-        .progress-container { width: 100%; background: rgba(0,0,0,0.4); border-radius: 50px; height: 16px; margin: 15px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .att-metrics { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;}
-        .status-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
-        .status-red { background: rgba(255,51,51,0.1); color: var(--accent-red); }
-        .status-green { background: rgba(0,255,102,0.1); color: var(--accent-green); }
-
         #toast { position: fixed; top: 20px; right: 20px; background: var(--bg-glass-solid); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: var(--text-main); padding: 12px 20px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s ease; z-index: 999999; box-shadow: 0 8px 30px rgba(0,0,0,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
 
-        /* --- EXTREME MOBILE COMPRESSION --- */
         @media (max-width: 850px) {
             .mobile-menu-btn { display: flex; }
             .sidebar { position: fixed; left: 0; transform: translateX(-100%); border-radius: 0; }
             .sidebar.open { transform: translateX(0); }
-            .main-content { padding: 75px 12px 15px 12px; }
+            .main-content { padding: 70px 10px 15px 10px; }
             .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 10px; padding: 15px; border-radius: 16px;}
             .stat-badge { text-align: left; margin-top: 5px;}
-            .panel-card { padding: 18px 15px; border-radius: 16px; margin-bottom: 15px;}
-            .form-control { padding: 12px 18px; font-size: 0.85rem;}
+            .panel-card { padding: 15px; border-radius: 16px; margin-bottom: 15px;}
+            .form-control { padding: 10px 15px; font-size: 0.85rem;}
         }
 
         .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
@@ -235,25 +223,35 @@
                 </div>
             </div>
 
-            <!-- [INTERN] Operation Hub -->
+            <!-- [INTERN] Operation Hub (With Timer) -->
             <div id="panel-intern-task" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
-                    <div style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
-                        <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
-                        <div class="tag-badge" id="intTaskID">DEV-000</div>
-                        <p style="color:var(--text-muted); font-size: 0.85rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
+                
+                <!-- State 1: Details -->
+                <div class="panel-card glass-panel" id="taskDetailState">
+                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Operation Directive</h3>
+                    <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                    <div class="tag-badge" id="intTaskID">DEV-000</div>
+                    <div class="tag-badge" id="intTaskRole" style="background:rgba(189,0,255,0.1); color:var(--accent-purple);">Role</div>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-top: 15px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
+                    
+                    <div id="internReferenceLink" style="margin-top:15px; display:none;">
+                        <a href="#" id="internRefAnchor" target="_blank" class="btn btn-outline" style="padding:8px 15px; font-size:0.75rem; width:fit-content; display:inline-flex; border-radius: 8px;"><i class="fa-solid fa-paperclip"></i> View Reference Asset</a>
                     </div>
+                    
+                    <button class="btn btn-primary" style="margin-top: 25px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation Timer</button>
+                </div>
 
+                <!-- State 2: Timer & Progress -->
+                <div class="panel-card glass-panel" id="taskTimerState" style="display: none; border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.1);">
+                    <h3 class="panel-title" style="justify-content: center; border:none;"><i class="fa-solid fa-stopwatch fa-spin"></i> Active Operation</h3>
+                    <div class="timer-display" id="activeTimer">00:00:00</div>
+                    
                     <div class="form-group">
                         <label class="form-label">Operation Progress Log</label>
-                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. This safely auto-saves locally." oninput="window.saveDraft()"></textarea>
+                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow here. System auto-saves locally." oninput="window.saveDraft()"></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button class="btn btn-outline" style="flex: 1; min-width:140px;" onclick="window.showToast('Draft is continuously auto-saved.', false)"><i class="fa-solid fa-save"></i> Save Draft</button>
-                        <button class="btn btn-success" style="flex: 1; min-width:140px;" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Final Submit</button>
-                    </div>
+                    <button class="btn btn-success" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Stop Timer & Submit to HR</button>
                 </div>
             </div>
 
@@ -279,7 +277,7 @@
 
             <!-- [OFFICER] Advanced Deploy Hub -->
             <div id="panel-officer-tasks" class="content-panel">
-                <!-- Step 1: Active Projects List -->
+                <!-- List View -->
                 <div class="panel-card glass-panel" id="offProjectListView">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
@@ -295,7 +293,7 @@
                     <div class="data-grid" id="activeTeamProjectsContainer"></div>
                 </div>
 
-                <!-- Step 2: Create Team Project -->
+                <!-- Create View -->
                 <div class="panel-card glass-panel" id="offProjectCreateView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 class="panel-title" style="margin: 0;"><i class="fa-solid fa-rocket"></i> Initialize New Team Task</h3>
@@ -306,10 +304,10 @@
                     <button class="btn btn-success" onclick="window.createTeamProject()"><i class="fa-solid fa-check-double"></i> Initialize Matrix</button>
                 </div>
 
-                <!-- Step 3: Add Interns to Team Task -->
+                <!-- Assign View -->
                 <div class="panel-card glass-panel" id="offAddInternView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                        <h3 class="panel-title" style="margin: 0; border: none; padding: 0;" id="detailProjectTitle"><i class="fa-solid fa-layer-group"></i> Project Details</h3>
+                        <h3 class="panel-title" style="margin: 0; border: none; padding: 0;" id="detailProjectTitle">Project</h3>
                         <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.7rem;" onclick="window.backToProjectList()"><i class="fa-solid fa-arrow-left"></i> Back</button>
                     </div>
                     
@@ -318,19 +316,37 @@
                     <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; font-weight: 800;"><i class="fa-solid fa-user-plus"></i> Add Team Member</h4>
                     <div class="data-grid">
                         <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="addInternName" class="form-control" placeholder="Assignee Name" oninput="window.generateUniqueTaskID()"></div>
-                        <div class="form-group"><label class="form-label">Unique Intern Task ID</label><input type="text" id="addUniqueId" class="form-control" placeholder="Auto-Generates" disabled style="opacity: 0.7;"></div>
+                        <div class="form-group"><label class="form-label">Unique Task ID</label><input type="text" id="addUniqueId" class="form-control" disabled style="opacity: 0.7;"></div>
                     </div>
-                    <div class="form-group"><label class="form-label">Step-by-Step Execution Directives</label><textarea id="addInternSteps" class="form-control" placeholder="1. Phase one... 2. Phase two..."></textarea></div>
                     
-                    <button class="btn btn-primary" onclick="window.assignInternTask()"><i class="fa-solid fa-satellite-dish"></i> Assign Intern to Team Task</button>
+                    <div class="form-group">
+                        <label class="form-label">Intern Role</label>
+                        <select id="addInternRole" class="form-control" style="appearance: auto; padding-right: 15px;">
+                            <option value="Team Leader">Team Leader</option>
+                            <option value="Core Developer">Core Developer</option>
+                            <option value="UI/UX Designer">UI/UX Designer</option>
+                            <option value="Supporter" selected>Operational Supporter</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group"><label class="form-label">Step-by-Step Directives</label><textarea id="addInternSteps" class="form-control" placeholder="1. Phase one... 2. Phase two..."></textarea></div>
+                    
+                    <div class="upload-zone" onclick="document.getElementById('taskFileUploader').click()">
+                        <i class="fa-solid fa-file-arrow-up" id="taskUploadIcon"></i>
+                        <h4 id="taskUploadText">Attach Reference Asset</h4>
+                        <p style="font-size: 0.7rem; color: #888;">PDF/IMG automatically encoded to Base64 Database format.</p>
+                        <input type="file" id="taskFileUploader" style="display:none;" onchange="window.handleTaskFile(event)">
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" onclick="window.assignInternTask()"><i class="fa-solid fa-satellite-dish"></i> Assign Intern & Update Matrix</button>
                 </div>
             </div>
 
-            <!-- [OFFICER/HR] Workflow Approvals -->
+            <!-- [OFFICER/HR] Approvals -->
             <div id="panel-officer-approvals" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-clipboard-check"></i> Pending Workflows</h3>
-                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Verify intern text progress before granting attendance clearance.</p>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Verify intern text progress and timer before granting attendance clearance.</p>
                     <div id="approvalMatrixContainer"></div>
                 </div>
             </div>
@@ -339,25 +355,26 @@
             <div id="panel-officer-assets" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload assets. Images auto-compress locally to preserve bandwidth.</p>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload structural assets to DB directly.</p>
                     
                     <div class="data-grid">
                         <div class="form-group">
                             <label class="form-label">Asset Type</label>
-                            <select id="assetType" class="form-control">
+                            <select id="assetType" class="form-control" style="appearance:auto;">
                                 <option value="SOP">SOP Document</option>
                                 <option value="TED">TED Resource</option>
                                 <option value="Video">Video Archive</option>
+                                <option value="Announcement">Announcement</option>
                             </select>
                         </div>
-                        <div class="form-group"><label class="form-label">Asset Title</label><input type="text" id="assetTitle" class="form-control" placeholder="e.g. UI Guidelines"></div>
+                        <div class="form-group"><label class="form-label">Asset Title</label><input type="text" id="assetTitle" class="form-control" placeholder="e.g. Architecture Guide"></div>
                     </div>
                     
                     <div class="upload-zone" onclick="document.getElementById('fileUploader').click()">
                         <i class="fa-solid fa-file-arrow-up" id="uploadIcon"></i>
                         <h4 id="uploadText">Click to Select File</h4>
-                        <p style="font-size: 0.75rem; color: #888;">Auto-compress engine active.</p>
-                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleFileSelect(event)">
+                        <p style="font-size: 0.75rem; color: #888;">Natively encoded to Base64.</p>
+                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleGlobalFile(event)">
                     </div>
                     <br>
                     <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
@@ -391,11 +408,11 @@
 
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-building"></i> Headquarters Mail</h3>
-                    <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 15px;">
+                    <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 20px;">
                         <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> contact@tournyx.in</p>
                     </div>
                     
-                    <h3 class="panel-title" style="margin-top:20px;"><i class="fa-solid fa-sitemap"></i> Executive Board</h3>
+                    <h3 class="panel-title"><i class="fa-solid fa-sitemap"></i> Executive Board</h3>
                     <div class="data-grid">
                         <div class="data-card">
                             <h4>Shiva Kumar</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Chief Technology Officer</p>
@@ -413,17 +430,24 @@
                 </div>
             </div>
 
-            <!-- SHARED: AI Hub -->
+            <!-- SHARED: AI Hub (CHATGPT STYLE) -->
             <div id="panel-ai" class="content-panel">
                 <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4);">
-                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 15px; font-size: 0.8rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
-                    <div class="form-group"><input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);"></div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple);" onclick="window.triggerAI()"><i class="fa-solid fa-brain"></i> Execute Edge Query</button>
+                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Agent AI</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 15px; font-size: 0.8rem;">Agent automatically reads your active task context to assist you accurately.</p>
+                    
+                    <div class="chat-container" id="aiChatBox">
+                        <div class="chat-bubble chat-ai">System Online. Connecting to Cloudflare Neural Net... Ready.</div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="aiInput" class="form-control" placeholder="Ask agent anything..." onkeypress="if(event.key === 'Enter') window.triggerAI()">
+                        <button class="btn btn-primary" style="width: auto; padding: 0 20px; border-radius: 50%;" onclick="window.triggerAI()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </div>
 
-            <!-- SHARED: Settings Theme Switcher -->
+            <!-- SHARED: Settings -->
             <div id="panel-settings" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Preferences</h3>
@@ -441,24 +465,29 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SECURE JAVASCRIPT ENGINE (NATIVE REST API) -->
+    <!-- SECURE JAVASCRIPT ENGINE (100% NATIVE REST) -->
     <!-- ========================================== -->
     <script>
         // --- 1. CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const WORKER_URL = 'https://tims-engine-worker.annaduraithilakjeevesh.workers.dev/'; // Your cloudflare tunnel
+        const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
+        const WORKER_URL = 'YOUR_WORKER_URL_HERE'; // e.g. https://tims-engine-worker.yourname.workers.dev
 
         const apiHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
         
         window.currentTeamTaskId = null;
         window.taskFileBase64 = null;
+        window.taskFileType = null;
+        window.globalFileBase64 = null;
+        window.globalFileType = null;
+        
+        let timerInterval = null;
+        let timerSeconds = 0;
 
         const fetchWithTimeout = (promise, ms) => {
             return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout.")), ms)) ]);
         };
 
-        // --- DROPDOWN FIX ---
         window.onclick = function(event) {
             if (!event.target.matches('.btn-primary') && !event.target.closest('.dropdown')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -468,7 +497,6 @@
             }
         };
 
-        // --- 2. THEME ENGINE ---
         window.toggleTheme = function() {
             if(document.getElementById('themeToggle').checked) {
                 document.body.classList.add('light-theme'); localStorage.setItem('tims_theme', 'light');
@@ -477,7 +505,6 @@
             }
         };
 
-        // --- 3. TOAST ENGINE ---
         window.showToast = function(msg, isError = false) {
             try {
                 const t = document.getElementById('toast'); const icon = t.querySelector('i');
@@ -490,7 +517,6 @@
             } catch(e) {}
         };
 
-        // --- 4. UI TOGGLING ---
         window.toggleAuth = function(type) {
             if(navigator.vibrate) navigator.vibrate(15);
             document.getElementById('tab-intern').classList.remove('active'); document.getElementById('tab-officer').classList.remove('active');
@@ -508,7 +534,7 @@
             return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
         };
 
-        // --- 5. NATIVE REST API LOGIN ---
+        // --- NATIVE REST LOGIN ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
@@ -563,7 +589,7 @@
             } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
 
-        // --- 6. DYNAMIC ROLE ROUTING ---
+        // --- DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
             menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
@@ -578,17 +604,28 @@
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
                 `;
                 document.getElementById('intTaskTitle').innerText = data.title || "Operation Node";
-                document.getElementById('intTaskID').innerText = data.intern_task_id; 
+                document.getElementById('intTaskID').innerText = data.intern_task_id;
+                document.getElementById('intTaskRole').innerText = data.intern_role || "Supporter";
                 document.getElementById('intTaskDesc').innerText = data.step_by_step_process;
                 
+                if(data.reference_file_url) {
+                    document.getElementById('internReferenceLink').style.display = 'block';
+                    document.getElementById('internRefAnchor').href = data.reference_file_url;
+                }
+
                 const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
                 if(draft) { document.getElementById('internProgressText').value = draft; }
+                
+                // Set AI Context
+                window.taskContextStr = `Task: ${data.title}. Directives: ${data.step_by_step_process}`;
+
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
                 `;
+                window.taskContextStr = "You are assisting a TIMS Commander.";
             }
 
             menu.innerHTML += `
@@ -596,7 +633,8 @@
                 <li class="nav-item" onclick="window.loadAssets('SOP', 'Distributed SOPs', this)"><i class="fa-solid fa-file-contract"></i> SOPs</li>
                 <li class="nav-item" onclick="window.loadAssets('TED', 'TED Library', this)"><i class="fa-solid fa-book"></i> TED</li>
                 <li class="nav-item" onclick="window.loadAssets('Video', 'Video Archives', this)"><i class="fa-solid fa-video"></i> Videos</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+                <li class="nav-item" onclick="window.loadAssets('Announcement', 'Announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx Agent</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
             `;
@@ -613,24 +651,47 @@
             }
         };
 
-        // --- 7. WORKFLOW & ATTENDANCE ---
+        // --- TASK TIMER ENGINE ---
+        window.startTaskTimer = function() {
+            document.getElementById('taskDetailState').style.display = 'none';
+            document.getElementById('taskTimerState').style.display = 'block';
+            
+            // Start Stopwatch
+            const timerEl = document.getElementById('activeTimer');
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                let hrs = Math.floor(timerSeconds / 3600);
+                let mins = Math.floor((timerSeconds % 3600) / 60);
+                let secs = timerSeconds % 60;
+                timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        };
+
+        // --- ATTENDANCE & SUBMIT ---
         window.markAttendance = async function() { window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance."); };
         window.saveDraft = function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
             if(session && session.role === 'intern') localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('internProgressText').value);
         };
+        
         window.submitTaskFinal = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
             const txt = document.getElementById('internProgressText').value;
+            const timeLog = document.getElementById('activeTimer').innerText;
             if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
             
+            clearInterval(timerInterval);
             window.showToast("Syncing Database...");
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ progress_text: txt, status: 'Submitted' }) });
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ progress_text: txt, status: 'Submitted', time_spent: timeLog }) });
                 const dateString = new Date().toISOString().split('T')[0];
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt }) });
-                window.showToast("Operation Submitted. HR Notified."); localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`); setTimeout(() => { window.logout(); }, 3000);
+                
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt, timeSpent: timeLog }) });
+
+                window.showToast("Operation Submitted (+40%). HR Notified.");
+                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
+                setTimeout(() => { window.logout(); }, 3000);
             } catch(e) { window.showToast("Sync Failed.", true); }
         };
 
@@ -651,7 +712,7 @@
             } catch(e) {}
         };
 
-        // --- 8. ADVANCED OFFICER TASK DEPLOYER ---
+        // --- ADVANCED OFFICER TASK DEPLOYER ---
         window.openCreateProjectView = function() {
             document.getElementById('deployDropdown').classList.remove('show');
             document.getElementById('offProjectListView').style.display = 'none';
@@ -672,22 +733,14 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
             
             const session = JSON.parse(localStorage.getItem('tims_session'));
-            const payload = {
-                team_task_id: document.getElementById('newTeamTaskId').value,
-                project_name: document.getElementById('newProjectName').value,
-                created_by: session.name
-            };
-
+            const payload = { team_task_id: document.getElementById('newTeamTaskId').value, project_name: document.getElementById('newProjectName').value, created_by: session.name };
             if(!payload.project_name) { window.showToast("Project Name is required.", true); btn.innerHTML = ogText; btn.disabled = false; return; }
 
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
                 if(!res.ok) throw new Error("Database error.");
-                window.showToast("Team Task Created Successfully.");
-                document.getElementById('newProjectName').value = '';
-                window.backToProjectList();
-            } catch(e) { window.showToast("Failed to create project.", true); 
-            } finally { btn.innerHTML = ogText; btn.disabled = false; }
+                window.showToast("Team Task Created Successfully."); document.getElementById('newProjectName').value = ''; window.backToProjectList();
+            } catch(e) { window.showToast("Failed to create project.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
         window.fetchDeployedTasks = async function() {
@@ -696,15 +749,8 @@
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`, { headers: apiHeaders });
                 const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `
-                        <div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
-                            <h4 style="color:var(--accent-cyan); font-size:1.1rem;">${d.team_task_id}</h4>
-                            <p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:10px;">${d.project_name}</p>
-                            <span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">Manage Squad <i class="fa-solid fa-arrow-right"></i></span>
-                        </div>
-                    `).join('');
+                if(data.length > 0) {
+                    cont.innerHTML = data.map(d => `<div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')"><h4 style="color:var(--accent-cyan); font-size:1.1rem;">${d.team_task_id}</h4><p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:10px;">${d.project_name}</p><span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">Manage Squad <i class="fa-solid fa-arrow-right"></i></span></div>`).join('');
                 } else { cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; }
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
         };
@@ -712,20 +758,14 @@
         window.filterTeamProjects = function(val) {
             const cards = document.getElementById('activeTeamProjectsContainer').children;
             for(let i=0; i<cards.length; i++) {
-                if(cards[i].classList.contains('data-card')) {
-                    cards[i].style.display = cards[i].innerText.toLowerCase().includes(val.toLowerCase()) ? 'block' : 'none';
-                }
+                if(cards[i].classList.contains('data-card')) cards[i].style.display = cards[i].innerText.toLowerCase().includes(val.toLowerCase()) ? 'block' : 'none';
             }
         };
 
-        // --- AGENT AUTO-SUGGEST FIX ---
         window.openTeamTask = async function(taskId, projectName) {
-            document.getElementById('offProjectListView').style.display = 'none';
-            document.getElementById('offAddInternView').style.display = 'block';
+            document.getElementById('offProjectListView').style.display = 'none'; document.getElementById('offAddInternView').style.display = 'block';
             document.getElementById('detailProjectTitle').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${projectName} <span style="font-size:0.8rem; color:var(--text-muted);">(${taskId})</span>`;
-            
-            window.currentTeamTaskId = taskId;
-            window.fetchProjectInterns(taskId);
+            window.currentTeamTaskId = taskId; window.fetchProjectInterns(taskId);
         };
 
         window.generateUniqueTaskID = function() {
@@ -734,35 +774,44 @@
         };
 
         window.fetchProjectInterns = async function(taskId) {
-            const cont = document.getElementById('projectInternsList');
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
+            const cont = document.getElementById('projectInternsList'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(taskId)}&select=*`, { headers: apiHeaders });
                 const data = await res.json();
-                
                 if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `
-                        <div class="data-card" style="border-left-color: var(--accent-purple);">
-                            <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4>
-                            <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p>
-                        </div>
-                    `).join('');
+                    cont.innerHTML = data.map(d => `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4><p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p><p style="font-size:0.7rem; color:white;">Role: ${d.intern_role}</p></div>`).join('');
                 } else { cont.innerHTML = '<div class="empty-state" style="padding: 20px; font-size:0.8rem;">No interns assigned to this specific team task yet. Add one below.</div>'; }
             } catch(e) { cont.innerHTML = ''; }
+        };
+
+        window.handleTaskFile = function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            document.getElementById('taskUploadIcon').className = "fa-solid fa-spinner fa-spin"; document.getElementById('taskUploadText').innerText = "Encoding Base64...";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window.taskFileBase64 = e.target.result;
+                window.taskFileType = file.type;
+                document.getElementById('taskUploadIcon').className = "fa-solid fa-file-circle-check"; document.getElementById('taskUploadText').innerText = "File Attached & Encoded";
+            };
+            reader.readAsDataURL(file);
         };
 
         window.assignInternTask = async function() {
             const btn = event.currentTarget; const ogText = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Assigning...'; btn.disabled = true;
-            
             const session = JSON.parse(localStorage.getItem('tims_session'));
+            
             const payload = {
                 team_task_id: window.currentTeamTaskId,
                 intern_task_id: document.getElementById('addUniqueId').value,
                 intern_name: document.getElementById('addInternName').value.trim(),
+                intern_role: document.getElementById('addInternRole').value,
                 assigned_officer: session.name,
                 title: document.getElementById('detailProjectTitle').innerText.replace('Project Details', '').trim(),
-                step_by_step_process: document.getElementById('addInternSteps').value
+                step_by_step_process: document.getElementById('addInternSteps').value,
+                reference_file_url: window.taskFileBase64 || ""
             };
 
             if(!payload.intern_task_id || !payload.step_by_step_process) { window.showToast("Missing intern name or directives.", true); btn.innerHTML = ogText; btn.disabled = false; return; }
@@ -770,59 +819,60 @@
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
                 if(!res.ok) throw new Error("Database rejected assignment.");
-
                 window.showToast("Intern Assigned Successfully.");
                 document.getElementById('addInternName').value = ''; document.getElementById('addUniqueId').value = ''; document.getElementById('addInternSteps').value = '';
+                document.getElementById('taskUploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('taskUploadText').innerText = "Attach Reference Asset"; window.taskFileBase64 = null;
                 window.fetchProjectInterns(window.currentTeamTaskId);
-            } catch(e) { window.showToast("Assignment Failed.", true); 
-            } finally { btn.innerHTML = ogText; btn.disabled = false; }
+            } catch(e) { window.showToast("Assignment Failed.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-        // --- 9. ASSET UPLOAD & COMPRESSOR (HTML5 Canvas Mock) ---
-        window.handleFileSelect = function(event) {
+        // --- ASSET UPLOAD NATIVE (BASE64) ---
+        window.handleGlobalFile = function(event) {
             const file = event.target.files[0];
-            if(file) {
-                document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin";
-                document.getElementById('uploadText').innerText = "Compressing Asset...";
-                setTimeout(() => {
-                    window.selectedFile = file;
-                    document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check";
-                    document.getElementById('uploadText').innerText = `${file.name} (Compressed)`;
-                }, 1500);
-            }
-        };
+            if(!file) return;
+            document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin"; document.getElementById('uploadText').innerText = "Encoding Base64...";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window.globalFileBase64 = e.target.result;
+                window.globalFileType = file.type;
+                document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check"; document.getElementById('uploadText').innerText = "File Attached & Encoded";
+            };
+            reader.readAsDataURL(file);
+        }
 
         window.broadcastAsset = async function() {
-            if(!window.selectedFile) { window.showToast("Please select a file to compress and broadcast.", true); return; }
+            if(!window.globalFileBase64) { window.showToast("Please attach a file first.", true); return; }
             const title = document.getElementById('assetTitle').value; const type = document.getElementById('assetType').value;
             if(!title) { window.showToast("Asset Title Required.", true); return; }
 
-            const mockUrl = `https://tournyx.in/assets/${type}/${encodeURIComponent(title.toLowerCase())}.mp4`;
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ asset_type: type, title: title, file_url: mockUrl }) });
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ asset_type: type, title: title, file_type: window.globalFileType, file_url: window.globalFileBase64 }) });
                 window.showToast("Asset Compressed & Distributed to Network.");
-                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('uploadText').innerText = "Click to Upload File";
-                window.selectedFile = null;
+                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('uploadText').innerText = "Click to Select File";
+                window.globalFileBase64 = null; window.globalFileType = null; document.getElementById('assetTitle').value = "";
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
-        // --- 10. DYNAMIC DATA FETCHING & ADVANCED VIDEO PLAYER ---
         window.loadAssets = async function(type, title, navElement) {
-            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`;
-            window.switchPanel('panel-dynamic-assets', navElement);
+            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`; window.switchPanel('panel-dynamic-assets', navElement);
             const cont = document.getElementById('assetContainer'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*`, { headers: apiHeaders });
                 const data = await res.json();
                 if(data && data.length > 0) {
                     if(type === 'Video') {
-                        cont.innerHTML = data.map(d => `<div class="video-container" style="margin-bottom:15px; border-radius:16px; overflow:hidden; border:1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5);"><video controls preload="metadata" disablePictureInPicture="false" controlsList="nodownload" style="width:100%; display:block; object-fit: cover;"><source src="${d.file_url}" type="video/mp4"></video><div style="padding:15px; background:rgba(0,0,0,0.5);"><h4>${d.title}</h4></div></div>`).join('');
-                    } else { cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.title}</h4><a href="${d.file_url}" target="_blank" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-link"></i> Access Asset</a></div>`).join('') + `</div>`; }
+                        cont.innerHTML = data.map(d => `<div class="video-container" style="margin-bottom:15px; border-radius:16px; overflow:hidden; border:1px solid var(--glass-border); background:#000;"><video controls preload="metadata" disablePictureInPicture="false" controlsList="nodownload"><source src="${d.file_url}" type="${d.file_type}"></video><div style="padding:15px; background:rgba(0,0,0,0.5);"><h4>${d.title}</h4></div></div>`).join('');
+                    } else if (type === 'Announcement') {
+                        cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${d.title}</h4><p>${d.description || 'General Announcement'}</p></div>`).join('') + `</div>`;
+                    } else { 
+                        cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.title}</h4><a href="${d.file_url}" download="${d.title}" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-download"></i> Download Asset</a></div>`).join('') + `</div>`; 
+                    }
                 } else { cont.innerHTML = `<div class="empty-state">No ${type} assets assigned to your sector yet.</div>`; }
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
         };
 
-        // --- 11. OFFICER VERIFICATION ---
+        // --- VERIFICATIONS ---
         window.fetchApprovals = async function() {
             const cont = document.getElementById('approvalMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
             try {
@@ -830,7 +880,7 @@
                 const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
                 const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
                 if(data && data.length > 0) {
-                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4><div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);"><strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br><p style="color:white; font-size:0.85rem;">${d.progress_text}</p></div><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn btn-outline" style="padding:10px; font-size:0.75rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button><button class="btn btn-success" style="padding:10px; font-size:0.75rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Grant Clearance</button></div></div>`).join('') + `</div>`;
+                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4><p style="font-size:0.7rem; color:var(--accent-purple);">Time Spent: ${d.time_spent || 'Unknown'}</p><div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);"><strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br><p style="color:white; font-size:0.85rem;">${d.progress_text}</p></div><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn btn-outline" style="padding:10px; font-size:0.7rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button><button class="btn btn-success" style="padding:10px; font-size:0.7rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Grant Clearance</button></div></div>`).join('') + `</div>`;
                 } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
             } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
         };
@@ -852,14 +902,14 @@
             } catch(e) {}
         };
 
-        // --- 12. SHARED FETCHERS (Team & Domain Officer) ---
+        // --- SHARED FETCHERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
             try {
-                const url = teamTaskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,intern_task_id` : `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id`;
+                const url = teamTaskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,intern_task_id,intern_role` : `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id,intern_role`;
                 const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
                 if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="tag-badge" style="background:rgba(189,0,255,0.1); color:var(--accent-purple); border:1px solid rgba(189,0,255,0.3);">${d.intern_task_id}</span></div>`).join('');
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge" style="float:right; background:transparent; border:1px solid var(--glass-border);">${d.intern_role || 'Supporter'}</span></h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="tag-badge" style="background:rgba(189,0,255,0.1); color:var(--accent-purple); border:1px solid rgba(189,0,255,0.3);">${d.intern_task_id}</span></div>`).join('');
                 } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
             } catch(e) {}
         };
@@ -876,14 +926,31 @@
             } catch(e) {}
         };
 
-        // --- 13. UI CORE ROUTING ---
+        // --- AI CHAT AGENT ---
+        window.triggerAI = async function() {
+            const input = document.getElementById('aiInput');
+            const chatBox = document.getElementById('aiChatBox');
+            if(!input.value.trim()) return;
+
+            // Add User Bubble
+            chatBox.innerHTML += `<div class="chat-bubble chat-user">${input.value}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            const userPrompt = input.value; input.value = '';
+
+            try {
+                const res = await fetch(WORKER_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'tims_ai_chat', prompt: userPrompt, taskContext: window.taskContextStr || "General Operations" }) });
+                const data = await res.json();
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer || data.error}</div>`;
+            } catch(e) { chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI.</div>`; }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        // --- UI CORE ROUTING ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
-            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
+            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
-            
             localStorage.setItem('tims_last_panel', panelId);
-
             activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
         };
@@ -903,7 +970,7 @@
             }, 500);
         };
 
-        // --- 14. SAFE BOOT SEQUENCE ---
+        // --- SAFE BOOT SEQUENCE ---
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('tims_theme');
             if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
