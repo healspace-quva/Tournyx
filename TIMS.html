@@ -1,980 +1,932 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TIMS Engine - Unified Gateway</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TIMS Engine - Unified Gateway</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- NO EXTERNAL SUPABASE SDK SCRIPT NEEDED. 100% NATIVE API. ZERO FREEZING. -->
+    <!-- 🚨 EXTERNAL SCRIPTS COMPLETELY REMOVED. ZERO CHANCE OF UI FREEZE. 🚨 -->
 
-    <style>
-        /* --- DYNAMIC THEME ENGINE --- */
-        :root {
-            --bg-main: #04010a;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --bg-glass: rgba(15, 10, 25, 0.45);
-            --bg-glass-solid: rgba(20, 15, 30, 0.85);
-            --bg-input: rgba(0, 0, 0, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            --sidebar-width: 260px;
-            
-            --accent-cyan: #00f2ff;
-            --accent-purple: #bd00ff;
-            --accent-red: #ff3333;
-            --accent-green: #00ff66;
-            
-            --font-head: 'Inter', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --font-logo: 'Orbitron', sans-serif;
-        }
+    <style>
+        :root {
+            --bg-main: #04010a; --text-main: #ffffff; --text-muted: #aaaaaa;
+            --bg-glass: rgba(15, 10, 25, 0.45); --bg-glass-solid: rgba(20, 15, 30, 0.85); --bg-input: rgba(0, 0, 0, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.08); --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            --sidebar-width: 260px;
+            --accent-cyan: #00f2ff; --accent-purple: #bd00ff; --accent-red: #ff3333; --accent-green: #00ff66;
+            --font-head: 'Inter', sans-serif; --font-body: 'Inter', sans-serif; --font-logo: 'Orbitron', sans-serif;
+        }
 
-        body.light-theme {
-            --bg-main: #f0f4f8;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --bg-glass: rgba(255, 255, 255, 0.65);
-            --bg-glass-solid: rgba(255, 255, 255, 0.95);
-            --bg-input: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --accent-cyan: #0284c7; 
-        }
+        body.light-theme {
+            --bg-main: #f0f4f8; --text-main: #0f172a; --text-muted: #475569;
+            --bg-glass: rgba(255, 255, 255, 0.65); --bg-glass-solid: rgba(255, 255, 255, 0.95); --bg-input: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.1); --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); --accent-cyan: #0284c7; 
+        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
-        
-        body { 
-            color: var(--text-main); font-family: var(--font-body); overflow-x: hidden; min-height: 100dvh; 
-            background-color: var(--bg-main); position: relative; transition: background-color 0.4s ease, color 0.4s ease;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+        body { color: var(--text-main); font-family: var(--font-body); overflow-x: hidden; min-height: 100dvh; background-color: var(--bg-main); transition: background-color 0.4s ease, color 0.4s ease; }
 
-        /* Ambient Glow Orbs */
-        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; }
-        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); -webkit-filter: blur(100px); opacity: 0.35; animation: float 12s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
-        .orb-1 { width: 350px; height: 350px; background: var(--accent-purple); top: -5%; left: -5%; }
-        .orb-2 { width: 450px; height: 450px; background: var(--accent-cyan); bottom: -5%; right: -5%; animation-delay: -6s; }
-        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(40px) scale(1.05); } }
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; }
+        .glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); -webkit-filter: blur(100px); opacity: 0.35; animation: float 12s infinite alternate ease-in-out; pointer-events: none; transform: translateZ(0); }
+        .orb-1 { width: 400px; height: 400px; background: var(--accent-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 500px; height: 500px; background: var(--accent-cyan); bottom: -10%; right: -10%; animation-delay: -6s; }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(30px) scale(1.05); } }
 
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;}
+        .glass-panel { background: var(--bg-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); box-shadow: var(--glass-shadow); transform: translateZ(0); transition: background 0.4s ease; }
 
-        /* Premium Glass Panel Framework */
-        .glass-panel {
-            background: var(--bg-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-top: 1px solid rgba(255, 255, 255, 0.2); border-left: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: var(--glass-shadow); transform: translateZ(0); transition: background 0.4s ease;
-        }
+        /* --- LOGIN VIEW --- */
+        #view-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 100; transition: opacity 0.4s ease, visibility 0.4s; }
+        .login-card { width: 100%; max-width: 380px; border-radius: 24px; padding: 35px 25px; animation: slideFadeIn 0.5s ease; position: relative; background: var(--bg-glass-solid); }
+        @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* --- 1. LOGIN GATEWAY --- */
-        #view-login { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 100; transition: opacity 0.4s ease, visibility 0.4s; }
-        .login-card { width: 100%; max-width: 380px; border-radius: 30px; padding: 40px 30px; animation: slideFadeIn 0.5s ease; position: relative; background: var(--bg-glass-solid); }
-        @keyframes slideFadeIn { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed var(--glass-border); padding-bottom: 15px;}
+        .header-logo h1 { font-family: var(--font-logo); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
+        .header-logo p { color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .header-logo { text-align: center; margin-bottom: 25px; border-bottom: 1px dashed var(--glass-border); padding-bottom: 20px;}
-        .header-logo h1 { font-family: var(--font-logo); font-size: 1.8rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; margin-bottom: 5px;}
-        .header-logo p { color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem;}
+        .auth-toggle { display: flex; background: var(--bg-input); border-radius: 50px; margin-bottom: 20px; border: 1px solid var(--glass-border); padding: 5px; width: 100%; user-select: none; }
+        .auth-toggle div { flex: 1; text-align: center; padding: 10px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border-radius: 50px; transition: all 0.2s ease; text-transform: uppercase; font-weight: 700;}
+        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan);}
+        body.light-theme .auth-toggle div.active { background: var(--accent-cyan); color: white; }
 
-        .auth-toggle { display: flex; background: var(--bg-input); border-radius: 50px; margin-bottom: 25px; border: 1px solid var(--glass-border); padding: 5px; width: 100%; user-select: none; }
-        .auth-toggle div { flex: 1; text-align: center; padding: 12px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border-radius: 50px; transition: all 0.2s ease; text-transform: uppercase; font-weight: 700;}
-        .auth-toggle div.active { background: rgba(0,242,255,0.15); color: var(--accent-cyan);}
-        body.light-theme .auth-toggle div.active { background: var(--accent-cyan); color: white; }
+        .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .auth-form { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .auth-form.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .form-group { margin-bottom: 15px; width: 100%; position: relative;}
+        .form-label { display: block; color: var(--accent-cyan); font-size: 0.7rem; margin-bottom: 6px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; padding-left: 15px;}
+        .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease; outline: none; }
+        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
+        textarea.form-control { border-radius: 16px; resize: vertical; min-height: 100px; padding: 15px 20px; }
 
-        .form-group { margin-bottom: 20px; width: 100%; position: relative;}
-        .form-label { display: block; color: var(--accent-cyan); font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; padding-left: 15px;}
-        
-        .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease; outline: none; }
-        .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2);}
-        textarea.form-control { border-radius: 16px; resize: vertical; min-height: 100px; padding: 15px 20px; }
+        .btn { width: 100%; padding: 14px 30px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; color: white;}
+        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); margin-top: 5px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);}
+        .btn-primary:active { transform: scale(0.96) !important; }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
+        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
 
-        .btn { width: 100%; padding: 15px 30px; border-radius: 50px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; border: none; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; color: white;}
-        .btn-primary { background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
-        .btn-primary:active { transform: scale(0.96) !important; }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
-        .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
-        .btn-outline { background: transparent; border: 2px solid var(--accent-cyan); color: var(--accent-cyan); }
-        body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
+        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate;}
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
 
-        .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.4rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 5px; animation: pulsateSmall 2s infinite alternate; }
-        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
+        /* --- DASHBOARD VIEW --- */
+        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; }
+        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: var(--bg-glass-solid); }
+        .sidebar::-webkit-scrollbar { width: 0px; }
+        .sidebar-brand { text-align: center; margin-bottom: 20px; padding: 0 20px;}
+        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.4rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
+        .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none; margin-bottom: 4px;}
+        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: 800;}
+        body.light-theme .nav-item:hover, body.light-theme .nav-item.active { background: rgba(2, 132, 199, 0.1); }
+        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
 
-        /* --- 2. DASHBOARD VIEW --- */
-        #view-dashboard { display: none; visibility: hidden; width: 100vw; height: 100dvh; overflow: hidden; flex-direction: row; z-index: 20; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; }
+        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
+        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.75rem;}
 
-        .sidebar { width: var(--sidebar-width); height: 100dvh; display: flex; flex-direction: column; padding: 25px 0; overflow-y: auto; flex-shrink: 0; z-index: 200; transition: transform 0.4s ease; border-right: 1px solid var(--glass-border); border-radius: 0 24px 24px 0; background: var(--bg-glass-solid); }
-        .sidebar::-webkit-scrollbar { width: 0px; }
+        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 25px 35px; position: relative; }
+        .main-content::-webkit-scrollbar { width: 5px; }
+        .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
 
-        .sidebar-brand { text-align: center; margin-bottom: 20px; padding: 0 20px;}
-        .sidebar-brand h2 { font-family: var(--font-logo); font-size: 1.6rem; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;}
-        
-        .nav-menu { list-style: none; padding: 0; margin: 0; width: 100%;}
-        .nav-item { padding: 12px 25px; border-left: 4px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 15px; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; transition: all 0.2s ease; user-select: none; margin-bottom: 4px;}
-        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.1); color: var(--accent-cyan); border-left-color: var(--accent-cyan); font-weight: 800;}
-        body.light-theme .nav-item:hover, body.light-theme .nav-item.active { background: rgba(2, 132, 199, 0.1); }
-        .nav-item i { width: 20px; text-align: center; font-size: 1.1rem;}
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-overlay.open { display: block; opacity: 1; }
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
 
-        .sidebar-footer { margin-top: auto; padding: 20px 25px; }
-        .logout-btn { width: 100%; background: rgba(255,51,51,0.1); border: 1px solid rgba(255,51,51,0.3); color: var(--accent-red); padding: 12px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 0.8rem;}
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; border-radius: 20px; margin-bottom: 25px; background: var(--bg-glass-solid);}
+        .dash-greeting h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;}
+        .dash-greeting p { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;}
+        .stat-badge { text-align: right; }
+        .stat-badge span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
+        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); text-shadow: 0 0 10px rgba(0,255,127,0.3);}
 
-        .main-content { flex: 1; height: 100dvh; overflow-y: auto; overflow-x: hidden; padding: 30px 40px; position: relative; }
-        .main-content::-webkit-scrollbar { width: 6px; }
-        .main-content::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+        /* PANELS */
+        .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; }
+        .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
+        .panel-card { border-radius: 20px; padding: 25px; margin-bottom: 20px; background: var(--bg-glass-solid); }
+        .panel-title { color: var(--text-main); font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
+        .panel-title i { color: var(--accent-purple); }
 
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 150; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s ease;}
-        .mobile-overlay.open { display: block; opacity: 1; }
-        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 300; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; align-items: center; justify-content: center; padding: 0; background: var(--bg-glass-solid); border: 1px solid var(--glass-border); color: var(--accent-cyan); }
+        /* Grids & Cards */
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .data-card { background: var(--bg-input); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan); position: relative;}
+        .data-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: white;}
+        .data-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .tag-badge { font-size: 0.65rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
 
-        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-radius: 20px; margin-bottom: 25px; background: var(--bg-glass-solid);}
-        .dash-greeting h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px;}
-        .dash-greeting p { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
-        .stat-badge { text-align: right; }
-        .stat-badge span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.6rem; color: var(--accent-green); font-family: var(--font-logo); }
+        /* Video Player */
+        .video-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative;}
+        video { width: 100%; display: block; object-fit: cover; }
+        
+        .upload-zone { border: 2px dashed var(--accent-cyan); padding: 30px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
+        .upload-zone i { font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px; }
 
-        /* Data Panels */
-        .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; }
-        .content-panel.active { display: block; opacity: 1; transform: translateY(0); }
-        .panel-card { border-radius: 20px; padding: 25px; margin-bottom: 20px; background: var(--bg-glass-solid); }
-        .panel-title { color: var(--text-main); font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
-        .panel-title i { color: var(--accent-purple); }
+        .empty-state { text-align: center; color: var(--text-muted); padding: 30px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; font-style: italic; font-size: 0.9rem;}
 
-        /* Grids & Cards */
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .data-card { background: var(--bg-input); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent-cyan);}
-        .data-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px;}
-        .data-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
-        .tag-badge { font-size: 0.7rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
+        /* Dropdown */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: var(--bg-glass-solid); min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.8); border: 1px solid var(--accent-cyan); z-index: 10; border-radius: 12px; overflow: hidden; top: 110%; }
+        .dropdown-content div { color: white; padding: 12px 16px; display: block; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dropdown-content div:hover { background-color: rgba(0,242,255,0.2); color: var(--accent-cyan); }
+        .show { display: block; }
 
-        /* Upload Area */
-        .upload-zone { border: 2px dashed var(--accent-cyan); padding: 40px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
-        .upload-zone:hover { background: rgba(0,242,255,0.1); }
-        .upload-zone i { font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 15px; }
+        /* Attendance Matrix */
+        .progress-container { width: 100%; background: rgba(0,0,0,0.4); border-radius: 50px; height: 16px; margin: 15px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .att-metrics { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;}
+        .status-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
+        .status-red { background: rgba(255,51,51,0.1); color: var(--accent-red); }
+        .status-green { background: rgba(0,255,102,0.1); color: var(--accent-green); }
 
-        /* Advanced Video Player UI */
-        .video-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        video { width: 100%; display: block; object-fit: cover; }
+        #toast { position: fixed; top: 20px; right: 20px; background: var(--bg-glass-solid); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: var(--text-main); padding: 12px 20px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s ease; z-index: 999999; box-shadow: 0 8px 30px rgba(0,0,0,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;}
+        #toast.show { transform: translateX(0); }
 
-        /* Empty State */
-        .empty-state { text-align: center; color: var(--text-muted); padding: 40px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; font-style: italic; }
+        /* --- EXTREME MOBILE COMPRESSION --- */
+        @media (max-width: 850px) {
+            .mobile-menu-btn { display: flex; }
+            .sidebar { position: fixed; left: 0; transform: translateX(-100%); border-radius: 0; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { padding: 75px 12px 15px 12px; }
+            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 10px; padding: 15px; border-radius: 16px;}
+            .stat-badge { text-align: left; margin-top: 5px;}
+            .panel-card { padding: 18px 15px; border-radius: 16px; margin-bottom: 15px;}
+            .form-control { padding: 12px 18px; font-size: 0.85rem;}
+        }
 
-        /* Attendance Matrix */
-        .progress-container { width: 100%; background: rgba(0,0,0,0.4); border-radius: 50px; height: 20px; margin: 15px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .att-metrics { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; text-transform: uppercase; font-weight: 700; }
-        .status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
-        .status-red { background: rgba(255,51,51,0.1); color: var(--accent-red); }
-        .status-green { background: rgba(0,255,102,0.1); color: var(--accent-green); }
-
-        /* Toast */
-        #toast { position: fixed; top: 20px; right: 20px; background: var(--bg-glass-solid); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: var(--text-main); padding: 15px 25px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 999999; box-shadow: 0 8px 30px rgba(0,0,0,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;}
-        #toast.show { transform: translateX(0); }
-
-        /* --- EXTREME MOBILE COMPRESSION --- */
-        @media (max-width: 850px) {
-            .mobile-menu-btn { display: flex; }
-            .sidebar { position: fixed; left: 0; transform: translateX(-100%); border-radius: 0; }
-            .sidebar.open { transform: translateX(0); }
-            
-            /* Aggressively reduce padding for small screens to prevent overflow */
-            .main-content { padding: 75px 12px 15px 12px; }
-            .dash-top-bar { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px 15px; border-radius: 16px;}
-            .stat-badge { text-align: left; margin-top: 10px;}
-            .panel-card { padding: 20px 15px; border-radius: 16px; }
-            .form-control { padding: 12px 18px; font-size: 0.9rem;}
-        }
-
-        /* Toggle Switch for Settings */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-input); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border);}
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent-cyan); }
-        input:checked + .slider:before { transform: translateX(24px); }
-    </style>
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-input); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border);}
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-cyan); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
 </head>
 <body>
 
-    <div class="ambient-bg">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-    </div>
-    <canvas id="particles-canvas"></canvas>
-    
-    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
-
-    <!-- ========================================== -->
-    <!-- VIEW 1: LOGIN GATEWAY                      -->
-    <!-- ========================================== -->
-    <div id="view-login">
-        <div class="login-card glass-panel">
-            <div class="header-logo">
-                <h1>TIMS ENGINE</h1>
-                <p>Unified Operational Gateway</p>
-            </div>
-
-            <div class="auth-toggle">
-                <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
-                <div id="tab-officer" onclick="window.toggleAuth('officer')">Officer Login</div>
-            </div>
-
-            <div id="form-intern" class="auth-form active">
-                <div class="form-group">
-                    <label class="form-label">Intern Name</label>
-                    <input type="text" id="loginInternName" class="form-control" placeholder="Enter Registered Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Team Task ID</label>
-                    <input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')">
-                </div>
-                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Initiate Session
-                </button>
-            </div>
-
-            <div id="form-officer" class="auth-form">
-                <div class="form-group">
-                    <label class="form-label">Commander Name</label>
-                    <input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Secure PIN</label>
-                    <input type="password" id="loginPin" class="form-control" placeholder="Enter Secure PIN" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')">
-                </div>
-                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="window.initiateLogin('officer')">
-                    <i class="fa-solid fa-shield-halved"></i> Authenticate
-                </button>
-            </div>
-            
-            <div class="brand-footer">
-                POWERED BY <br><span class="neon-quva-small">QUVA</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- VIEW 2: MASTER DASHBOARD                   -->
-    <!-- ========================================== -->
-    <div id="view-dashboard">
-        
-        <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
-        <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
-        
-        <div class="sidebar glass-panel" id="sidebar">
-            <div class="sidebar-brand">
-                <h2>TIMS HUB</h2>
-            </div>
-            <ul class="nav-menu" id="dynamicNavMenu">
-                <!-- Javascript injects menus here based on role -->
-            </ul>
-            <div class="sidebar-footer">
-                <button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
-            </div>
-        </div>
-
-        <div class="main-content" id="mainContentScroll">
-            
-            <div class="dash-top-bar glass-panel">
-                <div class="dash-greeting">
-                    <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2>
-                    <p id="dashRole">Role Data</p>
-                </div>
-                <div class="stat-badge">
-                    <span>System Status</span>
-                    <strong style="color:var(--accent-green); text-shadow: 0 0 15px rgba(0,255,127,0.4);">ONLINE</strong>
-                </div>
-            </div>
-
-            <!-- ============================== -->
-            <!-- DYNAMIC PANELS                 -->
-            <!-- ============================== -->
-
-            <!-- [SHARED] Dashboard Home -->
-            <div id="panel-dashboard" class="content-panel active">
-                <div class="panel-card glass-panel" id="internHomeSection" style="display:none;">
-                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Operations Check-In</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Log your attendance daily before starting your assigned operational task.</p>
-                    <button class="btn btn-success" onclick="window.markAttendance()" style="max-width: 250px;"><i class="fa-solid fa-clock"></i> Mark Present Today</button>
-                </div>
-                <div class="panel-card glass-panel" id="officerHomeSection" style="display:none;">
-                    <h3 class="panel-title"><i class="fa-solid fa-shield-halved"></i> Commander Overview</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Welcome to the Unified Portal. Monitor intern attendance, verify progress, and distribute structural assets (SOPs/Videos) from the sidebar.</p>
-                </div>
-            </div>
-
-            <!-- [INTERN] Operation Hub -->
-            <div id="panel-intern-task" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
-                    <div style="margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
-                        <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
-                        <div class="tag-badge" id="intTaskID">DEV-000</div>
-                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Operation Progress Log (Auto-Saves Locally)</label>
-                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. You can close this portal and your work will remain safely cached here..." oninput="window.saveDraft()"></textarea>
-                    </div>
-
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <button class="btn btn-outline" style="flex: 1;" onclick="window.showToast('Draft is continuously auto-saved.', false)">
-                            <i class="fa-solid fa-save"></i> Save Draft
-                        </button>
-                        <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()">
-                            <i class="fa-solid fa-paper-plane"></i> Final Submit to HR
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- [INTERN] Attendance Matrix (10/40/20/30 Logic) -->
-            <div id="panel-intern-attendance" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Attendance Matrix</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Attendance requires full workflow completion and approvals.</p>
-                    
-                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 3rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
-                    <div class="progress-container"><div class="progress-fill" id="attProgressBar" style="width: 10%;"></div></div>
-                    
-                    <div class="att-metrics" style="margin-top: 15px;">
-                        <div>System Login <br><span class="status-badge status-green">10% Verified</span></div>
-                        <div>Task Submit <br><span class="status-badge" id="attSubmitBadge">40% Pending</span></div>
-                    </div>
-                    <div class="att-metrics" style="margin-top: 15px;">
-                        <div>HR Verification <br><span class="status-badge" id="attHRBadge">20% Pending</span></div>
-                        <div>Officer Clearance <br><span class="status-badge" id="attOfficerBadge">30% Pending</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- [OFFICER] Task Deployment -->
-            <div id="panel-officer-tasks" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> Deploy New Task</h3>
-                    <div class="data-grid">
-                        <div class="form-group"><label class="form-label">Team Task ID</label><input type="text" id="offTaskId" class="form-control" placeholder="e.g. DEV-020" oninput="window.generateInternId()"></div>
-                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="offInternName" class="form-control" placeholder="Assignee Name" oninput="window.generateInternId()"></div>
-                        <div class="form-group"><label class="form-label">Unique Intern Task ID</label><input type="text" id="offUniqueId" class="form-control" placeholder="Auto-Generates" disabled style="opacity: 0.5;"></div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Task Title</label><input type="text" id="offTaskTitle" class="form-control" placeholder="Objective Name"></div>
-                    <div class="form-group"><label class="form-label">Operation Directives</label><textarea id="offTaskDesc" class="form-control" placeholder="Define parameters..."></textarea></div>
-                    <button class="btn btn-primary" onclick="window.deployTask()"><i class="fa-solid fa-satellite-dish"></i> Deploy to Network</button>
-                </div>
-            </div>
-
-            <!-- [OFFICER/HR] Workflow Approvals -->
-            <div id="panel-officer-approvals" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-check"></i> Pending Workflows</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Verify intern text progress before granting attendance clearance.</p>
-                    <div id="approvalMatrixContainer">
-                        <div class="empty-state">Scanning for submitted workflows...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- [OFFICER] Asset Upload Hub (With Compressor Mock) -->
-            <div id="panel-officer-assets" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload assets. The system automatically compresses images before sending to DB to reduce latency.</p>
-                    
-                    <div class="data-grid">
-                        <div class="form-group">
-                            <label class="form-label">Asset Type</label>
-                            <select id="assetType" class="form-control">
-                                <option value="SOP">SOP Document</option>
-                                <option value="TED">TED Resource</option>
-                                <option value="Video">Video Archive</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Asset Title</label>
-                            <input type="text" id="assetTitle" class="form-control" placeholder="e.g. Architecture Guide">
-                        </div>
-                    </div>
-                    
-                    <div class="upload-zone" onclick="document.getElementById('fileUploader').click()">
-                        <i class="fa-solid fa-file-arrow-up" id="uploadIcon"></i>
-                        <h4 id="uploadText">Click to Select File</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-muted);">Auto-compress engine active.</p>
-                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleFileSelect(event)">
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
-                </div>
-            </div>
-
-            <!-- SHARED: Dynamic Assets -->
-            <div id="panel-dynamic-assets" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title" id="assetTitleHeader"><i class="fa-solid fa-folder-open"></i> Asset Database</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Classified structural assets.</p>
-                    <div id="assetContainer"></div>
-                </div>
-            </div>
-
-            <!-- SHARED: Squad Matrix -->
-            <div id="panel-team" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Operatives assigned to your active Team Task ID.</p>
-                    <div class="data-grid" id="teamMatrixContainer"></div>
-                </div>
-            </div>
-
-            <!-- SHARED: Global Contacts (HARDCODED HTML) -->
-            <div id="panel-contacts" class="content-panel">
-                <!-- Intern's Domain Officer -->
-                <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
-                    <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Direct supervisor contact for current task queries.</p>
-                    <div class="data-grid" id="contactsDomainContainer"></div>
-                </div>
-
-                <!-- Hardcoded Executive Board -->
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-building"></i> Headquarters Mail</h3>
-                    <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 20px;">
-                        <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> contact@tournyx.in</p>
-                    </div>
-                    
-                    <h3 class="panel-title"><i class="fa-solid fa-sitemap"></i> Executive Board</h3>
-                    <div class="data-grid">
-                        <div class="data-card">
-                            <h4>Shiva Kumar</h4>
-                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Chief Technology Officer</p>
-                            <p><i class="fa-solid fa-envelope"></i> cto@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000001</p>
-                        </div>
-                        <div class="data-card">
-                            <h4>Prabhu</h4>
-                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Chief Executive Officer</p>
-                            <p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000000</p>
-                        </div>
-                        <div class="data-card">
-                            <h4>Tharun Kumar</h4>
-                            <p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.75rem;">Human Resources</p>
-                            <p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000002</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SHARED: AI Hub -->
-            <div id="panel-ai" class="content-panel">
-                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4);">
-                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
-                    <div class="form-group">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);">
-                    </div>
-                    <button class="btn btn-primary" style="background: var(--accent-purple);" onclick="window.triggerAI()"><i class="fa-solid fa-brain"></i> Execute Edge Query</button>
-                </div>
-            </div>
-
-            <!-- SHARED: Settings Theme Switcher -->
-            <div id="panel-settings" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Preferences</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
-                        <div>
-                            <h4 style="font-size: 1rem; margin-bottom: 4px;">Light / Dark Theme</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Toggle interface color matrix.</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="themeToggle" onchange="window.toggleTheme()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- SECURE JAVASCRIPT ENGINE (100% NATIVE REST API) -->
-    <!-- ========================================== -->
-    <script>
-        // --- 1. SECURE CONFIGURATION (100% NATIVE REST, NO DEPENDENCIES) ---
-        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const WORKER_URL = 'YOUR_WORKER_URL_HERE'; // Replace with deployed Cloudflare worker
-
-        const fetchWithTimeout = (promise, ms) => {
-            return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout.")), ms)) ]);
-        };
-
-        const apiHeaders = {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        };
-
-        // --- 2. THEME ENGINE ---
-        window.toggleTheme = function() {
-            const isLight = document.getElementById('themeToggle').checked;
-            if(isLight) {
-                document.body.classList.add('light-theme');
-                localStorage.setItem('tims_theme', 'light');
-            } else {
-                document.body.classList.remove('light-theme');
-                localStorage.setItem('tims_theme', 'dark');
-            }
-        };
-
-        // --- 3. TOAST ENGINE ---
-        window.showToast = function(msg, isError = false) {
-            try {
-                const t = document.getElementById('toast');
-                const icon = t.querySelector('i');
-                document.getElementById('toastMsg').innerText = msg;
-                t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-                t.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-                icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
-                icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
-                t.classList.add('show');
-                setTimeout(() => t.classList.remove('show'), 3500);
-            } catch(e) {}
-        };
-
-        // --- 4. UI TOGGLING ---
-        window.toggleAuth = function(type) {
-            if(navigator.vibrate) navigator.vibrate(15);
-            document.getElementById('tab-intern').classList.remove('active'); document.getElementById('tab-officer').classList.remove('active');
-            document.getElementById(`tab-${type}`).classList.add('active');
-            document.getElementById('form-intern').classList.remove('active'); document.getElementById('form-officer').classList.remove('active');
-            document.getElementById('form-intern').style.display = 'none'; document.getElementById('form-officer').style.display = 'none';
-            document.getElementById(`form-${type}`).style.display = 'block';
-            setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 10);
-        };
-
-        window.handleEnter = function(e, role) { if (e.key === 'Enter') { e.preventDefault(); window.initiateLogin(role); } };
-
-        // --- 5. 24-HOUR SESSION CHECKER ---
-        window.isSessionValid = function(session) {
-            if(!session || !session.timestamp) return false;
-            const diffHours = (new Date().getTime() - session.timestamp) / (1000 * 60 * 60);
-            return diffHours < 24; 
-        };
-
-        // --- 6. NATIVE REST API LOGIN (FREEZE-PROOF & CASE-INSENSITIVE) ---
-        window.initiateLogin = async function(role) {
-            if(navigator.vibrate) navigator.vibrate(20);
-            
-            // Auto lowercase for case-insensitive verification
-            let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim() : document.getElementById('loginOfficerName').value.trim();
-            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim() : document.getElementById('loginPin').value.trim();
-            let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
-
-            if(!nameInput || !secondaryInput) { window.showToast("All fields are strictly required.", true); return; }
-
-            const btn = document.getElementById(btnId);
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
-
-            // Using ilike (Case Insensitive) for Supabase Native REST
-            let url = role === 'intern' 
-                ? `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
-                : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
-
-            try {
-                const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
-                if (!response.ok) throw new Error("Server Error");
-                const data = await response.json();
-
-                if (data.length === 0) {
-                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Team Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
-                    return; 
-                }
-
-                const sessionData = data[0]; 
-                
-                // Initialize Attendance on Login (10%) for interns
-                if(role === 'intern') {
-                    const dateString = new Date().toISOString().split('T')[0];
-                    const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
-                    const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
-                    const attData = await attRes.json();
-                    
-                    if(attData.length === 0) {
-                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
-                    }
-                }
-
-                localStorage.setItem('tims_session', JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
-                
-                document.getElementById('view-login').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('view-login').style.visibility = 'hidden'; document.getElementById('view-login').style.display = 'none';
-                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
-                    setTimeout(() => { dashView.style.opacity = '1'; }, 50);
-                    
-                    document.getElementById('dashName').innerText = sessionData.name || sessionData.intern_name; 
-                    document.getElementById('dashRole').innerText = `${role} access level`;
-                    document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                    
-                    window.buildDashboardRole(role, sessionData);
-                    window.showToast("System Access Granted.");
-                }, 400); 
-
-            } catch (err) {
-                console.error("LOGIN ERROR:", err);
-                window.showToast(err.message || "Network Error: Could not reach server.", true);
-            } finally {
-                // THE ULTIMATE FAILSAFE: Button ALWAYS unlocks.
-                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
-            }
-        };
-
-        // --- 7. DYNAMIC ROLE ROUTING & PANEL MEMORY ---
-        window.buildDashboardRole = function(role, data) {
-            const menu = document.getElementById('dynamicNavMenu');
-            menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
-
-            document.getElementById('internHomeSection').style.display = role === 'intern' ? 'block' : 'none';
-            document.getElementById('officerHomeSection').style.display = role !== 'intern' ? 'block' : 'none';
-            document.getElementById('assignedOfficerSection').style.display = role === 'intern' ? 'block' : 'none';
-
-            if(role === 'intern') {
-                menu.innerHTML += `
-                    <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
-                `;
-                document.getElementById('intTaskTitle').innerText = data.title;
-                document.getElementById('intTaskID').innerText = data.intern_task_id; // Show Unique ID
-                document.getElementById('intTaskDesc').innerText = data.description;
-                
-                const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
-                if(draft) { document.getElementById('internProgressText').value = draft; window.showToast("Local draft restored."); }
-            } else {
-                menu.innerHTML += `
-                    <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this)"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
-                `;
-            }
-
-            // Shared Universal Menus
-            menu.innerHTML += `
-                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users-viewfinder"></i> Squad Matrix</li>
-                <li class="nav-item" onclick="window.loadAssets('SOP', 'Distributed SOPs', this)"><i class="fa-solid fa-file-contract"></i> SOPs</li>
-                <li class="nav-item" onclick="window.loadAssets('TED', 'TED Library', this)"><i class="fa-solid fa-book"></i> TED</li>
-                <li class="nav-item" onclick="window.loadAssets('Video', 'Video Archives', this)"><i class="fa-solid fa-video"></i> Videos</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
-            `;
-
-            if(data) {
-                window.fetchTeamMatrix(role === 'intern' ? data.team_task_id : "ALL");
-                if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
-            }
-
-            // Memory: Restore last panel securely without resetting
-            const lastPanel = localStorage.getItem('tims_last_panel');
-            if(lastPanel) {
-                const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
-                if(el) el.click();
-            }
-        };
-
-        // --- 8. WORKFLOW & ATTENDANCE ---
-        window.markAttendance = async function() {
-            window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance.");
-        };
-
-        window.saveDraft = function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            if(session && session.role === 'intern') {
-                const txt = document.getElementById('internProgressText').value;
-                localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, txt);
-            }
-        };
-
-        window.submitTaskFinal = async function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const txt = document.getElementById('internProgressText').value;
-            if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
-            
-            window.showToast("Syncing Database...");
-            try {
-                // Update Supabase Status
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ progress_text: txt, status: 'Submitted' }) });
-                
-                // Update Attendance (+40%)
-                const dateString = new Date().toISOString().split('T')[0];
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=eq.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
-                
-                // Trigger Cloudflare Worker Email Dispatch
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt }) });
-
-                window.showToast("Operation Submitted. HR Notified.");
-                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
-                
-                // Purge session on completion
-                setTimeout(() => { window.logout(); }, 3000);
-            } catch(e) { window.showToast("Sync Failed.", true); }
-        };
-
-        window.fetchAttendance = async function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            try {
-                const dateString = new Date().toISOString().split('T')[0];
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
-                const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    const att = data[0];
-                    document.getElementById('attPercent').innerText = att.total_percentage + "%";
-                    document.getElementById('attProgressBar').style.width = att.total_percentage + "%";
-                    
-                    document.getElementById('attSubmitBadge').className = att.task_40 ? 'status-badge status-green' : 'status-badge status-red';
-                    document.getElementById('attSubmitBadge').innerText = att.task_40 ? '40% Verified' : 'Task Not Submitted';
-                    
-                    document.getElementById('attHRBadge').className = att.hr_20 ? 'status-badge status-green' : 'status-badge status-red';
-                    document.getElementById('attHRBadge').innerText = att.hr_20 ? '20% Verified' : 'HR Not Approved';
-
-                    document.getElementById('attOfficerBadge').className = att.officer_30 ? 'status-badge status-green' : 'status-badge status-red';
-                    document.getElementById('attOfficerBadge').innerText = att.officer_30 ? '30% Verified' : 'Officer Not Approved';
-                }
-            } catch(e) {}
-        };
-
-        // --- 9. OFFICER TASK DEPLOYMENT (Unique ID Generator) ---
-        window.generateInternId = function() {
-            const teamId = document.getElementById('offTaskId').value.trim().toUpperCase();
-            const intern = document.getElementById('offInternName').value.trim().toUpperCase().replace(/\s+/g, '');
-            if(teamId && intern) document.getElementById('offUniqueId').value = `${teamId}-${intern}`;
-            else document.getElementById('offUniqueId').value = "";
-        };
-
-        window.deployTask = async function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const payload = {
-                team_task_id: document.getElementById('offTaskId').value.trim(),
-                intern_task_id: document.getElementById('offUniqueId').value,
-                intern_name: document.getElementById('offInternName').value.trim(),
-                title: document.getElementById('offTaskTitle').value,
-                description: document.getElementById('offTaskDesc').value,
-                assigned_officer: session.name
-            };
-
-            if(!payload.team_task_id || !payload.intern_name) { window.showToast("Missing parameters.", true); return; }
-
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
-                window.showToast("Task Deployed to Network Successfully.");
-                document.getElementById('offInternName').value = '';
-                document.getElementById('offUniqueId').value = '';
-            } catch(e) { window.showToast("Deployment Failed.", true); }
-        };
-
-        // --- 10. ASSET UPLOAD & COMPRESSOR (HTML5 Canvas Mock) ---
-        window.handleFileSelect = function(event) {
-            const file = event.target.files[0];
-            if(file) {
-                document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin";
-                document.getElementById('uploadText').innerText = "Compressing Asset...";
-                
-                // Simulate Client-Side File Compression (Reduces storage footprint)
-                setTimeout(() => {
-                    window.selectedFile = file;
-                    document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check";
-                    document.getElementById('uploadText').innerText = `${file.name} (Compressed)`;
-                }, 1500);
-            }
-        };
-
-        window.broadcastAsset = async function() {
-            if(!window.selectedFile) { window.showToast("Please select a file to compress and broadcast.", true); return; }
-            
-            const title = document.getElementById('assetTitle').value;
-            const type = document.getElementById('assetType').value;
-            if(!title) { window.showToast("Asset Title Required.", true); return; }
-
-            // Simulate Storage URL
-            const mockUrl = `https://tournyx.in/assets/${type}/${encodeURIComponent(title.toLowerCase())}.mp4`;
-            
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ asset_type: type, title: title, file_url: mockUrl }) });
-                window.showToast("Asset Compressed & Distributed to Network.");
-                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up";
-                document.getElementById('uploadText').innerText = "Click to Upload File";
-                window.selectedFile = null;
-            } catch(e) { window.showToast("Broadcast Failed.", true); }
-        };
-
-        // --- 11. DYNAMIC DATA FETCHING & ADVANCED VIDEO PLAYER ---
-        window.loadAssets = async function(type, title, navElement) {
-            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`;
-            window.switchPanel('panel-dynamic-assets', navElement);
-            
-            const cont = document.getElementById('assetContainer');
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*`, { headers: apiHeaders });
-                const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    if(type === 'Video') {
-                        // Advanced PiP Video Player
-                        cont.innerHTML = data.map(d => `
-                            <div class="video-container" style="margin-bottom:15px; border-radius:16px; overflow:hidden; border:1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
-                                <video controls preload="metadata" disablePictureInPicture="false" controlsList="nodownload" style="width:100%; display:block; object-fit: cover;">
-                                    <source src="${d.file_url}" type="video/mp4">
-                                </video>
-                                <div style="padding:15px; background:rgba(0,0,0,0.5);"><h4>${d.title}</h4></div>
-                            </div>
-                        `).join('');
-                    } else {
-                        cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.title}</h4><a href="${d.file_url}" target="_blank" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-link"></i> Access Asset</a></div>`).join('') + `</div>`;
-                    }
-                } else { cont.innerHTML = `<div class="empty-state">No ${type} assets assigned to your sector yet.</div>`; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
-        };
-
-        // --- 12. OFFICER VERIFICATION ---
-        window.fetchApprovals = async function() {
-            const cont = document.getElementById('approvalMatrixContainer');
-            cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
-            try {
-                const session = JSON.parse(localStorage.getItem('tims_session'));
-                const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
-                const res = await fetch(url, { headers: apiHeaders });
-                const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `
-                        <div class="data-card">
-                            <h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4>
-                            <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);">
-                                <strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br>
-                                <p style="color:white; font-size:0.85rem;">${d.progress_text}</p>
-                            </div>
-                            <div style="display:flex; gap:10px; margin-top:15px;">
-                                <button class="btn btn-outline" style="padding:10px; font-size:0.75rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button>
-                                <button class="btn btn-success" style="padding:10px; font-size:0.75rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Grant Clearance</button>
-                            </div>
-                        </div>
-                    `).join('') + `</div>`;
-                } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
-        };
-
-        window.approveIntern = async function(internName) {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const dateString = new Date().toISOString().split('T')[0];
-            try {
-                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
-                const attData = await attRes.json();
-                
-                if(attData.length > 0) {
-                    const att = attData[0];
-                    let payload = {};
-                    if(session.role === 'hr' && !att.hr_20) payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
-                    else if (session.role === 'officer' && !att.officer_30) payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
-                    
-                    if(Object.keys(payload).length > 0) {
-                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
-                        window.showToast("Clearance Granted Successfully.");
-                        window.fetchApprovals();
-                    } else { window.showToast("Already cleared by you.", true); }
-                }
-            } catch(e) {}
-        };
-
-        // --- 13. SHARED FETCHERS (Team & Domain Officer) ---
-        window.fetchTeamMatrix = async function(teamTaskId) {
-            const cont = document.getElementById('teamMatrixContainer');
-            cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
-            try {
-                const url = teamTaskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,intern_task_id` : `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id`;
-                const res = await fetch(url, { headers: apiHeaders });
-                const data = await res.json();
-                if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="tag-badge" style="background:rgba(189,0,255,0.1); color:var(--accent-purple); border:1px solid rgba(189,0,255,0.3);">${d.intern_task_id}</span></div>`).join('');
-                } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
-            } catch(e) {}
-        };
-
-        window.fetchDomainOfficer = async function(assignedOfficerName) {
-            const domainCont = document.getElementById('contactsDomainContainer');
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(assignedOfficerName)}&select=*`, { headers: apiHeaders });
-                const data = await res.json();
-                if(data && data.length > 0) {
-                    const officer = data[0];
-                    domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
-                }
-            } catch(e) {}
-        };
-
-        // --- 14. UI CORE ROUTING ---
-        window.switchPanel = function(panelId, navElement) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
-            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(20px)'; });
-            const activePanel = document.getElementById(panelId);
-            if(!activePanel) return; 
-            
-            localStorage.setItem('tims_last_panel', panelId);
-
-            activePanel.classList.add('active');
-            setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
-            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'});
-            if(window.innerWidth <= 850) window.closeSidebar();
-        };
-
-        window.openSidebar = function() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileOverlay').classList.add('open'); };
-        window.closeSidebar = function() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('open'); };
-
-        window.logout = function() {
-            localStorage.removeItem('tims_session');
-            localStorage.removeItem('tims_last_panel');
-            const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
-            setTimeout(() => {
-                dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
-                const loginView = document.getElementById('view-login'); loginView.style.visibility = 'visible'; loginView.style.display = 'flex';
-                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
-                document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
-                document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
-                window.closeSidebar(); window.showToast("Session Terminated Securely.");
-            }, 500);
-        };
-
-        // --- 15. SAFE BOOT SEQUENCE ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('tims_theme');
-            if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
-
-            try {
-                const canvas = document.getElementById('particles-canvas'); const ctx = canvas.getContext('2d');
-                let width = window.innerWidth; let height = window.innerHeight; canvas.width = width; canvas.height = height;
-                let pArray = [];
-                for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
-                function draw() { ctx.clearRect(0, 0, width, height); pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); }); requestAnimationFrame(draw); }
-                draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
-            } catch(e) {}
-
-            const sessionRaw = localStorage.getItem('tims_session');
-            if(sessionRaw) {
-                const s = JSON.parse(sessionRaw);
-                if(window.isSessionValid(s)) {
-                    document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
-                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
-                    document.getElementById('dashName').innerText = s.name; document.getElementById('dashRole').innerText = `${s.role} access level`;
-                    document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                    window.buildDashboardRole(s.role, s.data);
-                } else { localStorage.removeItem('tims_session'); }
-            }
-        });
-    </script>
+    <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
+    <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN GATEWAY                      -->
+    <!-- ========================================== -->
+    <div id="view-login">
+        <div class="login-card glass-panel">
+            <div class="header-logo">
+                <h1>TIMS ENGINE</h1>
+                <p>Unified Operational Gateway</p>
+            </div>
+
+            <div class="auth-toggle">
+                <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
+                <div id="tab-officer" onclick="window.toggleAuth('officer')">Officer Login</div>
+            </div>
+
+            <div id="form-intern" class="auth-form active">
+                <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
+                <div class="form-group"><label class="form-label">Team Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. DEV-015" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
+                <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
+            </div>
+
+            <div id="form-officer" class="auth-form">
+                <div class="form-group"><label class="form-label">Commander Name</label><input type="text" id="loginOfficerName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')"></div>
+                <div class="form-group"><label class="form-label">Secure PIN</label><input type="password" id="loginPin" class="form-control" placeholder="Enter PIN" autocomplete="off" onkeypress="window.handleEnter(event, 'officer')"></div>
+                <button type="button" class="btn btn-primary" id="btn-login-officer" onclick="window.initiateLogin('officer')"><i class="fa-solid fa-shield-halved"></i> Authenticate</button>
+            </div>
+            
+            <div class="brand-footer">POWERED BY <br><span class="neon-quva-small">QUVA</span></div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: MASTER DASHBOARD                   -->
+    <!-- ========================================== -->
+    <div id="view-dashboard">
+        
+        <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
+        <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
+        
+        <div class="sidebar glass-panel" id="sidebar">
+            <div class="sidebar-brand"><h2>TIMS HUB</h2></div>
+            <ul class="nav-menu" id="dynamicNavMenu"></ul>
+            <div class="sidebar-footer"><button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button></div>
+        </div>
+
+        <div class="main-content" id="mainContentScroll">
+            
+            <div class="dash-top-bar glass-panel">
+                <div class="dash-greeting"><h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2><p id="dashRole">Role Data</p></div>
+                <div class="stat-badge"><span>System Status</span><strong style="color:var(--accent-green); text-shadow: 0 0 10px rgba(0,255,127,0.3);">ONLINE</strong></div>
+            </div>
+
+            <!-- [SHARED] Dashboard Home -->
+            <div id="panel-dashboard" class="content-panel active">
+                <div class="panel-card glass-panel" id="internHomeSection" style="display:none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Operations Check-In</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Log your attendance daily before starting your assigned task.</p>
+                    <button class="btn btn-success" onclick="window.markAttendance()" style="max-width: 250px;"><i class="fa-solid fa-clock"></i> Mark Present Today</button>
+                </div>
+                <div class="panel-card glass-panel" id="officerHomeSection" style="display:none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-shield-halved"></i> Commander Overview</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Welcome to the Unified Portal. Monitor intern attendance, deploy tasks, and distribute assets via the sidebar.</p>
+                </div>
+            </div>
+
+            <!-- [INTERN] Operation Hub -->
+            <div id="panel-intern-task" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Active Operation Directive</h3>
+                    <div style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                        <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
+                        <div class="tag-badge" id="intTaskID">DEV-000</div>
+                        <p style="color:var(--text-muted); font-size: 0.85rem; margin-top: 10px; line-height: 1.5;" id="intTaskDesc">Description loading...</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Operation Progress Log</label>
+                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow. This safely auto-saves locally." oninput="window.saveDraft()"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" style="flex: 1; min-width:140px;" onclick="window.showToast('Draft is continuously auto-saved.', false)"><i class="fa-solid fa-save"></i> Save Draft</button>
+                        <button class="btn btn-success" style="flex: 1; min-width:140px;" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Final Submit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [INTERN] Attendance Matrix -->
+            <div id="panel-intern-attendance" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Attendance Matrix</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Clearance requires workflow completion and officer approval.</p>
+                    
+                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 2.5rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
+                    <div class="progress-container"><div class="progress-fill" id="attProgressBar" style="width: 10%;"></div></div>
+                    
+                    <div class="att-metrics" style="margin-top: 15px;">
+                        <div>System Login <br><span class="status-badge status-green">10% Verified</span></div>
+                        <div>Task Submit <br><span class="status-badge" id="attSubmitBadge">40% Pending</span></div>
+                    </div>
+                    <div class="att-metrics" style="margin-top: 15px;">
+                        <div>HR Verification <br><span class="status-badge" id="attHRBadge">20% Pending</span></div>
+                        <div>Officer Clearance <br><span class="status-badge" id="attOfficerBadge">30% Pending</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [OFFICER] Advanced Deploy Hub -->
+            <div id="panel-officer-tasks" class="content-panel">
+                <!-- Step 1: Active Projects List -->
+                <div class="panel-card glass-panel" id="offProjectListView">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+                            <input type="text" class="form-control" placeholder="Search operations..." oninput="window.filterTeamProjects(this.value)" style="padding: 10px 15px; font-size: 0.8rem;">
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-primary" style="width: auto; padding: 10px 15px; font-size: 0.75rem;" onclick="document.getElementById('deployDropdown').classList.toggle('show')"><i class="fa-solid fa-plus"></i> Deploy <i class="fa-solid fa-caret-down"></i></button>
+                            <div id="deployDropdown" class="dropdown-content">
+                                <div onclick="window.openCreateProjectView()"><i class="fa-solid fa-users"></i> New Team Project</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-grid" id="activeTeamProjectsContainer"></div>
+                </div>
+
+                <!-- Step 2: Create Team Project -->
+                <div class="panel-card glass-panel" id="offProjectCreateView" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="panel-title" style="margin: 0;"><i class="fa-solid fa-rocket"></i> Initialize New Team Task</h3>
+                        <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.7rem;" onclick="window.backToProjectList()"><i class="fa-solid fa-arrow-left"></i> Abort</button>
+                    </div>
+                    <div class="form-group"><label class="form-label">Auto-Generated Team Task ID</label><input type="text" id="newTeamTaskId" class="form-control" disabled style="opacity: 0.7;"></div>
+                    <div class="form-group"><label class="form-label">Team / Project Name</label><input type="text" id="newProjectName" class="form-control" placeholder="Enter Project Name"></div>
+                    <button class="btn btn-success" onclick="window.createTeamProject()"><i class="fa-solid fa-check-double"></i> Initialize Matrix</button>
+                </div>
+
+                <!-- Step 3: Add Interns to Team Task -->
+                <div class="panel-card glass-panel" id="offAddInternView" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <h3 class="panel-title" style="margin: 0; border: none; padding: 0;" id="detailProjectTitle"><i class="fa-solid fa-layer-group"></i> Project Details</h3>
+                        <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.7rem;" onclick="window.backToProjectList()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
+                    
+                    <div id="projectInternsList" class="data-grid" style="margin-bottom: 20px;"></div>
+
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; font-weight: 800;"><i class="fa-solid fa-user-plus"></i> Add Team Member</h4>
+                    <div class="data-grid">
+                        <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="addInternName" class="form-control" placeholder="Assignee Name" oninput="window.generateUniqueTaskID()"></div>
+                        <div class="form-group"><label class="form-label">Unique Intern Task ID</label><input type="text" id="addUniqueId" class="form-control" placeholder="Auto-Generates" disabled style="opacity: 0.7;"></div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Step-by-Step Execution Directives</label><textarea id="addInternSteps" class="form-control" placeholder="1. Phase one... 2. Phase two..."></textarea></div>
+                    
+                    <button class="btn btn-primary" onclick="window.assignInternTask()"><i class="fa-solid fa-satellite-dish"></i> Assign Intern to Team Task</button>
+                </div>
+            </div>
+
+            <!-- [OFFICER/HR] Workflow Approvals -->
+            <div id="panel-officer-approvals" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-clipboard-check"></i> Pending Workflows</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Verify intern text progress before granting attendance clearance.</p>
+                    <div id="approvalMatrixContainer"></div>
+                </div>
+            </div>
+
+            <!-- [OFFICER] Asset Upload Hub -->
+            <div id="panel-officer-assets" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload assets. Images auto-compress locally to preserve bandwidth.</p>
+                    
+                    <div class="data-grid">
+                        <div class="form-group">
+                            <label class="form-label">Asset Type</label>
+                            <select id="assetType" class="form-control">
+                                <option value="SOP">SOP Document</option>
+                                <option value="TED">TED Resource</option>
+                                <option value="Video">Video Archive</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label">Asset Title</label><input type="text" id="assetTitle" class="form-control" placeholder="e.g. UI Guidelines"></div>
+                    </div>
+                    
+                    <div class="upload-zone" onclick="document.getElementById('fileUploader').click()">
+                        <i class="fa-solid fa-file-arrow-up" id="uploadIcon"></i>
+                        <h4 id="uploadText">Click to Select File</h4>
+                        <p style="font-size: 0.75rem; color: #888;">Auto-compress engine active.</p>
+                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleFileSelect(event)">
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
+                </div>
+            </div>
+
+            <!-- SHARED: Dynamic Assets -->
+            <div id="panel-dynamic-assets" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title" id="assetTitleHeader"><i class="fa-solid fa-folder-open"></i> Asset Database</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Classified structural assets.</p>
+                    <div id="assetContainer"></div>
+                </div>
+            </div>
+
+            <!-- SHARED: Squad Matrix -->
+            <div id="panel-team" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Operatives assigned to your active Team Task ID.</p>
+                    <div class="data-grid" id="teamMatrixContainer"></div>
+                </div>
+            </div>
+
+            <!-- SHARED: Global Contacts (HARDCODED HTML) -->
+            <div id="panel-contacts" class="content-panel">
+                <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
+                    <div class="data-grid" id="contactsDomainContainer"></div>
+                </div>
+
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-building"></i> Headquarters Mail</h3>
+                    <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 15px;">
+                        <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> contact@tournyx.in</p>
+                    </div>
+                    
+                    <h3 class="panel-title" style="margin-top:20px;"><i class="fa-solid fa-sitemap"></i> Executive Board</h3>
+                    <div class="data-grid">
+                        <div class="data-card">
+                            <h4>Shiva Kumar</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Chief Technology Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> cto@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000001</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Prabhu</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Chief Executive Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000000</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Tharun Kumar</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Human Resources</p>
+                            <p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000002</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHARED: AI Hub -->
+            <div id="panel-ai" class="content-panel">
+                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4);">
+                    <h3 class="panel-title" style="color: var(--accent-purple);"><i class="fa-solid fa-microchip"></i> Tournyx Edge AI</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 15px; font-size: 0.8rem; line-height: 1.5;">Direct secure connection to Cloudflare AI. Auto-switches models to maintain uptime.</p>
+                    <div class="form-group"><input type="text" id="aiInput" class="form-control" placeholder="Initialize AI query..." style="border-color: rgba(189,0,255,0.4);"></div>
+                    <button class="btn btn-primary" style="background: var(--accent-purple);" onclick="window.triggerAI()"><i class="fa-solid fa-brain"></i> Execute Edge Query</button>
+                </div>
+            </div>
+
+            <!-- SHARED: Settings Theme Switcher -->
+            <div id="panel-settings" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Preferences</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+                        <div>
+                            <h4 style="font-size: 0.95rem; margin-bottom: 2px;">Light / Dark Theme</h4>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">Toggle interface color matrix.</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="themeToggle" onchange="window.toggleTheme()"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECURE JAVASCRIPT ENGINE (NATIVE REST API) -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. CONFIGURATION ---
+        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
+        const WORKER_URL = 'https://tournyx.in/api/tims'; // Your cloudflare tunnel
+
+        const apiHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
+        
+        window.currentTeamTaskId = null;
+        window.taskFileBase64 = null;
+
+        const fetchWithTimeout = (promise, ms) => {
+            return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout.")), ms)) ]);
+        };
+
+        // --- DROPDOWN FIX ---
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-primary') && !event.target.closest('.dropdown')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) { dropdowns[i].classList.remove('show'); }
+                }
+            }
+        };
+
+        // --- 2. THEME ENGINE ---
+        window.toggleTheme = function() {
+            if(document.getElementById('themeToggle').checked) {
+                document.body.classList.add('light-theme'); localStorage.setItem('tims_theme', 'light');
+            } else {
+                document.body.classList.remove('light-theme'); localStorage.setItem('tims_theme', 'dark');
+            }
+        };
+
+        // --- 3. TOAST ENGINE ---
+        window.showToast = function(msg, isError = false) {
+            try {
+                const t = document.getElementById('toast'); const icon = t.querySelector('i');
+                document.getElementById('toastMsg').innerText = msg;
+                t.style.borderColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                icon.className = isError ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-circle-check";
+                icon.style.color = isError ? "var(--accent-red)" : "var(--accent-cyan)";
+                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
+            } catch(e) {}
+        };
+
+        // --- 4. UI TOGGLING ---
+        window.toggleAuth = function(type) {
+            if(navigator.vibrate) navigator.vibrate(15);
+            document.getElementById('tab-intern').classList.remove('active'); document.getElementById('tab-officer').classList.remove('active');
+            document.getElementById(`tab-${type}`).classList.add('active');
+            document.getElementById('form-intern').classList.remove('active'); document.getElementById('form-officer').classList.remove('active');
+            document.getElementById('form-intern').style.display = 'none'; document.getElementById('form-officer').style.display = 'none';
+            document.getElementById(`form-${type}`).style.display = 'block';
+            setTimeout(() => { document.getElementById(`form-${type}`).classList.add('active'); }, 10);
+        };
+
+        window.handleEnter = function(e, role) { if (e.key === 'Enter') { e.preventDefault(); window.initiateLogin(role); } };
+
+        window.isSessionValid = function(session) {
+            if(!session || !session.timestamp) return false;
+            return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
+        };
+
+        // --- 5. NATIVE REST API LOGIN ---
+        window.initiateLogin = async function(role) {
+            if(navigator.vibrate) navigator.vibrate(20);
+            let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
+            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim().toUpperCase() : document.getElementById('loginPin').value.trim();
+            let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
+
+            if(!nameInput || !secondaryInput) { window.showToast("All fields are strictly required.", true); return; }
+
+            const btn = document.getElementById(btnId); const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
+
+            let url = role === 'intern' 
+                ? `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
+                : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
+
+            try {
+                const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
+                if (!response.ok) throw new Error("Server Error");
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Team Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
+                    return; 
+                }
+
+                const sessionData = data[0]; 
+                
+                if(role === 'intern') {
+                    const dateString = new Date().toISOString().split('T')[0];
+                    const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
+                    const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
+                    const attData = await attRes.json();
+                    if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
+                }
+
+                localStorage.setItem('tims_session', JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
+                
+                document.getElementById('view-login').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('view-login').style.visibility = 'hidden'; document.getElementById('view-login').style.display = 'none';
+                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
+                    setTimeout(() => { dashView.style.opacity = '1'; }, 50);
+                    
+                    document.getElementById('dashName').innerText = sessionData.name || sessionData.intern_name; 
+                    document.getElementById('dashRole').innerText = `${role} access level`;
+                    document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    
+                    window.buildDashboardRole(role, sessionData); window.showToast("System Access Granted.");
+                }, 400); 
+
+            } catch (err) { window.showToast("Network Error: Could not reach server.", true);
+            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
+        };
+
+        // --- 6. DYNAMIC ROLE ROUTING ---
+        window.buildDashboardRole = function(role, data) {
+            const menu = document.getElementById('dynamicNavMenu');
+            menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
+
+            document.getElementById('internHomeSection').style.display = role === 'intern' ? 'block' : 'none';
+            document.getElementById('officerHomeSection').style.display = role !== 'intern' ? 'block' : 'none';
+            document.getElementById('assignedOfficerSection').style.display = role === 'intern' ? 'block' : 'none';
+
+            if(role === 'intern') {
+                menu.innerHTML += `
+                    <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
+                `;
+                document.getElementById('intTaskTitle').innerText = data.title || "Operation Node";
+                document.getElementById('intTaskID').innerText = data.intern_task_id; 
+                document.getElementById('intTaskDesc').innerText = data.step_by_step_process;
+                
+                const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
+                if(draft) { document.getElementById('internProgressText').value = draft; }
+            } else {
+                menu.innerHTML += `
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
+                `;
+            }
+
+            menu.innerHTML += `
+                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users-viewfinder"></i> Squad Matrix</li>
+                <li class="nav-item" onclick="window.loadAssets('SOP', 'Distributed SOPs', this)"><i class="fa-solid fa-file-contract"></i> SOPs</li>
+                <li class="nav-item" onclick="window.loadAssets('TED', 'TED Library', this)"><i class="fa-solid fa-book"></i> TED</li>
+                <li class="nav-item" onclick="window.loadAssets('Video', 'Video Archives', this)"><i class="fa-solid fa-video"></i> Videos</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx AI</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
+            `;
+
+            if(data) {
+                window.fetchTeamMatrix(role === 'intern' ? data.team_task_id : "ALL");
+                if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
+            }
+
+            const lastPanel = localStorage.getItem('tims_last_panel');
+            if(lastPanel) {
+                const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
+                if(el) el.click();
+            }
+        };
+
+        // --- 7. WORKFLOW & ATTENDANCE ---
+        window.markAttendance = async function() { window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance."); };
+        window.saveDraft = function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            if(session && session.role === 'intern') localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('internProgressText').value);
+        };
+        window.submitTaskFinal = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const txt = document.getElementById('internProgressText').value;
+            if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
+            
+            window.showToast("Syncing Database...");
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ progress_text: txt, status: 'Submitted' }) });
+                const dateString = new Date().toISOString().split('T')[0];
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt }) });
+                window.showToast("Operation Submitted. HR Notified."); localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`); setTimeout(() => { window.logout(); }, 3000);
+            } catch(e) { window.showToast("Sync Failed.", true); }
+        };
+
+        window.fetchAttendance = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            try {
+                const dateString = new Date().toISOString().split('T')[0];
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const att = data[0];
+                    document.getElementById('attPercent').innerText = att.total_percentage + "%";
+                    document.getElementById('attProgressBar').style.width = att.total_percentage + "%";
+                    document.getElementById('attSubmitBadge').className = att.task_40 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attSubmitBadge').innerText = att.task_40 ? '40% Verified' : 'Task Not Submitted';
+                    document.getElementById('attHRBadge').className = att.hr_20 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attHRBadge').innerText = att.hr_20 ? '20% Verified' : 'HR Not Approved';
+                    document.getElementById('attOfficerBadge').className = att.officer_30 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attOfficerBadge').innerText = att.officer_30 ? '30% Verified' : 'Officer Not Approved';
+                }
+            } catch(e) {}
+        };
+
+        // --- 8. ADVANCED OFFICER TASK DEPLOYER ---
+        window.openCreateProjectView = function() {
+            document.getElementById('deployDropdown').classList.remove('show');
+            document.getElementById('offProjectListView').style.display = 'none';
+            document.getElementById('offProjectCreateView').style.display = 'block';
+            document.getElementById('offAddInternView').style.display = 'none';
+            document.getElementById('newTeamTaskId').value = "PRJ-" + Math.floor(Math.random() * 90000 + 10000);
+        };
+
+        window.backToProjectList = function() {
+            document.getElementById('offProjectCreateView').style.display = 'none';
+            document.getElementById('offAddInternView').style.display = 'none';
+            document.getElementById('offProjectListView').style.display = 'block';
+            window.fetchDeployedTasks();
+        };
+
+        window.createTeamProject = async function() {
+            const btn = event.currentTarget; const ogText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+            
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const payload = {
+                team_task_id: document.getElementById('newTeamTaskId').value,
+                project_name: document.getElementById('newProjectName').value,
+                created_by: session.name
+            };
+
+            if(!payload.project_name) { window.showToast("Project Name is required.", true); btn.innerHTML = ogText; btn.disabled = false; return; }
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
+                if(!res.ok) throw new Error("Database error.");
+                window.showToast("Team Task Created Successfully.");
+                document.getElementById('newProjectName').value = '';
+                window.backToProjectList();
+            } catch(e) { window.showToast("Failed to create project.", true); 
+            } finally { btn.innerHTML = ogText; btn.disabled = false; }
+        };
+
+        window.fetchDeployedTasks = async function() {
+            const cont = document.getElementById('activeTeamProjectsContainer');
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
+                            <h4 style="color:var(--accent-cyan); font-size:1.1rem;">${d.team_task_id}</h4>
+                            <p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:10px;">${d.project_name}</p>
+                            <span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">Manage Squad <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
+        };
+
+        window.filterTeamProjects = function(val) {
+            const cards = document.getElementById('activeTeamProjectsContainer').children;
+            for(let i=0; i<cards.length; i++) {
+                if(cards[i].classList.contains('data-card')) {
+                    cards[i].style.display = cards[i].innerText.toLowerCase().includes(val.toLowerCase()) ? 'block' : 'none';
+                }
+            }
+        };
+
+        // --- AGENT AUTO-SUGGEST FIX ---
+        window.openTeamTask = async function(taskId, projectName) {
+            document.getElementById('offProjectListView').style.display = 'none';
+            document.getElementById('offAddInternView').style.display = 'block';
+            document.getElementById('detailProjectTitle').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${projectName} <span style="font-size:0.8rem; color:var(--text-muted);">(${taskId})</span>`;
+            
+            window.currentTeamTaskId = taskId;
+            window.fetchProjectInterns(taskId);
+        };
+
+        window.generateUniqueTaskID = function() {
+            const intern = document.getElementById('addInternName').value.trim().toUpperCase().replace(/\s+/g, '');
+            document.getElementById('addUniqueId').value = (window.currentTeamTaskId && intern) ? `${window.currentTeamTaskId}-${intern}` : "";
+        };
+
+        window.fetchProjectInterns = async function(taskId) {
+            const cont = document.getElementById('projectInternsList');
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(taskId)}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="border-left-color: var(--accent-purple);">
+                            <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4>
+                            <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state" style="padding: 20px; font-size:0.8rem;">No interns assigned to this specific team task yet. Add one below.</div>'; }
+            } catch(e) { cont.innerHTML = ''; }
+        };
+
+        window.assignInternTask = async function() {
+            const btn = event.currentTarget; const ogText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Assigning...'; btn.disabled = true;
+            
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const payload = {
+                team_task_id: window.currentTeamTaskId,
+                intern_task_id: document.getElementById('addUniqueId').value,
+                intern_name: document.getElementById('addInternName').value.trim(),
+                assigned_officer: session.name,
+                title: document.getElementById('detailProjectTitle').innerText.replace('Project Details', '').trim(),
+                step_by_step_process: document.getElementById('addInternSteps').value
+            };
+
+            if(!payload.intern_task_id || !payload.step_by_step_process) { window.showToast("Missing intern name or directives.", true); btn.innerHTML = ogText; btn.disabled = false; return; }
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
+                if(!res.ok) throw new Error("Database rejected assignment.");
+
+                window.showToast("Intern Assigned Successfully.");
+                document.getElementById('addInternName').value = ''; document.getElementById('addUniqueId').value = ''; document.getElementById('addInternSteps').value = '';
+                window.fetchProjectInterns(window.currentTeamTaskId);
+            } catch(e) { window.showToast("Assignment Failed.", true); 
+            } finally { btn.innerHTML = ogText; btn.disabled = false; }
+        };
+
+        // --- 9. ASSET UPLOAD & COMPRESSOR (HTML5 Canvas Mock) ---
+        window.handleFileSelect = function(event) {
+            const file = event.target.files[0];
+            if(file) {
+                document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin";
+                document.getElementById('uploadText').innerText = "Compressing Asset...";
+                setTimeout(() => {
+                    window.selectedFile = file;
+                    document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check";
+                    document.getElementById('uploadText').innerText = `${file.name} (Compressed)`;
+                }, 1500);
+            }
+        };
+
+        window.broadcastAsset = async function() {
+            if(!window.selectedFile) { window.showToast("Please select a file to compress and broadcast.", true); return; }
+            const title = document.getElementById('assetTitle').value; const type = document.getElementById('assetType').value;
+            if(!title) { window.showToast("Asset Title Required.", true); return; }
+
+            const mockUrl = `https://tournyx.in/assets/${type}/${encodeURIComponent(title.toLowerCase())}.mp4`;
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ asset_type: type, title: title, file_url: mockUrl }) });
+                window.showToast("Asset Compressed & Distributed to Network.");
+                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('uploadText').innerText = "Click to Upload File";
+                window.selectedFile = null;
+            } catch(e) { window.showToast("Broadcast Failed.", true); }
+        };
+
+        // --- 10. DYNAMIC DATA FETCHING & ADVANCED VIDEO PLAYER ---
+        window.loadAssets = async function(type, title, navElement) {
+            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`;
+            window.switchPanel('panel-dynamic-assets', navElement);
+            const cont = document.getElementById('assetContainer'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    if(type === 'Video') {
+                        cont.innerHTML = data.map(d => `<div class="video-container" style="margin-bottom:15px; border-radius:16px; overflow:hidden; border:1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5);"><video controls preload="metadata" disablePictureInPicture="false" controlsList="nodownload" style="width:100%; display:block; object-fit: cover;"><source src="${d.file_url}" type="video/mp4"></video><div style="padding:15px; background:rgba(0,0,0,0.5);"><h4>${d.title}</h4></div></div>`).join('');
+                    } else { cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.title}</h4><a href="${d.file_url}" target="_blank" style="color:var(--accent-cyan); font-size:0.8rem; font-weight:bold; text-decoration:none;"><i class="fa-solid fa-link"></i> Access Asset</a></div>`).join('') + `</div>`; }
+                } else { cont.innerHTML = `<div class="empty-state">No ${type} assets assigned to your sector yet.</div>`; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
+        };
+
+        // --- 11. OFFICER VERIFICATION ---
+        window.fetchApprovals = async function() {
+            const cont = document.getElementById('approvalMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
+            try {
+                const session = JSON.parse(localStorage.getItem('tims_session'));
+                const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
+                const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4><div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);"><strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br><p style="color:white; font-size:0.85rem;">${d.progress_text}</p></div><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn btn-outline" style="padding:10px; font-size:0.75rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button><button class="btn btn-success" style="padding:10px; font-size:0.75rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Grant Clearance</button></div></div>`).join('') + `</div>`;
+                } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
+        };
+
+        window.approveIntern = async function(internName) {
+            const session = JSON.parse(localStorage.getItem('tims_session')); const dateString = new Date().toISOString().split('T')[0];
+            try {
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+                const attData = await attRes.json();
+                if(attData.length > 0) {
+                    const att = attData[0]; let payload = {};
+                    if(session.role === 'hr' && !att.hr_20) payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
+                    else if (session.role === 'officer' && !att.officer_30) payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
+                    if(Object.keys(payload).length > 0) {
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
+                        window.showToast("Clearance Granted Successfully."); window.fetchApprovals();
+                    } else { window.showToast("Already cleared by you.", true); }
+                }
+            } catch(e) {}
+        };
+
+        // --- 12. SHARED FETCHERS (Team & Domain Officer) ---
+        window.fetchTeamMatrix = async function(teamTaskId) {
+            const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
+            try {
+                const url = teamTaskId === "ALL" ? `${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_phone,intern_task_id` : `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id`;
+                const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name}</h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="tag-badge" style="background:rgba(189,0,255,0.1); color:var(--accent-purple); border:1px solid rgba(189,0,255,0.3);">${d.intern_task_id}</span></div>`).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
+            } catch(e) {}
+        };
+
+        window.fetchDomainOfficer = async function(assignedOfficerName) {
+            const domainCont = document.getElementById('contactsDomainContainer');
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(assignedOfficerName)}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const officer = data[0];
+                    domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
+                }
+            } catch(e) {}
+        };
+
+        // --- 13. UI CORE ROUTING ---
+        window.switchPanel = function(panelId, navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
+            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
+            const activePanel = document.getElementById(panelId); if(!activePanel) return; 
+            
+            localStorage.setItem('tims_last_panel', panelId);
+
+            activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
+            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
+        };
+
+        window.openSidebar = function() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileOverlay').classList.add('open'); };
+        window.closeSidebar = function() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('open'); };
+        window.logout = function() {
+            localStorage.removeItem('tims_session'); localStorage.removeItem('tims_last_panel');
+            const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
+            setTimeout(() => {
+                dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
+                const loginView = document.getElementById('view-login'); loginView.style.visibility = 'visible'; loginView.style.display = 'flex';
+                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
+                document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
+                document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
+                window.closeSidebar(); window.showToast("Session Terminated Securely.");
+            }, 500);
+        };
+
+        // --- 14. SAFE BOOT SEQUENCE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('tims_theme');
+            if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
+            try {
+                const canvas = document.getElementById('particles-canvas'); const ctx = canvas.getContext('2d');
+                let width = window.innerWidth; let height = window.innerHeight; canvas.width = width; canvas.height = height; let pArray = [];
+                for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
+                function draw() { ctx.clearRect(0, 0, width, height); pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); }); requestAnimationFrame(draw); }
+                draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
+            } catch(e) {}
+
+            const sessionRaw = localStorage.getItem('tims_session');
+            if(sessionRaw) {
+                const s = JSON.parse(sessionRaw);
+                if(window.isSessionValid(s)) {
+                    document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
+                    const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
+                    document.getElementById('dashName').innerText = s.name; document.getElementById('dashRole').innerText = `${s.role} access level`;
+                    document.getElementById('dashName').style.color = s.role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                    window.buildDashboardRole(s.role, s.data);
+                } else { localStorage.removeItem('tims_session'); }
+            }
+        });
+    </script>
 </body>
 </html>
