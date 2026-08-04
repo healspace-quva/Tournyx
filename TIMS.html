@@ -66,9 +66,10 @@
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
         .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
 
         .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate;}
+        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 2s infinite alternate;}
         @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
 
         /* --- DASHBOARD VIEW --- */
@@ -123,7 +124,7 @@
         .tag-badge { font-size: 0.7rem; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; background: rgba(0,242,255,0.1); color: var(--accent-cyan); display: inline-block; font-weight: 700;}
 
         /* Previews & Assets */
-        .preview-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 15px; }
+        .preview-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 15px; display: flex; justify-content: center; align-items: center;}
         .preview-container img { width: 100%; display: block; object-fit: contain; max-height: 400px; }
         .preview-container iframe { width: 100%; height: 400px; border: none; background: white; }
         .preview-container video { width: 100%; display: block; }
@@ -183,7 +184,6 @@
 <body>
 
     <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
-    <canvas id="particles-canvas"></canvas>
     <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
 
     <!-- ========================================== -->
@@ -330,6 +330,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- [INTERN] Attendance Matrix (With History & Filters) -->
             <div id="panel-intern-attendance" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -367,6 +368,7 @@
 
             <!-- [OFFICER] Advanced Deploy Hub -->
             <div id="panel-officer-tasks" class="content-panel">
+                <!-- List View -->
                 <div class="panel-card glass-panel" id="offProjectListView">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
@@ -382,6 +384,7 @@
                     <div class="data-grid" id="activeTeamProjectsContainer"></div>
                 </div>
 
+                <!-- Create View -->
                 <div class="panel-card glass-panel" id="offProjectCreateView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 class="panel-title" style="margin: 0;"><i class="fa-solid fa-rocket"></i> Initialize New Team Task</h3>
@@ -392,6 +395,7 @@
                     <button class="btn btn-success" onclick="window.createTeamProject()"><i class="fa-solid fa-check-double"></i> Initialize Matrix</button>
                 </div>
 
+                <!-- Assign View -->
                 <div class="panel-card glass-panel" id="offAddInternView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                         <h3 class="panel-title" style="margin: 0; border: none; padding: 0;" id="detailProjectTitle">Project</h3>
@@ -442,7 +446,7 @@
             <div id="panel-officer-assets" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
-                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload structural assets to DB directly.</p>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload structural assets to DB directly. Native MIME encoding enabled.</p>
                     
                     <div class="data-grid">
                         <div class="form-group">
@@ -481,10 +485,11 @@
                 </div>
             </div>
 
-            <!-- SHARED: Dynamic Assets -->
+            <!-- SHARED: Dynamic Assets (PREVIEWS) -->
             <div id="panel-dynamic-assets" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title" id="assetTitleHeader"><i class="fa-solid fa-folder-open"></i> Asset Database</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Classified structural assets.</p>
                     <div id="assetContainer"></div>
                 </div>
             </div>
@@ -493,11 +498,12 @@
             <div id="panel-team" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Operatives assigned to your active Team Task ID.</p>
                     <div class="data-grid" id="teamMatrixContainer"></div>
                 </div>
             </div>
 
-           <!-- SHARED: Global Contacts -->
+            <!-- SHARED: Global Contacts -->
             <div id="panel-contacts" class="content-panel">
                 <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
                     <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
@@ -507,7 +513,7 @@
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-building"></i> Headquarters Mail</h3>
                     <div class="data-card" style="border-left-color: var(--accent-green); margin-bottom: 20px;">
-                        <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> tournyx.esports.india@gmail.com</p>
+                        <h4>Tournyx Main Comm</h4><p><i class="fa-solid fa-envelope"></i> contact@tournyx.in</p>
                     </div>
                     
                     <h3 class="panel-title"><i class="fa-solid fa-sitemap"></i> Command Squad</h3>
@@ -544,7 +550,7 @@
                 </div>
             </div>
 
-            <!-- SHARED: Settings -->
+            <!-- SHARED: Settings Theme Switcher -->
             <div id="panel-settings" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-gear"></i> System Preferences</h3>
@@ -553,7 +559,10 @@
                             <h4 style="font-size: 0.95rem; margin-bottom: 2px;">Light / Dark Theme</h4>
                             <p style="font-size: 0.75rem; color: var(--text-muted);">Toggle interface color matrix.</p>
                         </div>
-                        <label class="switch"><input type="checkbox" id="themeToggle" onchange="window.toggleTheme()"><span class="slider"></span></label>
+                        <label class="switch">
+                            <input type="checkbox" id="themeToggle" onchange="window.toggleTheme()">
+                            <span class="slider"></span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -561,11 +570,14 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- SECURE JAVASCRIPT ENGINE (100% NATIVE REST) -->
+    <!-- ========================================== -->
     <script>
         // --- 1. CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const WORKER_URL = 'https://tims-engine-worker.annaduraithilakjeevesh.workers.dev'; // e.g. https://tims-engine-worker.yourname.workers.dev
+        const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
+        const WORKER_URL = 'YOUR_WORKER_URL_HERE'; // e.g. https://tims-engine-worker.yourname.workers.dev
 
         const apiHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
         
@@ -574,7 +586,7 @@
         window.taskFileType = null;
         window.globalFileBase64 = null;
         window.globalFileType = null;
-        window.aiContextStr = "No task assigned.";
+        window.aiContextStr = "No context established.";
         
         let timerInterval = null;
         let timerSeconds = 0;
@@ -641,11 +653,9 @@
             const btn = document.getElementById(btnId); const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
 
-            // BUG FIX: Interns login with unique intern_task_id
             let url = role === 'intern' 
                 ? `${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
                 : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
-//... (Keep the rest of the initiateLogin function the same)
 
             try {
                 const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
@@ -661,10 +671,10 @@
                 
                 if(role === 'intern') {
                     const dateString = new Date().toISOString().split('T')[0];
-                    const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
+                    const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
                     const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
                     const attData = await attRes.json();
-                    if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
+                    if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
                 }
 
                 localStorage.setItem('tims_session', JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
@@ -686,186 +696,6 @@
             } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
 
-        // --- 1. TIMER & QUESTIONNAIRE HANDLING ---
-        window.startTaskTimer = function() {
-            document.getElementById('topRightTimer').style.display = 'flex';
-            document.getElementById('btnStartTimer').style.display = 'none';
-            document.getElementById('taskQuestionnaireState').style.display = 'block';
-            window.showToast("Timer Started. Complete the technical breakdown below.");
-
-            const timerEl = document.getElementById('activeTimer');
-            if (!timerInterval) {
-                timerInterval = setInterval(() => {
-                    timerSeconds++;
-                    let hrs = Math.floor(timerSeconds / 3600);
-                    let mins = Math.floor((timerSeconds % 3600) / 60);
-                    let secs = timerSeconds % 60;
-                    timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                }, 1000);
-            }
-        };
-
-        // --- 2. SUBMIT TECHNICAL REPORT & UPDATE DATABASE ---
-        window.submitTaskFinal = async function() {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const qFunc = document.getElementById('qFunctions').value.trim();
-            const qUpg = document.getElementById('qUpgrades').value.trim();
-            const qBugs = document.getElementById('qBugs').value.trim();
-            const qLog = document.getElementById('qLogic').value.trim();
-            const qChall = document.getElementById('qChallenges').value.trim();
-            const qSum = document.getElementById('qSummary').value.trim();
-            const timeLog = document.getElementById('activeTimer').innerText;
-
-            if (!qSum && !qFunc) { 
-                window.showToast("Please fill in the execution details before submitting.", true); 
-                return; 
-            }
-            
-            clearInterval(timerInterval);
-            const combinedProgress = `
-[Functions Implemented]: ${qFunc || 'N/A'}
-[Upgrades Added]: ${qUpg || 'N/A'}
-[Bugs Resolved]: ${qBugs || 'N/A'}
-[Code Logic]: ${qLog || 'N/A'}
-[Challenges Faced]: ${qChall || 'N/A'}
-[Summary]: ${qSum || 'Completed'}
-            `.trim();
-
-            window.showToast("Syncing Database...");
-            try {
-                // Update Supabase task record with all answers
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
-                    method: 'PATCH', 
-                    headers: apiHeaders, 
-                    body: JSON.stringify({ 
-                        progress_text: combinedProgress, 
-                        functions_implemented: qFunc,
-                        upgrades_added: qUpg,
-                        bugs_resolved: qBugs,
-                        code_logic: qLog,
-                        challenges_faced: qChall,
-                        final_summary: qSum,
-                        status: 'Submitted', 
-                        time_spent: timeLog 
-                    }) 
-                });
-
-                // Update Attendance Record to 50% (+40%)
-                const dateString = new Date().toISOString().split('T')[0];
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { 
-                    method: 'PATCH', 
-                    headers: apiHeaders, 
-                    body: JSON.stringify({ task_40: true, total_percentage: 50 }) 
-                });
-                
-                // Trigger Cloudflare Worker Email Notification to HR
-                fetch(WORKER_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) 
-                });
-
-                window.showToast("Operation Submitted (+40%). HR & Officers Notified.");
-                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
-                setTimeout(() => { window.logout(); }, 3000); 
-            } catch(e) { window.showToast("Sync Failed.", true); }
-        };
-
-        // --- 3. ATTENDANCE HISTORY & FILTER ---
-        window.fetchAttendanceHistory = async function(filterType = 'weekly') {
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            const cont = document.getElementById('attHistoryContainer');
-            if(!cont) return;
-            
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
-                const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `
-                        <div class="data-card">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <h4>${new Date(d.log_date).toLocaleDateString()}</h4>
-                                <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${d.total_percentage}% Score</span>
-                            </div>
-                            <p style="font-size:0.75rem; margin-top:8px;">HR Approved: ${d.hr_20 ? 'Yes' : 'Pending'} | Officer Cleared: ${d.officer_30 ? 'Yes' : 'Pending'}</p>
-                        </div>
-                    `).join('');
-                } else { cont.innerHTML = '<div class="empty-state">No past attendance logs recorded.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Failed to load history.</div>'; }
-        };
-
-        // --- 4. SQUAD MATRIX FETCHING (SQUAD FOR OFFICERS & INTERNS) ---
-        window.fetchTeamMatrix = async function(teamTaskId) {
-            const cont = document.getElementById('teamMatrixContainer');
-            if(!cont) return;
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning squad matrix...</div>';
-            
-            const session = JSON.parse(localStorage.getItem('tims_session'));
-            try {
-                let url = "";
-                if(session.role === 'intern') {
-                    // Fetch all interns assigned to the same team_task_id
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_task_id,intern_role,assigned_officer`;
-                } else {
-                    // Fetch all domain officers and squad members for Officers View
-                    url = `${SUPABASE_URL}/rest/v1/tims_users?select=name,role,email,phone`;
-                }
-
-                const res = await fetch(url, { headers: apiHeaders }); 
-                const data = await res.json();
-                
-                if(data && data.length > 0) {
-                    if(session.role === 'intern') {
-                        cont.innerHTML = data.map(d => `
-                            <div class="data-card">
-                                <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.intern_role || 'Supporter'}</span></h4>
-                                <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p>
-                                <p style="font-size:0.7rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p>
-                            </div>
-                        `).join('');
-                    } else {
-                        cont.innerHTML = data.map(d => `
-                            <div class="data-card">
-                                <h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4>
-                                <p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p>
-                                <p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p>
-                            </div>
-                        `).join('');
-                    }
-                } else { cont.innerHTML = '<div class="empty-state">No other squad members assigned to this matrix.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading squad.</div>'; }
-        };
-
-        // --- 5. FIXED AI CHATBOT FUNCTION ---
-        window.triggerAI = async function() {
-            const input = document.getElementById('aiInput');
-            const chatBox = document.getElementById('aiChatBox');
-            if(!input.value.trim()) return;
-
-            const userMessage = input.value.trim();
-            chatBox.innerHTML += `<div class="chat-bubble chat-user">${userMessage}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            input.value = '';
-
-            try {
-                const res = await fetch(WORKER_URL, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ 
-                        action: 'tims_ai_chat', 
-                        prompt: userMessage, 
-                        context: window.aiContextStr || "General Operations" 
-                    }) 
-                });
-                const data = await res.json();
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer || data.error || "No response received."}</div>`;
-            } catch(e) { 
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Connection Error: Unable to query AI Agent.</div>`; 
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        };
         // --- 6. DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
@@ -878,7 +708,7 @@
             if(role === 'intern') {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance(); window.fetchAttendanceHistory();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
                 `;
                 document.getElementById('intTaskTitle').innerText = data.title || "Operation Node";
                 document.getElementById('intTaskID').innerText = data.intern_task_id; 
@@ -895,7 +725,6 @@
                 
                 window.aiContextStr = `User is an Intern. Assigned Task: ${data.title}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
                 window.fetchAnnouncementsDashboard();
-
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
@@ -918,10 +747,11 @@
 
             if(data) {
                 window.fetchTeamMatrix(role === 'intern' ? data.team_task_id : "ALL");
-                window.fetchContacts(role === 'intern' ? data.assigned_officer : null);
+                if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
             }
 
-            const lastPanel = localStorage.getItem('tims_last_panel');
+            // Secure local storage navigation based on user role to prevent cross-contamination
+            const lastPanel = localStorage.getItem(`tims_last_panel_${role}`);
             if(lastPanel) {
                 const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
                 if(el) el.click();
@@ -937,48 +767,84 @@
             } catch(e) {}
         }
 
-        // --- 7. WORKFLOW & TIMER ---
+        // --- 7. WORKFLOW, TIMER, & QUESTIONNAIRE ---
         window.startTaskTimer = function() {
-            document.getElementById('taskDetailState').style.display = 'none';
-            document.getElementById('taskTimerState').style.display = 'block';
+            document.getElementById('topRightTimer').style.display = 'flex';
+            document.getElementById('btnStartTimer').style.display = 'none';
+            document.getElementById('taskQuestionnaireState').style.display = 'block';
+            window.showToast("Timer Started. Complete the technical breakdown below.");
+
             const timerEl = document.getElementById('activeTimer');
-            timerInterval = setInterval(() => {
-                timerSeconds++;
-                let hrs = Math.floor(timerSeconds / 3600); let mins = Math.floor((timerSeconds % 3600) / 60); let secs = timerSeconds % 60;
-                timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }, 1000);
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    let hrs = Math.floor(timerSeconds / 3600);
+                    let mins = Math.floor((timerSeconds % 3600) / 60);
+                    let secs = timerSeconds % 60;
+                    timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
         };
 
         window.markAttendance = async function() { 
             window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance."); 
             const session = JSON.parse(localStorage.getItem('tims_session'));
             const dateString = new Date().toISOString().split('T')[0];
-            const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+            const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
             const attData = await attRes.json();
             if(attData.length > 0) document.getElementById('dashInternStatus').innerText = "Logged In (10%)";
         };
         
         window.saveDraft = function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
-            if(session && session.role === 'intern') localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('internProgressText').value);
+            if(session && session.role === 'intern') localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('qSummary').value);
         };
 
         window.submitTaskFinal = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session'));
-            const txt = document.getElementById('internProgressText').value;
+            const qFunc = document.getElementById('qFunctions').value.trim();
+            const qUpg = document.getElementById('qUpgrades').value.trim();
+            const qBugs = document.getElementById('qBugs').value.trim();
+            const qLog = document.getElementById('qLogic').value.trim();
+            const qChall = document.getElementById('qChallenges').value.trim();
+            const qSum = document.getElementById('qSummary').value.trim();
             const timeLog = document.getElementById('activeTimer').innerText;
-            if(!txt) { window.showToast("Progress log cannot be empty.", true); return; }
+
+            if (!qSum && !qFunc) { window.showToast("Please fill in the execution details before submitting.", true); return; }
             
             clearInterval(timerInterval);
+            const combinedProgress = `
+[Functions Implemented]: ${qFunc || 'N/A'}
+[Upgrades Added]: ${qUpg || 'N/A'}
+[Bugs Resolved]: ${qBugs || 'N/A'}
+[Code Logic]: ${qLog || 'N/A'}
+[Challenges Faced]: ${qChall || 'N/A'}
+[Summary]: ${qSum || 'Completed'}
+            `.trim();
+
             window.showToast("Syncing Database...");
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ progress_text: txt, status: 'Submitted', time_spent: timeLog }) });
-                const dateString = new Date().toISOString().split('T')[0];
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
-                
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: txt, timeSpent: timeLog }) });
+                // Update Supabase task record with all answers
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
+                    method: 'PATCH', 
+                    headers: apiHeaders, 
+                    body: JSON.stringify({ 
+                        progress_text: combinedProgress, 
+                        functions_implemented: qFunc, upgrades_added: qUpg, bugs_resolved: qBugs, code_logic: qLog, challenges_faced: qChall, final_summary: qSum,
+                        status: 'Submitted', time_spent: timeLog 
+                    }) 
+                });
 
-                window.showToast("Operation Submitted (+40%). HR Notified.");
+                // Update Attendance Record to 50% (+40%)
+                const dateString = new Date().toISOString().split('T')[0];
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { 
+                    method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) 
+                });
+                
+                // Trigger Cloudflare Worker Email Notification to HR
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) });
+
+                window.showToast("Operation Submitted (+40%). HR & Officers Notified.");
                 localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
                 setTimeout(() => { window.logout(); }, 3000); 
             } catch(e) { window.showToast("Sync Failed.", true); }
@@ -988,7 +854,7 @@
             const session = JSON.parse(localStorage.getItem('tims_session'));
             try {
                 const dateString = new Date().toISOString().split('T')[0];
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
                 const data = await res.json();
                 if(data && data.length > 0) {
                     const att = data[0];
@@ -1001,13 +867,35 @@
             } catch(e) {}
         };
 
+        window.fetchAttendanceHistory = async function(filterType = 'weekly') {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const cont = document.getElementById('attHistoryContainer');
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
+            try {
+                // In production, implement date filtering based on 'filterType'. For now, orders by latest.
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4>${new Date(d.log_date).toLocaleDateString()}</h4>
+                                <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${d.total_percentage}% Score</span>
+                            </div>
+                            <p style="font-size:0.75rem; margin-top:8px;">HR Approved: ${d.hr_20 ? 'Yes' : 'Pending'} | Officer Cleared: ${d.officer_30 ? 'Yes' : 'Pending'}</p>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No past attendance logs recorded.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Failed to load history.</div>'; }
+        };
+
         // --- 8. ADVANCED OFFICER TASK DEPLOYER ---
         window.openCreateProjectView = function() {
             document.getElementById('deployDropdown').classList.remove('show');
             document.getElementById('offProjectListView').style.display = 'none';
             document.getElementById('offProjectCreateView').style.display = 'block';
             document.getElementById('offAddInternView').style.display = 'none';
-            // BUG FIX: Generate short lowercase ID
             document.getElementById('newTeamTaskId').value = "prj-" + Math.random().toString(36).substr(2, 4).toLowerCase();
         };
 
@@ -1063,7 +951,7 @@
             document.getElementById('addUniqueId').value = (window.currentTeamTaskId && intern) ? `${window.currentTeamTaskId}-${intern}` : "";
         };
 
-       window.fetchProjectInterns = async function(taskId) {
+        window.fetchProjectInterns = async function(taskId) {
             const cont = document.getElementById('projectInternsList'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(taskId)}&select=*`, { headers: apiHeaders });
@@ -1081,7 +969,6 @@
             } catch(e) { cont.innerHTML = ''; }
         };
 
-        // NEW FEATURE: Edit Existing Task
         window.editAssignedTask = async function(taskId) {
             window.showToast("Fetching task data...");
             try {
@@ -1108,12 +995,12 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 window.taskFileBase64 = e.target.result;
+                window.taskFileType = file.type;
                 document.getElementById('taskUploadIcon').className = "fa-solid fa-file-circle-check"; document.getElementById('taskUploadText').innerText = "File Attached & Encoded";
             };
             reader.readAsDataURL(file);
         };
 
-        // BUG FIX: Intern Assignment Try/Catch Block
         window.assignInternTask = async function() {
             const btn = event.currentTarget; const ogText = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Assigning...'; btn.disabled = true;
@@ -1218,7 +1105,7 @@
 
         window.createPreviewBlock = function(base64Str, title, type) {
             if(!base64Str || base64Str === 'none') return '';
-            if(type.startsWith('video') || base64Str.includes('youtube.com') || base64Str.endsWith('.mp4')) {
+            if(type && type.startsWith('video') || base64Str.includes('youtube.com') || base64Str.endsWith('.mp4')) {
                 return `<div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
                             <video controls preload="metadata" style="width:100%;">
                                 <source src="${base64Str}" type="video/mp4">
@@ -1242,7 +1129,6 @@
                 
                 if(data && data.length > 0) {
                     if (type === 'Announcement') {
-                        // Fix for Announcement overflow
                         cont.innerHTML = `<div class="data-grid">` + data.map(d => `
                             <div class="data-card" style="border-left-color: var(--accent-purple);">
                                 <h4>${d.title}</h4>
@@ -1254,7 +1140,6 @@
                             <div class="data-card" style="margin-bottom:15px;">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                                     <h4>${d.title}</h4>
-                                    <button class="btn btn-outline" style="padding:5px; border-color:var(--accent-red); color:var(--accent-red);" onclick="window.deleteAsset('${d.id}')"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                                 ${window.createPreviewBlock(d.file_url, d.title, d.file_type)}
                             </div>`).join(''); 
@@ -1297,12 +1182,10 @@
             const session = JSON.parse(localStorage.getItem('tims_session')); 
             const dateString = new Date().toISOString().split('T')[0];
             
-            // Instantly hide the card to prevent double-clicking
             document.getElementById(`approvalCard_${taskId}`).style.display = 'none';
             window.showToast("Processing Clearance...");
 
             try {
-                // Fetch attendance record to update
                 const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
                 const attData = await attRes.json();
                 
@@ -1313,34 +1196,34 @@
                     
                     if(Object.keys(payload).length > 0) {
                         await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
-                        
-                        // Update task status so it doesn't show in pending anymore
                         if((session.role === 'hr' && att.officer_30) || (session.role === 'officer' && att.hr_20)) {
                              await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved' }) });
                         }
                         window.showToast("Clearance Granted Successfully."); 
-                    }
+                    } else { window.showToast("Already cleared.", true); }
                 }
-            } catch(e) { 
-                window.showToast("Clearance Failed.", true); 
-                document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; // Show again on error
-            }
+            } catch(e) { document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; }
         };
+
         // --- SHARED FETCHERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
             const session = JSON.parse(localStorage.getItem('tims_session'));
             try {
                 let url = "";
-                if(session.role === 'intern') url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_phone,intern_task_id,intern_role`;
-                else url = `${SUPABASE_URL}/rest/v1/tims_users?or=(role.eq.officer,role.eq.hr)&select=name,role,phone`;
+                if(session.role === 'intern') {
+                    // Extract project prefix (e.g. prj-abcd) from the intern's specific task ID
+                    let projectPrefix = teamTaskId.split('-').slice(0, 2).join('-');
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(projectPrefix)}&select=intern_name,intern_phone,intern_task_id,intern_role,assigned_officer`;
+                }
+                else url = `${SUPABASE_URL}/rest/v1/tims_users?select=name,role,email,phone`;
 
                 const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
                 if(data && data.length > 0) {
                     if(session.role === 'intern') {
                         cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge" style="float:right; background:transparent; border:1px solid var(--glass-border);">${d.intern_role || 'Supporter'}</span></h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.intern_phone || 'Unlisted'}</p><span class="tag-badge" style="background:rgba(189,0,255,0.1); color:var(--accent-purple); border:1px solid rgba(189,0,255,0.3);">${d.intern_task_id}</span></div>`).join('');
                     } else {
-                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4><p><i class="fa-solid fa-mobile-screen"></i> ${d.phone || 'Unlisted'}</p></div>`).join('');
+                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
                     }
                 } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
             } catch(e) {}
@@ -1364,12 +1247,17 @@
             const chatBox = document.getElementById('aiChatBox');
             if(!input.value.trim()) return;
 
-            chatBox.innerHTML += `<div class="chat-bubble chat-user">${input.value}</div>`;
+            const userMessage = input.value.trim();
+            chatBox.innerHTML += `<div class="chat-bubble chat-user">${userMessage}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
-            const userPrompt = input.value; input.value = '';
+            input.value = '';
 
             try {
-                const res = await fetch(WORKER_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'tims_ai_chat', prompt: userPrompt, context: window.aiContextStr || "General Operations" }) });
+                const res = await fetch(WORKER_URL, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: userMessage, context: window.aiContextStr || "General Operations" }) 
+                });
                 const data = await res.json();
                 chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer || data.error}</div>`;
             } catch(e) { chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI.</div>`; }
@@ -1382,7 +1270,8 @@
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
             
-            localStorage.setItem('tims_last_panel', panelId);
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            if(session) localStorage.setItem(`tims_last_panel_${session.role}`, panelId);
 
             activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
@@ -1391,7 +1280,9 @@
         window.openSidebar = function() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileOverlay').classList.add('open'); };
         window.closeSidebar = function() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('open'); };
         window.logout = function() {
-            localStorage.removeItem('tims_session'); localStorage.removeItem('tims_last_panel');
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            if(session) localStorage.removeItem(`tims_last_panel_${session.role}`);
+            localStorage.removeItem('tims_session'); 
             const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
             setTimeout(() => {
                 dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
