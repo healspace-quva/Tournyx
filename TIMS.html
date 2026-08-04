@@ -552,14 +552,19 @@
                 </div>
             </div>
 
-            <!-- SHARED: AI Hub (CHATGPT STYLE) -->
+            <!-- SHARED: AI Hub (CHATGPT STYLE WITH MEMORY) -->
             <div id="panel-ai" class="content-panel" style="height: 100%;">
                 <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); display: flex; flex-direction: column; height: 100%;">
-                    <h3 class="panel-title" style="color: var(--accent-purple); margin-bottom:0; border:none; padding:0;"><i class="fa-solid fa-microchip"></i> Tournyx Agent AI</h3>
-                    <p style="color:var(--text-muted); margin-top:5px; margin-bottom: 15px; font-size: 0.75rem;">Agent automatically reads your profile context.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(189,0,255,0.2); padding-bottom: 15px; margin-bottom: 15px;">
+                        <div>
+                            <h3 class="panel-title" style="color: var(--accent-purple); margin:0; border:none; padding:0;"><i class="fa-solid fa-microchip"></i> Tournyx Agent AI</h3>
+                            <p style="color:var(--text-muted); margin-top:5px; font-size: 0.75rem;">Agent automatically reads your profile context.</p>
+                        </div>
+                        <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.7rem; border-color: var(--accent-purple); color: var(--accent-purple);" onclick="window.clearChat()"><i class="fa-solid fa-plus"></i> New Chat</button>
+                    </div>
                     
                     <div class="ai-chat-container" id="aiChatBox">
-                        <div class="chat-bubble chat-ai">System Online. Connected to Neural Net... I have read your profile context. How can I assist you?</div>
+                        <!-- Chats will inject here -->
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -1441,66 +1446,114 @@
             } catch(e) {}
         };
 
-        // --- AI CHAT AGENT (WITH CONVERSATIONAL MEMORY) ---
+      // --- AI CHAT AGENT (WITH MEMORY & AUTO-FETCH) ---
+        window.aiChatHistory = [];
+
+        window.initAIChat = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
+            const chatBox = document.getElementById('aiChatBox');
+            
+            // 1. Check if chat history already exists in memory
+            const savedHistory = localStorage.getItem(`tims_chat_history_${session.role}`);
+            if (savedHistory) {
+                window.aiChatHistory = JSON.parse(savedHistory);
+                window.renderChatHistory();
+                return; 
+            }
+
+            // 2. If no history, create the FIRST auto-prompt to introduce the task
+            window.aiChatHistory = [];
+            chatBox.innerHTML = '<div class="chat-bubble chat-ai"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing your dashboard profile and syncing context...</div>';
+            
+            let contextMsg = "";
+            let uniqueId = session.role === 'intern' ? session.data.intern_task_id : "CMD-" + Math.floor(Math.random() * 9000);
+            
+            if (session.role === 'intern' && session.data.title) {
+                contextMsg = `System Setup: The user is an Intern. Their Unique Query ID is ${uniqueId}. Their active task is "${session.data.title}". Directives: ${session.data.step_by_step_process}. Generate a professional greeting. Acknowledge their task and ID, and give them 2 bullet points suggesting how they should start executing their directives.`;
+            } else {
+                contextMsg = `System Setup: The user is a Commander. Their Unique Query ID is ${uniqueId}. Give a short, professional greeting welcoming them to the matrix, and provide one brief tip on managing workflows today.`;
+            }
+
+            try {
+                const res = await fetch(WORKER_URL, { 
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: contextMsg, history: [] }) 
+                });
+                const data = await res.json();
+                
+                window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Hello! System synchronized. How can I assist you today?" });
+                localStorage.setItem(`tims_chat_history_${session.role}`, JSON.stringify(window.aiChatHistory));
+                window.renderChatHistory();
+            } catch(e) {
+                chatBox.innerHTML = `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI. Ensure Cloudflare Worker is deployed.</div>`; 
+            }
+        };
+
+        window.renderChatHistory = function() {
+            const chatBox = document.getElementById('aiChatBox');
+            chatBox.innerHTML = window.aiChatHistory.map(msg => 
+                `<div class="chat-bubble ${msg.role === 'user' ? 'chat-user' : 'chat-ai'}">${msg.content}</div>`
+            ).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        window.clearChat = function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
+            localStorage.removeItem(`tims_chat_history_${session.role}`);
+            window.aiChatHistory = [];
+            window.initAIChat();
+        };
+
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
-            const chatBox = document.getElementById('aiChatBox');
             if(!input.value.trim()) return;
 
             const userMessage = input.value.trim();
-            
-            // Render user message on screen
-            chatBox.innerHTML += `<div class="chat-bubble chat-user">${userMessage}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
+            window.aiChatHistory.push({ role: 'user', content: userMessage });
+            window.renderChatHistory();
             input.value = '';
 
-            // Save user message to memory
-            window.aiChatHistory.push({ role: 'user', content: userMessage });
-
-            // Show typing indicator
+            const chatBox = document.getElementById('aiChatBox');
             const typingId = 'typing_' + Date.now();
             chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i> Processing...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
+
             try {
                 const res = await fetch(WORKER_URL, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ 
-                        action: 'tims_ai_chat', 
-                        history: window.aiChatHistory, // Sending entire memory array
-                        context: window.aiContextStr || "General Operations" 
-                    }) 
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: userMessage, history: window.aiChatHistory }) 
                 });
-                
                 const data = await res.json();
-                document.getElementById(typingId).remove(); // Remove typing indicator
                 
+                document.getElementById(typingId).remove();
                 if (data.status === 'success') {
-                    chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer}</div>`;
-                    // Save AI response to memory so it remembers for the next question
                     window.aiChatHistory.push({ role: 'assistant', content: data.answer });
+                    localStorage.setItem(`tims_chat_history_${session.role}`, JSON.stringify(window.aiChatHistory));
+                    window.renderChatHistory();
                 } else {
                     chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">${data.answer || data.error}</div>`;
-                    window.aiChatHistory.pop(); // Remove the last user message from memory if it failed, so it doesn't get stuck
+                    window.aiChatHistory.pop(); 
                 }
             } catch(e) { 
                 document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI. Ensure Cloudflare Worker is active.</div>`; 
-                window.aiChatHistory.pop(); // Remove the last user message from memory if it failed
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Check internet connection.</div>`; 
+                window.aiChatHistory.pop();
             }
-            chatBox.scrollTop = chatBox.scrollHeight;
         };
-        // --- UI CORE ROUTING ---
+       // --- UI CORE ROUTING ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
             
-            // Check session to store memory separately
-            const s_int = JSON.parse(localStorage.getItem('tims_session_intern'));
+            // Initialize AI if the user clicks the AI tab
+            if (panelId === 'panel-ai') { window.initAIChat(); }
+            
+            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
-            if(s_int) localStorage.setItem('tims_last_panel_intern', panelId);
+            if(session) localStorage.setItem('tims_last_panel_intern', panelId);
             if(s_off) localStorage.setItem('tims_last_panel_officer', panelId);
 
             activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
