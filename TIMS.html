@@ -604,12 +604,12 @@
         // --- 1. CONFIGURATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        const WORKER_URL = 'https://tims-engine-worker.annaduraithilakjeevesh.workers.dev'; // e.g. https://tims-engine-worker.yourname.workers.dev
+        const WORKER_URL = 'https://tims-engine-worker.annaduraithilakjeevesh.workers.dev'; 
 
         const apiHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
         
         window.currentTeamTaskId = null;
-        window.taskFilesArray = []; // Store up to 5 files
+        window.taskFilesArray = []; 
         window.globalFileBase64 = null;
         window.globalFileType = null;
         window.aiContextStr = "No context established.";
@@ -667,7 +667,7 @@
             return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
         };
 
-       // --- 5. NATIVE REST API LOGIN (FREEZE-PROOF & ERROR REVEALING) ---
+        // --- 5. NATIVE REST API LOGIN ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
@@ -685,13 +685,10 @@
 
             try {
                 const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
-                
-                // THE FIX: Catch the EXACT database error instead of showing a generic Network Error
                 if (!response.ok) {
                     const errData = await response.json();
-                    throw new Error(errData.message || "Database rejected connection. Check SQL tables.");
+                    throw new Error(errData.message || "Database rejected connection.");
                 }
-                
                 const data = await response.json();
 
                 if (data.length === 0) {
@@ -701,25 +698,24 @@
 
                 const sessionData = data[0]; 
                 
+                // BUG FIX: QUOTA EXCEEDED FIX - Strip heavy files from local storage!
+                const safeStorageData = { ...sessionData };
+                if (safeStorageData.reference_files) delete safeStorageData.reference_files; 
+                
                 if(role === 'intern') {
                     try {
                         const dateString = new Date().toISOString().split('T')[0];
                         const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
                         const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
-                        
-                        // Safely check attendance so it doesn't crash the login if the table is missing
                         if (attRes.ok) {
                             const attData = await attRes.json();
-                            if(attData.length === 0) {
-                                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
-                            }
+                            if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
                         }
-                    } catch (attError) {
-                        console.warn("Attendance tracker bypassed due to DB schema mismatch.");
-                    }
+                    } catch (attError) {}
                 }
 
-                localStorage.setItem(`tims_session_${role}`, JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
+                // Store cleaned data separately based on role
+                localStorage.setItem(`tims_session_${role}`, JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: safeStorageData, timestamp: new Date().getTime() }));
                 
                 document.getElementById('view-login').style.opacity = '0';
                 setTimeout(() => {
@@ -731,16 +727,14 @@
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
+                    // We pass the full sessionData (including files) to initial load so they render instantly
                     window.buildDashboardRole(role, sessionData); window.showToast("System Access Granted.");
                 }, 400); 
 
-            } catch (err) { 
-                // Displays the specific reason it failed
-                window.showToast("Error: " + err.message, true);
-            } finally { 
-                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } 
-            }
+            } catch (err) { window.showToast("Error: " + err.message, true);
+            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
+
         // --- 6. DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
@@ -771,9 +765,9 @@
                 }
 
                 const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
-                if(draft) { document.getElementById('qSummary').value = draft; window.showToast("Local draft restored.");}
+                if(draft) { document.getElementById('qSummary').value = draft; }
                 
-                window.aiContextStr = `User is an Intern. Task: ${data.title}. Objective: ${data.task_objective}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
+                window.aiContextStr = `User is an Intern. Assigned Task: ${data.title}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
                 window.fetchAnnouncementsDashboard();
 
             } else {
@@ -801,7 +795,6 @@
                 if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
             }
 
-            // Secure local storage navigation based on user role to prevent cross-contamination
             const lastPanel = localStorage.getItem(`tims_last_panel_${role}`);
             if(lastPanel) {
                 const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
@@ -818,7 +811,7 @@
             } catch(e) {}
         }
 
-        // --- 7. WORKFLOW, TIMER, & QUESTIONNAIRE ---
+        // --- 7. WORKFLOW, TIMER & SUBMISSION ---
         window.startTaskTimer = function() {
             document.getElementById('topRightTimer').style.display = 'flex';
             document.getElementById('btnStartTimer').style.display = 'none';
@@ -884,10 +877,9 @@
                 
                 fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) });
 
-                window.showToast("Operation Submitted (+40%). HR Notified. You can stay on this page.");
+                window.showToast("Operation Submitted (+40%). HR Notified.");
                 localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
                 
-                // Keep them on the page instead of logging out
                 document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Operation Successfully Submitted</h3><p style="color:var(--accent-green);">Your report and timer (${timeLog}) have been securely logged. Awaiting HR and Officer clearance.</p>`;
             } catch(e) { window.showToast("Sync Failed.", true); }
         };
@@ -919,7 +911,6 @@
             if(!cont || !session) return;
             cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
             try {
-                // In production, implement date filtering based on 'filterType'. For now, orders by latest.
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
                 const data = await res.json();
                 if(data && data.length > 0) {
@@ -991,7 +982,7 @@
             document.getElementById('detailProjectTitle').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${projectName} <span style="font-size:0.8rem; color:var(--text-muted);">(${taskId})</span>`;
             window.currentTeamTaskId = taskId; 
             
-            // Clear inputs and files
+            // Clear inputs
             window.taskFilesArray = [];
             document.getElementById('multiFilePreviewContainer').innerHTML = '';
             document.getElementById('taskUploadText').innerText = "Attach Up To 5 Reference Assets";
@@ -1043,12 +1034,10 @@
                     document.getElementById('editTaskIdHidden').value = taskId;
                     document.getElementById('btnAssignIntern').innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Update Intern Assignment';
 
-                    // Restore array of files
                     if(task.reference_files) {
                         window.taskFilesArray = typeof task.reference_files === 'string' ? JSON.parse(task.reference_files) : task.reference_files;
                         window.renderMultiFiles();
                     }
-                    
                     window.showToast("Task loaded for editing. Adjust fields and update.");
                 }
             } catch(e) { window.showToast("Failed to load task for editing.", true); }
@@ -1121,7 +1110,6 @@
 
             try {
                 let res;
-                // BUG FIX: Proper PATCH update for editing, avoiding deletion
                 if (editId) {
                     res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${editId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
                 } else {
@@ -1150,7 +1138,7 @@
             } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-        // --- ASSET UPLOAD NATIVE (BASE64 & URL Links) ---
+        // --- ASSET UPLOAD NATIVE ---
         window.handleAssetTypeChange = function() {
             const type = document.getElementById('assetType').value;
             if(type === 'Video' || type === 'TED') {
@@ -1242,12 +1230,10 @@
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             let teamFilter = "ALL";
             if(session && session.role === 'intern' && session.data) {
-                // Determine intern's team
                 teamFilter = session.data.team_task_id || "ALL";
             }
 
             try {
-                // Fetch assets assigned to ALL, OR assigned specifically to this intern's team
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&or=(assigned_team.eq.ALL,assigned_team.ilike.${encodeURIComponent(teamFilter)})&select=*&order=created_at.desc`, { headers: apiHeaders });
                 const data = await res.json();
                 
@@ -1336,7 +1322,6 @@
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             try {
                 let url = "";
-                // BUG FIX: Interns fetch from the task table based on project ID prefix, Officers fetch all active interns
                 if(session.role === 'intern') {
                     let projectPrefix = teamTaskId.split('-').slice(0, 2).join('-');
                     url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(projectPrefix)}&select=intern_name,intern_phone,intern_task_id,intern_role,assigned_officer`;
@@ -1459,7 +1444,18 @@
                 const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
                 document.getElementById('dashName').innerText = session.name; document.getElementById('dashRole').innerText = `${role} access level`;
                 document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                window.buildDashboardRole(role, session.data);
+                
+                // BUG FIX: Fetch fresh task data on reload so we get the heavy files without storing them locally
+                if (role === 'intern') {
+                    fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=eq.${encodeURIComponent(session.data.intern_task_id)}&select=*`, { headers: apiHeaders })
+                    .then(res => res.json())
+                    .then(taskData => {
+                        if(taskData && taskData.length > 0) window.buildDashboardRole(role, taskData[0]);
+                        else window.buildDashboardRole(role, session.data);
+                    }).catch(() => window.buildDashboardRole(role, session.data));
+                } else {
+                    window.buildDashboardRole(role, session.data);
+                }
             }
         });
     </script>
