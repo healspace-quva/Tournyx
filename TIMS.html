@@ -620,6 +620,7 @@
         window.globalFileBase64 = null;
         window.globalFileType = null;
         window.aiContextStr = "No context established.";
+        window.aiChatHistory = [];
         
         let timerInterval = null;
         let timerSeconds = 0;
@@ -1440,29 +1441,56 @@
             } catch(e) {}
         };
 
-        // --- AI CHAT AGENT (FULL PAGE) ---
+        // --- AI CHAT AGENT (WITH CONVERSATIONAL MEMORY) ---
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             const chatBox = document.getElementById('aiChatBox');
             if(!input.value.trim()) return;
 
             const userMessage = input.value.trim();
+            
+            // Render user message on screen
             chatBox.innerHTML += `<div class="chat-bubble chat-user">${userMessage}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             input.value = '';
+
+            // Save user message to memory
+            window.aiChatHistory.push({ role: 'user', content: userMessage });
+
+            // Show typing indicator
+            const typingId = 'typing_' + Date.now();
+            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i> Processing...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 const res = await fetch(WORKER_URL, { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: userMessage, context: window.aiContextStr || "General Operations" }) 
+                    body: JSON.stringify({ 
+                        action: 'tims_ai_chat', 
+                        history: window.aiChatHistory, // Sending entire memory array
+                        context: window.aiContextStr || "General Operations" 
+                    }) 
                 });
+                
                 const data = await res.json();
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer || data.error}</div>`;
-            } catch(e) { chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI. Ensure Cloudflare Worker is active.</div>`; }
+                document.getElementById(typingId).remove(); // Remove typing indicator
+                
+                if (data.status === 'success') {
+                    chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer}</div>`;
+                    // Save AI response to memory so it remembers for the next question
+                    window.aiChatHistory.push({ role: 'assistant', content: data.answer });
+                } else {
+                    chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">${data.answer || data.error}</div>`;
+                    window.aiChatHistory.pop(); // Remove the last user message from memory if it failed, so it doesn't get stuck
+                }
+            } catch(e) { 
+                document.getElementById(typingId).remove();
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI. Ensure Cloudflare Worker is active.</div>`; 
+                window.aiChatHistory.pop(); // Remove the last user message from memory if it failed
+            }
             chatBox.scrollTop = chatBox.scrollHeight;
         };
-
         // --- UI CORE ROUTING ---
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
