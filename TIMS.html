@@ -66,9 +66,10 @@
         .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
         .btn-success { background: linear-gradient(90deg, #00b09b, #96c93d); }
         .btn-outline { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
+        body.light-theme .btn-outline { color: var(--text-main); border-color: var(--text-muted); }
 
         .brand-footer { text-align: center; margin-top: 30px; user-select: none; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 1.5s infinite alternate;}
+        .neon-quva-small { display: inline-block; font-size: 1.3rem; font-weight: 900; color: var(--text-main); font-family: var(--font-logo); letter-spacing: 4px; margin-top: 4px; animation: pulsateSmall 2s infinite alternate;}
         @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
 
         /* --- DASHBOARD VIEW --- */
@@ -100,7 +101,7 @@
         .dash-greeting p { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 600;}
         .stat-badge { text-align: right; }
         .stat-badge span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;}
-        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); text-shadow: 0 0 10px rgba(0,255,127,0.3);}
+        .stat-badge strong { font-size: 1.5rem; color: var(--accent-green); font-family: var(--font-logo); }
 
         /* PANELS */
         .content-panel { display: none; width: 100%; max-width: 950px; margin: 0 auto; opacity: 0; transform: translateY(15px); transition: all 0.4s ease; flex: 1;}
@@ -200,7 +201,7 @@
 
             <div id="form-intern" class="auth-form active">
                 <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
-                <div class="form-group"><label class="form-label">Unique Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. prj-x8b2-name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
+                <div class="form-group"><label class="form-label">Unique Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. PRJ-X8B2-NAME" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
                 <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
             </div>
 
@@ -272,7 +273,6 @@
                 <div class="panel-card glass-panel" id="taskDetailState">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 15px;">
                         <h3 class="panel-title" style="margin:0; border:none; padding:0;"><i class="fa-solid fa-crosshairs"></i> Operation Directive</h3>
-                        <!-- Sleek Compact Top-Right Timer -->
                         <div id="topRightTimer" style="display:none; font-family:var(--font-logo); font-size:0.95rem; color:var(--accent-green); background:rgba(0,255,102,0.1); border:1px solid var(--accent-green); padding:5px 14px; border-radius:50px; align-items:center; gap:8px;">
                             <i class="fa-solid fa-stopwatch fa-spin"></i> <span id="activeTimer">00:00:00</span>
                         </div>
@@ -304,9 +304,10 @@
                         <div id="internReferencePreview" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
                     </div>
                     
-                    <button class="btn btn-primary" id="btnStartTimer" style="margin-top: 20px; width:fit-content; padding: 12px 30px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation</button>
+                    <button class="btn btn-primary" id="btnStartTimer" style="margin-top: 20px; width:fit-content; padding: 12px 30px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation & Timer</button>
                 </div>
 
+                <!-- Structured Technical Questionnaire Form -->
                 <div class="panel-card glass-panel" id="taskQuestionnaireState" style="display: none; border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.1);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 class="panel-title" style="margin:0; border:none; padding:0;"><i class="fa-solid fa-file-code"></i> Technical Task Report</h3>
@@ -335,7 +336,7 @@
                     <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Today's Attendance Matrix</h3>
                     <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Clearance requires workflow completion and officer approval.</p>
                     
-                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 2.8rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
+                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 3rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
                     <div class="progress-container"><div class="progress-fill" id="attProgressBar" style="width: 10%;"></div></div>
                     
                     <div class="att-metrics" style="margin-top: 15px;">
@@ -348,7 +349,6 @@
                     </div>
                 </div>
 
-                <!-- Historical Attendance Log with Filter -->
                 <div class="panel-card glass-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                         <h3 class="panel-title" style="margin:0; border:none; padding:0;"><i class="fa-solid fa-clock-rotate-left"></i> Attendance History</h3>
@@ -366,7 +366,6 @@
 
             <!-- [OFFICER] Advanced Deploy Hub -->
             <div id="panel-officer-tasks" class="content-panel">
-                <!-- List View -->
                 <div class="panel-card glass-panel" id="offProjectListView">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
@@ -382,7 +381,6 @@
                     <div class="data-grid" id="activeTeamProjectsContainer"></div>
                 </div>
 
-                <!-- Create View -->
                 <div class="panel-card glass-panel" id="offProjectCreateView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 class="panel-title" style="margin: 0;"><i class="fa-solid fa-rocket"></i> Initialize New Team Task</h3>
@@ -393,7 +391,6 @@
                     <button class="btn btn-success" onclick="window.createTeamProject()"><i class="fa-solid fa-check-double"></i> Initialize Matrix</button>
                 </div>
 
-                <!-- Assign View (7 Detailed Fields) -->
                 <div class="panel-card glass-panel" id="offAddInternView" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
                         <h3 class="panel-title" style="margin: 0; border: none; padding: 0;" id="detailProjectTitle">Project</h3>
@@ -579,6 +576,16 @@
                         <div><h4 style="font-size: 0.95rem; margin-bottom: 2px;">Push Notifications</h4><p style="font-size: 0.75rem; color: var(--text-muted);">Allow browser alerts.</p></div>
                         <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                     </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom:15px;">
+                        <div><h4 style="font-size: 0.95rem; margin-bottom: 2px;">Auto-Save Drafts</h4><p style="font-size: 0.75rem; color: var(--text-muted);">Sync input locally every 5s.</p></div>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom:15px;">
+                        <div><h4 style="font-size: 0.95rem; margin-bottom: 2px;">Offline Mode Caching</h4><p style="font-size: 0.75rem; color: var(--text-muted);">Store assets for offline viewing.</p></div>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
                         <div><h4 style="font-size: 0.95rem; margin-bottom: 2px;">Compact Sidebar</h4><p style="font-size: 0.75rem; color: var(--text-muted);">Reduce menu padding.</p></div>
@@ -664,7 +671,7 @@
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
-            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim().toLowerCase() : document.getElementById('loginPin').value.trim();
+            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim().toUpperCase() : document.getElementById('loginPin').value.trim();
             let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
 
             if(!nameInput || !secondaryInput) { window.showToast("All fields are strictly required.", true); return; }
@@ -742,7 +749,7 @@
                 
                 if(data.reference_files && Array.isArray(data.reference_files) && data.reference_files.length > 0) {
                     document.getElementById('internReferenceLink').style.display = 'block';
-                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'unknown')).join('');
+                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'image/png')).join('');
                 }
 
                 const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
@@ -776,6 +783,7 @@
                 if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
             }
 
+            // Secure local storage navigation based on user role to prevent cross-contamination
             const lastPanel = localStorage.getItem(`tims_last_panel_${role}`);
             if(lastPanel) {
                 const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
@@ -792,7 +800,7 @@
             } catch(e) {}
         }
 
-        // --- 7. WORKFLOW, TIMER & SUBMISSION ---
+        // --- 7. WORKFLOW, TIMER, & QUESTIONNAIRE ---
         window.startTaskTimer = function() {
             document.getElementById('topRightTimer').style.display = 'flex';
             document.getElementById('btnStartTimer').style.display = 'none';
@@ -858,9 +866,11 @@
                 
                 fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) });
 
-                window.showToast("Operation Submitted (+40%). HR Notified.");
+                window.showToast("Operation Submitted (+40%). HR Notified. You can stay on this page.");
                 localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
-                setTimeout(() => { window.logout(); }, 3000); 
+                
+                // Keep them on the page instead of logging out
+                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Operation Successfully Submitted</h3><p style="color:var(--accent-green);">Your report and timer (${timeLog}) have been securely logged. Awaiting HR and Officer clearance.</p>`;
             } catch(e) { window.showToast("Sync Failed.", true); }
         };
 
@@ -879,8 +889,8 @@
                     document.getElementById('attHRBadge').className = att.hr_20 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attHRBadge').innerText = att.hr_20 ? '20% Verified' : 'HR Not Approved';
                     document.getElementById('attOfficerBadge').className = att.officer_30 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attOfficerBadge').innerText = att.officer_30 ? '30% Verified' : 'Officer Not Approved';
                     
-                    if(att.hr_20 && !att.officer_30) window.showToast("HR Approved. Awaiting Domain Officer clearance.");
-                    if(att.total_percentage === 100) window.showToast("Full Attendance Secured for today.");
+                    if(att.hr_20 && !att.officer_30) window.showToast("HR Approved. Awaiting Domain Officer clearance.", false);
+                    if(att.total_percentage === 100) window.showToast("Full Attendance Secured for today.", false);
                 }
             } catch(e) {}
         };
@@ -891,6 +901,7 @@
             if(!cont || !session) return;
             cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
             try {
+                // In production, implement date filtering based on 'filterType'. For now, orders by latest.
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
                 const data = await res.json();
                 if(data && data.length > 0) {
@@ -913,7 +924,7 @@
             document.getElementById('offProjectListView').style.display = 'none';
             document.getElementById('offProjectCreateView').style.display = 'block';
             document.getElementById('offAddInternView').style.display = 'none';
-            document.getElementById('newTeamTaskId').value = "prj-" + Math.random().toString(36).substr(2, 4).toLowerCase();
+            document.getElementById('newTeamTaskId').value = "PRJ-" + Math.random().toString(36).substr(2, 4).toUpperCase();
         };
 
         window.backToProjectList = function() {
@@ -973,7 +984,7 @@
         };
 
         window.generateUniqueTaskID = function() {
-            const intern = document.getElementById('addInternName').value.trim().toLowerCase().replace(/\s+/g, '');
+            const intern = document.getElementById('addInternName').value.trim().toUpperCase().replace(/\s+/g, '');
             document.getElementById('addUniqueId').value = (window.currentTeamTaskId && intern) ? `${window.currentTeamTaskId}-${intern}` : "";
         };
 
@@ -1092,7 +1103,7 @@
 
             try {
                 let res;
-                // BUG FIX: Proper PATCH update for editing
+                // BUG FIX: Proper PATCH update for editing, avoiding deletion
                 if (editId) {
                     res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${editId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
                 } else {
