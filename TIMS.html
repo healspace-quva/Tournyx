@@ -270,10 +270,17 @@
                 </div>
             </div>
 
-            <!-- [INTERN] Operation Hub (With Live Timer) -->
+            <!-- [INTERN] Operation Hub (With Top-Right Timer & Structured Technical Questionnaire) -->
             <div id="panel-intern-task" class="content-panel">
                 <div class="panel-card glass-panel" id="taskDetailState">
-                    <h3 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Operation Directive</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 15px;">
+                        <h3 class="panel-title" style="margin:0; border:none; padding:0;"><i class="fa-solid fa-crosshairs"></i> Operation Directive</h3>
+                        <!-- Sleek Compact Top-Right Timer -->
+                        <div id="topRightTimer" style="display:none; font-family:var(--font-logo); font-size:0.95rem; color:var(--accent-green); background:rgba(0,255,102,0.1); border:1px solid var(--accent-green); padding:5px 14px; border-radius:50px; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-stopwatch fa-spin"></i> <span id="activeTimer">00:00:00</span>
+                        </div>
+                    </div>
+
                     <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 5px;" id="intTaskTitle">Task Title</h4>
                     <div class="tag-badge" id="intTaskID">DEV-000</div>
                     <div class="tag-badge" id="intTaskRole" style="background:rgba(189,0,255,0.1); color:var(--accent-purple);">Role</div>
@@ -284,29 +291,53 @@
                         <div id="internReferencePreview"></div>
                     </div>
                     
-                    <button class="btn btn-primary" style="margin-top: 25px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation Timer</button>
+                    <button class="btn btn-primary" id="btnStartTimer" style="margin-top: 20px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation & Timer</button>
                 </div>
 
-                <div class="panel-card glass-panel" id="taskTimerState" style="display: none; border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.1);">
-                    <h3 class="panel-title" style="justify-content: center; border:none;"><i class="fa-solid fa-stopwatch fa-spin"></i> Active Operation</h3>
-                    <div class="timer-display" id="activeTimer">00:00:00</div>
+                <!-- Structured Technical Questionnaire Form -->
+                <div class="panel-card glass-panel" id="taskQuestionnaireState" style="display: none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-file-code"></i> Technical Task Report</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:15px;">Complete all technical breakdown questions regarding your execution:</p>
                     
                     <div class="form-group">
-                        <label class="form-label">Operation Progress Log</label>
-                        <textarea id="internProgressText" class="form-control" placeholder="Detail your workflow here. System auto-saves locally." oninput="window.saveDraft()"></textarea>
+                        <label class="form-label">1. Functions & Modules Implemented</label>
+                        <textarea id="qFunctions" class="form-control" placeholder="Detail the technical functions or API endpoints created..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">2. New Features & Upgrades Added</label>
+                        <textarea id="qUpgrades" class="form-control" placeholder="What enhancements were made to the project?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">3. Bugs Encountered & Fixed</label>
+                        <textarea id="qBugs" class="form-control" placeholder="List any errors encountered and how they were resolved..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">4. Code Logic & Architecture Brief</label>
+                        <textarea id="qLogic" class="form-control" placeholder="Briefly explain your architectural approach..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">5. Technical Challenges & Solutions</label>
+                        <textarea id="qChallenges" class="form-control" placeholder="What obstacles were faced during execution?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">6. Final Execution Summary & Notes</label>
+                        <textarea id="qSummary" class="form-control" placeholder="Provide a general summary for HR and Domain Officer review..." oninput="window.saveDraft()"></textarea>
                     </div>
 
-                    <button class="btn btn-success" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Stop Timer & Submit to HR</button>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" style="flex: 1;" onclick="window.saveDraft()"><i class="fa-solid fa-save"></i> Auto-Save Draft</button>
+                        <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Final Submit Task & Stop Timer</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- [INTERN] Attendance Matrix -->
+            <!-- [INTERN] Attendance Matrix (With History & Filters) -->
             <div id="panel-intern-attendance" class="content-panel">
                 <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Daily Attendance Matrix</h3>
+                    <h3 class="panel-title"><i class="fa-solid fa-calendar-check"></i> Today's Attendance Matrix</h3>
                     <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Clearance requires workflow completion and officer approval.</p>
                     
-                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 3rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
+                    <h1 style="text-align: center; font-family: var(--font-logo); font-size: 2.8rem; color: var(--accent-cyan);" id="attPercent">10%</h1>
                     <div class="progress-container"><div class="progress-fill" id="attProgressBar" style="width: 10%;"></div></div>
                     
                     <div class="att-metrics" style="margin-top: 15px;">
@@ -316,6 +347,21 @@
                     <div class="att-metrics" style="margin-top: 15px;">
                         <div>HR Verification <br><span class="status-badge" id="attHRBadge">20% Pending</span></div>
                         <div>Officer Clearance <br><span class="status-badge" id="attOfficerBadge">30% Pending</span></div>
+                    </div>
+                </div>
+
+                <!-- Historical Attendance Log with Filter -->
+                <div class="panel-card glass-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                        <h3 class="panel-title" style="margin:0; border:none; padding:0;"><i class="fa-solid fa-clock-rotate-left"></i> Attendance History</h3>
+                        <select id="attHistoryFilter" class="form-control" style="width:auto; padding:8px 15px; font-size:0.75rem; appearance:auto;" onchange="window.fetchAttendanceHistory(this.value)">
+                            <option value="weekly">This Week</option>
+                            <option value="monthly">This Month</option>
+                            <option value="yearly">This Year</option>
+                        </select>
+                    </div>
+                    <div class="data-grid" id="attHistoryContainer">
+                        <div class="empty-state">Loading attendance history...</div>
                     </div>
                 </div>
             </div>
@@ -452,7 +498,7 @@
                 </div>
             </div>
 
-            <!-- SHARED: Global Contacts -->
+           <!-- SHARED: Global Contacts -->
             <div id="panel-contacts" class="content-panel">
                 <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
                     <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
@@ -466,7 +512,20 @@
                     </div>
                     
                     <h3 class="panel-title"><i class="fa-solid fa-sitemap"></i> Command Squad</h3>
-                    <div class="data-grid" id="contactsExecContainer"></div>
+                    <div class="data-grid" id="contactsExecContainer">
+                        <div class="data-card">
+                            <h4>Shiva Kumar</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Chief Technology Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> cto@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000001</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Prabhu</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Chief Executive Officer</p>
+                            <p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000000</p>
+                        </div>
+                        <div class="data-card">
+                            <h4>Tharun Kumar</h4><p style="text-transform:uppercase; color:var(--accent-cyan); font-weight:700; font-size:0.7rem;">Human Resources</p>
+                            <p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p><p><i class="fa-solid fa-phone"></i> +91 9000000002</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -627,6 +686,186 @@
             } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
 
+        // --- 1. TIMER & QUESTIONNAIRE HANDLING ---
+        window.startTaskTimer = function() {
+            document.getElementById('topRightTimer').style.display = 'flex';
+            document.getElementById('btnStartTimer').style.display = 'none';
+            document.getElementById('taskQuestionnaireState').style.display = 'block';
+            window.showToast("Timer Started. Complete the technical breakdown below.");
+
+            const timerEl = document.getElementById('activeTimer');
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    let hrs = Math.floor(timerSeconds / 3600);
+                    let mins = Math.floor((timerSeconds % 3600) / 60);
+                    let secs = timerSeconds % 60;
+                    timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+        };
+
+        // --- 2. SUBMIT TECHNICAL REPORT & UPDATE DATABASE ---
+        window.submitTaskFinal = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const qFunc = document.getElementById('qFunctions').value.trim();
+            const qUpg = document.getElementById('qUpgrades').value.trim();
+            const qBugs = document.getElementById('qBugs').value.trim();
+            const qLog = document.getElementById('qLogic').value.trim();
+            const qChall = document.getElementById('qChallenges').value.trim();
+            const qSum = document.getElementById('qSummary').value.trim();
+            const timeLog = document.getElementById('activeTimer').innerText;
+
+            if (!qSum && !qFunc) { 
+                window.showToast("Please fill in the execution details before submitting.", true); 
+                return; 
+            }
+            
+            clearInterval(timerInterval);
+            const combinedProgress = `
+[Functions Implemented]: ${qFunc || 'N/A'}
+[Upgrades Added]: ${qUpg || 'N/A'}
+[Bugs Resolved]: ${qBugs || 'N/A'}
+[Code Logic]: ${qLog || 'N/A'}
+[Challenges Faced]: ${qChall || 'N/A'}
+[Summary]: ${qSum || 'Completed'}
+            `.trim();
+
+            window.showToast("Syncing Database...");
+            try {
+                // Update Supabase task record with all answers
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
+                    method: 'PATCH', 
+                    headers: apiHeaders, 
+                    body: JSON.stringify({ 
+                        progress_text: combinedProgress, 
+                        functions_implemented: qFunc,
+                        upgrades_added: qUpg,
+                        bugs_resolved: qBugs,
+                        code_logic: qLog,
+                        challenges_faced: qChall,
+                        final_summary: qSum,
+                        status: 'Submitted', 
+                        time_spent: timeLog 
+                    }) 
+                });
+
+                // Update Attendance Record to 50% (+40%)
+                const dateString = new Date().toISOString().split('T')[0];
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { 
+                    method: 'PATCH', 
+                    headers: apiHeaders, 
+                    body: JSON.stringify({ task_40: true, total_percentage: 50 }) 
+                });
+                
+                // Trigger Cloudflare Worker Email Notification to HR
+                fetch(WORKER_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) 
+                });
+
+                window.showToast("Operation Submitted (+40%). HR & Officers Notified.");
+                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
+                setTimeout(() => { window.logout(); }, 3000); 
+            } catch(e) { window.showToast("Sync Failed.", true); }
+        };
+
+        // --- 3. ATTENDANCE HISTORY & FILTER ---
+        window.fetchAttendanceHistory = async function(filterType = 'weekly') {
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            const cont = document.getElementById('attHistoryContainer');
+            if(!cont) return;
+            
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4>${new Date(d.log_date).toLocaleDateString()}</h4>
+                                <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${d.total_percentage}% Score</span>
+                            </div>
+                            <p style="font-size:0.75rem; margin-top:8px;">HR Approved: ${d.hr_20 ? 'Yes' : 'Pending'} | Officer Cleared: ${d.officer_30 ? 'Yes' : 'Pending'}</p>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No past attendance logs recorded.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Failed to load history.</div>'; }
+        };
+
+        // --- 4. SQUAD MATRIX FETCHING (SQUAD FOR OFFICERS & INTERNS) ---
+        window.fetchTeamMatrix = async function(teamTaskId) {
+            const cont = document.getElementById('teamMatrixContainer');
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning squad matrix...</div>';
+            
+            const session = JSON.parse(localStorage.getItem('tims_session'));
+            try {
+                let url = "";
+                if(session.role === 'intern') {
+                    // Fetch all interns assigned to the same team_task_id
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(teamTaskId)}&select=intern_name,intern_task_id,intern_role,assigned_officer`;
+                } else {
+                    // Fetch all domain officers and squad members for Officers View
+                    url = `${SUPABASE_URL}/rest/v1/tims_users?select=name,role,email,phone`;
+                }
+
+                const res = await fetch(url, { headers: apiHeaders }); 
+                const data = await res.json();
+                
+                if(data && data.length > 0) {
+                    if(session.role === 'intern') {
+                        cont.innerHTML = data.map(d => `
+                            <div class="data-card">
+                                <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.intern_role || 'Supporter'}</span></h4>
+                                <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p>
+                                <p style="font-size:0.7rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p>
+                            </div>
+                        `).join('');
+                    } else {
+                        cont.innerHTML = data.map(d => `
+                            <div class="data-card">
+                                <h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4>
+                                <p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p>
+                                <p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p>
+                            </div>
+                        `).join('');
+                    }
+                } else { cont.innerHTML = '<div class="empty-state">No other squad members assigned to this matrix.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading squad.</div>'; }
+        };
+
+        // --- 5. FIXED AI CHATBOT FUNCTION ---
+        window.triggerAI = async function() {
+            const input = document.getElementById('aiInput');
+            const chatBox = document.getElementById('aiChatBox');
+            if(!input.value.trim()) return;
+
+            const userMessage = input.value.trim();
+            chatBox.innerHTML += `<div class="chat-bubble chat-user">${userMessage}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            input.value = '';
+
+            try {
+                const res = await fetch(WORKER_URL, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ 
+                        action: 'tims_ai_chat', 
+                        prompt: userMessage, 
+                        context: window.aiContextStr || "General Operations" 
+                    }) 
+                });
+                const data = await res.json();
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai">${data.answer || data.error || "No response received."}</div>`;
+            } catch(e) { 
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Connection Error: Unable to query AI Agent.</div>`; 
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
         // --- 6. DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
@@ -954,24 +1193,45 @@
         window.createPreviewBlock = function(base64Str, title, type) {
             if(!base64Str || base64Str === 'none') return '';
             if(type.startsWith('video') || base64Str.includes('youtube.com') || base64Str.endsWith('.mp4')) {
-                return `<div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000;"><video controls preload="metadata"><source src="${base64Str}" type="video/mp4"></video></div>`;
+                return `<div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
+                            <video controls preload="metadata" style="width:100%;">
+                                <source src="${base64Str}" type="video/mp4">
+                            </video>
+                        </div>`;
             }
-            if(base64Str.startsWith('data:image')) return `<div class="preview-container"><img src="${base64Str}" alt="${title}"></div>`;
-            if(base64Str.startsWith('data:application/pdf')) return `<div class="preview-container"><iframe src="${base64Str}"></iframe></div>`;
+            if(base64Str.startsWith('data:image')) return `<div class="preview-container" style="max-height:300px; overflow:hidden;"><img src="${base64Str}" alt="${title}" style="width:100%; object-fit:contain;"></div>`;
+            if(base64Str.startsWith('data:application/pdf')) return `<div class="preview-container"><iframe src="${base64Str}" style="width:100%; height:400px; border:none;"></iframe></div>`;
             return `<a href="${base64Str}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
         }
 
         window.loadAssets = async function(type, title, navElement) {
-            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`; window.switchPanel('panel-dynamic-assets', navElement);
-            const cont = document.getElementById('assetContainer'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
+            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`; 
+            window.switchPanel('panel-dynamic-assets', navElement);
+            const cont = document.getElementById('assetContainer'); 
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
+            
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*`, { headers: apiHeaders });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*&order=created_at.desc`, { headers: apiHeaders });
                 const data = await res.json();
+                
                 if(data && data.length > 0) {
                     if (type === 'Announcement') {
-                        cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${d.title}</h4><p style="word-wrap:break-word; white-space:pre-wrap;">${d.description}</p></div>`).join('') + `</div>`;
+                        // Fix for Announcement overflow
+                        cont.innerHTML = `<div class="data-grid">` + data.map(d => `
+                            <div class="data-card" style="border-left-color: var(--accent-purple);">
+                                <h4>${d.title}</h4>
+                                <p style="word-wrap:break-word; white-space:pre-wrap; color:var(--text-main); font-size:0.85rem;">${d.description}</p>
+                                <span style="font-size:0.6rem; color:#888;">${new Date(d.created_at).toLocaleDateString()}</span>
+                            </div>`).join('') + `</div>`;
                     } else { 
-                        cont.innerHTML = data.map(d => `<div class="data-card" style="margin-bottom:15px;"><h4>${d.title}</h4>${window.createPreviewBlock(d.file_url, d.title, d.file_type)}</div>`).join(''); 
+                        cont.innerHTML = data.map(d => `
+                            <div class="data-card" style="margin-bottom:15px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                    <h4>${d.title}</h4>
+                                    <button class="btn btn-outline" style="padding:5px; border-color:var(--accent-red); color:var(--accent-red);" onclick="window.deleteAsset('${d.id}')"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                                ${window.createPreviewBlock(d.file_url, d.title, d.file_type)}
+                            </div>`).join(''); 
                     }
                 } else { cont.innerHTML = `<div class="empty-state">No ${type} assets assigned to your sector yet.</div>`; }
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
@@ -979,34 +1239,67 @@
 
         // --- VERIFICATIONS ---
         window.fetchApprovals = async function() {
-            const cont = document.getElementById('approvalMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
+            const cont = document.getElementById('approvalMatrixContainer'); 
+            cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session'));
                 const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
-                const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
+                const res = await fetch(url, { headers: apiHeaders }); 
+                const data = await res.json();
+                
                 if(data && data.length > 0) {
-                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4><p style="font-size:0.7rem; color:var(--accent-purple);">Time Spent: ${d.time_spent || 'Unknown'}</p><div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);"><strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br><p style="color:white; font-size:0.85rem;">${d.progress_text}</p></div><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn btn-outline" style="padding:10px; font-size:0.7rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify</button><button class="btn btn-success" style="padding:10px; font-size:0.7rem;" onclick="window.approveIntern('${d.intern_name}')"><i class="fa-solid fa-check"></i> Clear</button></div></div>`).join('') + `</div>`;
+                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `
+                        <div class="data-card" id="approvalCard_${d.id}">
+                            <h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4>
+                            <p style="font-size:0.7rem; color:var(--accent-purple);">Time Spent: ${d.time_spent || 'Unknown'}</p>
+                            
+                            <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);">
+                                <strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br>
+                                <p style="color:white; font-size:0.85rem; word-wrap:break-word;">${d.progress_text}</p>
+                            </div>
+                            
+                            <div style="display:flex; gap:10px; margin-top:15px;">
+                                <button class="btn btn-outline" style="padding:10px; font-size:0.7rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify</button>
+                                <button class="btn btn-success" style="padding:10px; font-size:0.7rem;" onclick="window.approveIntern('${d.intern_name}', '${d.id}')"><i class="fa-solid fa-check"></i> Grant Clearance</button>
+                            </div>
+                        </div>`).join('') + `</div>`;
                 } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
             } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
         };
 
-        window.approveIntern = async function(internName) {
-            const session = JSON.parse(localStorage.getItem('tims_session')); const dateString = new Date().toISOString().split('T')[0];
+        window.approveIntern = async function(internName, taskId) {
+            const session = JSON.parse(localStorage.getItem('tims_session')); 
+            const dateString = new Date().toISOString().split('T')[0];
+            
+            // Instantly hide the card to prevent double-clicking
+            document.getElementById(`approvalCard_${taskId}`).style.display = 'none';
+            window.showToast("Processing Clearance...");
+
             try {
-                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+                // Fetch attendance record to update
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
                 const attData = await attRes.json();
+                
                 if(attData.length > 0) {
                     const att = attData[0]; let payload = {};
                     if(session.role === 'hr' && !att.hr_20) payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
                     else if (session.role === 'officer' && !att.officer_30) payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
+                    
                     if(Object.keys(payload).length > 0) {
-                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
-                        window.showToast("Clearance Granted."); window.fetchApprovals();
-                    } else { window.showToast("Already cleared.", true); }
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
+                        
+                        // Update task status so it doesn't show in pending anymore
+                        if((session.role === 'hr' && att.officer_30) || (session.role === 'officer' && att.hr_20)) {
+                             await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved' }) });
+                        }
+                        window.showToast("Clearance Granted Successfully."); 
+                    }
                 }
-            } catch(e) {}
+            } catch(e) { 
+                window.showToast("Clearance Failed.", true); 
+                document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; // Show again on error
+            }
         };
-
         // --- SHARED FETCHERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
