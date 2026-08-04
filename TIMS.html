@@ -330,7 +330,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- [INTERN] Attendance Matrix (With History & Filters) -->
             <div id="panel-intern-attendance" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -646,6 +645,7 @@
             let url = role === 'intern' 
                 ? `${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
                 : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
+//... (Keep the rest of the initiateLogin function the same)
 
             try {
                 const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
@@ -1063,15 +1063,41 @@
             document.getElementById('addUniqueId').value = (window.currentTeamTaskId && intern) ? `${window.currentTeamTaskId}-${intern}` : "";
         };
 
-        window.fetchProjectInterns = async function(taskId) {
+       window.fetchProjectInterns = async function(taskId) {
             const cont = document.getElementById('projectInternsList'); cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(taskId)}&select=*`, { headers: apiHeaders });
                 const data = await res.json();
                 if(data && data.length > 0) {
-                    cont.innerHTML = data.map(d => `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4><p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p><p style="font-size:0.7rem; color:white; font-weight:bold; margin-top:5px;">${d.intern_role}</p></div>`).join('');
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="border-left-color: var(--accent-purple);">
+                            <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4>
+                            <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p>
+                            <p style="font-size:0.7rem; color:white; font-weight:bold; margin-top:5px;">Role: ${d.intern_role}</p>
+                            <button class="btn btn-outline" style="padding: 6px; font-size: 0.65rem; margin-top: 10px;" onclick="window.editAssignedTask('${d.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit Task</button>
+                        </div>
+                    `).join('');
                 } else { cont.innerHTML = '<div class="empty-state" style="padding: 20px; font-size:0.8rem;">No interns assigned to this specific team task yet. Add one below.</div>'; }
             } catch(e) { cont.innerHTML = ''; }
+        };
+
+        // NEW FEATURE: Edit Existing Task
+        window.editAssignedTask = async function(taskId) {
+            window.showToast("Fetching task data...");
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const task = data[0];
+                    document.getElementById('addInternName').value = task.intern_name;
+                    document.getElementById('addUniqueId').value = task.intern_task_id;
+                    document.getElementById('addInternRole').value = task.intern_role;
+                    document.getElementById('addInternSteps').value = task.step_by_step_process;
+                    // Delete original to allow update (Simplest approach for REST)
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'DELETE', headers: apiHeaders });
+                    window.showToast("Task loaded for editing. Adjust fields and re-assign.");
+                }
+            } catch(e) { window.showToast("Failed to load task for editing.", true); }
         };
 
         window.handleTaskFile = function(event) {
