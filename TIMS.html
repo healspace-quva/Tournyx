@@ -674,7 +674,7 @@
             return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
         };
 
-        // --- 5. NATIVE REST API LOGIN ---
+        
         // --- 5. NATIVE REST API LOGIN (CASE INSENSITIVE & DUAL ID SUPPORT) ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
@@ -1237,14 +1237,15 @@
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
-       window.createPreviewBlock = function(base64Str, title, type) {
-            if(!base64Str || base64Str === 'none') return '';
-            
-            // FIX: Convert raw Base64 into a secure Blob URL for mobile viewing
-            let blobUrl = base64Str;
+       window.createPreviewBlock = function(fileUrl, title, type) {
+            if (!fileUrl || fileUrl === 'none') return '';
+
+            let finalUrl = fileUrl;
+
+            // Step 1: Safely parse Base64 into a local Blob URL for seamless rendering
             try {
-                if (base64Str.startsWith('data:')) {
-                    const parts = base64Str.split(';base64,');
+                if (fileUrl.startsWith('data:')) {
+                    const parts = fileUrl.split(';base64,');
                     const contentType = parts[0].split(':')[1];
                     const byteCharacters = atob(parts[1]);
                     const byteNumbers = new Array(byteCharacters.length);
@@ -1252,29 +1253,61 @@
                         byteNumbers[i] = byteCharacters.charCodeAt(i);
                     }
                     const blob = new Blob([new Uint8Array(byteNumbers)], {type: contentType});
-                    blobUrl = URL.createObjectURL(blob);
+                    finalUrl = URL.createObjectURL(blob);
                 }
-            } catch(e) {}
+            } catch(e) { console.warn("Blob conversion bypassed."); }
 
-            if(type && type.startsWith('video') || base64Str.includes('youtube.com') || base64Str.endsWith('.mp4')) {
-                return `<div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
-                            <video controls preload="metadata" style="width:100%;">
-                                <source src="${blobUrl}" type="video/mp4">
-                            </video>
-                        </div>`;
+            // Step 2: YouTube / 3rd Party Embed Logic
+            if (fileUrl.includes('youtube.com') || fileUrl.includes('youtu.be')) {
+                let embedUrl = fileUrl;
+                // Auto-convert standard YouTube links to Embed format
+                if (fileUrl.includes('watch?v=')) {
+                    embedUrl = fileUrl.replace('watch?v=', 'embed/').split('&')[0];
+                } else if (fileUrl.includes('youtu.be/')) {
+                    embedUrl = fileUrl.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
+                }
+                
+                return `
+                <div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000; position:relative; padding-bottom:56.25%; height:0; margin-bottom: 10px;">
+                    <iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe>
+                </div>`;
             }
-            if(base64Str.startsWith('data:image')) {
-                return `<a href="${blobUrl}" target="_blank" style="display:block; max-height:300px; overflow:hidden; border-radius:12px; border:1px solid var(--accent-cyan); cursor:pointer;">
-                            <img src="${blobUrl}" alt="${title}" style="width:100%; object-fit:contain; background:rgba(0,0,0,0.5);">
-                        </a>`;
+
+            // Step 3: Direct MP4 / Uploaded Video Logic
+            if ((type && type.startsWith('video')) || fileUrl.endsWith('.mp4') || fileUrl.startsWith('data:video')) {
+                return `
+                <div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000; margin-bottom: 10px;">
+                    <video controls preload="metadata" style="width:100%; max-height:400px;">
+                        <source src="${finalUrl}" type="video/mp4">
+                    </video>
+                </div>`;
             }
-            if(base64Str.startsWith('data:application/pdf')) {
-                return `<div style="padding:15px; border:1px dashed var(--accent-cyan); border-radius:12px; text-align:center; background:rgba(0,242,255,0.05);">
-                            <i class="fa-solid fa-file-pdf" style="font-size:2.5rem; color:var(--accent-red); margin-bottom:10px;"></i><br>
-                            <a href="${blobUrl}" target="_blank" class="btn btn-outline" style="display:inline-flex; width:auto; padding:10px 20px;"><i class="fa-solid fa-up-right-from-square"></i> Open PDF Document</a>
-                        </div>`;
+
+            // Step 4: Inline PDF Preview Logic
+            if ((type && type.includes('pdf')) || fileUrl.endsWith('.pdf') || fileUrl.startsWith('data:application/pdf')) {
+                return `
+                <div style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#fff; height:450px; margin-bottom: 10px;">
+                    <iframe src="${finalUrl}#toolbar=0" style="width:100%; height:100%; border:none;" title="${title}"></iframe>
+                </div>
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <a href="${finalUrl}" target="_blank" class="btn btn-outline" style="padding:8px 15px; font-size:0.75rem; width:auto; display:inline-flex;">
+                        <i class="fa-solid fa-up-right-from-square"></i> Open Fullscreen
+                    </a>
+                </div>`;
             }
-            return `<a href="${blobUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
+
+            // Step 5: Uploaded Image Logic
+            if ((type && type.startsWith('image')) || fileUrl.startsWith('data:image')) {
+                return `
+                <div class="preview-container" style="max-height:350px; overflow:hidden; border-radius:12px; border:1px solid var(--accent-cyan); text-align:center; background:rgba(0,0,0,0.4); margin-bottom: 10px;">
+                    <a href="${finalUrl}" target="_blank" style="display:block;">
+                        <img src="${finalUrl}" alt="${title}" style="max-width:100%; max-height:350px; object-fit:contain;">
+                    </a>
+                </div>`;
+            }
+
+            // Step 6: Fallback for generic links
+            return `<a href="${finalUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem; margin-bottom: 10px;"><i class="fa-solid fa-link"></i> Access Linked Asset</a>`;
         };
 
         window.loadAssets = async function(type, title, navElement) {
