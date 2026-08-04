@@ -180,6 +180,12 @@
     </style>
 </head>
 <body>
+    <!-- GLOBAL BOOT LOADER -->
+    <div id="globalLoader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-main); z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s ease;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px;"></i>
+        <h2 style="font-family: var(--font-logo); color: white; letter-spacing: 2px;">TIMS <span style="color: var(--accent-cyan);">ENGINE</span></h2>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;">Establishing Secure Connection...</p>
+    </div>
 
     <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
     <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
@@ -201,7 +207,8 @@
 
             <div id="form-intern" class="auth-form active">
                 <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
-                <div class="form-group"><label class="form-label">Unique Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. PRJ-X8B2-NAME" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
+                <!-- UPDATED FIELD LABEL AND PLACEHOLDER -->
+                <div class="form-group"><label class="form-label">Project or Unique Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. prj-x8b2 OR prj-x8b2-name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
                 <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
             </div>
 
@@ -668,6 +675,7 @@
         };
 
         // --- 5. NATIVE REST API LOGIN ---
+        // --- 5. NATIVE REST API LOGIN (CASE INSENSITIVE & DUAL ID SUPPORT) ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
@@ -679,8 +687,9 @@
             const btn = document.getElementById(btnId); const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
 
+            // FIX: Interns can now login with EITHER Team Task ID OR Unique Task ID
             let url = role === 'intern' 
-                ? `${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=ilike.${encodeURIComponent(secondaryInput)}&intern_name=ilike.${encodeURIComponent(nameInput)}&select=*`
+                ? `${SUPABASE_URL}/rest/v1/tims_tasks?intern_name=ilike.${encodeURIComponent(nameInput)}&or=(team_task_id.ilike.${encodeURIComponent(secondaryInput)},intern_task_id.ilike.${encodeURIComponent(secondaryInput)})&select=*`
                 : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
 
             try {
@@ -692,13 +701,11 @@
                 const data = await response.json();
 
                 if (data.length === 0) {
-                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Unique Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
+                    window.showToast(role === 'intern' ? "Access Denied: Intern Name or Task ID not found!" : "Access Denied: Invalid Commander Credentials!", true);
                     return; 
                 }
 
                 const sessionData = data[0]; 
-                
-                // BUG FIX: QUOTA EXCEEDED FIX - Strip heavy files from local storage!
                 const safeStorageData = { ...sessionData };
                 if (safeStorageData.reference_files) delete safeStorageData.reference_files; 
                 
@@ -714,7 +721,6 @@
                     } catch (attError) {}
                 }
 
-                // Store cleaned data separately based on role
                 localStorage.setItem(`tims_session_${role}`, JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: safeStorageData, timestamp: new Date().getTime() }));
                 
                 document.getElementById('view-login').style.opacity = '0';
@@ -727,19 +733,16 @@
                     document.getElementById('dashRole').innerText = `${role} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
-                    // We pass the full sessionData (including files) to initial load so they render instantly
                     window.buildDashboardRole(role, sessionData); window.showToast("System Access Granted.");
                 }, 400); 
 
             } catch (err) { window.showToast("Error: " + err.message, true);
             } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
-
         // --- 6. DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
             menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
-
             document.getElementById('internHomeSection').style.display = role === 'intern' ? 'block' : 'none';
             document.getElementById('officerHomeSection').style.display = role !== 'intern' ? 'block' : 'none';
             document.getElementById('assignedOfficerSection').style.display = role === 'intern' ? 'block' : 'none';
@@ -753,23 +756,35 @@
                 document.getElementById('intTaskID').innerText = data.intern_task_id; 
                 document.getElementById('intTaskRole').innerText = data.intern_role || "Supporter";
                 
-                document.getElementById('intTaskObj').innerText = data.task_objective || "N/A";
-                document.getElementById('intTaskTools').innerText = data.tools_required || "N/A";
-                document.getElementById('intTaskUX').innerText = data.ux_guidelines || "N/A";
-                document.getElementById('intTaskDeadline').innerText = data.deadline || "N/A";
-                document.getElementById('intTaskDesc').innerText = data.step_by_step_process;
+                // FIX: Apply line breaks to prevent clumping
+                document.getElementById('intTaskObj').innerHTML = (data.task_objective || "N/A").replace(/\n/g, '<br>');
+                document.getElementById('intTaskTools').innerHTML = (data.tools_required || "N/A").replace(/\n/g, '<br>');
+                document.getElementById('intTaskUX').innerHTML = (data.ux_guidelines || "N/A").replace(/\n/g, '<br>');
+                document.getElementById('intTaskDeadline').innerHTML = data.deadline || "N/A";
+                document.getElementById('intTaskDesc').innerHTML = (data.step_by_step_process || "N/A").replace(/\n/g, '<br>');
                 
                 if(data.reference_files && Array.isArray(data.reference_files) && data.reference_files.length > 0) {
                     document.getElementById('internReferenceLink').style.display = 'block';
-                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'image/png')).join('');
+                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'unknown')).join('');
                 }
 
-                const draft = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
-                if(draft) { document.getElementById('qSummary').value = draft; }
+                // FIX: Restore ALL 6 draft fields securely
+                const draftStr = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
+                if(draftStr) {
+                    try {
+                        const draftObj = JSON.parse(draftStr);
+                        document.getElementById('qFunctions').value = draftObj.q1 || '';
+                        document.getElementById('qUpgrades').value = draftObj.q2 || '';
+                        document.getElementById('qBugs').value = draftObj.q3 || '';
+                        document.getElementById('qLogic').value = draftObj.q4 || '';
+                        document.getElementById('qChallenges').value = draftObj.q5 || '';
+                        document.getElementById('qSummary').value = draftObj.q6 || '';
+                        window.showToast("Local draft data restored.");
+                    } catch(e) {}
+                }
                 
-                window.aiContextStr = `User is an Intern. Assigned Task: ${data.title}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
+                window.aiContextStr = `User is an Intern. Task: ${data.title}. Objective: ${data.task_objective}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
                 window.fetchAnnouncementsDashboard();
-
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
@@ -799,6 +814,21 @@
             if(lastPanel) {
                 const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
                 if(el) el.click();
+            }
+        };
+
+        window.saveDraft = function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
+            if(session) {
+                const draftObj = {
+                    q1: document.getElementById('qFunctions').value,
+                    q2: document.getElementById('qUpgrades').value,
+                    q3: document.getElementById('qBugs').value,
+                    q4: document.getElementById('qLogic').value,
+                    q5: document.getElementById('qChallenges').value,
+                    q6: document.getElementById('qSummary').value
+                };
+                localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, JSON.stringify(draftObj));
             }
         };
 
@@ -1207,19 +1237,45 @@
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
-        window.createPreviewBlock = function(base64Str, title, type) {
+       window.createPreviewBlock = function(base64Str, title, type) {
             if(!base64Str || base64Str === 'none') return '';
+            
+            // FIX: Convert raw Base64 into a secure Blob URL for mobile viewing
+            let blobUrl = base64Str;
+            try {
+                if (base64Str.startsWith('data:')) {
+                    const parts = base64Str.split(';base64,');
+                    const contentType = parts[0].split(':')[1];
+                    const byteCharacters = atob(parts[1]);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const blob = new Blob([new Uint8Array(byteNumbers)], {type: contentType});
+                    blobUrl = URL.createObjectURL(blob);
+                }
+            } catch(e) {}
+
             if(type && type.startsWith('video') || base64Str.includes('youtube.com') || base64Str.endsWith('.mp4')) {
                 return `<div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
                             <video controls preload="metadata" style="width:100%;">
-                                <source src="${base64Str}" type="video/mp4">
+                                <source src="${blobUrl}" type="video/mp4">
                             </video>
                         </div>`;
             }
-            if(base64Str.startsWith('data:image')) return `<div class="preview-container" style="max-height:300px; overflow:hidden;"><img src="${base64Str}" alt="${title}" style="width:100%; object-fit:contain;"></div>`;
-            if(base64Str.startsWith('data:application/pdf')) return `<div class="preview-container"><iframe src="${base64Str}" style="width:100%; height:400px; border:none;"></iframe></div>`;
-            return `<a href="${base64Str}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
-        }
+            if(base64Str.startsWith('data:image')) {
+                return `<a href="${blobUrl}" target="_blank" style="display:block; max-height:300px; overflow:hidden; border-radius:12px; border:1px solid var(--accent-cyan); cursor:pointer;">
+                            <img src="${blobUrl}" alt="${title}" style="width:100%; object-fit:contain; background:rgba(0,0,0,0.5);">
+                        </a>`;
+            }
+            if(base64Str.startsWith('data:application/pdf')) {
+                return `<div style="padding:15px; border:1px dashed var(--accent-cyan); border-radius:12px; text-align:center; background:rgba(0,242,255,0.05);">
+                            <i class="fa-solid fa-file-pdf" style="font-size:2.5rem; color:var(--accent-red); margin-bottom:10px;"></i><br>
+                            <a href="${blobUrl}" target="_blank" class="btn btn-outline" style="display:inline-flex; width:auto; padding:10px 20px;"><i class="fa-solid fa-up-right-from-square"></i> Open PDF Document</a>
+                        </div>`;
+            }
+            return `<a href="${blobUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
+        };
 
         window.loadAssets = async function(type, title, navElement) {
             document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`; 
@@ -1322,9 +1378,9 @@
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             try {
                 let url = "";
+                // FIX: Interns query by exact team_task_id instead of prefix split to guarantee matching squad members
                 if(session.role === 'intern') {
-                    let projectPrefix = teamTaskId.split('-').slice(0, 2).join('-');
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=ilike.${encodeURIComponent(projectPrefix)}&select=intern_name,intern_phone,intern_task_id,intern_role,assigned_officer`;
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(session.data.team_task_id)}&select=intern_name,intern_task_id,intern_role,assigned_officer`;
                 } else {
                     url = `${SUPABASE_URL}/rest/v1/tims_users?or=(role.eq.officer,role.eq.hr)&select=name,role,email,phone`;
                 }
@@ -1332,14 +1388,13 @@
                 const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
                 if(data && data.length > 0) {
                     if(session.role === 'intern') {
-                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge" style="float:right; background:transparent; border:1px solid var(--glass-border);">${d.intern_role || 'Supporter'}</span></h4><p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p><p style="font-size:0.7rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p></div>`).join('');
+                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge" style="float:right; background:transparent; border:1px solid var(--glass-border);">${d.intern_role || 'Supporter'}</span></h4><p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p><p style="font-size:0.7rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p></div>`).join('');
                     } else {
                         cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
                     }
                 } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
             } catch(e) {}
         };
-
         window.fetchDomainOfficer = async function(assignedOfficerName) {
             const domainCont = document.getElementById('contactsDomainContainer');
             try {
@@ -1428,14 +1483,16 @@
                 draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
             } catch(e) {}
 
-            // Boot Check for Multi-Tab capability
-            let session = null;
-            let role = null;
-            
-            // Prefer the last used role if both exist, otherwise check which one is valid
+            const finishBoot = () => {
+                setTimeout(() => {
+                    const loader = document.getElementById('globalLoader');
+                    if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }
+                }, 600); // Allow time for panels to render
+            };
+
+            let session = null; let role = null;
             const s_int = JSON.parse(localStorage.getItem('tims_session_intern'));
             const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
-            
             if(s_int && window.isSessionValid(s_int)) { session = s_int; role = 'intern'; }
             if(s_off && window.isSessionValid(s_off)) { session = s_off; role = 'officer'; }
 
@@ -1445,18 +1502,18 @@
                 document.getElementById('dashName').innerText = session.name; document.getElementById('dashRole').innerText = `${role} access level`;
                 document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                 
-                // BUG FIX: Fetch fresh task data on reload so we get the heavy files without storing them locally
                 if (role === 'intern') {
                     fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=eq.${encodeURIComponent(session.data.intern_task_id)}&select=*`, { headers: apiHeaders })
                     .then(res => res.json())
                     .then(taskData => {
                         if(taskData && taskData.length > 0) window.buildDashboardRole(role, taskData[0]);
                         else window.buildDashboardRole(role, session.data);
-                    }).catch(() => window.buildDashboardRole(role, session.data));
+                        finishBoot();
+                    }).catch(() => { window.buildDashboardRole(role, session.data); finishBoot(); });
                 } else {
-                    window.buildDashboardRole(role, session.data);
+                    window.buildDashboardRole(role, session.data); finishBoot();
                 }
-            }
+            } else { finishBoot(); }
         });
     </script>
 </body>
