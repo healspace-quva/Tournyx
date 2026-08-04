@@ -667,11 +667,11 @@
             return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
         };
 
-        // --- 5. NATIVE REST API LOGIN (CASE INSENSITIVE & SEPARATE STORAGE) ---
+       // --- 5. NATIVE REST API LOGIN (FREEZE-PROOF & ERROR REVEALING) ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
-            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim().toUpperCase() : document.getElementById('loginPin').value.trim();
+            let secondaryInput = role === 'intern' ? document.getElementById('loginTaskId').value.trim().toLowerCase() : document.getElementById('loginPin').value.trim();
             let btnId = role === 'intern' ? 'btn-login-intern' : 'btn-login-officer';
 
             if(!nameInput || !secondaryInput) { window.showToast("All fields are strictly required.", true); return; }
@@ -685,7 +685,13 @@
 
             try {
                 const response = await fetchWithTimeout(fetch(url, { method: 'GET', headers: apiHeaders }), 5000);
-                if (!response.ok) throw new Error("Server Error");
+                
+                // THE FIX: Catch the EXACT database error instead of showing a generic Network Error
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.message || "Database rejected connection. Check SQL tables.");
+                }
+                
                 const data = await response.json();
 
                 if (data.length === 0) {
@@ -696,14 +702,23 @@
                 const sessionData = data[0]; 
                 
                 if(role === 'intern') {
-                    const dateString = new Date().toISOString().split('T')[0];
-                    const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
-                    const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
-                    const attData = await attRes.json();
-                    if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
+                    try {
+                        const dateString = new Date().toISOString().split('T')[0];
+                        const attUrl = `${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(nameInput)}&log_date=eq.${dateString}&select=*`;
+                        const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
+                        
+                        // Safely check attendance so it doesn't crash the login if the table is missing
+                        if (attRes.ok) {
+                            const attData = await attRes.json();
+                            if(attData.length === 0) {
+                                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
+                            }
+                        }
+                    } catch (attError) {
+                        console.warn("Attendance tracker bypassed due to DB schema mismatch.");
+                    }
                 }
 
-                // Store separately based on role so multiple tabs work
                 localStorage.setItem(`tims_session_${role}`, JSON.stringify({ name: sessionData.name || sessionData.intern_name, role: role, data: sessionData, timestamp: new Date().getTime() }));
                 
                 document.getElementById('view-login').style.opacity = '0';
@@ -719,10 +734,13 @@
                     window.buildDashboardRole(role, sessionData); window.showToast("System Access Granted.");
                 }, 400); 
 
-            } catch (err) { window.showToast("Network Error: Could not reach server.", true);
-            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
+            } catch (err) { 
+                // Displays the specific reason it failed
+                window.showToast("Error: " + err.message, true);
+            } finally { 
+                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } 
+            }
         };
-
         // --- 6. DYNAMIC ROLE ROUTING ---
         window.buildDashboardRole = function(role, data) {
             const menu = document.getElementById('dynamicNavMenu');
