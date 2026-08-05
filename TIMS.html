@@ -552,28 +552,50 @@
                 </div>
             </div>
 
-            <!-- SHARED: AI Hub (CHATGPT STYLE WITH MEMORY) -->
+            <!-- SHARED: AI Hub (CHATGPT/CLAUDE STYLE WITH RECENT CHATS) -->
             <div id="panel-ai" class="content-panel" style="height: 100%;">
-                <div class="panel-card glass-panel" style="border-color: rgba(189,0,255,0.4); display: flex; flex-direction: column; height: 100%;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(189,0,255,0.2); padding-bottom: 15px; margin-bottom: 15px;">
-                        <div>
-                            <h3 class="panel-title" style="color: var(--accent-purple); margin:0; border:none; padding:0;"><i class="fa-solid fa-microchip"></i> Tournyx Agent AI</h3>
-                            <p style="color:var(--text-muted); margin-top:5px; font-size: 0.75rem;">Agent automatically reads your profile context.</p>
-                        </div>
-                        <button class="btn btn-outline" style="width: auto; padding: 8px 15px; font-size: 0.7rem; border-color: var(--accent-purple); color: var(--accent-purple);" onclick="window.clearChat()"><i class="fa-solid fa-plus"></i> New Chat</button>
-                    </div>
+                <div style="display: flex; gap: 20px; height: 100%; min-height: 550px; flex-wrap: wrap;">
                     
-                    <div class="ai-chat-container" id="aiChatBox">
-                        <!-- Chats will inject here -->
+                    <!-- Left Sidebar: Recent Cloud Chats -->
+                    <div class="panel-card glass-panel" style="width: 260px; display: flex; flex-direction: column; padding: 18px; margin-bottom: 0; flex-shrink: 0;">
+                        <button class="btn btn-primary" style="margin-bottom: 15px; font-size: 0.75rem;" onclick="window.createNewChatSession()">
+                            <i class="fa-solid fa-plus"></i> New Chat
+                        </button>
+                        
+                        <h4 style="font-size: 0.75rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-clock-rotate-left"></i> Recent Chats</span>
+                            <i class="fa-solid fa-rotate-right" style="cursor:pointer;" onclick="window.loadRecentChats()" title="Refresh Chats"></i>
+                        </h4>
+
+                        <div id="recentChatsList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
+                            <div class="empty-state" style="padding: 15px; font-size: 0.75rem;">Loading past sessions...</div>
+                        </div>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <input type="text" id="aiInput" class="form-control" placeholder="Ask agent anything..." onkeypress="if(event.key === 'Enter') window.triggerAI()" style="border-color: rgba(189,0,255,0.4);">
-                        <button class="btn btn-primary" style="width: 50px; padding: 0; border-radius: 50%;" onclick="window.triggerAI()"><i class="fa-solid fa-paper-plane"></i></button>
+                    <!-- Right Column: Active Chat Window -->
+                    <div class="panel-card glass-panel" style="flex: 1; min-width: 300px; border-color: rgba(189,0,255,0.4); display: flex; flex-direction: column; margin-bottom: 0; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(189,0,255,0.2); padding-bottom: 12px; margin-bottom: 15px;">
+                            <div>
+                                <h3 class="panel-title" style="color: var(--accent-purple); margin:0; border:none; padding:0;" id="activeChatTitleHeader">
+                                    <i class="fa-solid fa-microchip"></i> Tournyx Agent AI
+                                </h3>
+                                <p style="color:var(--text-muted); margin-top:3px; font-size: 0.7rem;" id="activeChatSubHeader">Connected to Cloud Neural Net</p>
+                            </div>
+                            <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.65rem; border-color: var(--accent-red); color: var(--accent-red);" onclick="window.deleteActiveChatSession()"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
+                        
+                        <div class="ai-chat-container" id="aiChatBox">
+                            <div class="chat-bubble chat-ai">System Online. Connected to Neural Net... Select or start a chat session.</div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <input type="text" id="aiInput" class="form-control" placeholder="Ask Tournyx Agent for guidance..." onkeypress="if(event.key === 'Enter') window.triggerAI()" style="border-color: rgba(189,0,255,0.4);">
+                            <button class="btn btn-primary" style="width: 50px; height: 48px; padding: 0; border-radius: 50%; flex-shrink: 0;" onclick="window.triggerAI()"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
                     </div>
+
                 </div>
             </div>
-
             <!-- SHARED: Settings -->
             <div id="panel-settings" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -1446,49 +1468,110 @@
             } catch(e) {}
         };
 
-      // --- AI CHAT AGENT (WITH MEMORY & AUTO-FETCH) ---
+      // ==========================================
+        // TOURNYX AGENT AI (CLOUD SAVED + ChatGPT UI)
+        // ==========================================
+        window.activeChatId = null;
         window.aiChatHistory = [];
 
-        window.initAIChat = async function() {
+        // 1. Fetch Past Chat Sessions from Supabase
+        window.loadRecentChats = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
-            const chatBox = document.getElementById('aiChatBox');
-            
-            // 1. Check if chat history already exists in memory
-            const savedHistory = localStorage.getItem(`tims_chat_history_${session.role}`);
-            if (savedHistory) {
-                window.aiChatHistory = JSON.parse(savedHistory);
-                window.renderChatHistory();
-                return; 
-            }
-
-            // 2. If no history, create the FIRST auto-prompt to introduce the task
-            window.aiChatHistory = [];
-            chatBox.innerHTML = '<div class="chat-bubble chat-ai"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing your dashboard profile and syncing context...</div>';
-            
-            let contextMsg = "";
-            let uniqueId = session.role === 'intern' ? session.data.intern_task_id : "CMD-" + Math.floor(Math.random() * 9000);
-            
-            if (session.role === 'intern' && session.data.title) {
-                contextMsg = `System Setup: The user is an Intern. Their Unique Query ID is ${uniqueId}. Their active task is "${session.data.title}". Directives: ${session.data.step_by_step_process}. Generate a professional greeting. Acknowledge their task and ID, and give them 2 bullet points suggesting how they should start executing their directives.`;
-            } else {
-                contextMsg = `System Setup: The user is a Commander. Their Unique Query ID is ${uniqueId}. Give a short, professional greeting welcoming them to the matrix, and provide one brief tip on managing workflows today.`;
-            }
+            const listCont = document.getElementById('recentChatsList');
+            if (!listCont || !session) return;
 
             try {
-                const res = await fetch(WORKER_URL, { 
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: contextMsg, history: [] }) 
-                });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_ai_chats?user_name=eq.${encodeURIComponent(session.name)}&select=id,chat_title,updated_at&order=updated_at.desc`, { headers: apiHeaders });
                 const data = await res.json();
-                
-                window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Hello! System synchronized. How can I assist you today?" });
-                localStorage.setItem(`tims_chat_history_${session.role}`, JSON.stringify(window.aiChatHistory));
-                window.renderChatHistory();
-            } catch(e) {
-                chatBox.innerHTML = `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Unable to reach Edge AI. Ensure Cloudflare Worker is deployed.</div>`; 
+
+                if (data && data.length > 0) {
+                    listCont.innerHTML = data.map(c => `
+                        <div class="data-card" style="padding: 10px 12px; border-left-width: 3px; cursor: pointer; margin: 0; background: ${window.activeChatId === c.id ? 'rgba(0,242,255,0.15)' : 'var(--bg-input)'};" onclick="window.openChatSession('${c.id}')">
+                            <h4 style="font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;">${c.chat_title}</h4>
+                            <span style="font-size: 0.6rem; color: var(--text-muted);">${new Date(c.updated_at).toLocaleDateString()}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    listCont.innerHTML = '<div class="empty-state" style="padding: 15px; font-size: 0.75rem;">No past chats saved.</div>';
+                }
+            } catch (e) {
+                listCont.innerHTML = '<div class="empty-state" style="padding: 15px; font-size: 0.75rem; color: var(--accent-red);">Failed to load chats.</div>';
             }
         };
 
+        // 2. Open Selected Past Chat
+        window.openChatSession = async function(chatId) {
+            window.activeChatId = chatId;
+            const chatBox = document.getElementById('aiChatBox');
+            chatBox.innerHTML = '<div class="chat-bubble chat-ai"><i class="fa-solid fa-spinner fa-spin"></i> Retrieving cloud transcript...</div>';
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_ai_chats?id=eq.${chatId}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    const chat = data[0];
+                    document.getElementById('activeChatTitleHeader').innerHTML = `<i class="fa-solid fa-microchip"></i> ${chat.chat_title}`;
+                    window.aiChatHistory = typeof chat.messages === 'string' ? JSON.parse(chat.messages) : chat.messages;
+                    window.renderChatHistory();
+                    window.loadRecentChats();
+                }
+            } catch (e) {
+                window.showToast("Failed to load cloud session.", true);
+            }
+        };
+
+        // 3. Create New Chat Session
+        window.createNewChatSession = function() {
+            window.activeChatId = null;
+            window.aiChatHistory = [];
+            document.getElementById('activeChatTitleHeader').innerHTML = `<i class="fa-solid fa-microchip"></i> New Operational Session`;
+            document.getElementById('aiChatBox').innerHTML = `<div class="chat-bubble chat-ai">System Online. Connected to Neural Net... Ask Tournyx Agent anything to begin.</div>`;
+            window.loadRecentChats();
+        };
+
+        // 4. Save Current Session to Supabase Cloud
+        window.saveChatToCloud = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
+            if (!session || window.aiChatHistory.length === 0) return;
+
+            // Generate title from first query
+            const firstUserQuery = window.aiChatHistory.find(m => m.role === 'user')?.content || "Operational Query";
+            const title = firstUserQuery.substring(0, 30) + (firstUserQuery.length > 30 ? "..." : "");
+
+            const payload = {
+                user_name: session.name,
+                user_role: session.role,
+                chat_title: title,
+                messages: window.aiChatHistory,
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                if (window.activeChatId) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_ai_chats?id=eq.${window.activeChatId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
+                } else {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_ai_chats`, { method: 'POST', headers: { ...apiHeaders, 'Prefer': 'return=representation' }, body: JSON.stringify(payload) });
+                    const newChatData = await res.json();
+                    if (newChatData && newChatData.length > 0) window.activeChatId = newChatData[0].id;
+                }
+                window.loadRecentChats();
+            } catch (e) { console.warn("Cloud chat sync failed."); }
+        };
+
+        // 5. Delete Chat Session
+        window.deleteActiveChatSession = async function() {
+            if (!window.activeChatId) { window.createNewChatSession(); return; }
+            if (confirm("Delete this chat session permanently?")) {
+                try {
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_ai_chats?id=eq.${window.activeChatId}`, { method: 'DELETE', headers: apiHeaders });
+                    window.showToast("Chat session deleted.");
+                    window.createNewChatSession();
+                } catch(e) { window.showToast("Failed to delete chat.", true); }
+            }
+        };
+
+        // 6. Render Chat Messages Box
         window.renderChatHistory = function() {
             const chatBox = document.getElementById('aiChatBox');
             chatBox.innerHTML = window.aiChatHistory.map(msg => 
@@ -1497,13 +1580,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-        window.clearChat = function() {
-            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
-            localStorage.removeItem(`tims_chat_history_${session.role}`);
-            window.aiChatHistory = [];
-            window.initAIChat();
-        };
-
+        // 7. Main AI Trigger Function
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             if(!input.value.trim()) return;
@@ -1515,41 +1592,48 @@
 
             const chatBox = document.getElementById('aiChatBox');
             const typingId = 'typing_' + Date.now();
-            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i> Processing...</div>`;
+            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i> Analyzing context & generating execution plan...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
 
             try {
                 const res = await fetch(WORKER_URL, { 
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ action: 'tims_ai_chat', prompt: userMessage, history: window.aiChatHistory }) 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ 
+                        action: 'tims_ai_chat', 
+                        prompt: userMessage, 
+                        history: window.aiChatHistory, 
+                        context: window.aiContextStr || "General Operations" 
+                    }) 
                 });
                 const data = await res.json();
                 
                 document.getElementById(typingId).remove();
                 if (data.status === 'success') {
                     window.aiChatHistory.push({ role: 'assistant', content: data.answer });
-                    localStorage.setItem(`tims_chat_history_${session.role}`, JSON.stringify(window.aiChatHistory));
                     window.renderChatHistory();
+                    window.saveChatToCloud(); // Save to Cloud DB automatically
                 } else {
                     chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">${data.answer || data.error}</div>`;
                     window.aiChatHistory.pop(); 
                 }
             } catch(e) { 
                 document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Check internet connection.</div>`; 
+                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Please retry.</div>`; 
                 window.aiChatHistory.pop();
             }
         };
-       // --- UI CORE ROUTING ---
+
+        // 8. Panel Routing Hook
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
             
-            // Initialize AI if the user clicks the AI tab
-            if (panelId === 'panel-ai') { window.initAIChat(); }
+            // Auto-load Recent Chats when clicking AI Tab
+            if (panelId === 'panel-ai') { window.loadRecentChats(); }
             
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
