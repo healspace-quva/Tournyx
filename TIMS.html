@@ -501,21 +501,22 @@
                     <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
                 </div>
             </div>
+             <div class="panel-card glass-panel" style="margin-top: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
+                    <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
+                        <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
+                    </h3>
+                    <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
+                        <i class="fa-solid fa-rotate-right"></i> Refresh
+                    </button>
+                </div>
+                <div id="officerAssetsContainer">
+                    <div class="empty-state">Click Refresh to load assets.</div>
+                </div>
+            </div>
 
-            <!-- OFFICER UPLOADED ASSETS LIST -->
-<div class="panel-card glass-panel" style="margin-top: 25px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
-        <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
-            <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
-        </h3>
-        <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
-            <i class="fa-solid fa-rotate-right"></i> Refresh
-        </button>
-    </div>
-    <div id="officerAssetsContainer">
-        <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading uploaded assets...</div>
-    </div>
-</div>
+        </div>
+           
             <!-- SHARED: Dynamic Assets (PREVIEWS) -->
             <div id="panel-dynamic-assets" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -1112,51 +1113,61 @@ window.deleteProject = async function(projectId, teamTaskId) {
     }
 };
         // 1. Fetch Officer Assets
-window.fetchOfficerAssets = async function() {
-    const cont = document.getElementById('officerAssetsContainer');
-    if (!cont) return;
-    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning uploaded assets...</div>';
+// 1. Fetch Officer Assets (Bug-Proofed)
+        window.fetchOfficerAssets = async function() {
+            const cont = document.getElementById('officerAssetsContainer');
+            if (!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning uploaded assets...</div>';
 
-    try {
-        const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-        if (!session) return;
+            try {
+                // Security Check: Ensure only Officers can run this
+                const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+                if (!session) {
+                    cont.innerHTML = '<div class="empty-state">Unauthorized access.</div>';
+                    return;
+                }
 
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
-        const data = await res.json();
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
+                
+                // Network Error Check
+                if (!res.ok) throw new Error("API Error");
+                
+                const data = await res.json();
 
-        if (data && data.length > 0) {
-            cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
-                <div class="data-card" style="position:relative; padding-right:85px;">
-                    <!-- Actions -->
-                    <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px;">
-                        <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.editAssetTitle('${asset.id}', '${asset.title}')" title="Edit Asset Title">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.deleteAsset('${asset.id}')" title="Delete Asset">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
+                if (data && Array.isArray(data) && data.length > 0) {
+                    cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
+                        <div class="data-card" style="position:relative; padding-right:85px;">
+                            <!-- Edit & Delete Actions -->
+                            <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px;">
+                                <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.editAssetTitle('${asset.id}', '${asset.title}')" title="Edit Asset Title">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.deleteAsset('${asset.id}')" title="Delete Asset">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
 
-                    <span class="tag-badge" style="background:rgba(0,242,255,0.15); color:var(--accent-cyan); font-size:0.65rem; display:inline-block; margin-bottom:6px;">
-                        ${asset.asset_type || 'Asset Document'}
-                    </span>
-                    <h4 style="color:white; font-size:0.95rem; margin-bottom:4px; padding-right:10px;">${asset.title}</h4>
-                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.target_audience || 'ALL TEAMS'}</p>
-                    
-                    ${asset.file_data ? `
-                        <a href="${asset.file_data}" download="${asset.title}" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
-                            <i class="fa-solid fa-download"></i> Download Asset
-                        </a>
-                    ` : ''}
-                </div>
-            `).join('') + `</div>`;
-        } else {
-            cont.innerHTML = '<div class="empty-state">No uploaded assets found under your account.</div>';
-        }
-    } catch (e) {
-        cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Failed to load assets.</div>';
-    }
-};
+                            <span class="tag-badge" style="background:rgba(0,242,255,0.15); color:var(--accent-cyan); font-size:0.65rem; display:inline-block; margin-bottom:6px;">
+                                ${asset.asset_type || 'Asset Document'}
+                            </span>
+                            <h4 style="color:white; font-size:0.95rem; margin-bottom:4px; padding-right:10px;">${asset.title}</h4>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.target_audience || 'ALL TEAMS'}</p>
+                            
+                            ${asset.file_data ? `
+                                <a href="${asset.file_data}" download="${asset.title}" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
+                                    <i class="fa-solid fa-download"></i> Download Asset
+                                </a>
+                            ` : ''}
+                        </div>
+                    `).join('') + `</div>`;
+                } else {
+                    cont.innerHTML = '<div class="empty-state">No uploaded assets found under your account.</div>';
+                }
+            } catch (e) {
+                // If it fails (e.g., table doesn't exist yet), it stops the loading spinner.
+                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Failed to load assets. Database sync pending.</div>';
+            }
+        };
 
 // 2. Edit Asset Title
 window.editAssetTitle = async function(assetId, currentTitle) {
@@ -1808,16 +1819,19 @@ window.deleteAsset = async function(assetId) {
         };
 
         // 8. Panel Routing Hook
+       // 8. Panel Routing Hook
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
             
-           // Inside window.switchPanel = function(panelId, navElement) { ... }
-
-if (panelId === 'panel-ai') { window.loadRecentChats(); }
-if (panelId === 'panel-deploy') { window.fetchDeployedTasks(); }
-if (panelId === 'panel-upload' || panelId === 'panel-assets') { window.fetchOfficerAssets(); }
+            // --- ADD THESE TRIGGERS HERE ---
+            if (panelId === 'panel-ai') { window.loadRecentChats(); }
+            if (panelId === 'panel-deploy') { window.fetchDeployedTasks(); }
+            if (panelId === 'panel-upload' || panelId === 'panel-assets') { 
+                if(window.fetchOfficerAssets) window.fetchOfficerAssets(); 
+            }
+            // -------------------------------
             
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
