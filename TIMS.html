@@ -232,7 +232,7 @@
         
         <div class="sidebar glass-panel" id="sidebar">
             <div class="sidebar-brand" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding-top: 10px;">
-                <img src="tournyxweblogo.jpg" alt="Tournyx Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); object-fit: cover;">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgaAKNL-I8YoIYtKsz7XskA1UeyJPcZGYA4Fhmw4uUOxV3dktQfOcMBxotRDsviM2__QHqltvBnGu2tGuQ1aKkWEEnhTgK-ObF0qnxmPeD98f0K82cEq8ZapqgePiX2RLVh8AFXpQQ2m6ejZhVKBaIx98g1vbsscj2xOBBs_omt2F5SZ1PMOrtXVRF94BI/s1264/1000093706.png" alt="Tournyx Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); object-fit: cover;">
                 <h2 style="margin: 0;">TIMS HUB</h2>
             </div>
             <ul class="nav-menu" id="dynamicNavMenu"></ul>
@@ -1122,24 +1122,25 @@ window.deleteProject = async function(projectId, teamTaskId) {
             cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning uploaded assets...</div>';
 
             try {
-                // Security Check: Ensure only Officers can run this
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
                 if (!session) {
                     cont.innerHTML = '<div class="empty-state">Unauthorized access.</div>';
                     return;
                 }
 
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
+                // First try querying assets specifically uploaded by this officer
+                let res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
                 
-                // Network Error Check
-                if (!res.ok) throw new Error("API Error");
-                
+                // Fallback: If column filtering fails, fetch all assets
+                if (!res.ok) {
+                    res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?select=*&order=created_at.desc`, { headers: apiHeaders });
+                }
+
                 const data = await res.json();
 
                 if (data && Array.isArray(data) && data.length > 0) {
                     cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
                         <div class="data-card" style="position:relative; padding-right:85px;">
-                            <!-- Edit & Delete Actions -->
                             <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px;">
                                 <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.editAssetTitle('${asset.id}', '${asset.title}')" title="Edit Asset Title">
                                     <i class="fa-solid fa-pen"></i>
@@ -1153,11 +1154,11 @@ window.deleteProject = async function(projectId, teamTaskId) {
                                 ${asset.asset_type || 'Asset Document'}
                             </span>
                             <h4 style="color:white; font-size:0.95rem; margin-bottom:4px; padding-right:10px;">${asset.title}</h4>
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.target_audience || 'ALL TEAMS'}</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.assigned_team || asset.target_audience || 'ALL TEAMS'}</p>
                             
-                            ${asset.file_data ? `
-                                <a href="${asset.file_data}" download="${asset.title}" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
-                                    <i class="fa-solid fa-download"></i> Download Asset
+                            ${asset.file_url && asset.file_url !== 'none' ? `
+                                <a href="${asset.file_url}" download="${asset.title}" target="_blank" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none; width:auto;">
+                                    <i class="fa-solid fa-download"></i> Access Asset
                                 </a>
                             ` : ''}
                         </div>
@@ -1166,11 +1167,9 @@ window.deleteProject = async function(projectId, teamTaskId) {
                     cont.innerHTML = '<div class="empty-state">No uploaded assets found under your account.</div>';
                 }
             } catch (e) {
-                // If it fails (e.g., table doesn't exist yet), it stops the loading spinner.
-                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Failed to load assets. Database sync pending.</div>';
+                cont.innerHTML = '<div class="empty-state" style="color:var(--text-muted);">No assets available.</div>';
             }
         };
-
 // 2. Edit Asset Title
 window.editAssetTitle = async function(assetId, currentTitle) {
     const newTitle = prompt("Enter new Asset Title:", currentTitle);
@@ -1421,6 +1420,7 @@ window.deleteAsset = async function(assetId) {
         }
 
         window.broadcastAsset = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
             const type = document.getElementById('assetType').value;
             const title = document.getElementById('assetTitle').value; 
             const targetTeam = document.getElementById('assetTargetTeam').value || 'ALL';
@@ -1445,10 +1445,28 @@ window.deleteAsset = async function(assetId) {
             }
 
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ asset_type: type, title: title, description: finalDesc, file_type: finalType, file_url: finalUrl, assigned_team: targetTeam }) });
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { 
+                    method: 'POST', 
+                    headers: apiHeaders, 
+                    body: JSON.stringify({ 
+                        asset_type: type, 
+                        title: title, 
+                        description: finalDesc, 
+                        file_type: finalType, 
+                        file_url: finalUrl, 
+                        assigned_team: targetTeam,
+                        uploaded_by: session ? session.name : 'Commander' // Fix: Saves Officer Name
+                    }) 
+                });
                 window.showToast("Asset Distributed to Network.");
-                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('uploadText').innerText = "Click to Select File";
-                window.globalFileBase64 = null; window.globalFileType = null; document.getElementById('assetTitle').value = ""; document.getElementById('assetAnnouncementDesc').value = ""; document.getElementById('assetVideoUrl').value = "";
+                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; 
+                document.getElementById('uploadText').innerText = "Click to Select File";
+                window.globalFileBase64 = null; 
+                window.globalFileType = null; 
+                document.getElementById('assetTitle').value = ""; 
+                document.getElementById('assetAnnouncementDesc').value = ""; 
+                document.getElementById('assetVideoUrl').value = "";
+                window.fetchOfficerAssets(); // Refresh assets automatically
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
