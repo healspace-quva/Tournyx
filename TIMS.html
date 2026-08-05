@@ -914,31 +914,25 @@
             if (!qSum && !qFunc) { window.showToast("Please fill in the execution details before submitting.", true); return; }
             
             clearInterval(timerInterval);
-            const combinedProgress = `
-[Functions Implemented]: ${qFunc || 'N/A'}
-[Upgrades Added]: ${qUpg || 'N/A'}
-[Bugs Resolved]: ${qBugs || 'N/A'}
-[Code Logic]: ${qLog || 'N/A'}
-[Challenges Faced]: ${qChall || 'N/A'}
-[Summary]: ${qSum || 'Completed'}
-            `.trim();
+            const combinedProgress = `[Functions Implemented]: ${qFunc || 'N/A'}\n[Upgrades Added]: ${qUpg || 'N/A'}\n[Bugs Resolved]: ${qBugs || 'N/A'}\n[Code Logic]: ${qLog || 'N/A'}\n[Challenges Faced]: ${qChall || 'N/A'}\n[Summary]: ${qSum || 'Completed'}`.trim();
 
             window.showToast("Syncing Database...");
             try {
+                // BUG FIX: Status changed to Pending_HR for the waterfall effect
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
                     method: 'PATCH', headers: apiHeaders, 
-                    body: JSON.stringify({ progress_text: combinedProgress, functions_implemented: qFunc, upgrades_added: qUpg, bugs_resolved: qBugs, code_logic: qLog, challenges_faced: qChall, final_summary: qSum, status: 'Submitted', time_spent: timeLog }) 
+                    body: JSON.stringify({ progress_text: combinedProgress, functions_implemented: qFunc, upgrades_added: qUpg, bugs_resolved: qBugs, code_logic: qLog, challenges_faced: qChall, final_summary: qSum, status: 'Pending_HR', time_spent: timeLog }) 
                 });
                 
                 const dateString = new Date().toISOString().split('T')[0];
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
                 
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.team_task_id, progress: combinedProgress, timeSpent: timeLog }) });
+                // Triggers the automated Resend email with the exact Row ID
+                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.id, progress: combinedProgress, timeSpent: timeLog, date: dateString }) });
 
-                window.showToast("Operation Submitted (+40%). HR Notified.");
+                window.showToast("Operation Submitted (+40%). HR Notified via automated mail.");
                 localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
-                
-                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Operation Successfully Submitted</h3><p style="color:var(--accent-green);">Your report and timer (${timeLog}) have been securely logged. Awaiting HR and Officer clearance.</p>`;
+                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Operation Successfully Submitted</h3><p style="color:var(--accent-green);">Your report and timer (${timeLog}) have been securely logged. Awaiting HR Verification.</p>`;
             } catch(e) { window.showToast("Sync Failed.", true); }
         };
 
@@ -1016,15 +1010,23 @@
             } catch(e) { window.showToast("Failed to create project.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-        window.fetchDeployedTasks = async function() {
+       window.fetchDeployedTasks = async function() {
             const cont = document.getElementById('activeTeamProjectsContainer');
             cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`, { headers: apiHeaders });
+                const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+                
+                // BUG FIX: Officers only see projects where 'created_by' matches their name
+                const url = session.role === 'officer' 
+                    ? `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`
+                    : `${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`;
+
+                const res = await fetch(url, { headers: apiHeaders });
                 const data = await res.json();
+                
                 if(data.length > 0) {
                     cont.innerHTML = data.map(d => `<div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')"><h4 style="color:var(--accent-cyan); font-size:1.1rem;">${d.team_task_id}</h4><p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:10px;">${d.project_name}</p><span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">Manage Squad <i class="fa-solid fa-arrow-right"></i></span></div>`).join('');
-                } else { cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; }
+                } else { cont.innerHTML = '<div class="empty-state">No deployed operations found under your command. Click Deploy to assign tasks.</div>'; }
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
         };
 
@@ -1381,7 +1383,12 @@
             cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-                const url = session.role === 'hr' ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&select=*` : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Submitted&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
+                
+                // BUG FIX: HR sees "Pending_HR". Officers see "Pending_Officer" for their specific interns.
+                const url = session.role === 'hr' 
+                    ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=*` 
+                    : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
+                
                 const res = await fetch(url, { headers: apiHeaders }); 
                 const data = await res.json();
                 
@@ -1401,10 +1408,9 @@
                                 <button class="btn btn-success" style="padding:10px; font-size:0.7rem;" onclick="window.approveIntern('${d.intern_name}', '${d.id}')"><i class="fa-solid fa-check"></i> Grant Clearance</button>
                             </div>
                         </div>`).join('') + `</div>`;
-                } else { cont.innerHTML = '<div class="empty-state">No workflows pending approval.</div>'; }
+                } else { cont.innerHTML = '<div class="empty-state">No workflows pending your approval.</div>'; }
             } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
         };
-
         window.approveIntern = async function(internName, taskId) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer')); 
             const dateString = new Date().toISOString().split('T')[0];
@@ -1418,20 +1424,23 @@
                 
                 if(attData.length > 0) {
                     const att = attData[0]; let payload = {};
-                    if(session.role === 'hr' && !att.hr_20) payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
-                    else if (session.role === 'officer' && !att.officer_30) payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
+                    
+                    if(session.role === 'hr' && !att.hr_20) {
+                        payload = { hr_20: true, total_percentage: att.total_percentage + 20 };
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Pending_Officer' }) });
+                    }
+                    else if (session.role === 'officer' && !att.officer_30) {
+                        payload = { officer_30: true, total_percentage: att.total_percentage + 30 };
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved' }) });
+                    }
                     
                     if(Object.keys(payload).length > 0) {
                         await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
-                        if((session.role === 'hr' && att.officer_30) || (session.role === 'officer' && att.hr_20)) {
-                             await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved' }) });
-                        }
                         window.showToast("Clearance Granted Successfully."); 
                     } else { window.showToast("Already cleared.", true); }
                 }
             } catch(e) { document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; }
         };
-
         // --- SHARED FETCHERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
