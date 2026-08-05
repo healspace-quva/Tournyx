@@ -37,17 +37,17 @@
       "url": "https://tournyx.in",
       "logo": "https://tournyx.in/favicon.png",
       "contactPoint": [
-        { "@type": "ContactPoint", "email": "tournyx.esports.india@gmail.com", "contactType": "Main Office & General Support" }
+        { "@type": "ContactPoint", "email": "contact@tournyx.in", "contactType": "Main Office & General Support" }
       ],
       "employee": [
-        { "@type": "Person", "name": "Thilakeshwaran", "jobTitle": "Founder & CEO", "email": "ceo.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Monish V", "jobTitle": "Chief Technology Officer (CTO)", "email": "cto.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Shiva Kumar", "jobTitle": "Chief Operations & Technical Communications Officer", "email": "cotco.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Surya Prakash A", "jobTitle": "Chief Associate Cybersecurity & AI Operations Lead", "email": "cac.ol.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Rajesh Kumar A", "jobTitle": "Lead Software Development & Training Manager", "email": "csd.tm.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Surya S", "jobTitle": "Director of Community Outreach & Human Relations", "email": "dcohr.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Tharun Kumar G", "jobTitle": "HR / Team Operations Manager & Support Supervisor", "email": "hr.om.tournyxesports@gmail.com" },
-        { "@type": "Person", "name": "Umesh Sharma N", "jobTitle": "Communications & Media Operations Manager", "email": "cmm.tournyxesports@gmail.com" }
+        { "@type": "Person", "name": "Thilakeshwaran", "jobTitle": "Founder & CEO", "email": "ceo@tournyx.in" },
+        { "@type": "Person", "name": "Pending", "jobTitle": "Chief Technology Officer (CTO)", "email": "cto@tournyx.in" },
+        { "@type": "Person", "name": "Shiva Kumar", "jobTitle": "Chief Operations & Technical Communications Officer", "email": "ops@tournyx.in" },
+        { "@type": "Person", "name": "Surya Prakash A", "jobTitle": "Chief Associate Cybersecurity & AI Operations Lead", "email": "security@tournyx.in" },
+        { "@type": "Person", "name": "Rajesh Kumar A", "jobTitle": "Lead Software Development & Training Manager", "email": "dev@tournyx.in" },
+        { "@type": "Person", "name": "Surya S", "jobTitle": "Director of Community Outreach & Human Relations", "email": "community@tournyx.in" },
+        { "@type": "Person", "name": "Tharun Kumar G", "jobTitle": "HR / Team Operations Manager & Support Supervisor", "email": "hr@tournyx.in" },
+        { "@type": "Person", "name": "Umesh Sharma N", "jobTitle": "Communications & Media Operations Manager", "email": "media@tournyx.in" }
       ]
     }
     </script>
@@ -78,7 +78,8 @@
         .back-btn { color: white; font-size: 1.2rem; cursor: pointer; text-decoration: none; padding: 5px; transition: 0.3s; display: flex; align-items: center;}
         .back-btn:active { transform: translateX(-5px); color: var(--accent-cyan); }
         .page-title { font-family: var(--font-head); font-size: clamp(1rem, 4vw, 1.2rem); font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .header-logo { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent-cyan); box-shadow: 0 0 8px rgba(0,242,255,0.4); object-fit: cover; cursor: pointer;}
+        .header-logo { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent-cyan); box-shadow: 0 0 8px rgba(0,242,255,0.4); object-fit: cover; cursor: pointer; transition: transform 0.3s ease;}
+        .header-logo:hover { transform: scale(1.1); }
 
         /* INTRO BANNER */
         .intro-banner { text-align: center; margin-bottom: 25px; padding: 20px 10px; animation: fadeInDown 0.6s ease; }
@@ -87,7 +88,8 @@
         .intro-banner p { font-size: 0.95rem; color: #aaa; max-width: 600px; margin: 0 auto; line-height: 1.5; font-weight: bold;}
 
         /* HIGHLIGHTED OFFICE CARD */
-        .main-office-card { background: linear-gradient(180deg, rgba(0, 242, 255, 0.1) 0%, rgba(10, 5, 20, 0.9) 100%); border: 1px solid var(--accent-cyan); border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,242,255,0.2), inset 0 0 20px rgba(0,242,255,0.05); animation: fadeInDown 0.8s ease backwards; backdrop-filter: blur(12px);}
+        .main-office-card { background: linear-gradient(180deg, rgba(0, 242, 255, 0.1) 0%, rgba(10, 5, 20, 0.9) 100%); border: 1px solid var(--accent-cyan); border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,242,255,0.2), inset 0 0 20px rgba(0,242,255,0.05); animation: fadeInDown 0.8s ease backwards; backdrop-filter: blur(12px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .main-office-card:hover { transform: scale(1.02); box-shadow: 0 15px 40px rgba(0,242,255,0.3), inset 0 0 25px rgba(0,242,255,0.1); }
         .main-office-card h2 { font-family: var(--font-head); color: white; margin-bottom: 10px; font-weight: 900; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 10px;}
         .main-office-card p { color: #aaa; font-size: 0.9rem; margin-bottom: 20px; font-weight: bold;}
 
@@ -96,14 +98,15 @@
         @media (min-width: 768px) { .officer-grid { grid-template-columns: 1fr 1fr; } .founder-card { grid-column: 1 / -1; } }
 
         /* OFFICER CARDS */
-        .officer-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; backdrop-filter: blur(12px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition: 0.3s; position: relative; overflow: hidden; animation: fadeInUp 0.5s ease backwards;}
-        .officer-card:hover { transform: translateY(-3px); border-color: var(--accent-cyan); box-shadow: 0 10px 30px rgba(0,242,255,0.15); }
-        .officer-card::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent-gradient); }
+        .officer-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; backdrop-filter: blur(12px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: fadeInUp 0.5s ease backwards;}
+        .officer-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 12px 35px rgba(0,242,255,0.2); }
+        .officer-card::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent-gradient); transition: width 0.3s ease; }
+        .officer-card:hover::before { width: 6px; }
 
         /* FOUNDER SPECIAL CARD */
         .founder-card { border-color: rgba(255,215,0,0.4); background: linear-gradient(180deg, rgba(30, 25, 10, 0.8) 0%, rgba(10, 5, 20, 0.9) 100%); box-shadow: 0 10px 30px rgba(255,215,0,0.15), inset 0 0 20px rgba(255,215,0,0.05); }
         .founder-card::before { background: var(--gold-gradient); width: 5px;}
-        .founder-card:hover { border-color: var(--accent-gold); box-shadow: 0 12px 35px rgba(255,215,0,0.3); }
+        .founder-card:hover { border-color: var(--accent-gold); box-shadow: 0 15px 45px rgba(255,215,0,0.3); }
 
         /* CARD INTERNALS */
         .card-top { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; }
@@ -121,16 +124,21 @@
         .founder-card .responsibilities li i { color: var(--accent-gold); }
 
         /* SEO/AEO EMAIL TEXT EXPOSURE */
-        .email-display { background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); }
-        .email-text { font-family: monospace; font-size: 0.75rem; color: #aaa; user-select: all; -webkit-user-select: all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .copy-icon { color: var(--accent-cyan); font-size: 0.9rem; cursor: pointer; padding: 5px;}
+        .email-display { background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .email-display:hover { border-color: rgba(0,242,255,0.3); }
+        .email-text { font-family: monospace; font-size: 0.75rem; color: #aaa; user-select: all; -webkit-user-select: all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s;}
+        .email-display:hover .email-text { color: white; }
+        .copy-icon { color: var(--accent-cyan); font-size: 0.9rem; cursor: pointer; padding: 5px; transition: 0.3s;}
+        .copy-icon:hover { transform: scale(1.2); }
         .founder-card .copy-icon { color: var(--accent-gold); }
 
         /* CONTACT BUTTONS */
         .contact-btn { width: 100%; padding: 12px; background: rgba(0,242,255,0.05); border: 1px solid var(--accent-cyan); border-radius: 10px; color: var(--accent-cyan); font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; text-transform: uppercase; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: 1px;}
+        .contact-btn:hover { background: rgba(0,242,255,0.15); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
         .contact-btn:active { transform: scale(0.96); background: var(--accent-cyan); color: black; }
         
         .founder-card .contact-btn { background: var(--gold-gradient); color: black; border: none; box-shadow: 0 4px 15px rgba(255,215,0,0.3);}
+        .founder-card .contact-btn:hover { box-shadow: 0 8px 25px rgba(255,215,0,0.5); filter: brightness(1.1); }
         .founder-card .contact-btn:active { box-shadow: 0 2px 8px rgba(255,215,0,0.4); }
 
         /* DECORATIVE SEPARATOR */
@@ -174,10 +182,10 @@
             <h2><i class="fa-solid fa-building"></i> TOURNYX MAIN OFFICE</h2>
             <p>For general inquiries, corporate relations, and official support documentation.</p>
             <div class="email-display" style="max-width: 400px; margin: 0 auto 15px auto; justify-content: center; gap: 15px; border-color: rgba(0,242,255,0.3);">
-                <div class="email-text" itemprop="email" style="font-size: 0.95rem; color: var(--accent-cyan);">tournyx.esports.india@gmail.com</div>
-                <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('tournyx.esports.india@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                <div class="email-text" itemprop="email" style="font-size: 0.95rem; color: var(--accent-cyan);">contact@tournyx.in</div>
+                <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('contact@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
             </div>
-            <a href="mailto:tournyx.esports.india@gmail.com?subject=Tournyx%20General%20Inquiry" class="contact-btn" style="max-width: 400px; margin: 0 auto; background: var(--accent-gradient); color: white; border: none; box-shadow: 0 4px 15px rgba(0,242,255,0.3);" onclick="triggerHaptic()">
+            <a href="mailto:contact@tournyx.in?subject=Tournyx%20General%20Inquiry" class="contact-btn" style="max-width: 400px; margin: 0 auto; background: var(--accent-gradient); color: white; border: none; box-shadow: 0 4px 15px rgba(0,242,255,0.3);" onclick="triggerHaptic()">
                 <i class="fa-solid fa-envelope"></i> Email Main Office
             </a>
         </div>
@@ -199,23 +207,23 @@
                     <li><i class="fa-solid fa-diamond"></i> Executive Leadership & B2B Infrastructure Integration.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">ceo.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('ceo.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">ceo@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('ceo@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:ceo.tournyxesports@gmail.com?subject=Tournyx%20Executive%20Inquiry" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:ceo@tournyx.in?subject=Tournyx%20Executive%20Inquiry" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-envelope"></i> Email Executive Board
                 </a>
             </div>
 
             <div class="section-divider">TECHNOLOGY & OPERATIONS</div>
 
-            <!-- CTO -->
+            <!-- CTO (Name Blank) -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.1s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR MONISH -->
-                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgjIrJWUPbimg2IBT5Rkq0Uz16lg2VOqOPnTUApxCfClipvXUqlf5BF0USbRKprf6N1yjQz7wQC6KnVADXczxT8Y2KAuFkqfu1nZf4OkLR3NYT8_cpxKjmoFNQIhX5GDi3RYqhGeYQyFJ8PH4EhIPZwqYMHhbws03x52AkbIcqcxSVkXw6x3gHqV1Lfni4/s1600/1000132239.jpg" class="avatar" alt="Monish V - CTO" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
+                    <!-- Generic CTO Avatar -->
+                    <img src="https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="CTO" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
-                        <div class="name" itemprop="name">Monish V</div>
+                        <div class="name" itemprop="name">&nbsp;</div>
                         <div class="title" itemprop="jobTitle">Chief Technology Officer [CTO]</div>
                     </div>
                 </div>
@@ -224,10 +232,10 @@
                     <li><i class="fa-solid fa-diamond"></i> AI & Game Server Development Leadership.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">cto.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('cto.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">cto@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('cto@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:cto.tournyxesports@gmail.com?subject=Technology%20&%20Platform%20Inquiry%20(Attn:%20CTO)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:cto@tournyx.in?subject=Technology%20&%20Platform%20Inquiry%20(Attn:%20CTO)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Tech Team
                 </a>
             </div>
@@ -235,7 +243,6 @@
             <!-- COO -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.15s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR SHIVA -->
                     <img src="https://ui-avatars.com/api/?name=Shiva+Kumar&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="Shiva Kumar - COO" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Shiva Kumar</div>
@@ -247,10 +254,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Daily Technical Communication & Workflow.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">cotco.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('cotco.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">ops@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('ops@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:cotco.tournyxesports@gmail.com?subject=Esports%20Operations%20Inquiry%20(Attn:%20Operations)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:ops@tournyx.in?subject=Esports%20Operations%20Inquiry%20(Attn:%20Operations)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Operations
                 </a>
             </div>
@@ -258,7 +265,6 @@
             <!-- CYBERSECURITY -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.2s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR SURYA PRAKASH -->
                     <img src="https://ui-avatars.com/api/?name=Surya+Prakash&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="Surya Prakash - Security" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Surya Prakash A</div>
@@ -270,10 +276,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Platform Security & Account Recovery Support.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">cac.ol.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('cac.ol.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">security@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('security@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:cac.ol.tournyxesports@gmail.com?subject=Security%20Vulnerability%20Report%20(Attn:%20Cybersecurity)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:security@tournyx.in?subject=Security%20Vulnerability%20Report%20(Attn:%20Cybersecurity)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Report Security Issue
                 </a>
             </div>
@@ -281,7 +287,6 @@
             <!-- LEAD DEV -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.25s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR RAJESH -->
                     <img src="https://ui-avatars.com/api/?name=Rajesh+Kumar&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="Rajesh Kumar - Lead Dev" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Rajesh Kumar A</div>
@@ -293,10 +298,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Full Stack Architecture Guidance.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">lsd.tm.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('csd.tm.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">dev@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('dev@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:csd.tm.tournyxesports@gmail.com?subject=Developer%20Support%20Inquiry%20(Attn:%20Dev%20Team)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:dev@tournyx.in?subject=Developer%20Support%20Inquiry%20(Attn:%20Dev%20Team)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Dev Team
                 </a>
             </div>
@@ -306,7 +311,6 @@
             <!-- HR MANAGER -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.3s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR THARUN -->
                     <img src="https://ui-avatars.com/api/?name=Tharun+Kumar&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="Tharun Kumar - HR" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Tharun Kumar G</div>
@@ -318,10 +322,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Player Support Ticket Escalations.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">hr.om.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('hr.om.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">hr@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('hr@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:hr.om.tournyxesports@gmail.com?subject=HR%20&%20Careers%20Inquiry%20(Attn:%20HR)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:hr@tournyx.in?subject=HR%20&%20Careers%20Inquiry%20(Attn:%20HR)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Human Resources
                 </a>
             </div>
@@ -329,7 +333,6 @@
             <!-- DIR OF COMMUNITY -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.35s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR SURYA S -->
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhe8bXN0D0aLqD9LK5U_4PhUgpNjbXxUh1S3a_D8Ghg6WzJDy9U5h0gfshD9F6-zRxlfNdbMdTH-ZJQTPgIuYV_sKpvzNWe4QCskTuZ_3veM0tntoZ4nkPBwbgWIKXhjw4z9eY_5gOv_-bPVlY9Z-Yfj5yseTmLHq1A11nla8gKYtUt4tQiO_9wsxvv6YE/s1280/1000132230.jpg" class="avatar" alt="Surya S - Community" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Surya S</div>
@@ -341,10 +344,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Community Expansion & Public Relations.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">dcohr.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('dcohr.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">community@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('community@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:dcohr.tournyxesports@gmail.com?subject=Community%20Outreach%20Partnership%20(Attn:%20Community%20Lead)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:community@tournyx.in?subject=Community%20Outreach%20Partnership%20(Attn:%20Community%20Lead)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Outreach Team
                 </a>
             </div>
@@ -352,7 +355,6 @@
             <!-- MEDIA OPS -->
             <div class="officer-card" itemscope itemtype="https://schema.org/Person" style="animation-delay: 0.4s">
                 <div class="card-top">
-                    <!-- REPLACE src WITH IMAGE LINK FOR UMESH -->
                     <img src="https://ui-avatars.com/api/?name=Umesh+Sharma&background=00f2ff&color=000&font-family=Orbitron" class="avatar" alt="Umesh Sharma - Media" itemprop="image" onerror="this.src='https://tournyx.in/favicon.png'">
                     <div class="info">
                         <div class="name" itemprop="name">Umesh Sharma N</div>
@@ -364,10 +366,10 @@
                     <li><i class="fa-solid fa-diamond"></i> Tournament Content Coordination.</li>
                 </ul>
                 <div class="email-display">
-                    <div class="email-text" itemprop="email">cmm.tournyxesports@gmail.com</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('cmm.tournyxesports@gmail.com'); triggerHaptic();" title="Copy Email"></i>
+                    <div class="email-text" itemprop="email">media@tournyx.in</div>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('media@tournyx.in'); triggerHaptic();" title="Copy Email"></i>
                 </div>
-                <a href="mailto:cmm.tournyxesports@gmail.com?subject=Media%20&%20Press%20Inquiry%20(Attn:%20Media%20Manager)" class="contact-btn" onclick="triggerHaptic()">
+                <a href="mailto:media@tournyx.in?subject=Media%20&%20Press%20Inquiry%20(Attn:%20Media%20Manager)" class="contact-btn" onclick="triggerHaptic()">
                     <i class="fa-solid fa-paper-plane"></i> Contact Media Desk
                 </a>
             </div>
