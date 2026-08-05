@@ -502,6 +502,20 @@
                 </div>
             </div>
 
+            <!-- OFFICER UPLOADED ASSETS LIST -->
+<div class="panel-card glass-panel" style="margin-top: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
+        <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
+            <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
+        </h3>
+        <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+    </div>
+    <div id="officerAssetsContainer">
+        <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading uploaded assets...</div>
+    </div>
+</div>
             <!-- SHARED: Dynamic Assets (PREVIEWS) -->
             <div id="panel-dynamic-assets" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -1010,25 +1024,183 @@
             } catch(e) { window.showToast("Failed to create project.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-       window.fetchDeployedTasks = async function() {
-            const cont = document.getElementById('activeTeamProjectsContainer');
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
-            try {
-                const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-                
-                // BUG FIX: Officers only see projects where 'created_by' matches their name
-                const url = session.role === 'officer' 
-                    ? `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`
-                    : `${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`;
+      window.fetchDeployedTasks = async function() {
+    const cont = document.getElementById('activeTeamProjectsContainer');
+    if (!cont) return;
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
+    
+    try {
+        const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+        if (!session) return;
+        
+        // Officers see projects created by them; Commanders see all
+        const url = session.role === 'officer' 
+            ? `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`
+            : `${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`;
 
-                const res = await fetch(url, { headers: apiHeaders });
-                const data = await res.json();
-                
-                if(data.length > 0) {
-                    cont.innerHTML = data.map(d => `<div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')"><h4 style="color:var(--accent-cyan); font-size:1.1rem;">${d.team_task_id}</h4><p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:10px;">${d.project_name}</p><span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">Manage Squad <i class="fa-solid fa-arrow-right"></i></span></div>`).join('');
-                } else { cont.innerHTML = '<div class="empty-state">No deployed operations found under your command. Click Deploy to assign tasks.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
-        };
+        const res = await fetch(url, { headers: apiHeaders });
+        const data = await res.json();
+        
+        if (data && data.length > 0) {
+            cont.innerHTML = data.map(d => `
+                <div class="data-card" style="cursor:pointer; position:relative; padding-right:90px;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
+                    <!-- Top Right Action Controls -->
+                    <div style="position:absolute; top:15px; right:15px; display:flex; gap:8px; z-index:10;">
+                        <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.editProjectName('${d.id}', '${d.project_name}')" title="Edit Project Title">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.deleteProject('${d.id}', '${d.team_task_id}')" title="Delete Project">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <h4 style="color:var(--accent-cyan); font-size:1.1rem; margin-bottom:4px;">${d.team_task_id}</h4>
+                    <p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:12px; padding-right:20px;">${d.project_name}</p>
+                    <span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">
+                        Manage Squad <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+            `).join('');
+        } else { 
+            cont.innerHTML = '<div class="empty-state">No deployed operations found under your command. Click Deploy to assign tasks.</div>'; 
+        }
+    } catch(e) { 
+        cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; 
+    }
+};
+        // Edit Project Name
+window.editProjectName = async function(projectId, currentName) {
+    const newName = prompt("Enter new Project Title:", currentName);
+    if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
+
+    window.showToast("Updating Project Title...");
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
+            method: 'PATCH',
+            headers: apiHeaders,
+            body: JSON.stringify({ project_name: newName.trim() })
+        });
+        if (res.ok) {
+            window.showToast("Project Title Updated Successfully.");
+            window.fetchDeployedTasks();
+        } else {
+            window.showToast("Failed to update project title.", true);
+        }
+    } catch (e) {
+        window.showToast("Network Error.", true);
+    }
+};
+
+// Delete Project
+window.deleteProject = async function(projectId, teamTaskId) {
+    if (!confirm(`Are you sure you want to delete operation ${teamTaskId}? This action cannot be undone.`)) return;
+
+    window.showToast("Deleting Operation...");
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
+            method: 'DELETE',
+            headers: apiHeaders
+        });
+        if (res.ok) {
+            window.showToast("Operation Deleted Successfully.");
+            window.fetchDeployedTasks();
+        } else {
+            window.showToast("Failed to delete operation.", true);
+        }
+    } catch (e) {
+        window.showToast("Network Error.", true);
+    }
+};
+        // 1. Fetch Officer Assets
+window.fetchOfficerAssets = async function() {
+    const cont = document.getElementById('officerAssetsContainer');
+    if (!cont) return;
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning uploaded assets...</div>';
+
+    try {
+        const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+        if (!session) return;
+
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+            cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
+                <div class="data-card" style="position:relative; padding-right:85px;">
+                    <!-- Actions -->
+                    <div style="position:absolute; top:12px; right:12px; display:flex; gap:6px;">
+                        <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.editAssetTitle('${asset.id}', '${asset.title}')" title="Edit Asset Title">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="window.deleteAsset('${asset.id}')" title="Delete Asset">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <span class="tag-badge" style="background:rgba(0,242,255,0.15); color:var(--accent-cyan); font-size:0.65rem; display:inline-block; margin-bottom:6px;">
+                        ${asset.asset_type || 'Asset Document'}
+                    </span>
+                    <h4 style="color:white; font-size:0.95rem; margin-bottom:4px; padding-right:10px;">${asset.title}</h4>
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.target_audience || 'ALL TEAMS'}</p>
+                    
+                    ${asset.file_data ? `
+                        <a href="${asset.file_data}" download="${asset.title}" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
+                            <i class="fa-solid fa-download"></i> Download Asset
+                        </a>
+                    ` : ''}
+                </div>
+            `).join('') + `</div>`;
+        } else {
+            cont.innerHTML = '<div class="empty-state">No uploaded assets found under your account.</div>';
+        }
+    } catch (e) {
+        cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Failed to load assets.</div>';
+    }
+};
+
+// 2. Edit Asset Title
+window.editAssetTitle = async function(assetId, currentTitle) {
+    const newTitle = prompt("Enter new Asset Title:", currentTitle);
+    if (!newTitle || newTitle.trim() === "" || newTitle.trim() === currentTitle) return;
+
+    window.showToast("Updating Asset Title...");
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, {
+            method: 'PATCH',
+            headers: apiHeaders,
+            body: JSON.stringify({ title: newTitle.trim() })
+        });
+        if (res.ok) {
+            window.showToast("Asset Title Updated.");
+            window.fetchOfficerAssets();
+        } else {
+            window.showToast("Failed to update asset title.", true);
+        }
+    } catch (e) {
+        window.showToast("Network Error.", true);
+    }
+};
+
+// 3. Delete Asset
+window.deleteAsset = async function(assetId) {
+    if (!confirm("Are you sure you want to delete this asset permanently?")) return;
+
+    window.showToast("Deleting Asset...");
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, {
+            method: 'DELETE',
+            headers: apiHeaders
+        });
+        if (res.ok) {
+            window.showToast("Asset Deleted Successfully.");
+            window.fetchOfficerAssets();
+        } else {
+            window.showToast("Failed to delete asset.", true);
+        }
+    } catch (e) {
+        window.showToast("Network Error.", true);
+    }
+};
 
         window.filterTeamProjects = function(val) {
             const cards = document.getElementById('activeTeamProjectsContainer').children;
@@ -1641,8 +1813,11 @@
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
             const activePanel = document.getElementById(panelId); if(!activePanel) return; 
             
-            // Auto-load Recent Chats when clicking AI Tab
-            if (panelId === 'panel-ai') { window.loadRecentChats(); }
+           // Inside window.switchPanel = function(panelId, navElement) { ... }
+
+if (panelId === 'panel-ai') { window.loadRecentChats(); }
+if (panelId === 'panel-deploy') { window.fetchDeployedTasks(); }
+if (panelId === 'panel-upload' || panelId === 'panel-assets') { window.fetchOfficerAssets(); }
             
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
