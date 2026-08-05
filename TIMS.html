@@ -228,10 +228,13 @@
     <div id="view-dashboard">
         
         <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
-        <button class="mobile-menu-btn glass-panel" onclick="window.openSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <button class="mobile-menu-btn glass-panel" onclick="window.toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
         
         <div class="sidebar glass-panel" id="sidebar">
-            <div class="sidebar-brand"><h2>TIMS HUB</h2></div>
+            <div class="sidebar-brand" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding-top: 10px;">
+                <img src="tournyxweblogo.jpg" alt="Tournyx Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); object-fit: cover;">
+                <h2 style="margin: 0;">TIMS HUB</h2>
+            </div>
             <ul class="nav-menu" id="dynamicNavMenu"></ul>
             <div class="sidebar-footer"><button class="logout-btn" onclick="window.logout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button></div>
         </div>
@@ -500,22 +503,22 @@
                     <br>
                     <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
                 </div>
-            </div>
-             <div class="panel-card glass-panel" style="margin-top: 25px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
-                    <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
-                        <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
-                    </h3>
-                    <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
-                        <i class="fa-solid fa-rotate-right"></i> Refresh
-                    </button>
-                </div>
-                <div id="officerAssetsContainer">
-                    <div class="empty-state">Click Refresh to load assets.</div>
-                </div>
-            </div>
 
-        </div>
+                <!-- OFFICER UPLOADED ASSETS LIST (FIXED TO STAY IN PANEL) -->
+                <div class="panel-card glass-panel" style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
+                        <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
+                            <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
+                        </h3>
+                        <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="officerAssetsContainer">
+                        <div class="empty-state">Click Refresh to load assets.</div>
+                    </div>
+                </div>
+            </div>
            
             <!-- SHARED: Dynamic Assets (PREVIEWS) -->
             <div id="panel-dynamic-assets" class="content-panel">
@@ -1112,8 +1115,7 @@ window.deleteProject = async function(projectId, teamTaskId) {
         window.showToast("Network Error.", true);
     }
 };
-        // 1. Fetch Officer Assets
-// 1. Fetch Officer Assets (Bug-Proofed)
+        // 1. Fetch Officer Assets (Bug-Proofed)
         window.fetchOfficerAssets = async function() {
             const cont = document.getElementById('officerAssetsContainer');
             if (!cont) return;
@@ -1819,7 +1821,6 @@ window.deleteAsset = async function(assetId) {
         };
 
         // 8. Panel Routing Hook
-       // 8. Panel Routing Hook
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
             document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
@@ -1828,7 +1829,7 @@ window.deleteAsset = async function(assetId) {
             // --- ADD THESE TRIGGERS HERE ---
             if (panelId === 'panel-ai') { window.loadRecentChats(); }
             if (panelId === 'panel-deploy') { window.fetchDeployedTasks(); }
-            if (panelId === 'panel-upload' || panelId === 'panel-assets') { 
+            if (panelId === 'panel-officer-assets' || panelId === 'panel-upload') { 
                 if(window.fetchOfficerAssets) window.fetchOfficerAssets(); 
             }
             // -------------------------------
@@ -1842,8 +1843,29 @@ window.deleteAsset = async function(assetId) {
             document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
         };
 
-        window.openSidebar = function() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileOverlay').classList.add('open'); };
-        window.closeSidebar = function() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('open'); };
+        // MOBILE SIDEBAR TOGGLE
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('open')) {
+                window.closeSidebar();
+            } else {
+                window.openSidebar();
+            }
+        };
+
+        window.openSidebar = function() { 
+            document.getElementById('sidebar').classList.add('open'); 
+            document.getElementById('mobileOverlay').classList.add('open'); 
+            const icon = document.querySelector('.mobile-menu-btn i');
+            if(icon) { icon.classList.remove('fa-bars'); icon.classList.add('fa-xmark'); }
+        };
+
+        window.closeSidebar = function() { 
+            document.getElementById('sidebar').classList.remove('open'); 
+            document.getElementById('mobileOverlay').classList.remove('open'); 
+            const icon = document.querySelector('.mobile-menu-btn i');
+            if(icon) { icon.classList.remove('fa-xmark'); icon.classList.add('fa-bars'); }
+        };
         
         window.logout = function() {
             // Check which role is logging out to not kill multiple tabs
