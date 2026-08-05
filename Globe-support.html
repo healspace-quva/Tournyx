@@ -41,9 +41,9 @@
       ],
       "employee": [
         { "@type": "Person", "name": "Thilakeshwaran", "jobTitle": "Founder & CEO", "email": "ceo@tournyx.in" },
-        { "@type": "Person", "name": "Pending", "jobTitle": "Chief Technology Officer (CTO)", "email": "cto@tournyx.in" },
+        { "@type": "Person", "name": "not yet[managed by CEO]", "jobTitle": "Chief Technology Officer (CTO)", "email": "cto@tournyx.in" },
         { "@type": "Person", "name": "Shiva Kumar", "jobTitle": "Chief Operations & Technical Communications Officer", "email": "ops@tournyx.in" },
-        { "@type": "Person", "name": "Surya Prakash A", "jobTitle": "Chief Associate Cybersecurity & AI Operations Lead", "email": "security@tournyx.in" },
+        { "@type": "Person", "name": "Surya Prakash A", "jobTitle": "Chief Associate Cybersecurity & AI Operations Lead", "email": "cyber@tournyx.in" },
         { "@type": "Person", "name": "Rajesh Kumar A", "jobTitle": "Lead Software Development & Training Manager", "email": "dev@tournyx.in" },
         { "@type": "Person", "name": "Surya S", "jobTitle": "Director of Community Outreach & Human Relations", "email": "community@tournyx.in" },
         { "@type": "Person", "name": "Tharun Kumar G", "jobTitle": "HR / Team Operations Manager & Support Supervisor", "email": "hr@tournyx.in" },
@@ -95,7 +95,12 @@
 
         /* GRID SYSTEM */
         .officer-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
-        @media (min-width: 768px) { .officer-grid { grid-template-columns: 1fr 1fr; } .founder-card { grid-column: 1 / -1; } }
+        
+        /* DESKTOP LAYOUT FIX: Enforces full width for the founder and section dividers so the grid wraps perfectly */
+        @media (min-width: 768px) { 
+            .officer-grid { grid-template-columns: 1fr 1fr; } 
+            .founder-card, .section-divider { grid-column: 1 / -1; } 
+        }
 
         /* OFFICER CARDS */
         .officer-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; backdrop-filter: blur(12px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: fadeInUp 0.5s ease backwards;}
@@ -142,10 +147,15 @@
         .founder-card .contact-btn:active { box-shadow: 0 2px 8px rgba(255,215,0,0.4); }
 
         /* DECORATIVE SEPARATOR */
-        .section-divider { display: flex; align-items: center; text-align: center; margin: 35px 0; color: #888; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; letter-spacing: 2px;}
+        .section-divider { display: flex; align-items: center; text-align: center; margin: 35px 0; color: #888; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; letter-spacing: 2px; grid-column: 1 / -1;}
         .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px dashed rgba(255,255,255,0.1); }
         .section-divider:not(:empty)::before { margin-right: 15px; }
         .section-divider:not(:empty)::after { margin-left: 15px; }
+
+        /* FOOTER CREDITS */
+        .brand-footer { text-align: center; margin-top: 40px; margin-bottom: 10px; user-select: none; font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.5rem; font-weight: 900; color: white; font-family: var(--font-head); letter-spacing: 4px; margin-top: 5px; animation: pulsateSmall 2s infinite alternate;}
+        @keyframes pulsateSmall { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.3), 0 0 8px var(--accent-purple); } }
 
         /* TOAST NOTIFICATION */
         #toast { position: fixed; top: 20px; right: 20px; background: rgba(10,5,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: white; padding: 15px 25px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 5px 25px rgba(0,242,255,0.4); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;}
@@ -375,6 +385,13 @@
             </div>
 
         </div>
+        
+        <!-- POWERED BY QUVA FOOTER -->
+        <div class="brand-footer">
+            POWERED BY <br>
+            <span class="neon-quva-small">QUVA</span>
+        </div>
+        
     </div>
 
     <!-- Background Particle Engine -->
