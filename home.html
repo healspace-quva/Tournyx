@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournyx Player System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-void: #080b12;
+            --panel-glass: rgba(16, 21, 38, 0.7);
+            --panel-border: rgba(0, 240, 255, 0.15);
+            --neon-cyan: #00f0ff;
+            --neon-purple: #bd00ff;
+            --gold: #FFD700;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+            --font-display: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* LEFT COLUMN WRAPPER */
+        .system-overview-column {
+            width: 100%;
+            max-width: 400px; /* Locks the width for the left panel */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- 1. TOP HEADER --- */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .top-nav h2 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        .nav-icons { font-size: 1.2rem; cursor: pointer; color: var(--text-muted); transition: 0.3s; }
+        .nav-icons:hover { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+
+        /* --- 2. PLAYER PROFILE CARD --- */
+        .player-card {
+            background: var(--panel-glass);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.02);
+        }
+        .player-info-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .player-avatar {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            background: #000;
+        }
+        .player-stats h3 { font-family: var(--font-display); font-size: 1rem; margin-bottom: 2px; }
+        .level-text { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .exp-bar-container {
+            width: 150px; height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px; margin-top: 5px;
+            overflow: hidden;
+        }
+        .exp-fill {
+            height: 100%; width: 78%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+            box-shadow: 0 0 8px var(--neon-cyan);
+        }
+        
+        .currency-row {
+            display: flex; gap: 10px;
+        }
+        .currency-badge {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 8px; border-radius: 8px;
+            font-family: var(--font-display); font-size: 0.85rem;
+        }
+
+        /* --- 3. TOURNAMENT BANNER --- */
+        .tournament-banner {
+            background: linear-gradient(135deg, rgba(18, 11, 46, 0.9), rgba(6, 12, 33, 0.9));
+            border: 1px solid rgba(189, 0, 255, 0.3);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .tournament-banner::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%);
+            z-index: 0; pointer-events: none;
+        }
+        .tourney-content { position: relative; z-index: 1; }
+        .tourney-title { font-family: var(--font-display); font-size: 1.4rem; color: #fff; font-weight: 900; line-height: 1.1; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .tourney-sub { color: var(--neon-cyan); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; }
+        .prize-pool { font-family: var(--font-display); font-size: 1.8rem; color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); margin-bottom: 15px; }
+        
+        .btn-register {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 10px 25px; border-radius: 50px;
+            font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-register:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); }
+
+        /* --- 4. ENGINE STATUS CARD --- */
+        .engine-card {
+            background: var(--panel-glass);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px; padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .engine-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;}
+        .engine-header h3 { font-family: var(--font-display); font-size: 0.9rem; }
+        .status-badge { font-size: 0.65rem; color: var(--neon-green, #00ff66); border: 1px solid rgba(0,255,102,0.3); padding: 3px 8px; border-radius: 50px; background: rgba(0,255,102,0.1); font-weight: bold; letter-spacing: 1px;}
+        
+        .engine-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px; align-items: center;
+        }
+        .stat-box { display: flex; flex-direction: column; }
+        .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 2px;}
+        .stat-value { font-family: var(--font-display); font-size: 1.1rem; color: #fff; }
+        .stat-value.gold { color: var(--gold); }
+        .stat-value.purple { color: var(--neon-purple); }
+
+        .btn-open-system {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px dashed var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: var(--font-display); font-size: 0.7rem; font-weight: bold;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+            cursor: pointer; transition: 0.3s;
+            animation: pulse-border 2s infinite;
+        }
+        .btn-open-system:hover { background: rgba(0,240,255,0.1); transform: scale(1.05); }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 240, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+        }
+
+        /* --- 5. QUICK ACCESS & BOTTOM NAV --- */
+        .quick-access-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-top: 5px;}
+        .view-all { color: var(--neon-cyan); cursor: pointer; }
+        
+        .quick-access-grid {
+            display: flex; justify-content: space-between;
+        }
+        .quick-icon-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            color: var(--text-muted); font-size: 0.75rem; cursor: pointer; font-weight: 600;
+        }
+        .icon-circle {
+            width: 45px; height: 45px;
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: 0.3s;
+        }
+        .quick-icon-btn:hover .icon-circle { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,240,255,0.2); }
+
+        .bottom-nav {
+            display: flex; justify-content: space-between;
+            background: var(--panel-glass); border-top: 1px solid var(--panel-border);
+            padding: 15px 20px; border-radius: 20px; margin-top: 10px;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; cursor: pointer;}
+        .nav-item.active { color: var(--neon-cyan); }
+        .nav-item i { font-size: 1.1rem; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="system-overview-column">
+        
+        <!-- Top Nav -->
+        <div class="top-nav">
+            <i class="fa-solid fa-bars nav-icons"></i>
+            <h2>TOURNYX</h2>
+            <div style="display:flex; gap:15px;">
+                <i class="fa-regular fa-bell nav-icons"></i>
+                <i class="fa-regular fa-user nav-icons"></i>
+            </div>
+        </div>
+
+        <!-- Player Card -->
+        <div class="player-card">
+            <div class="player-info-row">
+                <div class="player-avatar"></div> <!-- Replace with img tag later -->
+                <div class="player-stats">
+                    <h3>PlayerX</h3>
+                    <div class="level-text">Level 45 <span style="float:right;">78%</span></div>
+                    <div class="exp-bar-container"><div class="exp-fill"></div></div>
+                </div>
+            </div>
+            <div class="currency-row">
+                <div class="currency-badge"><i class="fa-regular fa-gem" style="color:#00f0ff;"></i> 5,000 +</div>
+                <div class="currency-badge"><i class="fa-solid fa-coins" style="color:#FFD700;"></i> 12,450 +</div>
+            </div>
+        </div>
+
+        <!-- Tournament Banner -->
+        <div class="tournament-banner">
+            <div class="tourney-content">
+                <h1 class="tourney-title">TOURNYX<br>LEGENDS<br>LEAGUE</h1>
+                <div class="tourney-sub">SEASON 2 PRIZE POOL</div>
+                <div class="prize-pool">₹ 1,00,000</div>
+                <button class="btn-register">Register Now</button>
+            </div>
+        </div>
+
+        <!-- Engine Status Card -->
+        <div class="engine-card">
+            <div class="engine-header">
+                <h3>TOURNYX ENGINE</h3>
+                <span class="status-badge">AI STATUS: ACTIVE</span>
+            </div>
+            <div class="engine-grid">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="stat-box">
+                        <span class="stat-label">Power Level</span>
+                        <span class="stat-value"><i class="fa-solid fa-cube" style="color:var(--neon-cyan); font-size:0.8rem;"></i> 5,460</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Today's XP</span>
+                        <span class="stat-value purple">+420 XP</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="stat-box">
+                        <span class="stat-label">Current Rank</span>
+                        <span class="stat-value gold"><i class="fa-solid fa-shield-halved"></i> GOLD II</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Daily Progress</span>
+                        <span class="stat-value">68%</span>
+                    </div>
+                </div>
+                <button class="btn-open-system">
+                    OPEN<br>SYSTEM<br><i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="quick-access-header">
+            <span>QUICK ACCESS</span>
+            <span class="view-all">VIEW ALL ></span>
+        </div>
+        <div class="quick-access-grid">
+            <div class="quick-icon-btn">
+                <div class="icon-circle"><i class="fa-regular fa-calendar-check" style="color:#bd00ff;"></i></div>
+                Daily Check-In
+            </div>
+            <div class="quick-icon-btn">
+                <div class="icon-circle"><i class="fa-solid fa-dharmachakra" style="color:#00f0ff;"></i></div>
+                Lucky Spin
+            </div>
+            <div class="quick-icon-btn">
+                <div class="icon-circle"><i class="fa-solid fa-trophy" style="color:#FFD700;"></i></div>
+                Upcoming
+            </div>
+            <div class="quick-icon-btn">
+                <div class="icon-circle"><i class="fa-solid fa-cart-shopping" style="color:#8b9bb4;"></i></div>
+                Shop
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
+            <div class="nav-item"><i class="fa-solid fa-trophy"></i> Tourneys</div>
+            <div class="nav-item"><i class="fa-solid fa-shield"></i> Guild</div>
+            <div class="nav-item"><i class="fa-solid fa-chart-simple"></i> Rank</div>
+            <div class="nav-item"><i class="fa-solid fa-user"></i> Profile</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
