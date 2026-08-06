@@ -202,42 +202,32 @@
         .vid-text p { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; }
 
         .ad-banner { background: linear-gradient(45deg, #111, #222); height: 100px; border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: #555; font-family: var(--font-head); font-weight: bold; letter-spacing: 2px; }
-
+         /* 1. Force Sidebar to Hide on Mobile */
+        .desktop-sidebar {
+            display: none !important; width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--panel-border);
+            flex-direction: column; padding: 30px 20px; z-index: 1000; box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+        }
+        @media (min-width: 1024px) {
+            .desktop-sidebar { display: flex !important; }
+        }
+        .mobile-header { display: none !important; } /* Erase old header */
         /* --- MENISCUS iOS DOCK (Exact Video Match) --- */
         .ios-dock-wrapper {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: calc(100% - 30px); max-width: 420px; z-index: 9000;
         }
+        /* 2. Perfect Video-Style Meniscus Dock */
         .ios-dock {
             background: rgba(14, 17, 24, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px; padding: 0 10px;
             display: flex; justify-content: space-between; align-items: center; height: 65px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 20px rgba(0,242,255,0.05); position: relative; isolation: isolate;
         }
-        
-        .m-bead {
-            position: absolute; top: 50%; left: 0; margin-top: -22.5px; 
-            width: 45px; height: 45px; background: rgba(0, 242, 255, 0.1); border-radius: 50%;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); z-index: -1; 
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-        }
-        
-        .m-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 55px; height: 100%; position: relative; z-index: 1; cursor: pointer; text-decoration: none;
-        }
-        .m-icon { font-size: 1.25rem; color: #5a6b8c; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s; }
-        .m-text { font-size: 0.65rem; color: var(--neon-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 8px; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        .m-item.active .m-icon { transform: translateY(-12px); color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5);} 
-        .m-item.active .m-text { opacity: 1; transform: translateY(0); }
-        
         .m-fab {
             width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
             color: white; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
-            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.5); transform: translateY(-20px); cursor: pointer; border: 4px solid var(--bg-void);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; flex-shrink: 0;
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.5); transform: translateY(-20px); cursor: pointer; 
+            border: 5px solid var(--bg-void); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; flex-shrink: 0;
         }
         .m-fab:active { transform: translateY(-15px) scale(0.9); box-shadow: 0 2px 10px rgba(0, 242, 255, 0.8); }
 
@@ -284,10 +274,11 @@
         <div class="main-viewport" id="scrollArea">
             <div class="app-container">
                 
-                <!-- TOP MATRIX (Exact Image 4 Replica) -->
+                <!-- 1. TOP MATRIX (Logo, Search, Tix, Gold) -->
                 <div class="top-matrix z-up">
                     <div class="matrix-row">
-                        <div class="pill-btn logo-btn"><i class="fa-solid fa-microchip"></i></div>
+                        <!-- Tournyx Logo Button instead of Menu -->
+                        <div class="pill-btn logo-chip" onclick="window.location.reload()"><i class="fa-solid fa-microchip"></i></div>
                         <div class="pill-btn search" onclick="alert('Search Database Offline')"><i class="fa-solid fa-magnifying-glass"></i></div>
                         <div class="currency-pill tix"><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> <span id="valTix">--</span> +</div>
                         <div class="currency-pill gold"><i class="fa-solid fa-coins" style="color:var(--gold);"></i> <span id="valGold">--</span></div>
@@ -306,9 +297,10 @@
                     </div>
                 </div>
 
-                <!-- RECENT EVENTS SLIDER -->
+                <!-- 2. RECENT EVENTS SLIDER -->
                 <div class="events-slider z-up" id="eventsSlider">
-                    <div class="event-banner skeleton"></div>
+                    <!-- Skeletons with fixed height to prevent blank screen collapse -->
+                    <div class="event-banner skeleton" style="min-height: 140px;"></div>
                 </div>
 
                 <!-- DAILY STREAK (Medium, Tailored) -->
@@ -334,14 +326,13 @@
                 <!-- TOURNYX ENGINE (Player System) -->
                 <div class="engine-widget glass-panel z-up">
                     
-                    <!-- Guest Overlay -->
+                    <<!-- Guest Overlay -->
                     <div class="guest-overlay" id="guestOverlay">
-                        <i class="fa-solid fa-lock"></i>
-                        <h3>Matrix Locked</h3>
-                        <p>Authenticate to sync your combat stats.</p>
-                        <button class="guest-btn" onclick="window.location.href='login.html'">CONNECT ID</button>
+                        <i class="fa-solid fa-lock" style="font-size:2.5rem; color:rgba(255,255,255,0.2); margin-bottom:15px;"></i>
+                        <h3 style="font-family:var(--font-head); font-size:1.3rem; color:white; margin-bottom:5px;">Matrix Locked</h3>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Authenticate to sync your combat stats.</p>
+                        <button class="guest-btn" style="background:linear-gradient(90deg, #111, #222); border:1px solid var(--neon-cyan); color:var(--neon-cyan); width:100%; box-shadow:0 0 15px rgba(0,242,255,0.2);" onclick="window.location.href='login.html'">CONNECT ID</button>
                     </div>
-
                     <div class="eng-head">
                         <h3><i class="fa-solid fa-microchip"></i> TOURNYX ENGINE</h3>
                         <span class="eng-status" id="aiStatus">AI PINGING...</span>
@@ -557,7 +548,35 @@
             alert("Streak Claimed! +15 Tickets");
         }
 
-        // --- 5. DOM Generators (Zero Blank Screens) ---
+        // --- 5. DOM Generators & Supabase Real-Time Fetch ---
+        async function fetchSupabaseGames() {
+            try {
+                // Fetch up to 20 Tournaments from Supabase
+                if(supabase) {
+                    const { data: tourneys, error: tErr } = await supabase.from('tims_tournaments').select('*').limit(20);
+                    if(tourneys && tourneys.length > 0) renderTournaments(tourneys);
+                    else renderTournamentsMock(); // Fallback if table empty
+                } else {
+                    renderTournamentsMock();
+                }
+
+                // Fetch Creator Feed
+                if(supabase) {
+                    const { data: feeds, error: fErr } = await supabase.from('tims_feed').select('*').limit(10);
+                    if(feeds && feeds.length > 0) renderCreatorFeed(feeds);
+                    else renderCreatorFeedMock();
+                } else {
+                    renderCreatorFeedMock();
+                }
+
+                // Render Top Events Slider
+                renderEventsSlider();
+            } catch(e) { 
+                renderTournamentsMock();
+                renderCreatorFeedMock();
+            }
+        }
+
         function renderEventsSlider() {
             const slider = document.getElementById('eventsSlider');
             slider.innerHTML = `
@@ -566,15 +585,37 @@
             `;
         }
 
-        function renderTournaments() {
+        function renderTournaments(data) {
             const slider = document.getElementById('tourneySlider');
             let html = "";
-            for(let i=1; i<=20; i++) { // Loop 20 events without lag
+            data.forEach((t, i) => {
+                html += `
+                    <div class="ft-card">
+                        <div class="ft-top">
+                            <div class="ft-prize">₹ ${t.prize || '10,000'}</div>
+                            <div class="ft-title">${t.title || 'Pro Scrims Match ' + (i+1)}</div>
+                            <div class="ft-meta"><span>Squad</span><span>${t.game || 'Free Fire MAX'}</span></div>
+                        </div>
+                        <img src="${t.image || 'https://via.placeholder.com/150/11141D/00f2ff?text=Art'}" class="ft-art">
+                        <div class="ft-bottom">
+                            <div class="ft-status">${t.status || 'Registering'}</div>
+                            <div class="ft-btn" onclick="window.location.href='explore.html'">View Details</div>
+                        </div>
+                    </div>
+                `;
+            });
+            slider.innerHTML = html;
+        }
+
+        function renderTournamentsMock() {
+            const slider = document.getElementById('tourneySlider');
+            let html = "";
+            for(let i=1; i<=20; i++) { // Renders exactly 20 events smoothly
                 html += `
                     <div class="ft-card">
                         <div class="ft-top">
                             <div class="ft-prize">₹ ${Math.floor(Math.random() * 50 + 10)},000</div>
-                            <div class="ft-title">Pro Scrims Match ${i}</div>
+                            <div class="ft-title">Tournyx Pro Scrims ${i}</div>
                             <div class="ft-meta"><span>Squad</span><span>Free Fire MAX</span></div>
                         </div>
                         <img src="https://via.placeholder.com/150/11141D/00f2ff?text=Art" class="ft-art">
@@ -588,19 +629,23 @@
             slider.innerHTML = html;
         }
 
-        function renderCreatorFeed() {
+        function renderCreatorFeedMock() {
             const feed = document.getElementById('creatorFeed');
-            feed.innerHTML = `
-                <div class="feed-vid">
-                    <div class="vid-thumb"><img src="https://via.placeholder.com/600x300/111/00f2ff?text=Insane+Clutch"><i class="fa-solid fa-circle-play vid-play"></i></div>
-                    <div class="vid-info"><div class="vid-avatar"></div><div class="vid-text"><h4>1v4 Final Zone Clutch</h4><p>Shadow Gaming • 12K Views</p></div></div>
-                </div>
-                <div class="ad-banner">SPONSORED: ESPORTS GEAR</div>
-                <div class="feed-vid">
-                    <div class="vid-thumb"><img src="https://via.placeholder.com/600x300/111/bd00ff?text=Sniper+Montage"><i class="fa-solid fa-circle-play vid-play"></i></div>
-                    <div class="vid-info"><div class="vid-avatar"></div><div class="vid-text"><h4>AWM Only Challenge</h4><p>Team Xeron • 8K Views</p></div></div>
-                </div>
-            `;
+            let html = "";
+            // Endless feel with loops and ad banner injections
+            for(let i=1; i<=10; i++) {
+                html += `
+                    <div class="feed-vid">
+                        <div class="vid-thumb"><img src="https://via.placeholder.com/600x300/111/00f2ff?text=Insane+Clutch+${i}"><i class="fa-solid fa-circle-play vid-play"></i></div>
+                        <div class="vid-info"><div class="vid-avatar"></div><div class="vid-text"><h4>1v4 Final Zone Clutch #${i}</h4><p>Shadow Gaming • ${Math.floor(Math.random()*50 + 5)}K Views</p></div></div>
+                    </div>
+                `;
+                // Inject AD Banner every 3 videos
+                if(i % 3 === 0) {
+                    html += `<div class="ad-banner">SPONSORED: ROG ESPORTS PHONE 9</div>`;
+                }
+            }
+            feed.innerHTML = html;
         }
 
         function pingCloudflareAI() {
