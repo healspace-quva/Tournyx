@@ -8,7 +8,7 @@
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/tournyx/service-worker.js");
+          navigator.serviceWorker.register("/tournyx/service-worker.js").catch(()=>{});
         });
       }
     </script>
@@ -19,28 +19,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <title>Tournyx - Ultimate Indian Esports & Gaming Platform</title>
-    <meta name="description" content="Welcome to Tournyx Esports. India's ultimate premium skill-based platform for BGMI, Free Fire MAX, and CODM tournaments.">
+    <meta name="description" content="Welcome to Tournyx Esports. India's ultimate premium skill-based platform.">
     <meta name="robots" content="index, follow">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- SUPABASE CLIENT & CHART.JS -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            window.OneSignal = OneSignal;
+            await OneSignal.init({ appId: "15a8e2b2-240c-4547-929e-797d7170e988", notifyButton: { enable: false }});
+            try {
+                let userSession = localStorage.getItem('tournyx_user');
+                if (userSession) {
+                    let playerObj = JSON.parse(userSession);
+                    if (playerObj && playerObj.email) await OneSignal.login(String(playerObj.email).trim().toLowerCase());
+                }
+            } catch(e) {}
+        });
+    </script>
+
     <style>
         /* --- GLOBAL VARIABLES (THRYL DEEP BLACK THEME) --- */
         :root {
-            --primary-bg: #050608; 
-            --secondary-bg: #0A0C10; 
-            --glass-bg: rgba(17, 20, 29, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-            --panel-bg: #11141D;
+            --primary-bg: #020203; 
+            --secondary-bg: #08090C; 
+            --glass-bg: rgba(10, 12, 16, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+            --panel-bg: #0b0d12;
             --accent-cyan: #00f2ff;
             --accent-purple: #bd00ff;
             --accent-orange: #ff5500;
@@ -53,14 +67,8 @@
             --transition-smooth: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        html.theme-vip {
-            --accent-cyan: #FFD700; --accent-purple: #FFA500;
-            --accent-gradient: linear-gradient(135deg, #FFE87C, #D4AF37, #FF8C00);
-            --glass-border: rgba(212, 175, 55, 0.4);
-        }
-        
         * { -ms-overflow-style: none !important; scrollbar-width: none !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
         body {
             background-color: var(--primary-bg); color: var(--text-main); font-family: var(--font-body);
@@ -68,45 +76,45 @@
             padding-top: calc(85px + env(safe-area-inset-top, 0px)); 
         }
 
-        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 18px; }
 
-        /* --- DESKTOP FULL WIDTH EXPANSION --- */
-        .main-wrapper { max-width: 100%; margin: 0 auto; padding: 0 15px; }
-        
-        .desktop-sidebar { display: none; width: 260px; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); flex-direction: column; padding: 30px 20px; position: fixed; top: 0; left: 0; height: 100vh; z-index: 3000; box-shadow: 5px 0 30px rgba(0,0,0,0.9); }
+        /* --- DESKTOP FULL WIDTH ARCHITECTURE --- */
+        .desktop-sidebar { display: none; width: 280px; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); flex-direction: column; padding: 30px 20px; position: fixed; top: 0; left: 0; height: 100vh; z-index: 3000; box-shadow: 5px 0 30px rgba(0,0,0,0.9); }
         .sidebar-brand { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: white; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
         .sidebar-brand i { color: var(--accent-cyan); font-size: 1.8rem; }
         .side-nav-item { display: flex; align-items: center; gap: 15px; padding: 15px; color: var(--text-muted); font-size: 0.95rem; font-weight: bold; text-transform: uppercase; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 5px; text-decoration: none; font-family: var(--font-head); letter-spacing: 1px;}
         .side-nav-item:hover, .side-nav-item.active { background: rgba(0, 242, 255, 0.05); color: var(--accent-cyan); border-left: 3px solid var(--accent-cyan); transform: translateX(5px); }
 
+        .main-wrapper { max-width: 100%; margin: 0 auto; padding: 0 15px; }
+
         @media (min-width: 1024px) {
+            body { padding-left: 280px; }
             .desktop-sidebar { display: flex; }
-            .ios-dock-wrapper, .top-header .menu-btn { display: none !important; }
-            body { padding-left: 260px; }
-            .main-wrapper { padding: 0 40px; max-width: 1800px; }
+            .ios-dock-wrapper, .menu-btn, .bs-overlay, .bs-menu { display: none !important; }
+            .main-wrapper { padding: 0 40px; }
+            .top-header { width: calc(100% - 280px); left: 280px; }
         }
 
-        /* --- ATTRACTIVE METAL SHINE SKELETON --- */
+        /* --- METAL SHINE SKELETON --- */
         .skeleton { 
-            background: linear-gradient(110deg, #0A0C10 25%, #182030 40%, #232d42 50%, #182030 60%, #0A0C10 75%); 
+            background: linear-gradient(110deg, #0A0C10 25%, #1e2436 40%, #232d42 50%, #1e2436 60%, #0A0C10 75%); 
             background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
-            border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
         }
         @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* --- EXACT MENISCUS DOCK UI --- */
+        /* --- EXACT MENISCUS DOCK --- */
         .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 450px; z-index: 9000; }
-        .ios-dock { background: rgba(10, 12, 16, 0.95); backdrop-filter: blur(25px); border-radius: 40px; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; height: 70px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; border: 1px solid rgba(255,255,255,0.05); --active-color: #00f2ff; }
+        .ios-dock { background: rgba(8, 10, 14, 0.95); backdrop-filter: blur(25px); border-radius: 40px; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; height: 70px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; border: 1px solid rgba(255,255,255,0.05); --nav-color: #00f2ff;}
         
-        /* The Sliding Glowing Ring */
-        .m-bead { position: absolute; top: -16px; left: 0; width: 54px; height: 54px; border-radius: 50%; background: #050608; border: 2px solid var(--active-color); box-shadow: 0 8px 20px rgba(0,0,0,0.9), inset 0 0 15px var(--active-color); z-index: 1; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.5s, box-shadow 0.5s; opacity: 0; pointer-events: none; }
+        .m-bead { position: absolute; top: -18px; left: 0; width: 56px; height: 56px; border-radius: 50%; background: #020203; border: 2px solid var(--nav-color); box-shadow: 0 10px 25px rgba(0,0,0,0.9), inset 0 0 15px var(--nav-color); z-index: 1; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s, box-shadow 0.4s; opacity: 0; pointer-events: none; }
         
         .m-item { width: 60px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; position: relative; text-decoration: none; cursor: pointer; }
-        .m-icon { font-size: 1.35rem; color: #4a5b7c; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s; }
-        .m-text { font-size: 0.65rem; color: var(--active-color); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 8px; opacity: 0; transform: translateY(15px); transition: 0.4s; pointer-events: none; text-transform: uppercase; letter-spacing: 0.5px;}
+        .m-icon { font-size: 1.35rem; color: #4a5b7c; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s; z-index: 5;}
+        .m-text { font-size: 0.65rem; color: var(--nav-color); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 8px; opacity: 0; transform: translateY(15px); transition: 0.4s; pointer-events: none; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        .m-item.active .m-icon { transform: translateY(-28px); color: var(--active-color); text-shadow: 0 0 15px var(--active-color); }
-        .m-item.active .m-text { opacity: 1; transform: translateY(0); }
+        .m-item.active .m-icon { transform: translateY(-28px); color: var(--nav-color); text-shadow: 0 0 15px var(--nav-color); }
+        .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--nav-color); }
         
         .m-fab { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; transform: translateY(-25px); border: 6px solid var(--primary-bg); z-index: 10; box-shadow: 0 8px 25px rgba(189, 0, 255, 0.6); transition: 0.3s; cursor: pointer; flex-shrink: 0;}
         .m-fab:active { transform: translateY(-20px) scale(0.9); }
@@ -116,7 +124,6 @@
         @media(min-width: 1024px) { .engine-container-row { flex-direction: row; } .engine-widget, .streak-widget { flex: 1; margin-bottom: 0 !important; } }
         
         .engine-widget { padding: 20px; background: linear-gradient(180deg, rgba(17,20,29,1) 0%, #050608 100%); border-radius: 20px; border: 1px solid var(--accent-cyan); box-shadow: 0 10px 40px rgba(0,242,255,0.1); position: relative; overflow: hidden;}
-        .engine-widget::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,242,255,0.05) 0%, transparent 60%); pointer-events: none;}
         .eng-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(0,242,255,0.2); padding-bottom: 15px; position: relative; z-index: 2;}
         .eng-head h3 { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 10px; margin:0; text-shadow: 0 0 10px rgba(0,242,255,0.4);}
         .eng-status { font-size: 0.65rem; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 10px; border-radius: 50px; font-weight: bold; background: rgba(0,242,255,0.1); letter-spacing: 1px;}
@@ -129,22 +136,19 @@
         .streak-top { background: linear-gradient(135deg, #ff5500, #ff3300); padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
         .streak-top h2 { font-family: var(--font-head); font-size: 1.3rem; color: white; display:flex; align-items:center; gap:10px; margin:0;}
         .btn-claim-streak { background: white; color: #ff3300; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(255,255,255,0.3); transition: 0.3s;}
-        .btn-claim-streak:active { transform: scale(0.95); }
         .streak-bottom { padding: 20px; overflow-x: auto; scrollbar-width: none; }
-        .streak-bottom::-webkit-scrollbar { display: none; }
-        .ts-timeline { display: flex; align-items: center; position: relative; gap: 25px; min-width: max-content; padding-top: 5px;}
-        .ts-line-bg { position: absolute; top: 20px; left: 15px; right: 15px; height: 4px; background: rgba(255,255,255,0.05); border-radius:5px;}
-        .ts-line-fill { position: absolute; top: 20px; left: 15px; height: 4px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
-        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2;}
+        .ts-timeline { display: flex; align-items: center; position: relative; gap: 20px; min-width: max-content; padding-top: 5px;}
+        .ts-line-bg { position: absolute; top: 22px; left: 15px; right: 15px; height: 4px; background: rgba(255,255,255,0.05); border-radius:5px;}
+        .ts-line-fill { position: absolute; top: 22px; left: 15px; height: 4px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
+        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2;}
         .ts-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: transparent; transition: 0.4s;}
         .ts-node.claimed .ts-circle { background: var(--accent-orange); border-color: var(--accent-orange); color: white; }
         .ts-node.active .ts-circle { background: rgba(255,102,0,0.2); border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 0 25px rgba(255,102,0,0.8); transform: scale(1.3); animation: pulseFire 2s infinite;}
         .ts-val { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; text-align: center; line-height: 1.3;}
-        .ts-val b { display: block; color: white; font-size: 0.8rem; font-family: var(--font-head); letter-spacing: 0.5px;}
+        .ts-val b { display: block; color: white; font-size: 0.85rem; font-family: var(--font-head); letter-spacing: 0.5px;}
 
-        /* --- ESPORTS HIGHLIGHTS (ENDLESS REELS) --- */
+        /* --- HIGHLIGHTS (REELS) --- */
         .reels-container { display: flex; gap: 18px; overflow-x: auto; padding: 10px 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none;}
-        .reels-container::-webkit-scrollbar { display: none; }
         .reel-card { flex: 0 0 260px; height: 450px; scroll-snap-align: center; border-radius: 20px; background: #000; position: relative; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: transform 0.3s;}
         @media(min-width: 1024px) { .reel-card { flex: 0 0 280px; height: 480px; } .reel-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 15px 40px rgba(0,242,255,0.2); } }
         .reel-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85;}
@@ -153,19 +157,14 @@
         .reel-play-btn:active { transform: translate(-50%, -50%) scale(0.9); color: var(--accent-cyan); }
         .reel-bottom { display: flex; flex-direction: column; gap: 8px; }
         .reel-creator-name { font-size: 0.85rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 10px; font-family: var(--font-head);}
-        .reel-creator-name img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; box-shadow: 0 0 10px rgba(0,242,255,0.5);}
+        .reel-creator-name img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover;}
 
-        /* --- RETAINED CORE STYLES --- */
-        .top-header { position: fixed; top: 0; left: 0; width: 100%; height: 75px; padding: 0 15px; background: rgba(5, 6, 8, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); display: flex; align-items: center; }
-        @media (min-width: 1024px) { .top-header { left: 260px; width: calc(100% - 260px); } }
+        /* --- CORE ELEMENTS --- */
+        .top-header { position: fixed; top: 0; left: 0; width: 100%; height: 75px; padding: 0 15px; background: rgba(5, 6, 8, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 2000; display: flex; align-items: center; }
         .header-wrapper { max-width: 1800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;}
-        .header-left { display: flex; align-items: center; gap: 10px; }
         .app-logo { width: 35px; height: 35px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 15px var(--accent-purple); border: 1px solid rgba(255,255,255,0.2);}
         .app-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; text-transform: uppercase;}
-        .header-right { display: flex; align-items: center; gap: 10px;}
         .header-balance { background: rgba(255, 153, 0, 0.1); border: 1px solid rgba(255, 153, 0, 0.3); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; color: #ffffff; text-decoration: none; box-shadow: 0 4px 15px rgba(255, 153, 0, 0.2); }
-        .header-balance i { color: var(--accent-orange); }
-        .pass-text { color: var(--accent-cyan); display:flex; align-items:center; gap:5px;}
         .menu-btn { font-size: 1.4rem; color: white; cursor: pointer; }
 
         .hero { text-align: center; padding: 40px 15px 20px; position: relative; z-index: 2;}
@@ -179,14 +178,11 @@
         .view-all { font-size: 0.9rem; color: var(--accent-cyan); text-decoration: none; border-bottom: 1px solid var(--accent-cyan); font-family: var(--font-head); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
 
         .tourney-slider { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .tourney-slider::-webkit-scrollbar { display: none; }
         .tourney-card { flex: 0 0 90%; scroll-snap-align: center; overflow: hidden; transition: 0.4s; position: relative; border-radius: 20px; border: 1px solid var(--glass-border);}
         @media(min-width:768px){ .tourney-card { flex: 0 0 380px; } }
-        .tourney-card:hover { border-color: var(--accent-cyan); transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 242, 255, 0.2); }
         .t-img-box { height: 180px; background: #000; position: relative; overflow: hidden;}
-        .t-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .tourney-card:hover .t-img { transform: scale(1.12); opacity: 1; }
-        .t-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid var(--accent-cyan); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-family: var(--font-head); font-weight: bold; color: white; box-shadow: 0 0 15px rgba(0,242,255,0.4); text-transform: uppercase; }
+        .t-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85;}
+        .t-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent-cyan); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-family: var(--font-head); font-weight: bold; color: white; text-transform: uppercase; }
         .t-content { padding: 25px; }
         .t-title { font-family: var(--font-head); font-size: 1.3rem; margin-bottom: 12px; color: white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
         .t-btn { display: block; width: 100%; padding: 15px; background: var(--accent-gradient); border: none; border-radius: 14px; color: white; font-family: var(--font-head); font-weight: 900; font-size: 1rem; cursor: pointer; text-decoration: none; text-align: center; transition: 0.3s; box-shadow: 0 10px 25px rgba(189,0,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
@@ -201,7 +197,6 @@
         .bs-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9998; opacity: 0; pointer-events: none; transition: 0.3s; }
         .bs-overlay.active { opacity: 1; pointer-events: auto; }
         .bs-menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(10, 12, 16, 0.98); backdrop-filter: blur(25px); border-top: 1px solid var(--accent-cyan); border-radius: 35px 35px 0 0; padding: 25px 25px 50px; z-index: 9999; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -15px 50px rgba(0,0,0,0.9); }
-        @media(min-width:1024px) { .bs-menu { display: none !important; } .bs-overlay { display: none !important; } }
         .bs-menu.active { bottom: 0; }
         .bs-handle { width: 50px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 30px; }
         .bs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px 15px; }
@@ -213,11 +208,35 @@
         .fade-up.visible { opacity: 1; transform: translateY(0); }
         #customToast { visibility: hidden; min-width: 280px; background: rgba(0,242,255,0.95); backdrop-filter: blur(15px); color: #000; text-align: center; border-radius: 14px; padding: 18px; position: fixed; z-index: 10000; left: 50%; bottom: -50px; transform: translateX(-50%); font-family: var(--font-head); font-weight: 900; box-shadow: 0 10px 40px rgba(0,242,255,0.6); opacity: 0; transition: opacity 0.4s, bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-transform: uppercase; letter-spacing: 1px;}
         #customToast.show { visibility: visible; opacity: 1; bottom: 120px; }
+        
+        .optimized-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; background: #020203; pointer-events: none;}
+        .grid-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-image: linear-gradient(rgba(0,242,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.03) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.8;}
+        .glow-orb { position: absolute; border-radius: 50%; opacity: 0.5; pointer-events: none;}
+        .g-purple { width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%); top: -10vh; left: -10vw; }
+        .g-cyan { width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 60%); bottom: -10vh; right: -10vw; }
+        
+        #tournyx-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--primary-bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease-out; overflow: hidden; transform: translateZ(0); }
+        .loader-logo { font-family: var(--font-head); font-size: 4rem; font-weight: 900; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.3); position: relative; z-index: 10; }
+        .loader-logo::after { content: 'T'; position: absolute; top: 0; left: 0; color: #fff; text-shadow: 0 0 30px var(--accent-purple), 0 0 50px var(--accent-cyan); opacity: 0; animation: flashHit 1s infinite; }
+        .loader-text { margin-top: 30px; font-family: var(--font-body); font-size: 1rem; letter-spacing: 3px; color: var(--accent-purple); text-transform: uppercase; animation: blink 1s infinite alternate; text-shadow: 0 0 10px rgba(189,0,255,0.5); }
+        @keyframes flashHit { 0%, 48% { opacity: 0; } 50% { opacity: 1; text-shadow: 0 0 40px white; } 52%, 100% { opacity: 0; } }
+        @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- DESKTOP SIDEBAR MENU (Hidden on Mobile) -->
+    <div id="tournyx-loader">
+        <div class="loader-logo">T</div>
+        <div class="loader-text">INITIALIZING BATTLEGROUNDS...</div>
+    </div>
+
+    <div class="optimized-bg">
+        <div class="grid-layer"></div>
+        <div class="glow-orb g-purple"></div>
+        <div class="glow-orb g-cyan"></div>
+    </div>
+
+    <!-- DESKTOP SIDEBAR -->
     <aside class="desktop-sidebar">
         <div class="sidebar-brand"><i class="fa-solid fa-microchip"></i> TOURNYX</div>
         <a href="home.html" class="side-nav-item active"><i class="fa-solid fa-house"></i> Home Matrix</a>
@@ -254,8 +273,6 @@
                     <a href="tickets.html" class="header-balance" onclick="return checkAuth(event)">
                         <i class="fa-solid fa-wallet"></i>
                         <span id="homeWalletBalance">0</span> PTS 
-                        <span class="wallet-divider">|</span> 
-                        <span class="pass-text"><i class="fa-solid fa-ticket"></i> <span id="homePassBalance">0</span></span>
                     </a>
                     <i class="fa-solid fa-bars menu-btn" onclick="toggleMenu()"></i>
                 </div>
@@ -270,7 +287,7 @@
         <!-- EXACT TOURNYX ENGINE & 20-DAY STREAK -->
         <section class="section-pad fade-up">
             <div class="engine-container-row">
-                <!-- TOURNYX ENGINE (Live Demostration) -->
+                
                 <div class="engine-widget glass-panel" id="tournyxEngine">
                     <div class="eng-head">
                         <h3><i class="fa-solid fa-bolt"></i> TOURNYX ENGINE</h3>
@@ -295,7 +312,6 @@
                     </div>
                 </div>
 
-                <!-- 20 DAY POINTS STREAK (Overflow Fixed, Points on top) -->
                 <div class="streak-widget glass-panel">
                     <div class="streak-top">
                         <h2><i class="fa-solid fa-fire"></i> <span id="streakCount">--</span> Day Streak</h2>
@@ -309,18 +325,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- FLASH DROPS -->
-        <section class="section-pad fade-up" id="flashDropsSection">
-            <div class="slider-header">
-                <h2 class="section-title" style="margin:0;">Flash <span>Drops</span></h2>
-                <a href="giveaway.html" class="view-all">View All</a>
-            </div>
-            <div class="tourney-slider" id="flashDropsContainer">
-                <div class="drop-card skeleton" style="height:120px; width: 300px;"></div>
-                <div class="drop-card skeleton" style="height:120px; width: 300px;"></div>
             </div>
         </section>
 
@@ -368,20 +372,11 @@
             </div>
             <div id="feedLoader" style="text-align:center; color:var(--accent-cyan); display:none; padding: 30px; font-family:var(--font-head); font-weight:bold; letter-spacing:1px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; margin-right:10px;"></i> Fetching Matrix...</div>
         </section>
-
-        <section class="stats-area fade-up">
-            <div class="stats-grid">
-                <div class="stat-box glass-panel"><span class="stat-val count-up" data-target="56">0</span>K+<br><span class="stat-label">Players</span></div>
-                <div class="stat-box glass-panel"><span class="stat-val count-up" style="color:var(--accent-green)" data-target="93">0</span>K+<br><span class="stat-label">Prizes (₹)</span></div>
-                <div class="stat-box glass-panel"><span class="stat-val count-up" style="color:var(--accent-orange)" data-target="150">0</span>+<br><span class="stat-label">Events</span></div>
-                <div class="stat-box glass-panel"><span class="stat-val count-up" style="color:var(--accent-cyan)" data-target="4">0</span>+<br><span class="stat-label">States</span></div>
-            </div>
-        </section>
         
         <footer class="app-footer fade-up" style="background: transparent; padding: 40px 0;">
-            <div class="footer-logo-area" style="justify-content: center; margin-bottom: 20px;">
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" alt="Tournyx Icon">
-                <h2>TOURNYX</h2>
+            <div style="display:flex; align-items:center; justify-content:center; gap: 15px; margin-bottom: 20px;">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" style="width: 45px; border-radius: 50%; box-shadow: 0 0 15px var(--accent-cyan);">
+                <h2 style="font-family: var(--font-head); font-size: 1.5rem; color: white; margin: 0; text-shadow: 0 0 15px rgba(255,255,255,0.3); letter-spacing: 1px;">TOURNYX</h2>
             </div>
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-head); letter-spacing: 1px;">
                 © 2026 TOURNYX. ALL RIGHTS RESERVED.<br>
@@ -521,12 +516,10 @@
             
             if (user && !isGuestMode) {
                 document.getElementById('welcomeText').innerText = (user.username || user.ign || "Player");
-                fetchNextMatch(user);
                 syncLiveWalletPoints(user); 
             } else {
                 document.getElementById('welcomeText').innerText = "Guest";
                 document.getElementById('homeWalletBalance').innerText = "0";
-                document.getElementById('homePassBalance').innerText = "0";
             }
 
             loadLiveBackendData();
@@ -550,11 +543,9 @@
             secureFetch({ action: 'get_tournaments' }).then(data => {
                 if (data.status === "success") {
                     renderFeaturedTournaments(data.data);
-                    loadLiveTournamentsSlider(data.data);
                 }
             }).catch(e => {});
 
-            db.from('Drops').select('*').then(({data}) => { if (data) renderFlashDrops(data); });
             loadQuestsFromSheets(); 
         }
 
@@ -622,21 +613,6 @@
             return url;
         }
 
-        async function fetchNextMatch(user) {
-            try {
-                const [tRes, mRes] = await Promise.all([ secureFetch({ action: 'get_tournaments' }), secureFetch({ action: 'get_matches', email: user.email }) ]);
-                let allTourneys = tRes.data || []; let myMatches = mRes.data || []; let activeMatches = [];
-                myMatches.forEach(entry => { let t = allTourneys.find(x => x.id === entry.match_id || x.title === entry.tournament_title); if(t && t.status && !t.status.toLowerCase().includes('completed')) { activeMatches.push(t); } });
-                const widget = document.getElementById('nextMatchWidget');
-                if(activeMatches.length > 0) {
-                    let next = activeMatches[0]; document.getElementById('nmTitle').innerText = next.title;
-                    let sColor = next.status.toLowerCase().includes('live') ? 'var(--accent-green)' : 'var(--accent-cyan)';
-                    document.getElementById('nmDate').innerHTML = `<span style="color:${sColor}; font-weight:bold; font-family:var(--font-head);"><i class="fa-solid fa-satellite-dish fa-fade"></i> ${next.status.toUpperCase()}</span> • ${formatDateTime(next.match_period || next.date)}`;
-                    widget.style.display = 'block';
-                } else { widget.style.display = 'none'; }
-            } catch(e) {}
-        }
-
         // --- 5. LIVE RENDERERS ---
         function renderFeaturedTournaments(featuredArray) {
             const slider = document.getElementById('featuredSlider');
@@ -673,66 +649,15 @@
             });
         }
 
-        function loadLiveTournamentsSlider(allData) {
-            let liveData = allData.filter(t => t.status && t.status.toLowerCase().includes('live'));
-            const container = document.getElementById('liveSectionContainer');
-            const slider = document.getElementById('liveTourneySlider');
-            if(liveData.length > 0) {
-                slider.innerHTML = "";
-                liveData.slice(0, 5).forEach(t => {
-                    let bg = formatImageUrl(t.banner); let prize = (!t.prize || t.prize == 0) ? "Glory" : "₹" + t.prize;
-                    slider.innerHTML += `
-                        <a href="explore.html?tournament=${t.id || t.title}" class="live-card glass-panel">
-                            <img src="${bg}" class="live-img">
-                            <div class="live-info">
-                                <span class="live-badge"><i class="fa-solid fa-satellite-dish"></i> LIVE</span>
-                                <div class="live-title">${t.title}</div>
-                                <div class="live-prize">Prize Pool: <span>${prize}</span></div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right" style="color:var(--accent-green); opacity:0.7;"></i>
-                        </a>
-                    `;
-                });
-                container.style.display = 'block';
-            } else { container.style.display = 'none'; }
-        }
-
-        function renderFlashDrops(data) {
-            const container = document.getElementById('flashDropsContainer');
-            const section = document.getElementById('flashDropsSection');
-            if (!data || data.length === 0) { section.style.display = 'none'; return; }
-            container.innerHTML = "";
-            data.forEach(drop => {
-                let statusBadge = drop.status.toLowerCase().includes('live') ? `<span class="drop-timer" style="color:var(--accent-green); border-color:var(--accent-green); background:rgba(0,255,127,0.1); box-shadow:0 0 10px rgba(0,255,127,0.2);"><i class="fa-solid fa-bolt fa-fade"></i> Live Now</span>` : `<span class="drop-timer"><i class="fa-regular fa-clock"></i> ${drop.status}</span>`;
-                container.innerHTML += `
-                    <div class="drop-card glass-panel">
-                        <img src="${drop.image}" class="drop-img">
-                        <div class="drop-info">
-                            <div class="drop-title">${drop.title}</div>
-                            <div class="drop-val">Worth ₹${drop.worth}</div>
-                            ${statusBadge}
-                        </div>
-                        <button class="t-btn" style="width: auto; padding: 10px 20px;" onclick="window.location.href='giveaway.html'">Enter</button>
-                    </div>
-                `;
-            });
-        }
-
         function syncLiveWalletPoints(user) {
             const balanceDisplay = document.getElementById('homeWalletBalance');
-            const passDisplay = document.getElementById('homePassBalance');
-            let displayPasses = user.passes !== undefined ? user.passes : Math.floor((parseInt(user.rupees)||0) / 10);
             if (user.points !== undefined) { balanceDisplay.innerText = user.points; }
-            passDisplay.innerText = displayPasses;
             if (user.email) {
                 secureFetch({ action: 'sync_user', email: user.email }).then(data => {
                     if (data.status === 'success') {
                         user.points = data.data.points !== undefined ? data.data.points : user.points; 
-                        user.rupees = data.data.rupees !== undefined ? data.data.rupees : user.rupees;
-                        user.passes = data.data.passes !== undefined ? data.data.passes : user.passes;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         balanceDisplay.innerText = user.points || 0;
-                        passDisplay.innerText = user.passes !== undefined ? user.passes : Math.floor((parseInt(user.rupees)||0) / 10);
                     }
                 }).catch(err => {});
             }
@@ -752,12 +677,12 @@
             if(!dock || !bead || !el) return;
             
             // Apply dynamic color for exact video replica behavior
-            dock.style.setProperty('--active-color', color);
+            dock.style.setProperty('--nav-color', color);
             
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
-            // Center bead around the icon perfectly
-            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (54 / 2);
+            // Center bead perfectly
+            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - 28;
             
             bead.style.opacity = '1';
             bead.style.transform = `translateX(${offsetLeft}px)`;
@@ -777,7 +702,7 @@
                 menu.classList.add('active'); overlay.classList.add('active');
             }
         }
-        function toggleMenu() { toggleBottomSheet(); } // Bind top right burger menu to bottom sheet as well
+        function toggleMenu() { toggleBottomSheet(); } 
 
         // --- TOURNYX ENGINE & STREAK LOGIC ---
         let radarChartInstance = null;
@@ -795,7 +720,6 @@
                 authView.style.display = 'block';
                 guestView.style.display = 'none';
                 
-                // Real-time Fetch simulation logic based on wins
                 let wins = parseInt(user.wins) || 0;
                 document.getElementById('txtPower').innerText = wins > 0 ? (wins * 150).toLocaleString() : "4,200";
                 document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${wins > 10 ? 'Elite' : 'Rookie'}`;
@@ -836,16 +760,16 @@
             const timeline = document.getElementById('streakTimeline');
             timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
             
-            const total = 20; // Exact 20 day constraint
+            const total = 20; 
             for(let i=1; i<=total; i++) {
                 let sClass = i < currentStreak ? "claimed" : (i === currentStreak ? "active" : "");
                 let icon = i < currentStreak ? `<i class="fa-solid fa-check"></i>` : (i === currentStreak ? `<i class="fa-solid fa-fire"></i>` : "");
-                let pts = Math.min(i * 50, 1000); // Ramps from 50 to 1000 points
+                let pts = Math.min(i * 50, 1000); 
                 
                 timeline.insertAdjacentHTML('beforeend', `
                     <div class="ts-node ${sClass}">
                         <div class="ts-circle">${icon}</div>
-                        <div class="ts-val"><b>${pts} PTS</b><br><span style="font-size:0.6rem; color:#888;">Day ${i}</span></div>
+                        <div class="ts-val"><b>${pts} PTS</b><br><span style="font-size:0.65rem; color:#888;">Day ${i}</span></div>
                     </div>
                 `);
             }
@@ -863,7 +787,7 @@
 
         // --- SUPABASE REELS WITH EXACT DEDUPLICATION LOGIC ---
         let reelPage = 0; let hasMoreReels = true;
-        let loadedReelIds = new Set(); // Stores fetched IDs to prevent repeating
+        let loadedReelIds = new Set();
 
         function initEndlessReels() {
             const observer = new IntersectionObserver((entries) => {
@@ -881,7 +805,6 @@
                     const { data, error } = await db.from('Highlights').select('*').range(reelPage * 5, (reelPage + 1) * 5 - 1);
                     
                     if(data && data.length > 0) {
-                        // Deduplication: Only take videos we haven't loaded yet
                         let uniqueData = data.filter(vid => !loadedReelIds.has(vid.id));
                         uniqueData.forEach(vid => loadedReelIds.add(vid.id));
                         
@@ -889,7 +812,6 @@
                             renderReels(uniqueData, container);
                             reelPage++;
                         } else {
-                            // If all were duplicates, forcefully pull next page immediately
                             reelPage++; fetchReels(); return;
                         }
                     } else if (loadedReelIds.size === 0) {
@@ -898,7 +820,6 @@
                     } else { hasMoreReels = false; }
                 } catch(e) { hasMoreReels = false; }
             } else {
-                // Mock Fetch for demo visualization
                 setTimeout(() => {
                     if(reelPage < 2) { 
                         let mockData = [];
