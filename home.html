@@ -29,6 +29,7 @@
     
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- OneSignal -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -43,9 +44,9 @@
     <style>
         /* --- PREMIUM LITE TOURNYX THEME --- */
         :root {
-            --bg-void: #07090E;
-            --panel-bg: #131826;
-            --panel-border: rgba(255, 255, 255, 0.08);
+            --bg-void: #0B0E14; /* Sleeker, lighter dark theme */
+            --panel-bg: #151A27;
+            --panel-border: rgba(255, 255, 255, 0.05);
             
             --neon-cyan: #00f2ff;
             --neon-purple: #bd00ff;
@@ -62,161 +63,196 @@
         ::-webkit-scrollbar { display: none; }
 
         body {
-            background-color: var(--bg-void);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            height: 100dvh; width: 100vw;
-            display: flex; justify-content: center; /* Centers app on desktop */
-            overflow: hidden;
+            background-color: var(--bg-void); color: var(--text-main); font-family: var(--font-body);
+            height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- APP VIEWPORT CONFINEMENT (Perfect Desktop & Mobile Scale) --- */
-        .app-container {
-            width: 100%; max-width: 480px; /* Locks to mobile app width on PC */
-            height: 100%; overflow-y: auto; overflow-x: hidden;
-            background-color: var(--bg-void);
-            position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            padding-bottom: 100px;
+        /* --- DESKTOP VS MOBILE APP ARCHITECTURE --- */
+        .app-wrapper { display: flex; flex: 1; overflow: hidden; width: 100vw; }
+
+        .desktop-sidebar {
+            display: none; width: 280px; background: var(--panel-bg); border-right: 1px solid var(--panel-border);
+            flex-direction: column; padding: 30px 20px; z-index: 1000; box-shadow: 10px 0 30px rgba(0,0,0,0.3);
         }
 
-        /* --- UI SAMPLE: TOP CONTROL PANEL --- */
-        .top-nav-matrix { padding: 15px 20px; display: flex; flex-direction: column; gap: 15px; }
-        .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .main-viewport {
+            flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+            position: relative; padding-bottom: 120px;
+        }
+
+        @media (min-width: 1024px) {
+            body { flex-direction: row; }
+            .desktop-sidebar { display: flex; }
+            .main-viewport { padding: 40px; padding-bottom: 40px; }
+            .ios-dock-wrapper { display: none !important; }
+        }
+
+        /* --- UI SAMPLE: TOP CONTROL MATRIX --- */
+        .top-nav-matrix { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
         
+        @media (min-width: 1024px) {
+            .top-nav-matrix { flex-direction: row; align-items: center; justify-content: space-between; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--panel-border); margin-bottom: 25px; padding: 15px 25px;}
+            .nav-row { width: auto; justify-content: flex-start; }
+            .menu-btn-mobile { display: none !important; }
+        }
+
         .pill-btn {
             background: var(--panel-bg); border: 1px solid var(--panel-border);
-            height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
             color: var(--text-main); font-size: 1.1rem; cursor: pointer; transition: 0.3s;
         }
+        .pill-btn:hover { background: rgba(255,255,255,0.05); }
         .pill-btn:active { transform: scale(0.95); }
-        .pill-btn.menu { width: 42px; }
+        .pill-btn.menu-btn-mobile { width: 45px; }
         .pill-btn.search { width: 55px; }
-        .pill-btn.icon-only { width: 42px; position: relative; }
+        .pill-btn.icon-only { width: 45px; position: relative; border-radius: 50%; }
         
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--neon-purple); color: white; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .badge { position: absolute; top: -2px; right: -2px; background: var(--neon-purple); color: white; font-size: 0.6rem; font-family: var(--font-head); font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--neon-purple);}
 
         .currency-pill {
             background: var(--panel-bg); border: 1px solid var(--panel-border);
-            height: 42px; border-radius: 25px; padding: 0 12px;
-            display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.8rem; font-weight: bold;
+            height: 45px; border-radius: 25px; padding: 0 15px;
+            display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold;
         }
-        .currency-pill.tickets { border-color: rgba(0, 242, 255, 0.3); box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1); }
-        .currency-pill.gold { border-color: rgba(255, 215, 0, 0.3); box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.1); }
+        .currency-pill.tickets { border-color: rgba(0, 242, 255, 0.3); box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05); }
+        .currency-pill.gold { border-color: rgba(255, 215, 0, 0.3); box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.05); }
 
         .profile-pill {
             background: var(--panel-bg); border: 1px solid var(--panel-border);
-            height: 42px; border-radius: 25px; padding: 4px 15px 4px 4px;
+            height: 45px; border-radius: 25px; padding: 4px 15px 4px 4px;
             display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s;
         }
-        .profile-pill img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--gold); }
+        .profile-pill img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--gold); }
         .profile-text { display: flex; flex-direction: column; justify-content: center; }
         .profile-text b { font-family: var(--font-head); font-size: 0.8rem; line-height: 1; }
         .profile-text span { font-size: 0.65rem; color: var(--text-muted); }
 
+        /* --- DESKTOP SIDEBAR ITEMS --- */
+        .brand-logo { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: white; letter-spacing: 2px; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .brand-logo i { color: var(--neon-cyan); }
+        .side-nav-item { display: flex; align-items: center; gap: 15px; padding: 15px; color: var(--text-muted); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 5px; text-decoration: none; }
+        .side-nav-item:hover, .side-nav-item.active { background: rgba(0, 242, 255, 0.05); color: var(--neon-cyan); border-left: 3px solid var(--neon-cyan); }
+        .side-nav-item i { font-size: 1.2rem; width: 25px; text-align: center; }
+
         /* --- THRYL UI: DAILY STREAK --- */
         .thryl-streak-card {
-            margin: 5px 20px 20px; display: flex; background: #161A25;
-            border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); height: 130px;
+            margin: 5px 20px 25px; display: flex; background: var(--panel-bg);
+            border-radius: 20px; border: 1px solid var(--panel-border); overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); height: 130px;
         }
-        .ts-left {
-            background: linear-gradient(180deg, #ff9d00, #ff5500); width: 100px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; flex-shrink: 0; padding: 15px; text-align: center;
-        }
-        .ts-left h1 { font-family: var(--font-head); font-size: 2.2rem; color: white; margin: 0; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .ts-left span { font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-top: 2px; line-height: 1.1; }
-        .ts-left i { position: absolute; bottom: -10px; right: -5px; font-size: 4.5rem; color: rgba(255,255,255,0.2); pointer-events: none; }
-
-        .ts-right { flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center; overflow-x: auto; }
-        .ts-head { margin-bottom: 15px; }
-        .ts-head h4 { font-family: var(--font-head); font-size: 0.9rem; color: white; margin-bottom: 2px; }
-        .ts-head p { font-size: 0.7rem; color: var(--text-muted); }
-
-        .ts-timeline { display: flex; align-items: center; position: relative; gap: 15px; min-width: max-content; }
-        .ts-line-bg { position: absolute; top: 12px; left: 15px; right: 15px; height: 3px; background: rgba(255,255,255,0.1); z-index: 0; }
-        .ts-line-fill { position: absolute; top: 12px; left: 15px; height: 3px; background: var(--accent-orange); z-index: 1; transition: 1s ease; width: 0%; }
+        @media (min-width: 1024px) { .thryl-streak-card { margin: 0 0 30px 0; } }
         
-        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2; }
-        .ts-circle { width: 26px; height: 26px; border-radius: 50%; background: #161A25; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: transparent; }
+        .ts-left {
+            background: linear-gradient(180deg, #ff9d00, #ff5500); width: 110px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative; flex-shrink: 0; padding: 15px; text-align: center; overflow: hidden;
+        }
+        .ts-left h1 { font-family: var(--font-head); font-size: 2.5rem; color: white; margin: 0; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .ts-left span { font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-top: 4px; line-height: 1.1; }
+        .ts-left i { position: absolute; bottom: -15px; right: -5px; font-size: 5rem; color: rgba(255,255,255,0.2); pointer-events: none; }
+
+        .ts-right { flex: 1; padding: 15px 20px; display: flex; flex-direction: column; justify-content: center; overflow-x: auto; }
+        .ts-head { margin-bottom: 12px; }
+        .ts-head h4 { font-family: var(--font-head); font-size: 1rem; color: white; margin-bottom: 2px; }
+        .ts-head p { font-size: 0.75rem; color: var(--text-muted); }
+
+        .ts-timeline { display: flex; align-items: center; position: relative; gap: 20px; min-width: max-content; padding-top: 5px;}
+        .ts-line-bg { position: absolute; top: 18px; left: 15px; right: 15px; height: 3px; background: rgba(255,255,255,0.05); z-index: 0; border-radius:5px;}
+        .ts-line-fill { position: absolute; top: 18px; left: 15px; height: 3px; background: var(--accent-orange); z-index: 1; transition: 1s ease; width: 0%; border-radius:5px;}
+        
+        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2; }
+        .ts-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: transparent; transition: 0.3s;}
         .ts-node.claimed .ts-circle { background: var(--accent-orange); border-color: var(--accent-orange); color: white; }
-        .ts-node.active .ts-circle { background: rgba(255,102,0,0.2); border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 0 10px rgba(255,102,0,0.4); }
-        .ts-val { display: flex; flex-direction: column; align-items: center; }
-        .ts-val b { font-size: 0.75rem; color: white; display: flex; align-items: center; gap: 3px; }
-        .ts-val span { font-size: 0.6rem; color: var(--text-muted); }
+        .ts-node.active .ts-circle { background: rgba(255,102,0,0.1); border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 0 15px rgba(255,102,0,0.4); }
+        .ts-val { display: flex; flex-direction: column; align-items: center; gap: 2px;}
+        .ts-val b { font-size: 0.8rem; color: white; display: flex; align-items: center; gap: 4px; font-family:var(--font-head);}
+        .ts-val span { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;}
 
         /* --- SECTION HEADERS --- */
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 12px; }
-        .section-header h2 { font-family: var(--font-head); font-size: 1.1rem; color: white; }
-        .section-header a { font-size: 0.8rem; color: var(--neon-cyan); text-decoration: none; font-weight: bold; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 15px; }
+        @media (min-width: 1024px) { .section-header { padding: 0; margin-top: 10px;} }
+        .section-header h2 { font-family: var(--font-head); font-size: 1.2rem; color: white; }
+        .section-header a { font-size: 0.85rem; color: var(--neon-cyan); text-decoration: none; font-weight: bold; }
 
         /* --- THRYL CARDS (Horizontal Scroll) --- */
-        .card-slider { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px 20px; scroll-snap-type: x mandatory; }
+        .card-slider { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px 25px; scroll-snap-type: x mandatory; margin-bottom: 10px;}
+        @media (min-width: 1024px) { .card-slider { padding: 0 0 30px 0; } }
         
-        .game-card { flex: 0 0 150px; scroll-snap-align: start; border-radius: 16px; overflow: hidden; position: relative; height: 190px; background: var(--panel-bg); cursor: pointer; transition: 0.3s; border: 1px solid var(--panel-border); }
+        .game-card { flex: 0 0 160px; scroll-snap-align: start; border-radius: 18px; overflow: hidden; position: relative; height: 210px; background: var(--panel-bg); cursor: pointer; transition: 0.3s; border: 1px solid var(--panel-border); }
         .game-card:active { transform: scale(0.95); }
-        .gc-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; object-fit: cover; opacity: 0.6; z-index: 0; transition: 0.3s;}
-        .game-card:hover .gc-bg { opacity: 0.8; transform: scale(1.1); }
-        .gc-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent); z-index: 1; }
+        .gc-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; object-fit: cover; opacity: 0.6; z-index: 0; transition: 0.4s;}
+        .game-card:hover .gc-bg { opacity: 0.85; transform: scale(1.1); }
+        .gc-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(0deg, rgba(7,9,14,1), transparent); z-index: 1; }
         
-        .gc-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; z-index: 2; }
+        .gc-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; z-index: 2; }
         .gc-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .gc-title { font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.1;}
-        .gc-players { font-size: 0.65rem; color: #ddd; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-        .gc-share { width: 24px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-size: 0.7rem; color: white; }
+        .gc-title { font-family: var(--font-head); font-size: 1rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2;}
+        .gc-players { font-size: 0.7rem; color: #ddd; margin-top: 4px; display: flex; align-items: center; gap: 5px; font-weight:bold;}
+        .gc-share { width: 28px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); font-size: 0.75rem; color: white; border: 1px solid rgba(255,255,255,0.1);}
         
         .gc-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
-        .gc-stat { display: flex; flex-direction: column; gap: 2px; }
-        .gc-stat span { font-size: 0.6rem; color: #bbb; text-transform: uppercase; }
-        .gc-stat b { font-family: var(--font-head); font-size: 0.8rem; color: white; display: flex; align-items: center; gap: 4px; }
+        .gc-stat { display: flex; flex-direction: column; gap: 3px; }
+        .gc-stat span { font-size: 0.65rem; color: #aaa; text-transform: uppercase; font-weight:bold;}
+        .gc-stat b { font-family: var(--font-head); font-size: 0.85rem; color: white; display: flex; align-items: center; gap: 4px; text-shadow: 0 0 5px rgba(0,0,0,0.8);}
 
         /* FEATURED TOURNAMENT CARD */
-        .ft-card { flex: 0 0 280px; scroll-snap-align: center; border-radius: 16px; background: #161A25; border: 1px solid var(--panel-border); overflow: hidden; position: relative; }
-        .ft-top { padding: 15px; position: relative; z-index: 2;}
-        .ft-prize-badge { background: var(--neon-purple); display: inline-block; padding: 4px 10px; border-radius: 6px; font-family: var(--font-head); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 0 10px rgba(189,0,255,0.5);}
-        .ft-title { font-family: var(--font-head); font-size: 1rem; margin-bottom: 10px; line-height: 1.2; }
-        .ft-org { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;}
-        .ft-org img { width: 20px; height: 20px; border-radius: 50%; }
-        .ft-tags { display: flex; gap: 10px; font-size: 0.7rem; color: #888; font-weight: bold; }
+        .ft-card { flex: 0 0 300px; scroll-snap-align: center; border-radius: 18px; background: var(--panel-bg); border: 1px solid var(--panel-border); overflow: hidden; position: relative; display: flex; flex-direction: column;}
+        @media (min-width: 1024px) { .ft-card { flex: 0 0 320px; } }
+        .ft-top { padding: 18px; position: relative; z-index: 2; flex: 1;}
+        .ft-prize-badge { background: var(--neon-purple); display: inline-block; padding: 5px 12px; border-radius: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; box-shadow: 0 0 15px rgba(189,0,255,0.4);}
+        .ft-title { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 10px; line-height: 1.3; }
+        .ft-org { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; font-weight:bold;}
+        .ft-org img { width: 22px; height: 22px; border-radius: 50%; border:1px solid rgba(255,255,255,0.2);}
+        .ft-tags { display: flex; gap: 12px; font-size: 0.75rem; color: #888; font-weight: bold; }
         
-        .ft-art { position: absolute; right: 0; bottom: 45px; width: 100px; height: 100px; object-fit: contain; opacity: 0.8; z-index: 1;}
+        .ft-art { position: absolute; right: -10px; bottom: 45px; width: 120px; height: 120px; object-fit: contain; opacity: 0.5; z-index: 1;}
         
-        .ft-bottom { display: flex; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); z-index: 2; position: relative;}
-        .ft-status { flex: 1; padding: 12px; font-size: 0.75rem; color: var(--text-muted); text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
-        .ft-btn { flex: 1; padding: 12px; font-size: 0.8rem; font-family: var(--font-head); font-weight: bold; color: white; text-align: center; background: rgba(255,255,255,0.05); cursor: pointer;}
+        .ft-bottom { display: flex; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); z-index: 2; position: relative;}
+        .ft-status { flex: 1; padding: 14px; font-size: 0.8rem; color: #888; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); font-weight:bold;}
+        .ft-btn { flex: 1; padding: 14px; font-size: 0.85rem; font-family: var(--font-head); font-weight: bold; color: white; text-align: center; background: rgba(255,255,255,0.02); cursor: pointer; transition:0.3s;}
+        .ft-btn:hover { background: rgba(0,242,255,0.1); color: var(--neon-cyan); }
 
         /* --- SKELETON LOADERS --- */
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 12px;}
+        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 12px;}
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* --- MENISCUS iOS DOCK --- */
+        /* --- MENISCUS iOS DOCK (Perfect Animation) --- */
         .ios-dock-wrapper {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: calc(100% - 30px); max-width: 420px; z-index: 9000;
         }
         .ios-dock {
-            background: rgba(14, 18, 30, 0.95); backdrop-filter: blur(25px);
-            border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 40px; padding: 6px 10px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8); position: relative; isolation: isolate;
+            background: rgba(14, 18, 30, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 40px; padding: 0 10px;
+            display: flex; justify-content: space-between; align-items: center; height: 65px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,255,0.05); position: relative; isolation: isolate;
         }
-        .meniscus-bead {
-            position: absolute; top: 50%; left: 0; transform: translateY(-50%);
-            width: 40px; height: 40px; background: var(--neon-cyan); border-radius: 50%;
-            box-shadow: 0 0 15px var(--neon-cyan); z-index: -1; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
+        
+        .m-bead {
+            position: absolute; top: 50%; left: 0; margin-top: -22.5px; /* Center vertically */
+            width: 45px; height: 45px; background: var(--neon-cyan); border-radius: 50%;
+            box-shadow: 0 0 15px var(--neon-cyan); z-index: -1; 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
         }
-        .dock-btn {
-            display: flex; align-items: center; justify-content: center;
-            width: 48px; height: 40px; color: var(--text-muted);
-            font-size: 1.1rem; transition: 0.3s; position: relative; z-index: 1; cursor: pointer;
+        
+        .m-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 55px; height: 100%; position: relative; z-index: 1; cursor: pointer; text-decoration: none;
         }
-        .dock-btn.active { color: #000; }
-        .dock-fab {
-            width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
-            color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
-            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4); transform: translateY(-12px); cursor: pointer; border: 3px solid var(--bg-void);
+        .m-icon { font-size: 1.25rem; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s; }
+        .m-text { font-size: 0.65rem; color: var(--neon-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .m-item.active .m-icon { transform: translateY(-12px); color: var(--bg-void); } /* Text inside bead turns dark */
+        .m-item.active .m-text { opacity: 1; transform: translateY(0); }
+        
+        .m-fab {
+            width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+            color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4); transform: translateY(-15px); cursor: pointer; border: 4px solid var(--bg-void);
+            transition: 0.3s; z-index: 10;
         }
+        .m-fab:active { transform: translateY(-10px) scale(0.95); }
 
         /* --- BOTTOM SHEET MENU --- */
         .bottom-sheet-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10001; display: none; opacity: 0; transition: 0.3s; }
@@ -225,104 +261,156 @@
         .bottom-sheet.active { bottom: 0; }
         .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 20px; }
         .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .sheet-item { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-main); text-decoration: none; font-size: 0.7rem; font-weight: 700; background: rgba(0,0,0,0.4); border: 1px solid var(--panel-border); padding: 15px 5px; border-radius: 14px; cursor: pointer; }
+        .sheet-item { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.4); border: 1px solid var(--panel-border); padding: 18px 5px; border-radius: 16px; cursor: pointer; transition:0.3s;}
+        .sheet-item:active { transform: scale(0.95); border-color: var(--neon-cyan); }
+        .sheet-item i { font-size: 1.5rem; color: var(--neon-cyan); }
 
         /* --- MODALS & TOAST --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 10005; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 10005; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);}
         .modal-overlay.active { display: flex; }
-        .system-modal { width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--neon-cyan); border-radius: 20px; padding: 25px; text-align: center; position: relative; }
+        .system-modal { width: 100%; max-width: 400px; background: var(--panel-bg); border: 1px solid var(--neon-cyan); border-radius: 20px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 30px rgba(0,242,255,0.2);}
         .modal-close { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
         
-        #toast { position: fixed; top: 20px; right: 20px; background: var(--panel-bg); border: 1px solid var(--neon-cyan); color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; transform: translateX(150%); transition: 0.4s ease; z-index: 99999; }
+        #toast { position: fixed; top: 20px; right: 20px; background: var(--panel-bg); border: 1px solid var(--neon-cyan); color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.85rem; font-family: var(--font-head); font-weight: bold; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 99999; box-shadow: 0 5px 20px rgba(0,242,255,0.3);}
         #toast.show { transform: translateX(0); }
+        
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* GUEST HERO */
+        .guest-hero { text-align: center; padding: 40px 20px; }
+        .guest-hero h1 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 15px; line-height:1.2;}
+        .guest-hero p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;}
+        .btn-primary { background: var(--accent-gradient); border: none; color: white; font-family: var(--font-head); padding: 14px 40px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(189,0,255,0.4);}
     </style>
 </head>
 <body>
 
+    <!-- Ambient Background -->
     <div class="ambient-bg"><div class="grid-layer"></div><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
     
     <div id="toast"><i class="fa-solid fa-bell" style="color:var(--neon-cyan); margin-right:8px;"></i> <span id="toastMsg">Notification</span></div>
 
-    <!-- MAIN APP CONTAINER -->
-    <div class="app-container" id="mainApp">
-        
-        <!-- UI SAMPLE: TOP CONTROL MATRIX -->
-        <div class="top-nav-matrix">
-            <div class="nav-row">
-                <div class="pill-btn menu" onclick="toggleBottomSheet()"><i class="fa-solid fa-bars"></i></div>
-                <div class="pill-btn search" onclick="showToast('Search DB Offline')"><i class="fa-solid fa-magnifying-glass"></i></div>
-                <div class="currency-pill tickets"><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> <span id="valTickets">--</span> +</div>
-                <div class="currency-pill gold"><i class="fa-solid fa-coins" style="color:var(--gold);"></i> <span id="valGold">--</span></div>
-            </div>
-            <div class="nav-row">
-                <div class="pill-btn icon-only" style="color:var(--neon-pink);"><i class="fa-solid fa-gift"></i></div>
-                <div class="pill-btn icon-only"><i class="fa-solid fa-cart-shopping"></i><div class="badge">2</div></div>
-                <div class="pill-btn icon-only" style="color:var(--gold);"><i class="fa-solid fa-bell"></i></div>
-                <div class="profile-pill" onclick="window.location.href='profile.html'">
-                    <img src="https://ui-avatars.com/api/?name=P&background=131826&color=fff" id="valAvatar">
-                    <div class="profile-text">
-                        <b id="valName">Guest</b>
-                        <span id="valLevel">Level --</span>
+    <div class="app-wrapper">
+        <!-- DESKTOP PERMANENT SIDEBAR -->
+        <aside class="desktop-sidebar">
+            <div class="brand-logo"><i class="fa-solid fa-microchip"></i> TIMS</div>
+            <a href="index.html" class="side-nav-item active"><i class="fa-solid fa-house"></i> Home Matrix</a>
+            <a href="explore.html" class="side-nav-item"><i class="fa-solid fa-compass"></i> Explore</a>
+            <a href="matches.html" class="side-nav-item"><i class="fa-solid fa-trophy"></i> Matches</a>
+            <a href="profile.html" class="side-nav-item"><i class="fa-solid fa-id-card"></i> Player CV</a>
+            <a href="clans.html" class="side-nav-item"><i class="fa-solid fa-shield"></i> Clans</a>
+            <div class="side-nav-item" onclick="openModal('aiModal')"><i class="fa-solid fa-robot"></i> Vision AI</div>
+            <div class="side-nav-item" onclick="openModal('spinModal')"><i class="fa-solid fa-dharmachakra"></i> Lucky Spin</div>
+            <div style="margin-top: auto; color: var(--text-muted); font-size: 0.7rem; text-align: center;">Powered by QUVA Engine</div>
+        </aside>
+
+        <!-- MAIN VIEWPORT -->
+        <div class="main-viewport">
+            <div class="app-container" id="mainApp">
+                
+                <!-- UI SAMPLE: TOP CONTROL MATRIX -->
+                <div class="top-nav-matrix">
+                    <div class="nav-row">
+                        <div class="pill-btn menu-btn-mobile" onclick="toggleBottomSheet()"><i class="fa-solid fa-bars"></i></div>
+                        <div class="pill-btn search" onclick="showToast('Search DB Offline')"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <div class="currency-pill tickets"><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> <span id="valTickets">--</span> +</div>
+                        <div class="currency-pill gold"><i class="fa-solid fa-coins" style="color:var(--gold);"></i> <span id="valGold">--</span></div>
+                    </div>
+                    <div class="nav-row">
+                        <div class="pill-btn icon-only" style="color:var(--neon-pink);"><i class="fa-solid fa-gift"></i></div>
+                        <div class="pill-btn icon-only"><i class="fa-solid fa-cart-shopping"></i><div class="badge">2</div></div>
+                        <div class="pill-btn icon-only" style="color:var(--gold);"><i class="fa-solid fa-bell"></i></div>
+                        <div class="profile-pill" onclick="window.location.href='profile.html'">
+                            <img src="https://ui-avatars.com/api/?name=G&background=131826&color=fff" id="valAvatar">
+                            <div class="profile-text">
+                                <b id="valName">Guest</b>
+                                <span id="valLevel">Level --</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- THRYL UI: DAILY STREAK -->
-        <div class="thryl-streak-card" id="streakWidget">
-            <div class="ts-left">
-                <h1 id="valStreak">1</h1>
-                <span>Day Streak</span>
-                <i class="fa-solid fa-fire"></i>
-            </div>
-            <div class="ts-right">
-                <div class="ts-head">
-                    <h4>Next Reward</h4>
-                    <p>Come back tomorrow for more Tickets!</p>
+                <!-- DYNAMIC AUTH VIEW -->
+                <div id="authDashboard" style="display: none;">
+                    
+                    <!-- THRYL UI: DAILY STREAK -->
+                    <div class="thryl-streak-card fade-up">
+                        <div class="ts-left">
+                            <h1 id="valStreak">1</h1>
+                            <span>Day Streak</span>
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+                        <div class="ts-right">
+                            <div class="ts-head">
+                                <h4>Next Reward</h4>
+                                <p>Come back tomorrow for more Tickets!</p>
+                            </div>
+                            <div class="ts-timeline" id="streakTimeline">
+                                <div class="ts-line-bg"></div>
+                                <div class="ts-line-fill" id="streakFill"></div>
+                                <!-- Nodes injected via JS -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="ts-timeline" id="streakTimeline">
-                    <div class="ts-line-bg"></div>
-                    <div class="ts-line-fill" id="streakFill"></div>
-                    <!-- Nodes injected via JS -->
+
+                <!-- GUEST MARKETING VIEW -->
+                <div id="guestHero" class="guest-hero fade-up">
+                    <h1>Own the Arena<br><span style="color:var(--neon-cyan);">Power Your Play</span></h1>
+                    <p>Register now to unlock the Tournyx Engine, track your streak, and earn real rewards securely.</p>
+                    <button class="btn-primary" onclick="window.location.href='login.html'">LOG IN / SIGN UP</button>
                 </div>
+
+                <!-- THRYL UI: CASUAL GAMES -->
+                <div class="section-header fade-up">
+                    <h2>Casual Games</h2>
+                    <a href="explore.html">View All</a>
+                </div>
+                <div class="card-slider fade-up" id="gamesSlider">
+                    <div class="game-card skeleton"></div>
+                    <div class="game-card skeleton"></div>
+                </div>
+
+                <!-- THRYL UI: FEATURED TOURNAMENTS -->
+                <div class="section-header fade-up">
+                    <h2>Featured Tournaments</h2>
+                    <a href="explore.html">View All</a>
+                </div>
+                <div class="card-slider fade-up" id="tourneySlider">
+                    <div class="ft-card skeleton" style="height: 200px;"></div>
+                </div>
+
+                <div style="text-align:center; padding: 30px 20px; color:#666; font-size:0.75rem; margin-bottom: 20px;">
+                    © 2026 TOURNYX. All rights reserved.<br>
+                    Powered by <b style="color:var(--neon-purple); font-family:var(--font-head); letter-spacing:1px;">QUVA</b>
+                </div>
+
             </div>
         </div>
-
-        <!-- THRYL UI: CASUAL GAMES -->
-        <div class="section-header">
-            <h2>Casual Games</h2>
-            <a href="explore.html">View All</a>
-        </div>
-        <div class="card-slider" id="gamesSlider">
-            <!-- Skeleton Fallbacks -->
-            <div class="game-card skeleton"></div>
-            <div class="game-card skeleton"></div>
-        </div>
-
-        <!-- THRYL UI: FEATURED TOURNAMENTS -->
-        <div class="section-header">
-            <h2>Featured Tournaments</h2>
-            <a href="explore.html">View All</a>
-        </div>
-        <div class="card-slider" id="tourneySlider">
-            <!-- Skeleton Fallbacks -->
-            <div class="ft-card skeleton" style="height: 180px;"></div>
-        </div>
-
     </div>
 
     <!-- iOS MENISCUS DOCK -->
     <div class="ios-dock-wrapper">
         <nav class="ios-dock" id="mobileDock">
-            <div class="meniscus-bead" id="dockBead"></div>
-            <div class="dock-btn active" onclick="moveBead(0, this)"><i class="fa-solid fa-house"></i></div>
-            <div class="dock-btn" onclick="moveBead(1, this); window.location.href='explore.html'"><i class="fa-solid fa-compass"></i></div>
+            <div class="m-bead" id="dockBead"></div>
             
-            <!-- Center FAB -->
-            <div class="dock-fab" onclick="window.location.href='tournament.html'"><i class="fa-solid fa-plus"></i></div>
+            <a href="index.html" class="m-item active" onclick="moveBead(0, this)">
+                <i class="fa-solid fa-house m-icon"></i><span class="m-text">Home</span>
+            </a>
+            <a href="explore.html" class="m-item" onclick="moveBead(1, this)">
+                <i class="fa-solid fa-compass m-icon"></i><span class="m-text">Explore</span>
+            </a>
             
-            <div class="dock-btn" onclick="moveBead(2, this); window.location.href='matches.html'"><i class="fa-solid fa-trophy"></i></div>
-            <div class="dock-btn" onclick="toggleBottomSheet(); moveBead(3, this)"><i class="fa-solid fa-bars"></i></div>
+            <!-- Floating Center FAB -->
+            <div class="m-fab" onclick="window.location.href='tournament.html'"><i class="fa-solid fa-plus"></i></div>
+            
+            <a href="tickets.html" class="m-item" onclick="moveBead(2, this)">
+                <i class="fa-solid fa-ticket m-icon"></i><span class="m-text">Tickets</span>
+            </a>
+            <div class="m-item" onclick="toggleBottomSheet(); moveBead(3, this)">
+                <i class="fa-solid fa-bars m-icon"></i><span class="m-text">Menu</span>
+            </div>
         </nav>
     </div>
 
@@ -337,7 +425,7 @@
             <div class="sheet-item" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift"></i> Giveaway</div>
             <div class="sheet-item" onclick="window.location.href='offerwall.html'"><i class="fa-solid fa-coins"></i> Offerwall</div>
             <div class="sheet-item" onclick="openModal('spinModal'); toggleBottomSheet();"><i class="fa-solid fa-dharmachakra"></i> Lucky Spin</div>
-            <div class="sheet-item" onclick="openModal('aiModal'); toggleBottomSheet();"><i class="fa-solid fa-robot"></i> Vision AI</div>
+            <div class="sheet-item" onclick="showToast('Check-In Claimed!'); toggleBottomSheet();"><i class="fa-regular fa-calendar-check"></i> Daily Login</div>
         </div>
     </div>
 
@@ -346,7 +434,7 @@
         <div class="system-modal" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal('aiModal')">&times;</span>
             <h2 style="font-family:var(--font-head); color:var(--neon-cyan); margin-bottom:15px;"><i class="fa-solid fa-robot"></i> VISION AI</h2>
-            <div id="aiResponseText" style="font-size:0.85rem; color:#ddd; padding:15px; border-radius:12px; border:1px solid rgba(0,242,255,0.2);">
+            <div id="aiResponseText" style="font-size:0.85rem; color:#ddd; padding:15px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(0,242,255,0.2);">
                 <i class="fa-solid fa-spinner fa-spin"></i> Analyzing Combat Matrix...
             </div>
         </div>
@@ -357,20 +445,21 @@
             <span class="modal-close" onclick="closeModal('spinModal')">&times;</span>
             <h2 style="font-family:var(--font-head); color:var(--gold); margin-bottom:15px;"><i class="fa-solid fa-dharmachakra"></i> REWARD NODE</h2>
             <div id="spinWheel" style="width:120px; height:120px; border-radius:50%; border:4px dashed var(--neon-cyan); margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--gold);"><i class="fa-solid fa-gift"></i></div>
-            <button style="width:100%; padding:12px; background:var(--gold); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="triggerSpin()">SPIN FOR 100 GOLD</button>
+            <button style="width:100%; padding:12px; background:var(--gold); border:none; border-radius:10px; font-family:var(--font-head); font-weight:bold; cursor:pointer;" onclick="triggerSpin()">SPIN FOR 100 GOLD</button>
         </div>
     </div>
 
     <!-- SUPABASE ENGINE & JS LOGIC -->
     <script>
         // --- 1. Supabase Initialization (Failsafe) ---
-        const supabaseUrl = 'https://zuatrwfrejnwfnldqqgy.supabase.co'; 
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
+        const supabaseUrl = 'https://YOUR_PROJECT.supabase.co'; 
+        const supabaseKey = 'YOUR_API_KEY'; 
+        
         let supabase = null;
-        try { if(window.supabase) supabase = window.supabase.createClient(supabaseUrl, supabaseKey); } 
-        catch(e) { console.warn("Supabase Offline. Using Local Mock."); }
+        try {
+            if (window.supabase) supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch(e) { console.warn("Supabase Config Missing - using Mock Data."); }
 
-        // Core State
         let playerState = { streak: 1, gold: 0, tickets: 0, xp: 0 };
 
         // --- 2. Boot Sequence ---
@@ -381,26 +470,36 @@
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
 
             if(user) {
-                document.getElementById('valName').innerText = user.username || "Player";
-                document.getElementById('valAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${user.username || 'P'}&background=131826&color=fff`;
+                document.getElementById('authDashboard').style.display = 'block';
+                document.getElementById('guestHero').style.display = 'none';
+                
+                document.getElementById('valName').innerText = user.username || "Operative";
+                document.getElementById('valAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${user.username || 'P'}&background=151A27&color=fff`;
+                
                 if(supabase && user.email) fetchSupabaseUser(user.email);
                 else simulateDataLoad();
             } else {
                 document.getElementById('valName').innerText = "Guest";
-                simulateDataLoad(); // Load mock data for guests
+                simulateDataLoad(); // Load mock data for guests to see UI
             }
 
             fetchSupabaseGames();
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-up').forEach((el) => { observer.observe(el); });
         });
 
         // --- 3. Supabase Fetchers ---
         async function fetchSupabaseUser(email) {
+            if(!supabase) return simulateDataLoad();
             try {
                 const { data, error } = await supabase.from('tims_users').select('*').eq('email', email).single();
                 if (data) {
                     playerState.streak = data.current_streak || 1;
                     playerState.gold = data.gold || 0;
-                    playerState.tickets = data.passes || 0; // Using passes as tickets
+                    playerState.tickets = data.passes || 0; 
                     playerState.xp = data.points || 0;
                 }
                 updateTopUI();
@@ -408,8 +507,8 @@
         }
 
         async function fetchSupabaseGames() {
+            // Using try/catch to load dummy data instantly, replacing skeletons
             try {
-                // Fetch mock/real tournaments & games
                 renderThrylGames();
                 renderThrylTournaments();
             } catch(e) {}
@@ -422,7 +521,6 @@
 
         // --- 4. UI Updaters ---
         function updateTopUI() {
-            // Format Numbers (e.g. 12450 -> 12.4K)
             const formatNum = (num) => num > 9999 ? (num/1000).toFixed(1) + 'K' : num;
             
             document.getElementById('valGold').innerText = formatNum(playerState.gold);
@@ -433,8 +531,11 @@
         }
 
         function buildStreakTimeline() {
-            document.getElementById('valStreak').innerText = playerState.streak;
+            const streakCountEl = document.getElementById('valStreak');
+            if(streakCountEl) streakCountEl.innerText = playerState.streak;
+            
             const timeline = document.getElementById('streakTimeline');
+            if(!timeline) return;
             timeline.querySelectorAll('.ts-node').forEach(e => e.remove());
             
             const totalDays = 6;
@@ -458,6 +559,7 @@
         // --- 5. Thryl Card Renderers ---
         function renderThrylGames() {
             const slider = document.getElementById('gamesSlider');
+            if(!slider) return;
             slider.innerHTML = `
                 <div class="game-card" onclick="showToast('Launching Game...')">
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjN9Y3e2eA-4H2K2S7I9-e0Y9wY9X9y_L9a2W0P_J0aX2V9c0L_2J9J_zX9x9c0L_2J9J_zX9x9c0L_2J9J_zX9x9/s800/bgmi.jpg" class="gc-bg">
@@ -492,6 +594,7 @@
 
         function renderThrylTournaments() {
             const slider = document.getElementById('tourneySlider');
+            if(!slider) return;
             slider.innerHTML = `
                 <div class="ft-card">
                     <div class="ft-top">
@@ -500,7 +603,7 @@
                         <div class="ft-org"><img src="https://ui-avatars.com/api/?name=G&background=fff&color=000"> Glazer Games</div>
                         <div class="ft-tags"><span>Squad</span> | <span>5th Aug 2026</span> | <span>Free Fire Max</span></div>
                     </div>
-                    <img src="https://via.placeholder.com/150/131826/00f2ff?text=Tournament" class="ft-art">
+                    <img src="https://via.placeholder.com/150/151A27/00f2ff?text=Art" class="ft-art">
                     <div class="ft-bottom">
                         <div class="ft-status">Registration Closed</div>
                         <div class="ft-btn" onclick="window.location.href='explore.html'">View Details</div>
@@ -509,10 +612,14 @@
             `;
         }
 
-        // --- 6. Interactions & Docks ---
+        // --- 6. Meniscus Dock & Interactions ---
         function initMeniscusDock() {
-            const firstBtn = document.querySelector('.dock-btn.active');
+            const firstBtn = document.querySelector('.m-item.active');
             if(firstBtn) moveBead(0, firstBtn);
+            window.addEventListener('resize', () => {
+                const activeBtn = document.querySelector('.m-item.active');
+                if(activeBtn) moveBead(0, activeBtn);
+            });
         }
 
         function moveBead(index, el) {
@@ -522,10 +629,13 @@
             if(!dock || !bead || !el) return;
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
-            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (40 / 2);
+            
+            // Align bead perfectly behind the specific icon
+            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (45 / 2);
             bead.style.opacity = '1';
-            bead.style.transform = `translate(${offsetLeft}px, -50%)`;
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            bead.style.transform = `translateX(${offsetLeft}px)`;
+            
+            document.querySelectorAll('.m-item').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
         }
 
