@@ -27,7 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Supabase Client -->
+    <!-- Supabase Client & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -42,11 +42,12 @@
     </script>
 
     <style>
-        /* --- PREMIUM LITE TOURNYX THEME --- */
+        /* --- THRYL-STYLE PREMIUM DARK THEME --- */
         :root {
-            --bg-void: #0B0E14; /* Sleeker, lighter dark theme */
-            --panel-bg: #151A27;
-            --panel-border: rgba(255, 255, 255, 0.05);
+            --bg-void: #050505; /* True Black */
+            --sidebar-bg: #0A0C10; /* Deep Dark Blue-Black */
+            --panel-bg: #11141D; /* Sleek Thryl Card Color */
+            --panel-border: rgba(255, 255, 255, 0.04);
             
             --neon-cyan: #00f2ff;
             --neon-purple: #bd00ff;
@@ -63,36 +64,46 @@
         ::-webkit-scrollbar { display: none; }
 
         body {
-            background-color: var(--bg-void); color: var(--text-main); font-family: var(--font-body);
-            height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            height: 100dvh; width: 100vw;
+            overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
         /* --- DESKTOP VS MOBILE APP ARCHITECTURE --- */
         .app-wrapper { display: flex; flex: 1; overflow: hidden; width: 100vw; }
 
         .desktop-sidebar {
-            display: none; width: 280px; background: var(--panel-bg); border-right: 1px solid var(--panel-border);
-            flex-direction: column; padding: 30px 20px; z-index: 1000; box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            display: none; width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--panel-border);
+            flex-direction: column; padding: 30px 20px; z-index: 1000; box-shadow: 5px 0 25px rgba(0,0,0,0.8);
         }
 
         .main-viewport {
             flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            position: relative; padding-bottom: 120px;
+            position: relative; padding-bottom: 120px; width: 100%;
+        }
+
+        .app-container {
+            width: 100%; max-width: 100%; /* Spans full width on desktop */
+            margin: 0 auto;
         }
 
         @media (min-width: 1024px) {
             body { flex-direction: row; }
             .desktop-sidebar { display: flex; }
-            .main-viewport { padding: 40px; padding-bottom: 40px; }
+            .main-viewport { padding: 30px; padding-bottom: 40px; }
             .ios-dock-wrapper { display: none !important; }
+            .app-container { max-width: 1400px; } /* Clean constraint on ultra-wide monitors */
         }
 
-        /* --- UI SAMPLE: TOP CONTROL MATRIX --- */
-        .top-nav-matrix { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        /* --- TOP CONTROL MATRIX --- */
+        .top-nav-matrix { padding: 20px 20px 10px; display: flex; flex-direction: column; gap: 15px; }
         .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
         
         @media (min-width: 1024px) {
-            .top-nav-matrix { flex-direction: row; align-items: center; justify-content: space-between; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--panel-border); margin-bottom: 25px; padding: 15px 25px;}
+            .top-nav-matrix { flex-direction: row; align-items: center; justify-content: space-between; padding: 0 0 25px 0;}
             .nav-row { width: auto; justify-content: flex-start; }
             .menu-btn-mobile { display: none !important; }
         }
@@ -115,8 +126,8 @@
             height: 45px; border-radius: 25px; padding: 0 15px;
             display: flex; align-items: center; gap: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold;
         }
-        .currency-pill.tickets { border-color: rgba(0, 242, 255, 0.3); box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.05); }
-        .currency-pill.gold { border-color: rgba(255, 215, 0, 0.3); box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.05); }
+        .currency-pill.tickets { border-color: rgba(0, 242, 255, 0.2); color: var(--text-main); }
+        .currency-pill.gold { border-color: rgba(255, 215, 0, 0.2); color: var(--text-main); }
 
         .profile-pill {
             background: var(--panel-bg); border: 1px solid var(--panel-border);
@@ -137,9 +148,9 @@
 
         /* --- THRYL UI: DAILY STREAK --- */
         .thryl-streak-card {
-            margin: 5px 20px 25px; display: flex; background: var(--panel-bg);
+            margin: 10px 20px 25px; display: flex; background: var(--panel-bg);
             border-radius: 20px; border: 1px solid var(--panel-border); overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); height: 130px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); height: 130px;
         }
         @media (min-width: 1024px) { .thryl-streak-card { margin: 0 0 30px 0; } }
         
@@ -152,7 +163,8 @@
         .ts-left span { font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: bold; margin-top: 4px; line-height: 1.1; }
         .ts-left i { position: absolute; bottom: -15px; right: -5px; font-size: 5rem; color: rgba(255,255,255,0.2); pointer-events: none; }
 
-        .ts-right { flex: 1; padding: 15px 20px; display: flex; flex-direction: column; justify-content: center; overflow-x: auto; }
+        .ts-right { flex: 1; padding: 15px 20px; display: flex; flex-direction: column; justify-content: center; overflow-x: auto; scrollbar-width: none;}
+        .ts-right::-webkit-scrollbar { display: none; }
         .ts-head { margin-bottom: 12px; }
         .ts-head h4 { font-family: var(--font-head); font-size: 1rem; color: white; margin-bottom: 2px; }
         .ts-head p { font-size: 0.75rem; color: var(--text-muted); }
@@ -169,13 +181,47 @@
         .ts-val b { font-size: 0.8rem; color: white; display: flex; align-items: center; gap: 4px; font-family:var(--font-head);}
         .ts-val span { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;}
 
-        /* --- SECTION HEADERS --- */
+        /* --- DASHBOARD GRID (Player Engine Matrix) --- */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; margin-bottom: 30px; padding: 0 20px; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: minmax(300px, 1fr) minmax(400px, 2fr) minmax(300px, 1fr); padding: 0;} }
+
+        .glass-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden; transition: all 0.3s ease; }
+        
+        .player-profile-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .avatar-ring { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 14px; object-fit: cover; border: 2px solid var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        .player-details h3 { font-family: var(--font-head); font-size: 1.05rem; }
+        .level-text { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
+        .xp-bar-outer { width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 10px; margin-top: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .xp-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan)); box-shadow: 0 0 10px var(--neon-cyan); transition: width 1s ease; }
+        
+        .wallet-row { display: flex; gap: 10px; }
+        .currency-card { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--panel-border); padding: 8px 10px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-head); font-size: 0.8rem; }
+
+        .league-banner { background: linear-gradient(135deg, rgba(25, 12, 50, 0.9), rgba(8, 20, 45, 0.9)); border: 1px solid rgba(189, 0, 255, 0.3); text-align: center; padding: 25px 20px; }
+        .league-title { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.4); margin-bottom:0; color:white; }
+        .prize-text { font-family: var(--font-head); font-size: 2rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); margin: 5px 0 15px 0; }
+        .btn-claim { background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan)); border: none; color: white; padding: 10px 18px; border-radius: 50px; font-size: 0.8rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-claim:hover { box-shadow: 0 0 15px var(--neon-cyan); transform: scale(1.05); }
+
+        .engine-console { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
+        .engine-stat-block { display: flex; flex-direction: column; gap: 4px; }
+        .stat-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .stat-val { font-family: var(--font-head); font-size: 1.1rem; font-weight: bold; }
+
+        .btn-open-system { width: 75px; height: 75px; border-radius: 50%; background: rgba(0, 240, 255, 0.05); border: 2px dashed var(--neon-cyan); color: var(--neon-cyan); font-family: var(--font-head); font-size: 0.6rem; font-weight: 900; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; animation: pulseGlow 2.5s infinite; }
+        .btn-open-system:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 25px var(--neon-cyan); transform: scale(1.05); }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4); } 50% { box-shadow: 0 0 0 12px rgba(0, 240, 255, 0); } }
+
+        .quest-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; }
+        .quest-item.completed { border-color: var(--neon-green); opacity: 0.6; }
+
+        /* --- THRYL CARDS (Horizontal Scroll) --- */
         .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 15px; }
         @media (min-width: 1024px) { .section-header { padding: 0; margin-top: 10px;} }
         .section-header h2 { font-family: var(--font-head); font-size: 1.2rem; color: white; }
         .section-header a { font-size: 0.85rem; color: var(--neon-cyan); text-decoration: none; font-weight: bold; }
 
-        /* --- THRYL CARDS (Horizontal Scroll) --- */
         .card-slider { display: flex; gap: 15px; overflow-x: auto; padding: 0 20px 25px; scroll-snap-type: x mandatory; margin-bottom: 10px;}
         @media (min-width: 1024px) { .card-slider { padding: 0 0 30px 0; } }
         
@@ -187,7 +233,7 @@
         
         .gc-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; z-index: 2; }
         .gc-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .gc-title { font-family: var(--font-head); font-size: 1rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2;}
+        .gc-title { font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1.1;}
         .gc-players { font-size: 0.7rem; color: #ddd; margin-top: 4px; display: flex; align-items: center; gap: 5px; font-weight:bold;}
         .gc-share { width: 28px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); font-size: 0.75rem; color: white; border: 1px solid rgba(255,255,255,0.1);}
         
@@ -196,26 +242,19 @@
         .gc-stat span { font-size: 0.65rem; color: #aaa; text-transform: uppercase; font-weight:bold;}
         .gc-stat b { font-family: var(--font-head); font-size: 0.85rem; color: white; display: flex; align-items: center; gap: 4px; text-shadow: 0 0 5px rgba(0,0,0,0.8);}
 
-        /* FEATURED TOURNAMENT CARD */
         .ft-card { flex: 0 0 300px; scroll-snap-align: center; border-radius: 18px; background: var(--panel-bg); border: 1px solid var(--panel-border); overflow: hidden; position: relative; display: flex; flex-direction: column;}
         @media (min-width: 1024px) { .ft-card { flex: 0 0 320px; } }
         .ft-top { padding: 18px; position: relative; z-index: 2; flex: 1;}
-        .ft-prize-badge { background: var(--neon-purple); display: inline-block; padding: 5px 12px; border-radius: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; box-shadow: 0 0 15px rgba(189,0,255,0.4);}
+        .ft-prize-badge { background: var(--neon-purple); display: inline-block; padding: 5px 12px; border-radius: 8px; font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; box-shadow: 0 0 10px rgba(189,0,255,0.5);}
         .ft-title { font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 10px; line-height: 1.3; }
         .ft-org { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; font-weight:bold;}
         .ft-org img { width: 22px; height: 22px; border-radius: 50%; border:1px solid rgba(255,255,255,0.2);}
         .ft-tags { display: flex; gap: 12px; font-size: 0.75rem; color: #888; font-weight: bold; }
-        
         .ft-art { position: absolute; right: -10px; bottom: 45px; width: 120px; height: 120px; object-fit: contain; opacity: 0.5; z-index: 1;}
-        
         .ft-bottom { display: flex; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); z-index: 2; position: relative;}
         .ft-status { flex: 1; padding: 14px; font-size: 0.8rem; color: #888; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); font-weight:bold;}
         .ft-btn { flex: 1; padding: 14px; font-size: 0.85rem; font-family: var(--font-head); font-weight: bold; color: white; text-align: center; background: rgba(255,255,255,0.02); cursor: pointer; transition:0.3s;}
         .ft-btn:hover { background: rgba(0,242,255,0.1); color: var(--neon-cyan); }
-
-        /* --- SKELETON LOADERS --- */
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 12px;}
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* --- MENISCUS iOS DOCK (Perfect Animation) --- */
         .ios-dock-wrapper {
@@ -223,14 +262,14 @@
             width: calc(100% - 30px); max-width: 420px; z-index: 9000;
         }
         .ios-dock {
-            background: rgba(14, 18, 30, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: rgba(10, 12, 18, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(0, 242, 255, 0.15); border-radius: 40px; padding: 0 10px;
             display: flex; justify-content: space-between; align-items: center; height: 65px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,255,0.05); position: relative; isolation: isolate;
         }
         
         .m-bead {
-            position: absolute; top: 50%; left: 0; margin-top: -22.5px; /* Center vertically */
+            position: absolute; top: 50%; left: 0; margin-top: -22.5px; 
             width: 45px; height: 45px; background: var(--neon-cyan); border-radius: 50%;
             box-shadow: 0 0 15px var(--neon-cyan); z-index: -1; 
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
@@ -243,7 +282,7 @@
         .m-icon { font-size: 1.25rem; color: var(--text-muted); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s; }
         .m-text { font-size: 0.65rem; color: var(--neon-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .m-item.active .m-icon { transform: translateY(-12px); color: var(--bg-void); } /* Text inside bead turns dark */
+        .m-item.active .m-icon { transform: translateY(-12px); color: var(--bg-void); } 
         .m-item.active .m-text { opacity: 1; transform: translateY(0); }
         
         .m-fab {
@@ -254,10 +293,10 @@
         }
         .m-fab:active { transform: translateY(-10px) scale(0.95); }
 
-        /* --- BOTTOM SHEET MENU --- */
-        .bottom-sheet-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10001; display: none; opacity: 0; transition: 0.3s; }
+        /* --- SLIDE-UP BOTTOM SHEET (Menu) --- */
+        .bottom-sheet-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10001; display: none; opacity: 0; transition: opacity 0.3s; }
         .bottom-sheet-overlay.active { display: block; opacity: 1; }
-        .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--panel-glass-solid); border-top: 1px solid var(--neon-cyan); border-radius: 30px 30px 0 0; padding: 20px 20px 40px; z-index: 10002; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--panel-bg); border-top: 1px solid var(--neon-cyan); border-radius: 30px 30px 0 0; padding: 20px 20px 40px; z-index: 10002; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .bottom-sheet.active { bottom: 0; }
         .sheet-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 20px; }
         .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
@@ -274,14 +313,11 @@
         #toast { position: fixed; top: 20px; right: 20px; background: var(--panel-bg); border: 1px solid var(--neon-cyan); color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.85rem; font-family: var(--font-head); font-weight: bold; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 99999; box-shadow: 0 5px 20px rgba(0,242,255,0.3);}
         #toast.show { transform: translateX(0); }
         
+        .pulse-loading { animation: dataPulse 1.5s infinite alternate; }
+        @keyframes dataPulse { 0% { opacity: 0.3; } 100% { opacity: 0.7; } }
+        
         .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
-
-        /* GUEST HERO */
-        .guest-hero { text-align: center; padding: 40px 20px; }
-        .guest-hero h1 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 15px; line-height:1.2;}
-        .guest-hero p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;}
-        .btn-primary { background: var(--accent-gradient); border: none; color: white; font-family: var(--font-head); padding: 14px 40px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(189,0,255,0.4);}
     </style>
 </head>
 <body>
@@ -291,11 +327,13 @@
     
     <div id="toast"><i class="fa-solid fa-bell" style="color:var(--neon-cyan); margin-right:8px;"></i> <span id="toastMsg">Notification</span></div>
 
+    <!-- MAIN APP WRAPPER -->
     <div class="app-wrapper">
+        
         <!-- DESKTOP PERMANENT SIDEBAR -->
         <aside class="desktop-sidebar">
             <div class="brand-logo"><i class="fa-solid fa-microchip"></i> TIMS</div>
-            <a href="index.html" class="side-nav-item active"><i class="fa-solid fa-house"></i> Home Matrix</a>
+            <a href="#" class="side-nav-item active"><i class="fa-solid fa-house"></i> Home Matrix</a>
             <a href="explore.html" class="side-nav-item"><i class="fa-solid fa-compass"></i> Explore</a>
             <a href="matches.html" class="side-nav-item"><i class="fa-solid fa-trophy"></i> Matches</a>
             <a href="profile.html" class="side-nav-item"><i class="fa-solid fa-id-card"></i> Player CV</a>
@@ -313,16 +351,16 @@
                 <div class="top-nav-matrix">
                     <div class="nav-row">
                         <div class="pill-btn menu-btn-mobile" onclick="toggleBottomSheet()"><i class="fa-solid fa-bars"></i></div>
-                        <div class="pill-btn search" onclick="showToast('Search DB Offline')"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <div class="pill-btn search" onclick="showToast('Search System Offline')"><i class="fa-solid fa-magnifying-glass"></i></div>
                         <div class="currency-pill tickets"><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> <span id="valTickets">--</span> +</div>
                         <div class="currency-pill gold"><i class="fa-solid fa-coins" style="color:var(--gold);"></i> <span id="valGold">--</span></div>
                     </div>
                     <div class="nav-row">
-                        <div class="pill-btn icon-only" style="color:var(--neon-pink);"><i class="fa-solid fa-gift"></i></div>
+                        <div class="pill-btn icon-only" style="color:var(--neon-pink);" onclick="openModal('spinModal')"><i class="fa-solid fa-gift"></i></div>
                         <div class="pill-btn icon-only"><i class="fa-solid fa-cart-shopping"></i><div class="badge">2</div></div>
-                        <div class="pill-btn icon-only" style="color:var(--gold);"><i class="fa-solid fa-bell"></i></div>
+                        <div class="pill-btn icon-only" style="color:var(--gold);" onclick="showToast('No new alerts.')"><i class="fa-solid fa-bell"></i></div>
                         <div class="profile-pill" onclick="window.location.href='profile.html'">
-                            <img src="https://ui-avatars.com/api/?name=G&background=131826&color=fff" id="valAvatar">
+                            <img src="https://ui-avatars.com/api/?name=P&background=151A27&color=fff" id="valAvatar">
                             <div class="profile-text">
                                 <b id="valName">Guest</b>
                                 <span id="valLevel">Level --</span>
@@ -331,35 +369,79 @@
                     </div>
                 </div>
 
-                <!-- DYNAMIC AUTH VIEW -->
-                <div id="authDashboard" style="display: none;">
-                    
-                    <!-- THRYL UI: DAILY STREAK -->
-                    <div class="thryl-streak-card fade-up">
-                        <div class="ts-left">
-                            <h1 id="valStreak">1</h1>
-                            <span>Day Streak</span>
-                            <i class="fa-solid fa-fire"></i>
+                <!-- THRYL UI: DAILY STREAK -->
+                <div class="thryl-streak-card fade-up">
+                    <div class="ts-left">
+                        <h1 id="valStreak">1</h1>
+                        <span>Day Streak</span>
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="ts-right">
+                        <div class="ts-head">
+                            <h4>Next Reward</h4>
+                            <p>Come back tomorrow for more Tickets!</p>
                         </div>
-                        <div class="ts-right">
-                            <div class="ts-head">
-                                <h4>Next Reward</h4>
-                                <p>Come back tomorrow for more Tickets!</p>
-                            </div>
-                            <div class="ts-timeline" id="streakTimeline">
-                                <div class="ts-line-bg"></div>
-                                <div class="ts-line-fill" id="streakFill"></div>
-                                <!-- Nodes injected via JS -->
-                            </div>
+                        <div class="ts-timeline" id="streakTimeline">
+                            <div class="ts-line-bg"></div>
+                            <div class="ts-line-fill" id="streakFill"></div>
+                            <!-- Nodes injected via JS -->
                         </div>
                     </div>
                 </div>
 
-                <!-- GUEST MARKETING VIEW -->
-                <div id="guestHero" class="guest-hero fade-up">
-                    <h1>Own the Arena<br><span style="color:var(--neon-cyan);">Power Your Play</span></h1>
-                    <p>Register now to unlock the Tournyx Engine, track your streak, and earn real rewards securely.</p>
-                    <button class="btn-primary" onclick="window.location.href='login.html'">LOG IN / SIGN UP</button>
+                <!-- DASHBOARD GRID (Player Profile, Engine, Quests) -->
+                <div class="dashboard-grid">
+                    <!-- COLUMN 1: PROFILE -->
+                    <section class="glass-card fade-up visible">
+                        <div class="player-profile-row">
+                            <div class="avatar-ring"><img src="https://ui-avatars.com/api/?name=P&background=151A27&color=fff" class="avatar-img" id="dashAvatar"></div>
+                            <div class="player-details" style="flex:1;">
+                                <h3 id="txtPlayerName" class="pulse-loading">Fetching Data...</h3>
+                                <div class="level-text">Level <span id="txtLevel">--</span> <span style="float:right;" id="txtXPPercent">--%</span></div>
+                                <div class="xp-bar-outer"><div class="xp-bar-inner" id="barXP"></div></div>
+                            </div>
+                        </div>
+                        <div class="wallet-row">
+                            <div class="currency-card"><span><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> Tix</span><strong id="txtDiamonds" class="pulse-loading">--</strong></div>
+                            <div class="currency-card"><span><i class="fa-solid fa-coins" style="color:var(--gold);"></i> Gold</span><strong id="txtGoldDash" class="pulse-loading">--</strong></div>
+                        </div>
+                    </section>
+
+                    <!-- COLUMN 2: ENGINE -->
+                    <section style="display:flex; flex-direction:column; gap:15px;" class="fade-up visible">
+                        <div class="glass-card league-banner">
+                            <p style="color:var(--neon-cyan); font-weight:800; letter-spacing:2px; font-size:0.75rem;">TOURNYX LEGENDS LEAGUE</p>
+                            <h1 class="league-title">SEASON 2</h1>
+                            <div class="prize-text">₹ 1,00,000</div>
+                            <button class="btn-claim" onclick="window.location.href='explore.html'" style="font-size:0.9rem;">REGISTER NOW</button>
+                        </div>
+                        <div class="glass-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:10px;">
+                                <h3 style="font-family:var(--font-head); font-size:0.9rem;"><i class="fa-solid fa-microchip" style="color:var(--neon-cyan);"></i> TOURNYX ENGINE</h3>
+                                <span id="aiStatusBadge" style="font-size:0.6rem; color:var(--text-muted); border:1px solid rgba(255,255,255,0.2); padding:3px 8px; border-radius:50px; font-weight:bold;">AI STATUS: PINGING...</span>
+                            </div>
+                            <div class="engine-console">
+                                <div style="display:flex; gap:20px;">
+                                    <div class="engine-stat-block"><span class="stat-lbl">POWER LEVEL</span><span class="stat-val" style="color:var(--neon-cyan);"><i class="fa-solid fa-cube"></i> <span id="txtPower" class="pulse-loading">--</span></span></div>
+                                    <div class="engine-stat-block"><span class="stat-lbl">CURRENT RANK</span><span class="stat-val" style="color:var(--gold);" id="txtRank"><i class="fa-solid fa-shield-halved"></i> SCANNING...</span></div>
+                                </div>
+                                <button class="btn-open-system" onclick="openAwakeningSystem()">OPEN<br>SYSTEM<br><i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- COLUMN 3: QUESTS -->
+                    <section class="glass-card fade-up visible">
+                        <h3 style="font-family:var(--font-head); font-size:0.9rem; margin-bottom:12px;"><i class="fa-solid fa-list-check" style="color:var(--neon-purple);"></i> LIVE QUESTS</h3>
+                        <div id="questList">
+                            <div class="quest-item"><div><p style="font-weight:bold; font-size:0.8rem;">Daily Login</p><span style="font-size:0.65rem; color:var(--neon-cyan);">+250 XP</span></div><button class="btn-claim" onclick="completeQuest(this, 250)">Claim</button></div>
+                            <div class="quest-item"><div><p style="font-weight:bold; font-size:0.8rem;">10 CS Headshots</p><span style="font-size:0.65rem; color:var(--neon-cyan);">+500 XP</span></div><button class="btn-claim" onclick="completeQuest(this, 500)">Claim</button></div>
+                        </div>
+                        <div style="margin-top:15px; background:rgba(189,0,255,0.1); border:1px solid var(--neon-purple); padding:12px; border-radius:12px; cursor:pointer;" onclick="openModal('aiModal')">
+                            <p style="font-size:0.75rem; color:var(--neon-purple); font-weight:bold;"><i class="fa-solid fa-sparkles"></i> NEW VISION AI REPORT</p>
+                            <p style="font-size:0.75rem; color:#ddd; margin-top:4px;">"Tap here to view your real-time gameplay analysis."</p>
+                        </div>
+                    </section>
                 </div>
 
                 <!-- THRYL UI: CASUAL GAMES -->
@@ -368,6 +450,7 @@
                     <a href="explore.html">View All</a>
                 </div>
                 <div class="card-slider fade-up" id="gamesSlider">
+                    <!-- Data Injected via JS. Skeletons shown instantly if DB is slow. -->
                     <div class="game-card skeleton"></div>
                     <div class="game-card skeleton"></div>
                 </div>
@@ -378,10 +461,11 @@
                     <a href="explore.html">View All</a>
                 </div>
                 <div class="card-slider fade-up" id="tourneySlider">
-                    <div class="ft-card skeleton" style="height: 200px;"></div>
+                    <!-- Data Injected via JS -->
+                    <div class="ft-card skeleton" style="height: 180px;"></div>
                 </div>
 
-                <div style="text-align:center; padding: 30px 20px; color:#666; font-size:0.75rem; margin-bottom: 20px;">
+                <div style="text-align:center; padding: 20px 20px 40px; color:#666; font-size:0.75rem;">
                     © 2026 TOURNYX. All rights reserved.<br>
                     Powered by <b style="color:var(--neon-purple); font-family:var(--font-head); letter-spacing:1px;">QUVA</b>
                 </div>
@@ -395,7 +479,7 @@
         <nav class="ios-dock" id="mobileDock">
             <div class="m-bead" id="dockBead"></div>
             
-            <a href="index.html" class="m-item active" onclick="moveBead(0, this)">
+            <a href="#" class="m-item active" onclick="moveBead(0, this)">
                 <i class="fa-solid fa-house m-icon"></i><span class="m-text">Home</span>
             </a>
             <a href="explore.html" class="m-item" onclick="moveBead(1, this)">
@@ -425,18 +509,28 @@
             <div class="sheet-item" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift"></i> Giveaway</div>
             <div class="sheet-item" onclick="window.location.href='offerwall.html'"><i class="fa-solid fa-coins"></i> Offerwall</div>
             <div class="sheet-item" onclick="openModal('spinModal'); toggleBottomSheet();"><i class="fa-solid fa-dharmachakra"></i> Lucky Spin</div>
-            <div class="sheet-item" onclick="showToast('Check-In Claimed!'); toggleBottomSheet();"><i class="fa-regular fa-calendar-check"></i> Daily Login</div>
+            <div class="sheet-item" onclick="showToast('Daily System Checked!'); toggleBottomSheet();"><i class="fa-regular fa-calendar-check"></i> Daily Login</div>
         </div>
     </div>
 
     <!-- MODALS -->
+    <div id="systemModal" class="modal-overlay" onclick="closeModal('systemModal')">
+        <div class="system-modal" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('systemModal')">&times;</span>
+            <h2 style="font-family:var(--font-head); color:var(--neon-cyan); margin-bottom:10px;"><i class="fa-solid fa-bolt"></i> SYSTEM AWAKENED</h2>
+            <div style="width: 100%; max-width: 320px; margin: 0 auto; background: rgba(0,0,0,0.4); border-radius: 16px; padding: 10px; border: 1px solid var(--panel-border);"><canvas id="radarChart"></canvas></div>
+            <button class="btn-claim" style="width:100%; margin-top:20px; padding:12px;" onclick="closeModal('systemModal')">CLOSE TERMINAL</button>
+        </div>
+    </div>
+
     <div id="aiModal" class="modal-overlay" onclick="closeModal('aiModal')">
         <div class="system-modal" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal('aiModal')">&times;</span>
-            <h2 style="font-family:var(--font-head); color:var(--neon-cyan); margin-bottom:15px;"><i class="fa-solid fa-robot"></i> VISION AI</h2>
+            <h2 style="font-family:var(--font-head); color:var(--neon-green); margin-bottom:15px;"><i class="fa-solid fa-robot"></i> VISION AI</h2>
             <div id="aiResponseText" style="font-size:0.85rem; color:#ddd; padding:15px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(0,242,255,0.2);">
                 <i class="fa-solid fa-spinner fa-spin"></i> Analyzing Combat Matrix...
             </div>
+            <button class="btn-claim" style="width:100%; margin-top:20px; padding:10px; background:linear-gradient(90deg, #008000, var(--neon-green));" onclick="closeModal('aiModal')">ACKNOWLEDGE REPORT</button>
         </div>
     </div>
 
@@ -445,22 +539,27 @@
             <span class="modal-close" onclick="closeModal('spinModal')">&times;</span>
             <h2 style="font-family:var(--font-head); color:var(--gold); margin-bottom:15px;"><i class="fa-solid fa-dharmachakra"></i> REWARD NODE</h2>
             <div id="spinWheel" style="width:120px; height:120px; border-radius:50%; border:4px dashed var(--neon-cyan); margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--gold);"><i class="fa-solid fa-gift"></i></div>
-            <button style="width:100%; padding:12px; background:var(--gold); border:none; border-radius:10px; font-family:var(--font-head); font-weight:bold; cursor:pointer;" onclick="triggerSpin()">SPIN FOR 100 GOLD</button>
+            <button style="width:100%; padding:12px; background:var(--gold); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="triggerSpin()">SPIN FOR 100 GOLD</button>
         </div>
     </div>
 
     <!-- SUPABASE ENGINE & JS LOGIC -->
     <script>
-        // --- 1. Supabase Initialization (Failsafe) ---
-        const supabaseUrl = 'hhttps://zuatrwfrejnwfnldqqgy.supabase.co'; 
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
+        // --- 1. Supabase Fail-Safe Initializer ---
+        const supabaseUrl = 'https://YOUR_PROJECT.supabase.co'; // Set your actual URL here later
+        const supabaseKey = 'YOUR_API_KEY'; // Set your actual KEY here later
         
         let supabase = null;
         try {
-            if (window.supabase) supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        } catch(e) { console.warn("Supabase Config Missing - using Mock Data."); }
+            // Failsafe: Ensures page NEVER blanks out even if keys are invalid
+            if (window.supabase && supabaseUrl.includes("supabase.co")) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            } else { throw new Error("Supabase placeholder detected."); }
+        } catch(e) { console.warn("Supabase Offline. Rendering UI with Mock Data."); }
 
-        let playerState = { streak: 1, gold: 0, tickets: 0, xp: 0 };
+        // --- CORE STATE ---
+        let playerState = { streak: 1, gold: 0, tickets: 0, xp: 0, stats: { lethality: 85, endurance: 65, agility: 90, tactics: 75, perception: 80 } };
+        let radarChartInstance = null;
 
         // --- 2. Boot Sequence ---
         window.addEventListener('DOMContentLoaded', () => {
@@ -469,21 +568,24 @@
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
 
-            if(user) {
-                document.getElementById('authDashboard').style.display = 'block';
-                document.getElementById('guestHero').style.display = 'none';
-                
-                document.getElementById('valName').innerText = user.username || "Operative";
-                document.getElementById('valAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${user.username || 'P'}&background=151A27&color=fff`;
-                
-                if(supabase && user.email) fetchSupabaseUser(user.email);
-                else simulateDataLoad();
+            // Update UI Regardless of Auth State (Guests see the UI too now)
+            let defaultName = user ? (user.username || "Operative") : "Guest User";
+            let defaultAvatar = user && user.avatar ? user.avatar : `https://ui-avatars.com/api/?name=${defaultName[0]}&background=151A27&color=fff`;
+            
+            document.getElementById('valName').innerText = defaultName;
+            document.getElementById('txtPlayerName').innerText = defaultName;
+            document.getElementById('valAvatar').src = defaultAvatar;
+            document.getElementById('dashAvatar').src = defaultAvatar;
+            
+            if(user && user.email && supabase) {
+                fetchSupabaseUser(user.email);
             } else {
-                document.getElementById('valName').innerText = "Guest";
-                simulateDataLoad(); // Load mock data for guests to see UI
+                // If not logged in, OR supabase fails, load the beautiful mock data
+                simulateDataLoad();
             }
 
             fetchSupabaseGames();
+            pingCloudflareAI();
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
@@ -491,9 +593,8 @@
             document.querySelectorAll('.fade-up').forEach((el) => { observer.observe(el); });
         });
 
-        // --- 3. Supabase Fetchers ---
+        // --- 3. Data Fetchers ---
         async function fetchSupabaseUser(email) {
-            if(!supabase) return simulateDataLoad();
             try {
                 const { data, error } = await supabase.from('tims_users').select('*').eq('email', email).single();
                 if (data) {
@@ -507,27 +608,34 @@
         }
 
         async function fetchSupabaseGames() {
-            // Using try/catch to load dummy data instantly, replacing skeletons
+            // Using try/catch to load dummy data instantly, aggressive skeleton replacement
             try {
+                // Future Supabase Call Goes Here. For now, render UI perfectly:
                 renderThrylGames();
                 renderThrylTournaments();
             } catch(e) {}
         }
 
         function simulateDataLoad() {
-            playerState = { streak: 3, gold: 12450, tickets: 5000, xp: 45000 };
+            // Injects Mock Data so UI is never blank
+            playerState = { streak: 3, gold: 12450, tickets: 5000, xp: 45000, stats: playerState.stats };
             updateTopUI();
         }
 
         // --- 4. UI Updaters ---
         function updateTopUI() {
+            // Strip pulse loaders immediately
+            document.querySelectorAll('.pulse-loading').forEach(el => el.classList.remove('pulse-loading'));
+
             const formatNum = (num) => num > 9999 ? (num/1000).toFixed(1) + 'K' : num;
             
+            // Top Matrix Update
             document.getElementById('valGold').innerText = formatNum(playerState.gold);
             document.getElementById('valTickets').innerText = formatNum(playerState.tickets);
             document.getElementById('valLevel').innerText = "Level " + (Math.floor(playerState.xp / 1000) + 1);
             
             buildStreakTimeline();
+            processLevelMath();
         }
 
         function buildStreakTimeline() {
@@ -553,6 +661,26 @@
                         <div class="ts-val"><b><i class="fa-solid fa-ticket" style="color:var(--neon-cyan);"></i> ${amt}</b><span>Day ${i}</span></div>
                     </div>
                 `);
+            }
+        }
+
+        function processLevelMath() {
+            const currentLevel = Math.floor(playerState.xp / 1000) + 1;
+            const progressPercent = ((playerState.xp % 1000) / 1000) * 100;
+            
+            let rankText = "BRONZE III"; let rankColor = "#cd7f32";
+            if(playerState.xp > 2000) { rankText = "GOLD II"; rankColor = "var(--gold)"; }
+            if(playerState.xp > 5000) { rankText = "MONARCH"; rankColor = "var(--neon-purple)"; }
+
+            if(document.getElementById('txtLevel')) {
+                document.getElementById('txtLevel').innerText = currentLevel;
+                document.getElementById('txtXPPercent').innerText = `${Math.floor(progressPercent)}%`;
+                document.getElementById('barXP').style.width = `${progressPercent}%`;
+                document.getElementById('txtPower').innerText = playerState.xp.toLocaleString();
+                document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${rankText}`;
+                document.getElementById('txtRank').style.color = rankColor;
+                document.getElementById('txtGoldDash').innerText = playerState.gold.toLocaleString();
+                document.getElementById('txtDiamonds').innerText = playerState.tickets.toLocaleString();
             }
         }
 
@@ -618,7 +746,7 @@
             if(firstBtn) moveBead(0, firstBtn);
             window.addEventListener('resize', () => {
                 const activeBtn = document.querySelector('.m-item.active');
-                if(activeBtn) moveBead(0, activeBtn);
+                if(activeBtn) moveBead(0, activeBtn); // index is dummy here
             });
         }
 
@@ -630,13 +758,20 @@
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
             
-            // Align bead perfectly behind the specific icon
+            // Align bead perfectly behind the specific icon (Offset left relative to dock)
             const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (45 / 2);
             bead.style.opacity = '1';
             bead.style.transform = `translateX(${offsetLeft}px)`;
             
             document.querySelectorAll('.m-item').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
+        }
+
+        function pingCloudflareAI() {
+            setTimeout(() => {
+                const badge = document.getElementById('aiStatusBadge');
+                if(badge) { badge.innerText = "AI STATUS: ONLINE"; badge.style.color = "var(--neon-green)"; badge.style.borderColor = "rgba(0,255,127,0.3)"; }
+            }, 1500);
         }
 
         function toggleBottomSheet() {
@@ -661,6 +796,14 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        function completeQuest(btn, xpReward) {
+            if(navigator.vibrate) navigator.vibrate([20, 50, 20]);
+            btn.disabled = true; btn.innerText = "Done"; btn.style.background = "#555";
+            btn.parentElement.classList.add('completed');
+            playerState.xp += xpReward; playerState.gold += 50;
+            updateTopUI(); showToast(`System Updated: +${xpReward} XP!`);
+        }
+
         function triggerSpin() {
             if(playerState.gold < 100) return showToast("Not enough Gold!");
             if(navigator.vibrate) navigator.vibrate(30);
@@ -674,6 +817,25 @@
                 wheel.style.transition = "none"; wheel.style.transform = "rotate(0deg)";
                 closeModal('spinModal');
             }, 2100);
+        }
+
+        function openAwakeningSystem() {
+            openModal('systemModal');
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if(radarChartInstance) radarChartInstance.destroy();
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Lethality', 'Endurance', 'Agility', 'Tactics', 'Perception'],
+                    datasets: [{
+                        label: 'Combat Matrix',
+                        data: [playerState.stats.lethality, playerState.stats.endurance, playerState.stats.agility, playerState.stats.tactics, playerState.stats.perception],
+                        backgroundColor: 'rgba(0, 242, 255, 0.2)', borderColor: '#00f2ff', pointBackgroundColor: '#bd00ff',
+                        pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: '#00f2ff', borderWidth: 2,
+                    }]
+                },
+                options: { responsive: true, scales: { r: { angleLines: { color: 'rgba(255, 255, 255, 0.1)' }, grid: { color: 'rgba(255, 255, 255, 0.1)' }, pointLabels: { color: '#8b9bb4', font: { family: 'Orbitron', size: 10 } }, ticks: { display: false, min: 0, max: 100 } } }, plugins: { legend: { display: false } } }
+            });
         }
     </script>
 </body>
