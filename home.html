@@ -95,6 +95,7 @@
     </script>
     <style>
        /* --- GLOBAL VARIABLES (DEEP BLACK SYSTEM THEME) --- */
+        /* --- GLOBAL VARIABLES (THRYL DEEP BLACK THEME) --- */
         :root {
             --primary-bg: #050608; 
             --secondary-bg: #11141D; 
@@ -114,64 +115,88 @@
             --transition-smooth: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* --- TOURNYX ENGINE & STREAK COMPONENTS --- */
-        .streak-widget { display: flex; flex-direction: column; background: var(--panel-bg); border-radius: 18px; border: 1px solid var(--glass-border); box-shadow: 0 8px 25px rgba(0,0,0,0.5); overflow: hidden; margin-bottom: 20px;}
-        .streak-top { background: linear-gradient(135deg, #ff8c00, #ff3300); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .streak-top h2 { font-family: var(--font-head); font-size: 1.5rem; color: white; display:flex; align-items:center; gap:8px; margin:0;}
-        .btn-claim-streak { background: white; color: #ff3300; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(255,255,255,0.3);}
-        .streak-bottom { padding: 15px 15px 20px; overflow-x: auto; }
-        .ts-timeline { display: flex; align-items: center; position: relative; gap: 20px; min-width: max-content; }
-        .ts-line-bg { position: absolute; top: 18px; left: 15px; right: 15px; height: 4px; background: rgba(255,255,255,0.05); border-radius:5px;}
-        .ts-line-fill { position: absolute; top: 18px; left: 15px; height: 4px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
-        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2;}
-        .ts-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: transparent; transition: 0.4s;}
+        html.theme-vip {
+            --accent-cyan: #FFD700; --accent-purple: #FFA500;
+            --accent-gradient: linear-gradient(135deg, #FFE87C, #D4AF37, #FF8C00);
+            --glass-border: rgba(212, 175, 55, 0.4);
+        }
+        
+        * { -ms-overflow-style: none !important; scrollbar-width: none !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
+
+        body {
+            background-color: var(--primary-bg); color: var(--text-main); font-family: var(--font-body);
+            overflow-x: hidden; padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); 
+            padding-top: calc(85px + env(safe-area-inset-top, 0px)); 
+        }
+
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 16px; }
+
+        /* DESKTOP FULL WIDTH EXPANSION & MOBILE NAV HANDLING */
+        .hero, .stats-area, .section-pad, .pay-section, .app-footer, .next-match-card {
+            max-width: 1400px; /* Occupies full desktop */
+            margin-left: auto !important; margin-right: auto !important; width: 100%;
+        }
+        
+        @media (min-width: 1024px) {
+            .ios-dock-wrapper, .bottom-nav { display: none !important; } /* Hide mobile nav on desktop */
+            .overlay-menu { display: flex !important; position: fixed; left: 0; transform: none; width: 280px; height: 100vh; z-index: 1000; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
+            body { padding-left: 280px; } /* Push content to right of sidebar */
+            .close-menu-btn, .menu-backdrop { display: none !important; }
+        }
+        @media (max-width: 1023px) {
+            .desktop-sidebar { display: none !important; } /* Hide desktop sidebar on mobile */
+        }
+       /* --- EXACT MENISCUS DOCK UI --- */
+        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 450px; z-index: 9000; }
+        .ios-dock { background: rgba(15, 18, 25, 0.95); backdrop-filter: blur(20px); border-radius: 40px; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; height: 65px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .m-bead { position: absolute; top: 50%; left: 0; margin-top: -24px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.4), inset 0 0 10px rgba(0,242,255,0.1); z-index: 1; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; }
+        .m-item { width: 50px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; position: relative; text-decoration: none; cursor: pointer; }
+        .m-icon { font-size: 1.25rem; color: #5a6b8c; transition: 0.3s; }
+        .m-text { font-size: 0.6rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: 0.3s; pointer-events: none; }
+        .m-item.active .m-icon { transform: translateY(-8px); color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.6); }
+        .m-item.active .m-text { opacity: 1; transform: translateY(0); }
+        .m-fab { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; transform: translateY(-20px); border: 5px solid var(--primary-bg); z-index: 10; box-shadow: 0 5px 20px rgba(189, 0, 255, 0.5); transition: 0.3s; cursor: pointer; flex-shrink: 0;}
+        .m-fab:active { transform: translateY(-15px) scale(0.9); }
+
+        /* --- TOURNYX ENGINE & STREAK (Medium Sized & Overflow Fixed) --- */
+        .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; max-width: 1400px; margin-left: auto; margin-right: auto;}
+        @media(min-width: 768px) { .engine-container-row { flex-direction: row; } .engine-widget, .streak-widget { flex: 1; margin-bottom: 0 !important; } }
+        
+        .engine-widget { padding: 15px; background: linear-gradient(180deg, rgba(17,20,29,1) 0%, rgba(10,12,18,1) 100%); border-radius: 16px; border: 1px solid var(--accent-cyan); box-shadow: 0 10px 30px rgba(0,242,255,0.05); }
+        .eng-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(0,242,255,0.2); padding-bottom: 10px; }
+        .eng-head h3 { font-family: var(--font-head); font-size: 1rem; color: white; display: flex; align-items: center; gap: 8px; margin:0;}
+        .eng-status { font-size: 0.6rem; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 50px; font-weight: bold; background: rgba(0,242,255,0.05);}
+        .eng-auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .eng-stat-box { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
+        .eng-stat-box span { font-size: 0.6rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase;}
+        .eng-stat-box b { font-family: var(--font-head); font-size: 1.1rem; }
+        
+        .streak-widget { display: flex; flex-direction: column; background: var(--panel-bg); border-radius: 16px; border: 1px solid var(--glass-border); overflow: hidden; }
+        .streak-top { background: linear-gradient(135deg, #ff8c00, #ff3300); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .streak-top h2 { font-family: var(--font-head); font-size: 1.2rem; color: white; display:flex; align-items:center; gap:8px; margin:0;}
+        .btn-claim-streak { background: white; color: #ff3300; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; box-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .streak-bottom { padding: 15px; overflow-x: auto; scrollbar-width: none; }
+        .streak-bottom::-webkit-scrollbar { display: none; }
+        .ts-timeline { display: flex; align-items: center; position: relative; gap: 15px; min-width: max-content; }
+        .ts-line-bg { position: absolute; top: 15px; left: 15px; right: 15px; height: 3px; background: rgba(255,255,255,0.05); border-radius:5px;}
+        .ts-line-fill { position: absolute; top: 15px; left: 15px; height: 3px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
+        .ts-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;}
+        .ts-circle { width: 26px; height: 26px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: transparent; transition: 0.4s;}
         .ts-node.claimed .ts-circle { background: var(--accent-orange); border-color: var(--accent-orange); color: white; }
         .ts-node.active .ts-circle { background: rgba(255,102,0,0.2); border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 0 20px rgba(255,102,0,0.6); transform: scale(1.2); animation: pulseFire 2s infinite;}
-        @keyframes pulseFire { 0% { box-shadow: 0 0 10px rgba(255,102,0,0.4); } 50% { box-shadow: 0 0 25px rgba(255,102,0,0.8); } 100% { box-shadow: 0 0 10px rgba(255,102,0,0.4); } }
-        .ts-val { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; text-align: center; }
+        .ts-val { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; text-align: center; }
 
-        .engine-widget { padding: 20px; background: linear-gradient(180deg, rgba(17,20,29,1) 0%, rgba(10,12,18,1) 100%); border-radius: 20px; border: 1px solid var(--accent-cyan); position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,242,255,0.1); margin-bottom: 20px;}
-        .eng-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(0,242,255,0.2); padding-bottom: 12px; }
-        .eng-head h3 { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 8px; margin:0; text-shadow: 0 0 10px rgba(0,242,255,0.5);}
-        .eng-status { font-size: 0.65rem; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 10px; border-radius: 50px; font-weight: bold; background: rgba(0,242,255,0.05);}
-        .eng-auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .eng-stat-box { display: flex; flex-direction: column; gap: 5px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);}
-        .eng-stat-box span { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase;}
-        .eng-stat-box b { font-family: var(--font-head); font-size: 1.3rem; }
-        .eng-guest-view { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 15px 0; }
-        .eng-guest-view i { font-size: 2.5rem; color: rgba(0,242,255,0.3); margin-bottom: 15px; }
-
-        /* --- CUSTOM REELS HIGHLIGHTS --- */
-        .reels-container { display: flex; gap: 15px; overflow-x: auto; padding: 15px 5px; scroll-snap-type: x mandatory; scrollbar-width: none;}
+        /* Reels specific */
+        .reels-container { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none;}
         .reels-container::-webkit-scrollbar { display: none; }
-        .reel-card { flex: 0 0 240px; height: 420px; scroll-snap-align: center; border-radius: 18px; background: #000; position: relative; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 8px 25px rgba(0,0,0,0.6);}
-        .reel-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8;}
-        .reel-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%, rgba(0,0,0,0.4) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; pointer-events: none; z-index: 2;}
-        .reel-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: rgba(255,255,255,0.8); pointer-events: auto; cursor: pointer; transition: 0.3s;}
-        .reel-bottom { display: flex; flex-direction: column; gap: 8px; }
+        .reel-card { flex: 0 0 220px; height: 380px; scroll-snap-align: center; border-radius: 16px; background: #000; position: relative; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 8px 25px rgba(0,0,0,0.5);}
+        .reel-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85;}
+        .reel-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%, rgba(0,0,0,0.3) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; pointer-events: none; z-index: 2;}
+        .reel-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; color: rgba(255,255,255,0.8); pointer-events: auto; cursor: pointer; transition: 0.3s;}
+        .reel-bottom { display: flex; flex-direction: column; gap: 6px; }
         .reel-creator-name { font-size: 0.8rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px;}
-        .reel-creator-name img { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;}
-
-        /* --- MENISCUS DOCK & BOTTOM SHEET --- */
-        .ios-dock-wrapper { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; z-index: 9000; }
-        .ios-dock { background: rgba(14, 17, 24, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px; padding: 0 10px; display: flex; justify-content: space-between; align-items: center; height: 65px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; isolation: isolate; }
-        .m-bead { position: absolute; top: 50%; left: 0; margin-top: -22.5px; width: 45px; height: 45px; background: rgba(0, 242, 255, 0.1); border-radius: 50%; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); z-index: -1; transition: transform var(--transition-smooth); opacity: 0; border: 1px solid rgba(0, 242, 255, 0.3); }
-        .m-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60px; height: 100%; position: relative; z-index: 1; cursor: pointer; text-decoration: none; }
-        .m-icon { font-size: 1.2rem; color: #5a6b8c; transition: transform var(--transition-smooth), color 0.3s; }
-        .m-text { font-size: 0.65rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 8px; opacity: 0; transform: translateY(15px); transition: all var(--transition-smooth); pointer-events: none;}
-        .m-item.active .m-icon { transform: translateY(-10px); color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.5);} 
-        .m-item.active .m-text { opacity: 1; transform: translateY(-2px); }
-        .m-fab { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 5px 20px rgba(189, 0, 255, 0.5); transform: translateY(-20px); cursor: pointer; border: 5px solid var(--primary-bg); z-index: 10; transition: 0.3s;}
-
-        .bs-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); z-index: 9998; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .bs-overlay.active { opacity: 1; pointer-events: auto; }
-        .bs-menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(17, 20, 29, 0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--accent-cyan); border-radius: 30px 30px 0 0; padding: 20px 20px 40px; z-index: 9999; transition: bottom var(--transition-smooth); box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
-        .bs-menu.active { bottom: 0; }
-        .bs-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 25px; }
-        .bs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; }
-        .bs-item { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-main); font-size: 0.7rem; font-weight: bold; text-transform: uppercase; text-decoration: none;}
-        .bs-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--accent-cyan);}
-
+        .reel-creator-name img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;}
         html.theme-vip {
             --accent-cyan: #FFD700;
             --accent-purple: #FFA500;
@@ -216,10 +241,13 @@
             max-width: 1000px; margin-left: auto !important; margin-right: auto !important; width: 100%;
         }
 
-        /* --- SKELETON LOADER UI --- */
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);}
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
+       /* --- ATTRACTIVE METAL SHINE SKELETON LOADER --- */
+        .skeleton { 
+            background: linear-gradient(90deg, #11141D 25%, #1e2436 50%, #11141D 75%); 
+            background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         /* --- PERFECT OPTIMIZED CYBER GRID BACKGROUND --- */
         .optimized-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; background: #05020c; pointer-events: none;}
         .grid-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-image: linear-gradient(rgba(0,242,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.03) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.8;}
@@ -880,42 +908,44 @@
             </div>
     </section>
     <section class="section-pad fade-up">
-        <!-- TOURNYX AWAKENING ENGINE -->
-        <div class="engine-widget" id="tournyxEngine">
-            <div class="eng-head">
-                <h3><i class="fa-solid fa-bolt"></i> TOURNYX ENGINE</h3>
-                <span class="eng-status">SYSTEM ACTIVE</span>
-            </div>
-            
-            <div id="engineAuth" style="display: none;">
-                <div class="eng-auth-grid">
-                    <div class="eng-stat-box"><span>Power Level</span><b style="color:var(--accent-cyan);" id="txtPower">--</b></div>
-                    <div class="eng-stat-box"><span>Current Rank</span><b style="color:gold;" id="txtRank">--</b></div>
-                    <div class="eng-stat-box"><span>Win Rate</span><b style="color:white;" id="txtWinRate">--</b></div>
-                    <div class="eng-stat-box"><span>Daily XP</span><b style="color:var(--accent-purple);" id="txtXP">--</b></div>
+        <div class="engine-container-row">
+            <!-- TOURNYX ENGINE (Live Demostration) -->
+            <div class="engine-widget" id="tournyxEngine">
+                <div class="eng-head">
+                    <h3><i class="fa-solid fa-bolt"></i> TOURNYX ENGINE</h3>
+                    <span class="eng-status">SYSTEM ACTIVE</span>
                 </div>
-                <button class="t-btn" onclick="openSystemPopup()" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); box-shadow: none; color: var(--accent-cyan);">OPEN SYSTEM</button>
+                
+                <div id="engineAuth" style="display: none;">
+                    <div class="eng-auth-grid">
+                        <div class="eng-stat-box"><span>Power Level</span><b style="color:var(--accent-cyan);" id="txtPower">--</b></div>
+                        <div class="eng-stat-box"><span>Current Rank</span><b style="color:gold;" id="txtRank">--</b></div>
+                        <div class="eng-stat-box"><span>Win Rate</span><b style="color:white;" id="txtWinRate">--</b></div>
+                        <div class="eng-stat-box"><span>Total Wins</span><b style="color:var(--accent-purple);" id="txtWins">--</b></div>
+                    </div>
+                    <button class="t-btn" onclick="openSystemPopup()" style="padding: 10px; font-size:0.8rem; background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); box-shadow: none; color: var(--accent-cyan);">OPEN SYSTEM</button>
+                </div>
+
+                <div id="engineGuest" class="eng-guest-view">
+                    <i class="fa-solid fa-lock" style="font-size:2rem;"></i>
+                    <h3 style="font-family: var(--font-head); margin-bottom: 5px; font-size:1rem; text-transform: uppercase;">System Locked</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted);">Authenticate ID to initiate player awakening and sync combat stats.</p>
+                    <button class="t-btn" onclick="document.getElementById('authPopup').classList.add('active');" style="width:auto; padding: 8px 20px; font-size:0.8rem;">CONNECT ID</button>
+                </div>
             </div>
 
-            <div id="engineGuest" class="eng-guest-view">
-                <i class="fa-solid fa-lock"></i>
-                <h3 style="font-family: var(--font-head); margin-bottom: 5px; text-transform: uppercase;">System Locked</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Authenticate ID to initiate player awakening and sync combat stats.</p>
-                <button class="t-btn" onclick="document.getElementById('authPopup').classList.add('active');" style="width:auto; padding: 10px 25px;">CONNECT ID</button>
-            </div>
-        </div>
-
-        <!-- EXACT DAILY STREAK -->
-        <div class="streak-widget">
-            <div class="streak-top">
-                <h2><i class="fa-solid fa-fire"></i> <span id="streakCount">--</span> Day Streak</h2>
-                <button class="btn-claim-streak" onclick="claimDailyStreak()" id="btnClaimStreak">Claim Next</button>
-            </div>
-            <div class="streak-bottom">
-                <div class="ts-timeline" id="streakTimeline">
-                    <div class="ts-line-bg"></div>
-                    <div class="ts-line-fill" id="streakFill"></div>
-                    <!-- Nodes injected via JS -->
+            <!-- 20 DAY POINTS STREAK (Medium Sized) -->
+            <div class="streak-widget">
+                <div class="streak-top">
+                    <h2><i class="fa-solid fa-fire"></i> <span id="streakCount">--</span> Day Streak</h2>
+                    <button class="btn-claim-streak" onclick="claimDailyStreak()" id="btnClaimStreak">Claim Next</button>
+                </div>
+                <div class="streak-bottom">
+                    <div class="ts-timeline" id="streakTimeline">
+                        <div class="ts-line-bg"></div>
+                        <div class="ts-line-fill" id="streakFill"></div>
+                        <!-- 20 Nodes injected via JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -945,7 +975,7 @@
             <h2 class="section-title" style="margin:0; text-align:left; font-size:1.4rem;">Esports <span>Highlights</span></h2>
         </div>
         <div class="reels-container" id="reelsContainer">
-            <!-- Supabase Reels Injected Here -->
+            <!-- Endless Reels Injected Here -->
         </div>
         <div id="feedLoader" style="text-align:center; color:var(--accent-cyan); display:none; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Matrix...</div>
     </section>
@@ -954,7 +984,7 @@
     <div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) document.getElementById('ultimateSystemModal').classList.remove('active')">
         <div class="auth-popup-box glass-panel" style="max-width: 450px;">
             <i class="fa-solid fa-xmark auth-close" onclick="document.getElementById('ultimateSystemModal').classList.remove('active')"></i>
-            <h2 style="font-family:var(--font-head); color:var(--accent-cyan); margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-bolt"></i> Player Status</h2>
+            <h2 style="font-family:var(--font-head); color:var(--accent-cyan); margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-bolt"></i> Player Matrix</h2>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">System synchronization complete. Advanced tracking active.</p>
             <div style="background:rgba(0,0,0,0.5); border-radius:16px; padding:10px; border:1px solid var(--glass-border); margin-bottom: 20px;"><canvas id="radarChart"></canvas></div>
         </div>
@@ -987,41 +1017,6 @@
                 <div class="game-pill glass-panel"><i class="fa-solid fa-skull" style="color:green"></i> COD: MOBILE</div>
                 <div class="game-pill glass-panel"><i class="fa-solid fa-gamepad" style="color:cyan"></i> PUBG NEW STATE</div>
             </div>
-        </div>
-    </section>
-
-    <section class="section-pad fade-up">
-        <h2 class="section-title">Premium <span style="color:var(--accent-cyan); text-shadow:0 0 15px rgba(0,242,255,0.5);">Ecosystem</span></h2>
-        
-        <div class="feature-category-title">🎮 Tournament Core</div>
-        <div class="features-grid">
-            <div class="f-card glass-panel"><i class="fa-solid fa-sitemap f-icon"></i><div class="f-title">Auto Brackets</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-users f-icon"></i><div class="f-title">1-Click Squads</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-shield-halved f-icon"></i><div class="f-title">Anti-Cheat</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-key f-icon"></i><div class="f-title">Auto Room IDs</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-layer-group f-icon"></i><div class="f-title">Pro Leagues</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-robot f-icon"></i><div class="f-title">AI Disputes</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-chart-pie f-icon"></i><div class="f-title">Dynamic Prizes</div></div>
-        </div>
-
-        <div class="feature-category-title">🤝 Social & Networking</div>
-        <div class="features-grid" style="margin-top: 15px;">
-            <div class="f-card glass-panel"><i class="fa-solid fa-file-contract f-icon"></i><div class="f-title">Player Resumes</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-satellite-dish f-icon"></i><div class="f-title">LFG Radar</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-comments f-icon"></i><div class="f-title">Direct Comms</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-shield-cat f-icon"></i><div class="f-title">Guild Pages</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-video f-icon"></i><div class="f-title">Creator Hub</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-fire-flame-curved f-icon"></i><div class="f-title">Trending Feed</div></div>
-        </div>
-
-        <div class="feature-category-title">📈 Career & Support</div>
-        <div class="features-grid" style="margin-top: 15px;">
-            <div class="f-card glass-panel"><i class="fa-solid fa-magnifying-glass-chart f-icon"></i><div class="f-title">Scouting DB</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-map-location-dot f-icon"></i><div class="f-title">Stat Heatmaps</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-crown f-icon"></i><div class="f-title">T.O. Portals</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-chalkboard-user f-icon"></i><div class="f-title">VOD Coaching</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-newspaper f-icon"></i><div class="f-title">Esports News</div></div>
-            <div class="f-card glass-panel"><i class="fa-solid fa-handshake f-icon"></i><div class="f-title">Sponsors</div></div>
         </div>
     </section>
 
@@ -1070,31 +1065,6 @@
         </div>
     </section>
 
-    <section class="section-pad fade-up" id="workflowSection">
-        <div class="toggle-container glass-panel theme-purple" id="workflowToggle">
-            <div class="toggle-bg"></div>
-            <div class="toggle-option active" onclick="switchWorkflow('player'); if(navigator.vibrate) navigator.vibrate(50);">Player</div>
-            <div class="toggle-option" onclick="switchWorkflow('organizer'); if(navigator.vibrate) navigator.vibrate(50);">Organizer</div>
-        </div>
-        <div class="steps-wrapper" id="playerSteps">
-             <a href="explore.html" class="step-card glass-panel">
-                <div class="step-badge">1</div>
-                <div class="step-info"><h3>Find Events</h3><p>Explore by game, region, or prize.</p></div>
-                <i class="fa-solid fa-chevron-right" style="color:#666; margin-left:auto;"></i>
-            </a>
-            <div class="step-card glass-panel"><div class="step-badge">2</div><div class="step-info"><h3>Register</h3><p>Sign up seamlessly with your squad.</p></div></div>
-            <div class="step-card glass-panel"><div class="step-badge">3</div><div class="step-info"><h3>Play & Win</h3><p>Compete and claim your real rewards.</p></div></div>
-        </div>
-        <div class="steps-wrapper hidden" id="organizerSteps">
-             <a href="tournament.html" class="step-card glass-panel" onclick="return checkAuth(event)">
-                <div class="step-badge">1</div>
-                <div class="step-info"><h3>Create Setup</h3><p>Set brackets, rules, and prizes.</p></div>
-                <i class="fa-solid fa-chevron-right" style="color:#666; margin-left:auto;"></i>
-            </a>
-            <div class="step-card glass-panel"><div class="step-badge">2</div><div class="step-info"><h3>Manage</h3><p>Handle registrations and seeding.</p></div></div>
-            <div class="step-card glass-panel"><div class="step-badge">3</div><div class="step-info"><h3>Monetize</h3><p>Collect fees and grow your brand.</p></div></div>
-        </div>
-    </section>
 
     <section class="pay-section fade-up delay-1">
         <h2 class="section-title">Secure & <span style="color:#ff9900">Reliable</span></h2>
@@ -1172,6 +1142,7 @@
     <div id="customToast">Notification</div>
 
    <!-- UPGRADED MENISCUS iOS DOCK -->
+    <!-- EXACT MENISCUS DOCK -->
     <div class="ios-dock-wrapper">
         <nav class="ios-dock" id="mobileDock">
             <div class="m-bead" id="dockBead"></div>
@@ -1182,7 +1153,9 @@
             <a href="explore.html" class="m-item" onclick="moveBead(1, this);">
                 <i class="fa-solid fa-compass m-icon"></i><span class="m-text">Explore</span>
             </a>
+            
             <div class="m-fab" onclick="if(checkAuth(event)){window.location.href='tournament.html';}"><i class="fa-solid fa-plus"></i></div>
+            
             <a href="matches.html" class="m-item" onclick="moveBead(2, this);">
                 <i class="fa-solid fa-trophy m-icon"></i><span class="m-text">Matches</span>
             </a>
@@ -1909,13 +1882,13 @@
                 authView.style.display = 'block';
                 guestView.style.display = 'none';
                 
-                // Mapped to Solo Leveling E-to-S Rank Hierarchy
-                document.getElementById('txtPower').innerText = user.power || "42,500";
-                document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${user.rank || "S-Rank (Elite)"}`;
-                document.getElementById('txtWinRate').innerText = user.winRate || "82%";
-                document.getElementById('txtXP').innerText = "+850 EXP";
+                // Real-time Fetch from local cache (Or DB)
+                document.getElementById('txtPower').innerText = (user.wins ? user.wins * 150 : 0) || "4,200";
+                document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${user.wins > 10 ? 'Elite' : 'Rookie'}`;
+                document.getElementById('txtWinRate').innerText = "50%";
+                document.getElementById('txtWins').innerText = user.wins || "0";
                 
-                buildStreakTimeline(user.streak || 3);
+                buildStreakTimeline(user.streak || 1);
             }
         }
 
@@ -1924,13 +1897,12 @@
             const ctx = document.getElementById('radarChart').getContext('2d');
             if(radarChartInstance) radarChartInstance.destroy();
             
-            // Stats mapped directly to Tournyx Engine Requirements
             radarChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['Lethality', 'Endurance', 'Agility', 'Tactics', 'Perception'],
                     datasets: [{ 
-                        data: [92, 85, 96, 88, 90], 
+                        data: [70, 60, 85, 90, 75], 
                         backgroundColor: 'rgba(0, 242, 255, 0.2)', 
                         borderColor: '#00f2ff', 
                         pointBackgroundColor: '#bd00ff', 
@@ -1950,15 +1922,15 @@
             const timeline = document.getElementById('streakTimeline');
             timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
             
-            const total = 6;
+            const total = 20; // 20 Days
             for(let i=1; i<=total; i++) {
                 let sClass = i < currentStreak ? "claimed" : (i === currentStreak ? "active" : "");
                 let icon = i < currentStreak ? `<i class="fa-solid fa-check"></i>` : (i === currentStreak ? `<i class="fa-solid fa-fire"></i>` : "");
-                let amt = i >= 3 ? 15 : 5;
+                let pts = Math.min(i * 50, 1000); // 50 to 1000 Points logic
                 timeline.insertAdjacentHTML('beforeend', `
                     <div class="ts-node ${sClass}">
                         <div class="ts-circle">${icon}</div>
-                        <div class="ts-val"><b style="color:white; margin-bottom:2px;"><i class="fa-solid fa-gem" style="color:var(--accent-cyan);"></i> ${amt}</b><span>Day ${i}</span></div>
+                        <div class="ts-val"><b style="color:white; margin-bottom:2px;">${pts} PTS</b><span>Day ${i}</span></div>
                     </div>
                 `);
             }
@@ -1971,8 +1943,7 @@
             if(!checkAuth()) return;
             const btn = document.getElementById('btnClaimStreak');
             btn.innerText = "CLAIMED"; btn.style.background = "#444"; btn.style.color = "white"; btn.disabled = true;
-            showToast("Daily Quest Completed! EXP Gained.");
-            loadTournyxEngine(); 
+            showToast("Daily Points Claimed!");
         }
 
         function moveBead(index, el) {
@@ -1982,7 +1953,8 @@
             
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
-            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (45 / 2);
+            // Center the glowing ring perfectly around the icon
+            const offsetLeft = (elRect.left - dockRect.left) + (elRect.width / 2) - (48 / 2);
             bead.style.opacity = '1';
             bead.style.transform = `translateX(${offsetLeft}px)`;
             
@@ -1990,20 +1962,10 @@
             el.classList.add('active');
         }
 
-        function toggleBottomSheet() {
-            const menu = document.getElementById('bsMenu');
-            const overlay = document.getElementById('bsOverlay');
-            if(menu.classList.contains('active')) {
-                menu.classList.remove('active'); overlay.classList.remove('active');
-                const homeNode = document.querySelectorAll('.m-item')[0];
-                moveBead(0, homeNode); // Revert to Home
-            } else {
-                menu.classList.add('active'); overlay.classList.add('active');
-            }
-        }
-
-        // SUPABASE REELS
+        // SUPABASE REELS WITH DEDUPLICATION
         let reelPage = 0; let hasMoreReels = true;
+        let loadedReelIds = new Set(); // Prevent duplicates
+
         function initEndlessReels() {
             const observer = new IntersectionObserver((entries) => {
                 if(entries[0].isIntersecting && hasMoreReels) fetchReels();
@@ -2015,33 +1977,51 @@
             const container = document.getElementById('reelsContainer');
             document.getElementById('feedLoader').style.display = 'block';
             
-            // Using your pre-defined 'db' variable for Supabase
             if(db && !SUPABASE_URL.includes('YOUR_PROJECT')) {
                 try {
                     const { data, error } = await db.from('Highlights').select('*').range(reelPage * 5, (reelPage + 1) * 5 - 1);
-                    if(data && data.length > 0) { renderReels(data, container); reelPage++; } 
-                    else { hasMoreReels = false; }
+                    
+                    if(data && data.length > 0) {
+                        // Filter out already loaded videos
+                        let uniqueData = data.filter(vid => !loadedReelIds.has(vid.id));
+                        uniqueData.forEach(vid => loadedReelIds.add(vid.id));
+                        
+                        if(uniqueData.length > 0) {
+                            renderReels(uniqueData, container);
+                            reelPage++;
+                        } else {
+                            // All fetched were duplicates, try next page immediately
+                            reelPage++; fetchReels(); return;
+                        }
+                    } else if (loadedReelIds.size === 0) {
+                        container.innerHTML = `<div style="width:100%; text-align:center; padding:30px; color:#888; font-family:var(--font-head);">NO HIGHLIGHTS FOUND</div>`;
+                        hasMoreReels = false;
+                    } else { hasMoreReels = false; }
                 } catch(e) { hasMoreReels = false; }
             } else {
-                // Generic Esports Mock Data
+                // Mock Fetch 
                 setTimeout(() => {
-                    if(reelPage < 3) { 
+                    if(reelPage < 2) { 
                         let mockData = [];
-                        for(let i=1; i<=5; i++) mockData.push({ id: i, creator: "Tournyx Creator", title: "Insane 1v4 Final Zone Clutch 🔥", views: Math.floor(Math.random()*50 + 5) });
+                        for(let i=1; i<=5; i++) mockData.push({ id: `mock_${reelPage}_${i}`, creator: "Tournyx Hub", title: "Insane Clutch Play", views: 12 });
                         renderReels(mockData, container);
                         reelPage++;
+                    } else if (loadedReelIds.size === 0) {
+                        container.innerHTML = `<div style="width:100%; text-align:center; padding:30px; color:#888; font-family:var(--font-head);">NO HIGHLIGHTS FOUND</div>`;
+                        hasMoreReels = false;
                     } else { hasMoreReels = false; }
                     document.getElementById('feedLoader').style.display = 'none';
                 }, 800);
             }
+            document.getElementById('feedLoader').style.display = 'none';
         }
 
         function renderReels(data, container) {
             let html = "";
             data.forEach((vid) => {
                 html += `
-                    <div class="reel-card">
-                        <video class="reel-video" loop muted playsinline poster="${vid.thumbnail || 'https://via.placeholder.com/300x500/111/444?text=Reel+Frame'}">
+                    <div class="reel-card skeleton" style="animation:none;">
+                        <video class="reel-video" loop muted playsinline poster="${vid.thumbnail || 'https://via.placeholder.com/300x500/111/444?text=Reel'}">
                             <source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4">
                         </video>
                         <div class="reel-overlay">
@@ -2067,7 +2047,7 @@
 
         // Auto-Trigger on Load
         document.addEventListener('DOMContentLoaded', () => {
-            const firstBtn = document.querySelector('.m-item.active') || document.querySelector('.m-item');
+            const firstBtn = document.querySelector('.m-item.active');
             if(firstBtn) setTimeout(() => moveBead(0, firstBtn), 100);
             loadTournyxEngine();
             initEndlessReels();
