@@ -25,6 +25,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Added Chart.js to prevent fatal engine crash -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
             (function() {
@@ -87,7 +90,7 @@
         }
 
         .hero, .role-cards, .stats-area, .section-pad, .pay-section, .app-footer, .next-match-card, .engine-container-row {
-            width: 100%; max-width: 1300px; padding-left: 15px; padding-right: 15px;
+            width: 100%; max-width: 1300px; padding-left: 15px; padding-right: 15px; box-sizing: border-box;
         }
         
         @media (min-width: 1024px) {
@@ -102,7 +105,7 @@
             body { padding-left: 280px; } 
             .top-header { left: 280px; width: calc(100% - 280px); }
             
-            .close-menu-btn, .menu-backdrop { display: none !important; }
+            .close-menu-btn, .menu-backdrop, .menu-btn { display: none !important; } /* Right menu hidden on PC */
             
             /* Professional Desktop Scrollbars for sliders */
             .tourney-slider::-webkit-scrollbar, .reels-container::-webkit-scrollbar, .streak-bottom::-webkit-scrollbar { 
@@ -117,29 +120,32 @@
             .tourney-slider, .reels-container, .streak-bottom { scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2) !important; padding-bottom: 20px;}
         }
         
-        @media (max-width: 1023px) { .desktop-sidebar { display: none !important; } }
+        @media (max-width: 1023px) { 
+            .desktop-sidebar { display: none !important; } 
+            .menu-btn { display: none !important; } /* Hidden on mobile as Dock has menu */
+        }
         
         /* --- FLAWLESS MENISCUS DOCK UI (MEDIUM, ARTIFACT-FREE) --- */
         .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
         .ios-dock { 
-            background: var(--secondary-bg); border-radius: 22px; 
+            background: rgba(21, 25, 35, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px; 
             display: flex; justify-content: space-around; align-items: center; 
             height: 60px; padding: 0 10px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9); position: relative; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative; 
             border: 1px solid rgba(255,255,255,0.08);
         }
         
-        /* The magical gap ring that hides the border without CSS shadow artifacts */
         .m-bead-wrapper {
-            position: absolute; top: -18px; 
-            width: 50px; height: 50px; border-radius: 50%;
-            background: var(--primary-bg); /* Exact match to page bg creates the cutout */
+            position: absolute; top: -16px; 
+            width: 48px; height: 48px; border-radius: 50%;
+            background: transparent; 
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10; pointer-events: none;
         }
         .m-bead {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 42px; height: 42px; border-radius: 50%;
             background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
             color: #050608; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
             transition: background 0.4s, box-shadow 0.4s;
@@ -152,6 +158,17 @@
         
         .m-item.active .m-icon { opacity: 0; transform: translateY(20px); }
         .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
+
+        /* --- DYNAMIC BOTTOM SHEET --- */
+        .bs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 9998; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .bs-overlay.active { opacity: 1; pointer-events: auto; }
+        .bs-menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--secondary-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 9999; padding: 20px 15px 30px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.8); border-top: 1px solid var(--glass-border); display: flex; flex-direction: column;}
+        .bs-menu.active { bottom: 0; }
+        .bs-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 20px; }
+        .bs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .bs-item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: white; font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; transition: 0.3s; }
+        .bs-icon { width: 50px; height: 50px; border-radius: 14px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent-cyan); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .bs-item:active .bs-icon { transform: scale(0.9); background: var(--accent-cyan); color: #000; }
 
         /* --- THRYL ENGINE & STREAK --- */
         .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;}
@@ -198,7 +215,13 @@
         .reel-creator-name { font-size: 0.85rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px;}
         .reel-creator-name img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;}
 
-        /* --- SKELETON LOADER --- */
+        html.psm-active *, html.psm-active *::before, html.psm-active *::after {
+            animation: none !important; transition: none !important; scroll-behavior: auto !important;
+        }
+        html.psm-active .optimized-bg { display: none !important; }
+        html.psm-active .glow-section { box-shadow: none !important; border-color: rgba(255,255,255,0.1) !important; }
+
+        /* --- ATTRACTIVE METAL SHINE SKELETON LOADER --- */
         .skeleton { 
             background: linear-gradient(90deg, #151923 25%, #1f2533 50%, #151923 75%); 
             background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
@@ -246,7 +269,6 @@
         .header-balance i { font-size: 0.8rem; color: var(--accent-orange); }
         .wallet-divider { opacity: 0.4; margin: 0 2px; }
         .pass-text { color: var(--accent-cyan); display:flex; align-items:center; gap:3px;}
-        .menu-btn { font-size: 1.25rem; color: white; cursor: pointer; transition: 0.3s; padding: 2px; flex-shrink: 0;}
 
         /* --- NOTIFICATION SLIDER --- */
         .notification-bar { width: 100%; background: rgba(11, 14, 20, 0.9); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; overflow: hidden; display: flex; align-items: center; transform: translateZ(0); }
@@ -494,6 +516,7 @@
         </div>
     </div>
 
+    <!-- SIDEBAR FOR DESKTOP ONLY -->
     <div class="overlay-menu" id="overlayMenu">
         <i class="fa-solid fa-xmark close-menu-btn" onclick="toggleMenu()"></i>
         <a href="profile.html" class="menu-user-info-link" onclick="return checkAuth(event)">
@@ -832,7 +855,6 @@
     <!-- PERFECT MENISCUS DOCK UI (MEDIUM SIZE & NO ARTIFACTS) -->
     <div class="ios-dock-wrapper">
         <nav class="ios-dock" id="mobileDock">
-            <div class="dock-cutout" id="dockCutout"></div>
             <div class="m-bead-wrapper" id="beadWrapper">
                 <div class="m-bead" id="dockBead">
                     <i class="fa-solid fa-house" id="beadIcon"></i>
@@ -851,8 +873,8 @@
             <a href="matches.html" class="m-item" onclick="moveBead(3, this, 'fa-solid fa-trophy', 'var(--accent-orange)');">
                 <i class="fa-solid fa-trophy m-icon"></i><span class="m-text">Matches</span>
             </a>
-            <a href="profile.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(4, this, 'fa-solid fa-user', 'var(--accent-red)'); }">
-                <i class="fa-solid fa-user m-icon"></i><span class="m-text">Profile</span>
+            <a href="#" class="m-item" onclick="moveBead(4, this, 'fa-solid fa-bars', 'var(--accent-red)'); toggleBottomSheet(); event.preventDefault();">
+                <i class="fa-solid fa-bars m-icon"></i><span class="m-text">Menu</span>
             </a>
         </nav>
     </div>
@@ -873,11 +895,8 @@
         </div>
     </div>
 
-    <!-- Load Chart.js for Matrix Map -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-     // --- 1. CONFIGURATION & STATE ---
+        // --- 1. CONFIGURATION & STATE ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
         const CLOUDFLARE_WORKER_URL = 'https://tournyx-api.annaduraithilakjeevesh.workers.dev'; 
@@ -989,7 +1008,7 @@
             }
         }
 
-        // --- 2. STARTUP & LOADER ---
+        // --- 2. STARTUP ---
         document.addEventListener('DOMContentLoaded', () => {
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
@@ -1029,9 +1048,9 @@
                     renderFeaturedTournaments(res.data);
                     loadLiveTournamentsSlider(res.data);
                 } else {
-                    document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No tournaments available right now.</div>';
+                    document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">PLATFORM UPDATING...</div>';
                 }
-            }).catch(() => { document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load tournaments.</div>'; });
+            }).catch(() => { document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">UNABLE TO LOAD CAMPAIGNS</div>'; });
             
             if (db) {
                 // 2. Flash Drops
@@ -1048,18 +1067,18 @@
                 // 4. Pro Matches
                 db.from('ProMatches').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderProMatches(data);
-                    else document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No pro matches scheduled.</div>';
-                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load matches.</div>'; });
+                    else document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">NO PRO MATCHES SCHEDULED</div>';
+                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">UNABLE TO LOAD MATCHES</div>'; });
 
                 // 5. Scouting Data
                 db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
                     if (!error && data && data.length > 0) renderScouting(data);
-                    else document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No scouting profiles found.</div>';
-                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load scouting data.</div>'; });
+                    else document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">NO SCOUTING PROFILES FOUND</div>';
+                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">UNABLE TO LOAD SCOUTING DATA</div>'; });
             } else {
                 document.getElementById('flashDropsSection').style.display = 'none';
-                document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
-                document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
+                document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">SYSTEM OFFLINE</div>';
+                document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">SYSTEM OFFLINE</div>';
             }
 
             // 6. Quests & Leaderboard
@@ -1321,7 +1340,7 @@
                 let verifiedIcon = dWins > 10 ? `<i class="fa-solid fa-circle-check" style="color:var(--accent-cyan); font-size:0.8rem;"></i>` : ``;
                 
                 container.innerHTML += `
-                    <div class="scout-card">
+                    <div class="scout-card glass-panel">
                         <img src="${dAvatar}" class="scout-avatar">
                         <div class="scout-info">
                             <div class="scout-name">${dName} ${verifiedIcon}</div>
@@ -1387,6 +1406,20 @@
             }
         }
 
+        // Handles Bottom Sheet toggle cleanly
+        function toggleBottomSheet() { 
+            const overlay = document.getElementById('bsOverlay');
+            const menu = document.getElementById('bsMenu');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+            } else {
+                menu.classList.add('active');
+                overlay.classList.add('active');
+            }
+        }
+
+        // Desktop Sidebar Toggle
         function toggleMenu() { 
             document.getElementById('overlayMenu').classList.toggle('active'); 
             document.getElementById('menuBackdrop').classList.toggle('active');
@@ -1402,10 +1435,10 @@
                     currentDynamicQuests = data; 
                     renderQuests(); 
                 } else {
-                    document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding: 20px;">No daily quests active right now. Check back later!</div>';
+                    document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); font-family:var(--font-head); padding: 20px;">NO QUESTS ACTIVE RIGHT NOW</div>';
                 }
             }).catch(e => {
-                document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding: 20px;">Unable to fetch quests.</div>';
+                document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); font-family:var(--font-head); padding: 20px;">UNABLE TO FETCH QUESTS</div>';
             });
         }
 
@@ -1469,10 +1502,7 @@
         // --- 8. LEADERBOARD FETCH LOGIC (FIXED & LIVE CLOUD SYNCED) ---
         async function loadLeaderboard() {
             try {
-                // Ensure fresh data bypasses caching securely
                 const apiRes = await secureFetch({ action: 'get_community_leaderboard', t: new Date().getTime() });
-                
-                // Perfect Mapping regardless of Apps Script response wrapper
                 const data = apiRes.data || apiRes.message || apiRes.result || apiRes;
 
                 if (data && (data.organizers || data.teams || data.contributors)) {
@@ -1483,7 +1513,6 @@
                     throw new Error("Leaderboard data format mismatch or empty.");
                 }
             } catch (e) {
-                console.log("Leaderboard Sync Failed:", e);
                 renderLeaderboardList('organizers', [], '', '', '');
                 renderLeaderboardList('teams', [], '', '', '');
                 renderLeaderboardList('contributors', [], '', '', '');
@@ -1515,7 +1544,6 @@
                 
                 let imgUrl = (item.image && item.image.length > 5 && item.image !== "undefined" && item.image !== "null") ? item.image : 'https://ui-avatars.com/api/?name=' + item.name.charAt(0) + '&background=151923&color=fff';
                 
-                // Uses explicit assignment map values matching backend screenshot
                 let displayValue = item.value !== undefined ? item.value : 0;
                 let displayName = item.name && item.name !== "undefined" ? item.name : 'Unknown Player';
 
@@ -1591,7 +1619,7 @@
             const timeline = document.getElementById('streakTimeline');
             timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
             
-            const total = 10; // Thryl UI fits 6-10 easily. I'll render 10 for clean spacing.
+            const total = 10; // Thryl UI fits 6-10 easily.
             for(let i=1; i<=total; i++) {
                 let sClass = i < currentStreak ? "claimed" : (i === currentStreak ? "active" : "");
                 let icon = i < currentStreak ? `<i class="fa-solid fa-check"></i>` : (i === currentStreak ? `<i class="fa-solid fa-fire"></i>` : "");
@@ -1616,6 +1644,7 @@
             triggerConfetti(btn);
         }
 
+        // PERFECT MENISCUS DOCK GLIDE SCRIPT
         function moveBead(index, el, iconClass, color) {
             const dock = document.getElementById('mobileDock');
             const beadWrapper = document.getElementById('beadWrapper');
@@ -1628,11 +1657,10 @@
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
             
-            // Get center coordinate of the clicked element relative to the dock container
             const center = (elRect.left - dockRect.left) + (elRect.width / 2);
             
-            // Cutout/Wrapper are 50px wide, so offset by 25px to properly center them
-            const offset = center - 25; 
+            // Cutout/Wrapper are 48px wide, so offset by 24px to properly center them
+            const offset = center - 24; 
             
             beadWrapper.style.transform = `translateX(${offset}px)`;
             cutout.style.transform = `translateX(${offset}px)`;
@@ -1640,7 +1668,6 @@
             bead.style.background = color;
             bead.style.boxShadow = `0 5px 15px ${color}80`;
             
-            // Animate Icon inside Bead
             beadIcon.style.opacity = 0;
             beadIcon.style.transform = "scale(0.5)";
             setTimeout(() => {
@@ -1675,7 +1702,6 @@
                     const { data, error } = await db.from('Highlights').select('*').range(reelPage * 5, (reelPage + 1) * 5 - 1);
                     
                     if(data && data.length > 0) {
-                        // Filter out already loaded videos
                         let uniqueData = data.filter(vid => !loadedReelIds.has(vid.id));
                         uniqueData.forEach(vid => loadedReelIds.add(vid.id));
                         
@@ -1684,7 +1710,6 @@
                             renderReels(uniqueData, container);
                             reelPage++;
                         } else {
-                            // All fetched were duplicates, try next page immediately
                             reelPage++; fetchReels(); return;
                         }
                     } else if (loadedReelIds.size === 0) {
@@ -1693,7 +1718,6 @@
                     } else { hasMoreReels = false; }
                 } catch(e) { hasMoreReels = false; }
             } else {
-                // Mock Fetch 
                 setTimeout(() => {
                     if(reelPage < 2) { 
                         let mockData = [];
