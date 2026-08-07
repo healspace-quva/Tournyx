@@ -5,13 +5,13 @@
     <meta name="google-adsense-account" content="ca-pub-2610280925070403">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2610280925070403" crossorigin="anonymous"></script>
     <link rel="manifest" href="/manifest.json">
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/tournyx/service-worker.js");
-    });
-  }
-</script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/tournyx/service-worker.js");
+        });
+      }
+    </script>
     <link rel="icon" href="https://tournyx.in/favicon.ico" sizes="48x48">
     <link rel="icon" href="https://tournyx.in/favicon.png" type="image/png" sizes="192x192">
     <link rel="apple-touch-icon" href="https://tournyx.in/apple-touch-icon.png">
@@ -20,40 +20,17 @@
     
     <title>Tournyx - Ultimate Indian Esports & Gaming Platform</title>
     <meta name="description" content="Welcome to Tournyx Esports. India's ultimate premium skill-based platform for BGMI, Free Fire MAX, and CODM tournaments. Register now, climb the leaderboards, and win real cash prizes daily. Powered by Quva.">
-    <meta name="keywords" content="Esports India, Gaming Tournaments, BGMI, Free Fire, CODM, Tournyx, Play and Earn, Skill based gaming, Quva">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Tournyx">
-    <meta name="google-site-verification" content="ADD_YOUR_GOOGLE_SEARCH_CONSOLE_TAG_HERE" />
-    <link rel="canonical" href="https://tournyx.in/" />
     
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tournyx.in/">
-    <meta property="og:title" content="Tournyx - Ultimate Indian Esports Platform">
-    <meta property="og:description" content="Join India's top premium esports platform. Compete in BGMI, Free Fire MAX, and CODM to win daily cash prizes. Powered by Quva.">
-    <meta property="og:image" content="https://tournyx.in/favicon.png">
-    
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://tournyx.in/">
-    <meta property="twitter:title" content="Tournyx - Play Premium Esports Tournaments">
-    <meta property="twitter:description" content="Join India's top esports platform. Compete in BGMI, Free Fire MAX, and CODM to win daily cash prizes. Powered by Quva.">
-    <meta property="twitter:image" content="https://tournyx.in/favicon.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <script>
             (function() {
                 try {
-                    if(localStorage.getItem('tournyx_psm') === 'true') {
-                        document.documentElement.classList.add('psm-active');
-                    }
-                    const THEMES = [
-                        {cyan: '#00f2ff', purple: '#bd00ff'},
-                        {cyan: '#00ff7f', purple: '#00b09b'},
-                        {cyan: '#ff9900', purple: '#ff4d4d'}
-                    ];
+                    if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
+                    const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
                     let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
                     if(THEMES[tIndex]) {
                         document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
@@ -61,10 +38,8 @@
                         document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
                     }
                     let user = JSON.parse(localStorage.getItem('tournyx_user'));
-                    if (user && String(user.is_premium).toLowerCase() === 'true') {
-                        document.documentElement.classList.add('theme-vip');
-                    }
-                } catch(e) { console.log("Theme setting bypassed."); }
+                    if (user && String(user.is_premium).toLowerCase() === 'true') { document.documentElement.classList.add('theme-vip'); }
+                } catch(e) {}
             })();
     </script>
     <style>
@@ -100,18 +75,21 @@
         body {
             background-color: var(--primary-bg); color: var(--text-main); font-family: var(--font-body);
             overflow-x: hidden; padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
-            padding-top: calc(85px + env(safe-area-inset-top, 0px)); 
+            padding-top: calc(85px + env(safe-area-inset-top, 0px)); width: 100%;
         }
 
         .glass-panel { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 18px; }
 
-        /* DESKTOP FULL WIDTH EXPANSION & MOBILE NAV HANDLING */
+        /* --- DESKTOP PERFECT ALIGNMENT --- */
+        .main-content-wrapper {
+            width: 100%; max-width: 1300px; margin: 0 auto; 
+            display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
+        }
+
         .hero, .role-cards, .stats-area, .section-pad, .pay-section, .app-footer, .next-match-card, .engine-container-row {
-            max-width: 1300px; /* Occupies full desktop */
-            margin-left: auto !important; margin-right: auto !important; width: 100%;
+            width: 100%; max-width: 1300px; padding-left: 15px; padding-right: 15px;
         }
         
-        /* DESKTOP SIDEBAR LOGIC */
         @media (min-width: 1024px) {
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
             
@@ -126,102 +104,82 @@
             
             .close-menu-btn, .menu-backdrop { display: none !important; }
             
-            /* Show thin elegant scrollbars for desktop sliders */
+            /* Professional Desktop Scrollbars for sliders */
             .tourney-slider::-webkit-scrollbar, .reels-container::-webkit-scrollbar, .streak-bottom::-webkit-scrollbar { 
-                display: block !important; height: 6px !important; 
+                display: block !important; height: 8px !important; 
             }
             .tourney-slider::-webkit-scrollbar-thumb, .reels-container::-webkit-scrollbar-thumb, .streak-bottom::-webkit-scrollbar-thumb { 
-                background: rgba(255,255,255,0.15); border-radius: 4px; 
+                background: rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer;
             }
             .tourney-slider::-webkit-scrollbar-track, .reels-container::-webkit-scrollbar-track, .streak-bottom::-webkit-scrollbar-track { 
-                background: transparent; 
+                background: rgba(0,0,0,0.2); border-radius: 10px;
             }
-            .tourney-slider, .reels-container, .streak-bottom { scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,0.15) transparent !important; padding-bottom: 15px;}
+            .tourney-slider, .reels-container, .streak-bottom { scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2) !important; padding-bottom: 20px;}
         }
         
-        @media (max-width: 1023px) {
-            .desktop-sidebar { display: none !important; } 
-        }
+        @media (max-width: 1023px) { .desktop-sidebar { display: none !important; } }
         
-        /* --- EXACT MENISCUS DOCK UI (REDUCED MEDIUM SIZE & ARTIFACT FREE) --- */
+        /* --- FLAWLESS MENISCUS DOCK UI (MEDIUM, ARTIFACT-FREE) --- */
         .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
         .ios-dock { 
-            background: var(--secondary-bg); 
-            border-radius: 22px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            height: 60px; padding: 0; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9); 
-            position: relative; 
+            background: var(--secondary-bg); border-radius: 22px; 
+            display: flex; justify-content: space-around; align-items: center; 
+            height: 60px; padding: 0 10px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9); position: relative; 
             border: 1px solid rgba(255,255,255,0.08);
         }
         
-        /* Clean Flat Cutout without pseudo-element artifacts */
-        .dock-cutout {
-            position: absolute;
-            top: -20px;
-            width: 60px; height: 60px;
-            background: var(--primary-bg); /* Matches page background for invisible cut */
-            border-radius: 50%;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1;
-            pointer-events: none;
-        }
-        
+        /* The magical gap ring that hides the border without CSS shadow artifacts */
         .m-bead-wrapper {
-            position: absolute;
-            top: -20px;
-            width: 60px; height: 60px;
+            position: absolute; top: -18px; 
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--primary-bg); /* Exact match to page bg creates the cutout */
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10;
-            pointer-events: none;
+            z-index: 10; pointer-events: none;
         }
         .m-bead {
-            width: 44px; height: 44px; /* Reduced Medium Size */
-            border-radius: 50%;
-            background: var(--accent-cyan);
-            display: flex; justify-content: center; align-items: center;
-            color: #050608; font-size: 1.2rem;
-            box-shadow: 0 5px 15px rgba(0,242,255,0.4);
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
+            color: #050608; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
             transition: background 0.4s, box-shadow 0.4s;
         }
         .m-bead i { transition: opacity 0.2s, transform 0.2s; }
         
         .m-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-decoration: none; cursor: pointer; position: relative; }
-        .m-icon { font-size: 1.25rem; color: #5a6b8c; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .m-icon { font-size: 1.2rem; color: #5a6b8c; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
         .m-text { font-size: 0.6rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: 0.4s; pointer-events: none; }
         
         .m-item.active .m-icon { opacity: 0; transform: translateY(20px); }
         .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
 
-        /* --- THRYL ENGINE & STREAK (FLEX ROW FIX) --- */
-        .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; padding: 0 15px;}
+        /* --- THRYL ENGINE & STREAK --- */
+        .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;}
         @media(min-width: 768px) { .engine-container-row { flex-direction: row; align-items: stretch; } .engine-widget, .streak-widget-v2 { flex: 1; margin-bottom: 0 !important; min-width: 0; } }
         
-        .engine-widget { padding: 20px; background: linear-gradient(180deg, var(--secondary-bg) 0%, #0d1017 100%); display: flex; flex-direction: column; justify-content: center; }
+        .engine-widget { padding: 20px; background: linear-gradient(180deg, var(--secondary-bg) 0%, #0d1017 100%); display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box;}
         .eng-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(0,242,255,0.2); padding-bottom: 10px; }
         .eng-head h3 { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 8px; margin:0;}
         .eng-status { font-size: 0.65rem; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 10px; border-radius: 50px; font-weight: bold; background: rgba(0,242,255,0.05);}
-        .eng-auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .eng-auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; width: 100%;}
         .eng-stat-box { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);}
         .eng-stat-box span { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase;}
         .eng-stat-box b { font-family: var(--font-head); font-size: 1.2rem; }
         
-        /* Thryl Style Streak Widget */
-        .streak-widget-v2 { display: flex; flex-direction: row; border-radius: 18px; overflow: hidden; background: var(--panel-bg); padding: 0; align-items: stretch; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); min-height: 180px;}
+        .streak-widget-v2 { display: flex; flex-direction: row; border-radius: 18px; overflow: hidden; background: var(--panel-bg); padding: 0; align-items: stretch; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); min-height: 180px; width: 100%; box-sizing: border-box;}
         .streak-left { background: linear-gradient(180deg, #ff8c00, #ff3300); padding: 20px 15px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 110px; position: relative; overflow: hidden;}
         .streak-left h1 { font-size: 3rem; font-family: var(--font-head); margin: 0; line-height: 1; z-index: 2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .streak-left p { font-size: 0.85rem; font-weight: bold; z-index: 2; text-align: center;}
+        .streak-left p { font-size: 0.85rem; font-weight: bold; z-index: 2; text-align: center; margin-top: 5px;}
         .streak-left i { position: absolute; bottom: -15px; right: -15px; font-size: 5.5rem; opacity: 0.2; transform: rotate(-15deg);}
         .streak-right { flex: 1; padding: 18px 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0;}
         .sr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .sr-texts h4 { color: white; font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 4px; }
         .sr-texts p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
-        .btn-claim-streak { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s;}
+        .btn-claim-streak { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; flex-shrink: 0;}
         .btn-claim-streak:active { background: var(--accent-orange); border-color: var(--accent-orange); }
 
-        .streak-bottom { width: 100%; overflow-x: auto; overflow-y: hidden; }
-        .ts-timeline { display: flex; align-items: flex-start; position: relative; gap: 20px; min-width: max-content; padding: 10px 0; }
+        .streak-bottom { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 5px;}
+        .ts-timeline { display: flex; align-items: flex-start; position: relative; gap: 25px; min-width: max-content; padding: 10px 15px; }
         .ts-line-bg { position: absolute; top: 23px; left: 15px; right: 15px; height: 4px; background: rgba(255,255,255,0.05); border-radius:5px;}
         .ts-line-fill { position: absolute; top: 23px; left: 15px; height: 4px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
         .ts-node { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2;}
@@ -240,43 +198,20 @@
         .reel-creator-name { font-size: 0.85rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px;}
         .reel-creator-name img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;}
 
-        html.psm-active *, html.psm-active *::before, html.psm-active *::after {
-            animation: none !important; transition: none !important; scroll-behavior: auto !important;
-        }
-        html.psm-active .optimized-bg { display: none !important; }
-        html.psm-active .glow-section { box-shadow: none !important; border-color: rgba(255,255,255,0.1) !important; }
-
-        /* --- ATTRACTIVE METAL SHINE SKELETON LOADER --- */
+        /* --- SKELETON LOADER --- */
         .skeleton { 
             background: linear-gradient(90deg, #151923 25%, #1f2533 50%, #151923 75%); 
             background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
             border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
         }
         @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        /* --- PERFECT OPTIMIZED CYBER GRID BACKGROUND --- */
-        .optimized-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; background: var(--primary-bg); pointer-events: none;}
+
+        /* --- BG EFFECTS --- */
+        .optimized-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: var(--primary-bg); pointer-events: none;}
         .grid-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-image: linear-gradient(rgba(0,242,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.02) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.8;}
-        html.theme-vip .grid-layer { background-image: linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px); }
         .glow-orb { position: absolute; border-radius: 50%; opacity: 0.4; pointer-events: none; filter: blur(60px);}
         .g-purple { width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%); top: -10vh; left: -10vw; }
         .g-cyan { width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 60%); bottom: -10vh; right: -10vw; }
-        html.theme-vip .g-purple { background: radial-gradient(circle, rgba(255,165,0,0.15) 0%, transparent 60%); }
-        html.theme-vip .g-cyan { background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 60%); }
-
-        /* --- WELCOME BETA LAUNCH POPUP --- */
-        .beta-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .beta-overlay.active { display: flex; animation: fadeIn 0.5s; }
-        .beta-card { width: 90%; max-width: 500px; background: linear-gradient(180deg, rgba(21,25,35,0.95), rgba(11,14,20,0.95)); border: 2px solid var(--accent-cyan); border-radius: 20px; overflow: hidden; position: relative; text-align: center; box-shadow: 0 0 50px rgba(0,242,255,0.4); transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        html.theme-vip .beta-card { border-color: #FFD700; box-shadow: 0 0 50px rgba(255,215,0,0.4); }
-        .beta-overlay.active .beta-card { transform: scale(1); }
-        .beta-img-bg { height: 160px; background: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPWb1TYVY631LdM7_7wokoN6duPFimjq9b8aQu-fMRFfr_ZVJYwGWZv1qRswdGGD5eJ6zteK3be6JnC0D18-MkMHgq7Rc-R3ZFYJHyUSc1J1kzSMHyakXC_zEkXXugbpfLQTq9Hyx2LSZndRNgBJTKmdBGdqThUBChB-XlGdzGHFK1eIk3efwQRgQ2glw/s800/1000112605.gif') center/cover; position: relative; }
-        .beta-img-bg::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(0deg, rgba(11,14,20,1), transparent); }
-        .beta-content { padding: 0 25px 30px; position: relative; z-index: 2; margin-top: -30px;}
-        .beta-content h2 { font-family: var(--font-head); font-size: 1.8rem; color: white; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 15px rgba(0,242,255,0.8); }
-        .beta-content p { color: #d4d4ff; font-size: 1.05rem; line-height: 1.5; margin-bottom: 25px; }
-        .beta-date { display: inline-block; background: rgba(0,242,255,0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 8px 15px; border-radius: 12px; font-family: var(--font-head); font-weight: bold; margin-bottom: 25px; box-shadow: 0 0 15px rgba(0,242,255,0.3); letter-spacing: 1px;}
-        .beta-btn { display: block; width: 100%; padding: 15px; background: var(--accent-gradient); border: none; border-radius: 12px; color: white; font-family: var(--font-head); font-weight: bold; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 8px 25px rgba(189,0,255,0.5); transition: 0.3s; letter-spacing: 1px;}
-        .beta-btn:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(189,0,255,0.4); }
 
         /* --- LOADER --- */
         #tournyx-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--primary-bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease-out; overflow: hidden; transform: translateZ(0); }
@@ -335,7 +270,7 @@
         .quva-powered span { color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
 
         /* --- SMOOTH MENU --- */
-        .menu-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .menu-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .menu-backdrop.active { opacity: 1; pointer-events: auto; }
         .overlay-menu { position: fixed; top: 0; right: 0; width: 100%; max-width: 320px; height: 100vh; background: rgba(21, 25, 35, 0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.1); z-index: 3000; padding: 45px 20px 25px; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .overlay-menu.active { transform: translateX(0); }
@@ -464,6 +399,28 @@
     </style>
 </head>
 <body>
+    
+    <!-- 💥 ABSOLUTE FAILSAFE LOADER REMOVAL 💥 -->
+    <!-- This guarantees the loader is hidden even if Supabase completely crashes on load -->
+    <div id="tournyx-loader">
+        <div class="loader-logo">T</div>
+        <div class="bullet b1"></div><div class="bullet b2"></div><div class="bullet b3"></div><div class="bullet b4"></div><div class="bullet b5"></div>
+        <div class="loader-text">INITIALIZING BATTLEGROUNDS...</div>
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var l = document.getElementById('tournyx-loader');
+                if(l) { l.style.opacity = '0'; setTimeout(function(){ l.style.display = 'none'; }, 400); }
+            }, 1200);
+        });
+        // Backup Failsafe
+        setTimeout(function() {
+            var l = document.getElementById('tournyx-loader');
+            if(l) { l.style.opacity = '0'; setTimeout(function(){ l.style.display = 'none'; }, 400); }
+        }, 5000);
+    </script>
+
     <div class="beta-overlay" id="betaOverlay">
         <div class="beta-card">
             <div class="beta-img-bg"></div>
@@ -477,12 +434,6 @@
     </div>
 
     <div id="launch-celebration"></div>
-
-    <div id="tournyx-loader">
-        <div class="loader-logo">T</div>
-        <div class="bullet b1"></div><div class="bullet b2"></div><div class="bullet b3"></div><div class="bullet b4"></div><div class="bullet b5"></div>
-        <div class="loader-text">INITIALIZING BATTLEGROUNDS...</div>
-    </div>
 
     <div class="optimized-bg">
         <div class="grid-layer"></div>
@@ -575,7 +526,7 @@
         </div>
     </div>
 
-    <!-- WRAPPER TO PREVENT SIDEBAR OVERLAP ON DESKTOP -->
+    <!-- WRAPPER TO PREVENT SIDEBAR OVERLAP ON DESKTOP AND STOP OVERFLOW -->
     <main class="main-content-wrapper">
         <div class="next-match-card glass-panel fade-up visible" id="nextMatchWidget" style="cursor:pointer;" onclick="window.location.href='matches.html'; triggerHaptic();">
             <div class="nm-label"><i class="fa-solid fa-bolt"></i> Your Next Match</div>
@@ -675,7 +626,7 @@
                         </div>
                         <div class="streak-bottom">
                             <div class="ts-timeline" id="streakTimeline">
-                                <!-- 20 Nodes injected via JS. Adjusted math internally to avoid overflow -->
+                                <!-- 10 Nodes injected via JS. Clean spacing logic. -->
                             </div>
                         </div>
                     </div>
@@ -770,7 +721,7 @@
         </section>
 
         <section class="section-pad fade-up">
-            <div class="slider-header">
+            <div class="slider-header" style="margin-bottom: 10px;">
                 <h2 class="section-title">Esports <span>Scouting</span></h2>
             </div>
             <div class="tourney-slider" id="scoutingContainer">
@@ -931,8 +882,14 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g'; 
         const CLOUDFLARE_WORKER_URL = 'https://tournyx-api.annaduraithilakjeevesh.workers.dev'; 
         
-        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let animPaused = localStorage.getItem('tournyx_psm') === 'true';
+        let db = null;
+        try {
+            if (window.supabase) { db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } 
+            else { console.warn("Supabase SDK not loaded."); }
+        } catch (e) { console.error("DB Init Error:", e); }
+
+        let animPaused = false;
+        try { animPaused = localStorage.getItem('tournyx_psm') === 'true'; } catch(e) {}
 
         // --- UNIVERSAL PUSH ENGINE ---
         async function sendTournyxPush(targetEmail, title, message) {
@@ -942,50 +899,42 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'send_push', email: targetEmail, title: title, message: message })
                 });
-            } catch (e) { console.error("Push Error:", e); }
+            } catch (e) {}
         }
 
         // --- SECURE POST FETCHER LOGIC (SUPABASE WRAPPER) ---
         async function secureFetch(payload) {
             try {
-                // 1. SECURE WRITES -> Send to Cloudflare Worker
-                const secureActions = ['update_wallet', 'claim_quest_cloud'];
-                if (secureActions.includes(payload.action)) {
+                if (['update_wallet', 'claim_quest_cloud'].includes(payload.action)) {
                     const res = await fetch(CLOUDFLARE_WORKER_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                     });
                     return await res.json();
                 }
 
-                // 2. BULLETPROOF FAST READS -> Fetch from Supabase directly
+                if (!db) return { status: 'error', message: 'Database disconnected.' };
+
                 if (payload.action === 'get_tournaments') {
                     const { data, error } = await db.from('Tournaments').select('*').neq('db_status', 'Deleted');
                     if (error) throw error; 
                     return { status: 'success', data: data || [] };
                 }
-                
                 if (payload.action === 'get_matches') {
                     const { data, error } = await db.from('Matches').select('*').eq('user_email', payload.email);
                     if (error) throw error; 
                     return { status: 'success', data: data || [] };
                 }
-                
                 if (payload.action === 'sync_user') {
                     const { data, error } = await db.from('Users').select('*').eq('email', payload.email.toLowerCase()).single();
                     if (error) throw error; 
                     return { status: 'success', data: data || {} };
                 }
-
                 if (payload.action === 'get_quests') {
                     const { data, error } = await db.from('Quests').select('*');
                     if (error) throw error; 
                     return { status: 'success', data: data || [] };
                 }
-
                 if (payload.action === 'get_community_leaderboard') {
-                    // Try to fetch from Users Table (Wins & Earnings) to make it bulletproof
                     const { data, error } = await db.from('Users').select('username, ign, avatar, wins, earnings, role').order('wins', { ascending: false }).limit(20);
                     if (error) throw error;
                     
@@ -995,22 +944,19 @@
                         let dName = row.username || row.ign || "Player";
                         let obj = { name: dName, value: row.wins || 0, image: row.avatar };
                         if (cat.includes('organizer') || cat.includes('admin')) result.organizers.push(obj);
-                        else result.teams.push(obj); // Default players/teams mapping
+                        else result.teams.push(obj); 
                         result.contributors.push({ name: dName, value: row.earnings || 0, image: row.avatar });
                     });
                     return { status: 'success', data: result };
                 }
-
                 return { status: 'error', message: 'Action not mapped.' };
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                return { status: 'error', message: error.message };
-            }
+            } catch (error) { return { status: 'error', message: error.message }; }
         }
 
         // --- AUTH CHECKER FOR GUESTS ---
         function checkAuth(e) {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(err){}
             if (!user) {
                 if(e) e.preventDefault();
                 document.getElementById('authPopup').classList.add('active');
@@ -1023,10 +969,10 @@
         // --- LAUNCH CELEBRATION (BETA BANNER) ---
         function closeBetaBanner() {
             document.getElementById('betaOverlay').classList.remove('active');
-            localStorage.setItem('tournyx_beta_seen', 'true');
+            try { localStorage.setItem('tournyx_beta_seen', 'true'); } catch(e){}
         }
         function createLaunchCelebration() {
-            if(localStorage.getItem('tournyx_beta_seen') === 'true') return;
+            try { if(localStorage.getItem('tournyx_beta_seen') === 'true') return; } catch(e){}
             document.getElementById('betaOverlay').classList.add('active');
             if(!animPaused) {
                 const container = document.getElementById('launch-celebration');
@@ -1045,7 +991,8 @@
 
         // --- 2. STARTUP & LOADER ---
         document.addEventListener('DOMContentLoaded', () => {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             let isGuestMode = !user || !user.email;
             createLaunchCelebration();
             
@@ -1063,17 +1010,10 @@
                 document.getElementById('homePassBalance').innerText = "0";
             }
 
-            // TRIGGER ALL LIVE BACKEND CALLS
             loadLiveBackendData();
-            
             initScrollAnimations(); 
             if(!animPaused) typeWriterEffect();
 
-            setTimeout(() => {
-                const loader = document.getElementById('tournyx-loader');
-                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; }, 300); }
-            }, 1500); 
-            
             // SET INITIAL MENISCUS
             setTimeout(() => {
                 const firstBtn = document.querySelector('.m-item.active');
@@ -1081,44 +1021,46 @@
             }, 100);
         });
 
-        // --- MASTER BACKEND FETCH COORDINATOR (CLOUD SYNCED) ---
+        // --- MASTER BACKEND FETCH COORDINATOR (BULLETPROOF SKELETON REPLACEMENT) ---
         function loadLiveBackendData() {
-            // 1. Tournaments (Campaigns)
-            secureFetch({ action: 'get_tournaments' })
-            .then(data => {
-                if (data.status === "success" && data.data.length > 0) {
-                    renderFeaturedTournaments(data.data);
-                    loadLiveTournamentsSlider(data.data);
+            // 1. Tournaments
+            secureFetch({ action: 'get_tournaments' }).then(res => {
+                if (res.status === "success" && res.data && res.data.length > 0) {
+                    renderFeaturedTournaments(res.data);
+                    loadLiveTournamentsSlider(res.data);
                 } else {
-                    document.getElementById('featuredSlider').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">No tournaments available right now.</p>';
+                    document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No tournaments available right now.</div>';
                 }
-            }).catch(err => {
-                document.getElementById('featuredSlider').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">Unable to load tournaments.</p>';
-            });
+            }).catch(() => { document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load tournaments.</div>'; });
             
-            // 2. Flash Drops
-            db.from('Drops').select('*').then(({data, error}) => {
-                if (!error && data && data.length > 0) renderFlashDrops(data);
-                else document.getElementById('flashDropsSection').style.display = 'none';
-            }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; });
+            if (db) {
+                // 2. Flash Drops
+                db.from('Drops').select('*').then(({data, error}) => {
+                    if (!error && data && data.length > 0) renderFlashDrops(data);
+                    else document.getElementById('flashDropsSection').style.display = 'none';
+                }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; });
 
-            // 3. Trending Clips
-            db.from('Clips').select('*').then(({data, error}) => {
-                if (!error && data && data.length > 0) renderTrendingClips(data);
-                // The reels logic handles its own empty states
-            }).catch(()=>{});
+                // 3. Trending Clips
+                db.from('Clips').select('*').then(({data, error}) => {
+                    if (!error && data && data.length > 0) renderTrendingClips(data);
+                }).catch(()=>{});
 
-            // 4. Pro Matches
-            db.from('ProMatches').select('*').then(({data, error}) => {
-                if (!error && data && data.length > 0) renderProMatches(data);
-                else document.getElementById('proMatchesContainer').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">No pro matches scheduled.</p>';
-            }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">Unable to load matches.</p>'; });
+                // 4. Pro Matches
+                db.from('ProMatches').select('*').then(({data, error}) => {
+                    if (!error && data && data.length > 0) renderProMatches(data);
+                    else document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No pro matches scheduled.</div>';
+                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load matches.</div>'; });
 
-            // 5. Scouting Data (Mapping Users table to Scouting perfectly)
-            db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
-                if (!error && data && data.length > 0) renderScouting(data);
-                else document.getElementById('scoutingContainer').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">No scouting profiles found.</p>';
-            }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%; padding: 20px;">Unable to load scouting data.</p>'; });
+                // 5. Scouting Data
+                db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
+                    if (!error && data && data.length > 0) renderScouting(data);
+                    else document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No scouting profiles found.</div>';
+                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load scouting data.</div>'; });
+            } else {
+                document.getElementById('flashDropsSection').style.display = 'none';
+                document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
+                document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
+            }
 
             // 6. Quests & Leaderboard
             loadQuestsFromSheets(); 
@@ -1375,7 +1317,7 @@
             data.forEach(player => {
                 let dName = player.username || player.ign || "Anonymous";
                 let dWins = player.wins || 0;
-                let dAvatar = player.avatar || "https://ui-avatars.com/api/?name=" + dName.charAt(0) + "&background=ff6a00&color=fff";
+                let dAvatar = player.avatar || "https://ui-avatars.com/api/?name=" + dName.charAt(0) + "&background=151923&color=fff";
                 let verifiedIcon = dWins > 10 ? `<i class="fa-solid fa-circle-check" style="color:var(--accent-cyan); font-size:0.8rem;"></i>` : ``;
                 
                 container.innerHTML += `
@@ -1426,7 +1368,7 @@
                         user.points = data.data.points !== undefined ? data.data.points : user.points; 
                         user.rupees = data.data.rupees !== undefined ? data.data.rupees : user.rupees;
                         user.passes = data.data.passes !== undefined ? data.data.passes : user.passes;
-                        localStorage.setItem('tournyx_user', JSON.stringify(user));
+                        try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
                         let livePasses = user.passes !== undefined ? user.passes : Math.floor((parseInt(user.rupees)||0) / 10);
                         balanceDisplay.innerText = user.points || 0;
                         passDisplay.innerText = livePasses || 0;
@@ -1437,8 +1379,10 @@
         
         function logoutUser() {
             if(confirm("Are you sure you want to logout?")) {
-                localStorage.removeItem('tournyx_user');
-                localStorage.removeItem('tournyx_my_clans_cache');
+                try {
+                    localStorage.removeItem('tournyx_user');
+                    localStorage.removeItem('tournyx_my_clans_cache');
+                } catch(e){}
                 window.location.href = "login.html";
             }
         }
@@ -1482,7 +1426,8 @@
         }
 
         function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             if(!user) { document.getElementById('authPopup').classList.add('active'); return; }
 
             if(reqType === 'open') {
@@ -1502,7 +1447,7 @@
 
         function verifyQuest(questId, rewardPts, user) {
             user.points = (parseInt(user.points) || 0) + parseInt(rewardPts);
-            localStorage.setItem('tournyx_user', JSON.stringify(user));
+            try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
             document.getElementById('homeWalletBalance').innerText = user.points;
             showToast(`+${rewardPts} PTS verified & added to Wallet!`);
 
@@ -1551,7 +1496,7 @@
             if (!list || list.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px dashed rgba(255,255,255,0.1); width: 100%;">
-                        <i class="fa-solid fa-ghost" style="font-size:3rem; color:#444; margin-bottom:15px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));"></i>
+                        <i class="fa-solid fa-ghost" style="font-size:3rem; color:var(--text-muted); margin-bottom:15px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));"></i>
                         <h3 style="font-family:var(--font-head); color:#888;">No Legends Yet</h3>
                         <p style="color:var(--text-muted); font-size:0.9rem;">Data will sync automatically when available.</p>
                     </div>`;
@@ -1593,13 +1538,14 @@
         let radarChartInstance = null;
 
         function loadTournyxEngine() {
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             const authView = document.getElementById('engineAuth');
             const guestView = document.getElementById('engineGuest');
             
             if(!user || !user.email) {
                 authView.style.display = 'none';
-                guestView.style.display = 'flex';
+                guestView.style.display = 'block';
                 buildStreakTimeline(0); 
             } else {
                 authView.style.display = 'block';
@@ -1685,8 +1631,8 @@
             // Get center coordinate of the clicked element relative to the dock container
             const center = (elRect.left - dockRect.left) + (elRect.width / 2);
             
-            // Cutout/Wrapper are 60px wide, so offset by 30px to properly center them
-            const offset = center - 30; 
+            // Cutout/Wrapper are 50px wide, so offset by 25px to properly center them
+            const offset = center - 25; 
             
             beadWrapper.style.transform = `translateX(${offset}px)`;
             cutout.style.transform = `translateX(${offset}px)`;
@@ -1724,7 +1670,7 @@
             const container = document.getElementById('reelsContainer');
             document.getElementById('feedLoader').style.display = 'block';
             
-            if(db && !SUPABASE_URL.includes('YOUR_PROJECT')) {
+            if(db) {
                 try {
                     const { data, error } = await db.from('Highlights').select('*').range(reelPage * 5, (reelPage + 1) * 5 - 1);
                     
@@ -1794,8 +1740,9 @@
             else { video.pause(); btn.style.opacity = '1'; }
         }
 
-        // Initialize Reels on load
+        // Initialize Engine and Reels on load
         document.addEventListener('DOMContentLoaded', () => {
+            loadTournyxEngine();
             initEndlessReels();
         });
 
