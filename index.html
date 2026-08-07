@@ -163,13 +163,7 @@
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10; pointer-events: none;
         }
-        .m-bead-wrapper::before, .m-bead-wrapper::after {
-            content: ''; position: absolute; top: 28px; width: 20px; height: 20px;
-            background: transparent; pointer-events: none;
-        }
-        .m-bead-wrapper::before { left: -19px; border-top-right-radius: 20px; box-shadow: 6px -6px 0 0 var(--primary-bg); }
-        .m-bead-wrapper::after { right: -19px; border-top-left-radius: 20px; box-shadow: -6px -6px 0 0 var(--primary-bg); }
-
+        /* Removed complex mask blocks that caused black edges, relying purely on bead shadow */
         .m-bead {
             width: 54px; height: 54px; border-radius: 50%;
             background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
@@ -185,7 +179,7 @@
         
         .m-item.active .m-icon { opacity: 0; transform: translateY(20px); }
         .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
-        .m-item.action-plus .m-icon { font-size: 1.6rem; color: var(--accent-green); }
+        .m-item.action-plus .m-icon { font-size: 1.8rem; color: var(--accent-green); transform: translateY(-12px); filter: drop-shadow(0 0 10px rgba(0,255,127,0.4)); }
 
         /* --- SKELETON LOADER (UPGRADED FOR OLED BLACK) --- */
         .skeleton { 
@@ -273,20 +267,20 @@
         .g-cyan { width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 60%); bottom: -10vh; right: -10vw; }
 
         /* --- LOADER --- */
-        #tournyx-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--primary-bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease-out; overflow: hidden; transform: translateZ(0); }
+        #tournyx-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease-out; overflow: hidden; transform: translateZ(0); }
         .loader-logo { font-family: var(--font-head); font-size: 4rem; font-weight: 900; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.3); position: relative; z-index: 10; }
-        .loader-logo::after { content: 'T'; position: absolute; top: 0; left: 0; color: #fff; text-shadow: 0 0 30px var(--accent-purple), 0 0 50px var(--accent-cyan); opacity: 0; animation: flashHit 1s infinite; }
+        .loader-logo::after { content: 'T'; position: absolute; top: 0; left: 0; color: #fff; text-shadow: 0 0 50px var(--accent-purple), 0 0 70px var(--accent-cyan); opacity: 0; animation: flashHit 0.5s infinite; }
         .bullet { position: absolute; height: 4px; width: 100px; background: linear-gradient(90deg, transparent, var(--accent-cyan)); border-radius: 4px; box-shadow: 0 0 10px var(--accent-cyan); opacity: 0; }
-        .b1 { top: 40%; left: -150px; animation: shootRight 1s infinite; }
-        .b2 { top: 60%; right: -150px; background: linear-gradient(-90deg, transparent, var(--accent-purple)); box-shadow: 0 0 10px var(--accent-purple); animation: shootLeft 1s 0.5s infinite; }
-        .b3 { animation-delay: 1.3s; left: 80px; } 
-        .b4 { top: 40%; bottom: -100px; animation:shootup 1s infinite; animation-delay: 1.4s; left: 90px; }
-        .b5 { top: 40%; margin-top: -90px; animation:shootdown 1s infinite; animation-delay: 1.5s; left: 120px; }
+        .b1 { top: 40%; left: -150px; animation: shootRight 0.5s infinite; }
+        .b2 { top: 60%; right: -150px; background: linear-gradient(-90deg, transparent, var(--accent-purple)); box-shadow: 0 0 10px var(--accent-purple); animation: shootLeft 0.5s 0.25s infinite; }
+        .b3 { animation-delay: 0.6s; left: 80px; } 
+        .b4 { top: 40%; bottom: -100px; animation:shootup 0.5s infinite; animation-delay: 0.7s; left: 90px; }
+        .b5 { top: 40%; margin-top: -90px; animation:shootdown 0.5s infinite; animation-delay: 0.75s; left: 120px; }
         @keyframes shootRight { 0% { left: -150px; opacity: 1; } 50% { left: 50%; opacity: 0; } 100% { left: 50%; opacity: 0; } }
         @keyframes shootLeft { 0% { right: -150px; opacity: 1; } 50% { right: 50%; opacity: 0; } 100% { right: 50%; opacity: 0; } }
         @keyframes shootup { 0% { bottom: -100px; opacity: 1; } 50% { bottom: 50%; opacity: 0; } 100% { bottom: 50%; opacity: 0; } }
         @keyframes shootdown { 0% { margin-top: -90px; opacity: 1; } 50% { margin-top: 50%; opacity: 0; } 100% { margin-top: 50%; opacity: 0; } }
-        @keyframes flashHit { 0%, 48% { opacity: 0; } 50% { opacity: 1; text-shadow: 0 0 40px white; } 52%, 100% { opacity: 0; } }
+        @keyframes flashHit { 0%, 48% { opacity: 0; } 50% { opacity: 1; text-shadow: 0 0 60px white; } 52%, 100% { opacity: 0; } }
         .loader-text { margin-top: 30px; font-family: var(--font-body); font-size: 1rem; letter-spacing: 3px; color: var(--accent-purple); text-transform: uppercase; animation: blink 1s infinite alternate; text-shadow: 0 0 10px rgba(189,0,255,0.5); }
         @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
 
@@ -341,7 +335,7 @@
         .menu-user-details { display: flex; flex-direction: column; justify-content: center; }
         .menu-user-name { font-family: var(--font-head); font-size: 1.1rem; color: white; margin-bottom: 2px; text-shadow: 0 0 5px rgba(255,255,255,0.5); display: flex; align-items: center; }
         .menu-user-sub { font-size: 0.8rem; color: var(--accent-cyan); }
-        .menu-links { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;}
+        .menu-links { flex-grow: 1; overflow-y: overlay; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;}
         .menu-links::-webkit-scrollbar { width: 4px !important; display: block !important;}
         .menu-links::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .menu-links a { display: flex; align-items: center; font-family: var(--font-head); font-size: 0.85rem; color: #e0e0e0; text-decoration: none; padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid transparent; transition: all 0.3s ease; font-weight: 500;}
@@ -518,7 +512,7 @@
         /* Missing Bottom Sheet Menu Styles */
         .bs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 8000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .bs-overlay.active { opacity: 1; pointer-events: auto; }
-        .bs-menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--panel-bg); border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 8001; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); border-top: 1px solid var(--glass-border); padding-bottom: 100px;}
+        .bs-menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--panel-bg); border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 8001; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); border-top: 1px solid var(--glass-border); padding-bottom: 140px;}
         .bs-menu.active { bottom: 0; }
         .bs-handle { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 0 auto 20px; }
         .bs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
@@ -836,26 +830,19 @@
 
         <section class="section-pad fade-up">
             <div class="slider-header">
-                <h2 class="section-title">Esports <span>Highlights</span></h2>
+                <h2 class="section-title">Global <span>Matrix Feed</span></h2>
             </div>
-            <div class="reels-container" id="reelsContainer">
-                <div class="reel-card skeleton" style="height: 380px;"></div>
-                <div class="reel-card skeleton" style="height: 380px;"></div>
-                <div class="reel-card skeleton" style="height: 380px;"></div>
-                <div class="reel-card skeleton" style="height: 380px;"></div>
+            <div style="display: flex; flex-direction: column; gap: 15px;" id="infiniteHighlightsContainer">
+                <!-- Feed items will be injected here via Supabase pagination -->
+                <div class="video-card skeleton" style="height: 250px;"></div>
+                <div class="video-card skeleton" style="height: 250px;"></div>
             </div>
-        </section>
-        
-        <section class="section-pad fade-up" id="trendingClipsSection">
-             <div class="slider-header">
-                <h2 class="section-title">Creator <span>Highlights</span></h2>
-             </div>
-             <div id="trendingClipsContainer">
-                 <div class="video-card skeleton" style="height: 100px;"></div>
-                 <div class="video-card skeleton" style="height: 100px;"></div>
-                 <div class="video-card skeleton" style="height: 100px;"></div>
-             </div>
-             <div id="feedLoader" style="text-align:center; color:var(--accent-cyan); display:none; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Matrix...</div>
+            <div id="feedLoader" style="text-align:center; color:var(--accent-cyan); display:flex; justify-content:center; align-items:center; gap:10px; padding: 25px; font-family:var(--font-head); font-weight:bold;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size:1.5rem;"></i> Syncing Matrix...
+            </div>
+            <div id="endOfFeed" style="text-align:center; color:var(--text-muted); display:none; padding: 20px; font-family:var(--font-head); font-weight:bold; font-size: 0.9rem;">
+                <i class="fa-solid fa-server"></i> End of Matrix. No more data found.
+            </div>
         </section>
 
         <div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) document.getElementById('ultimateSystemModal').classList.remove('active')">
@@ -867,6 +854,24 @@
                     <div class="live-scan-line"></div>
                     <canvas id="radarChart"></canvas>
                 </div>
+            </div>
+        </div>
+
+        <!-- TOURNYX VISION AI MODAL -->
+        <div class="auth-popup-overlay" id="visionAIModal" onclick="if(event.target === this) { document.getElementById('visionAIModal').classList.remove('active'); stopVisionAI(); }">
+            <div class="auth-popup-box glass-panel" style="max-width: 450px;">
+                <i class="fa-solid fa-xmark auth-close" onclick="document.getElementById('visionAIModal').classList.remove('active'); stopVisionAI();"></i>
+                <h2 style="font-family:var(--font-head); color:var(--accent-orange); margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-eye fa-fade"></i> Tournyx Vision AI</h2>
+                <p id="visionAIStatusText" style="font-size: 0.85rem; color: white; margin-bottom: 20px; font-weight:bold;">Live Matrix Analysis required.</p>
+                <div style="background:#000; border-radius:16px; padding:10px; border:1px solid var(--accent-orange); margin-bottom: 20px; position: relative; overflow:hidden;">
+                    <video id="visionAIVideo" autoplay playsinline muted style="width:100%; height: 200px; border-radius:10px; opacity:0.6; filter: grayscale(30%); background:#111; object-fit:cover;"></video>
+                    <canvas id="visionAICanvas" style="display:none;"></canvas>
+                    <div id="visionAIScanLine" class="live-scan-line" style="display:none; background: linear-gradient(to bottom, transparent, rgba(255,140,0,0.5) 50%, transparent); box-shadow: 0 0 20px rgba(255,140,0,0.6);"></div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
+                    <i class="fa-solid fa-microchip" style="color:var(--accent-cyan); font-size:1.5rem;" id="aiChipIcon"></i>
+                </div>
+                <button class="auth-btn" id="visionStartBtn" style="background: linear-gradient(90deg, #ff8c00, #ff3300);" onclick="startVisionAI('Test Quest', 100)">INITIALIZE NEURAL LINK</button>
             </div>
         </div>
 
@@ -1716,30 +1721,55 @@
 
         function openSystemPopup() {
             let btn = document.querySelector('.btn-pulse-system');
-            triggerConfetti(btn);
+            if(btn) triggerConfetti(btn);
             
-            document.getElementById('ultimateSystemModal').classList.add('active');
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            if(radarChartInstance) radarChartInstance.destroy();
-            
-            radarChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Lethality', 'Endurance', 'Agility', 'Tactics', 'Perception'],
-                    datasets: [{ 
-                        data: [70, 60, 85, 90, 75], 
-                        backgroundColor: 'rgba(0, 242, 255, 0.2)', 
-                        borderColor: '#00f2ff', 
-                        pointBackgroundColor: '#bd00ff', 
-                        borderWidth: 2 
-                    }]
-                },
-                options: { 
-                    responsive: true, 
-                    scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false, max: 100 } } }, 
-                    plugins: { legend: { display: false } } 
-                }
-            });
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+
+            // Initialization Loader
+            const loader = document.getElementById('tournyx-loader');
+            if(loader) {
+                const lText = loader.querySelector('.loader-text');
+                if(lText) lText.innerText = "SYSTEM INITIALIZING...";
+                loader.style.display = 'flex';
+                loader.style.opacity = '1';
+                
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 400);
+
+                    document.getElementById('ultimateSystemModal').classList.add('active');
+                    
+                    // New Player State Check
+                    if (!user || user.wins === 0) {
+                        const modalP = document.getElementById('ultimateSystemModal').querySelector('p');
+                        if(modalP) modalP.innerText = "No Data Collected - Start Your Journey to Awaken the System.";
+                        return;
+                    }
+
+                    const ctx = document.getElementById('radarChart').getContext('2d');
+                    if(radarChartInstance) radarChartInstance.destroy();
+                    
+                    radarChartInstance = new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: ['Lethality', 'Endurance', 'Agility', 'Tactics', 'Perception'],
+                            datasets: [{ 
+                                data: [user.lethality || 70, user.endurance || 60, user.agility || 85, user.tactics || 90, user.perception || 75], 
+                                backgroundColor: 'rgba(0, 242, 255, 0.2)', 
+                                borderColor: '#00f2ff', 
+                                pointBackgroundColor: '#bd00ff', 
+                                borderWidth: 2 
+                            }]
+                        },
+                        options: { 
+                            responsive: true, 
+                            scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false, max: 100 } } }, 
+                            plugins: { legend: { display: false } } 
+                        }
+                    });
+                }, 1500);
+            }
         }
 
         function buildStreakTimeline(currentStreak) {
@@ -1764,11 +1794,35 @@
             }, 100);
         }
 
-        function claimDailyStreak() {
+        async function claimDailyStreak() {
             if(!checkAuth()) return;
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
             const btn = document.getElementById('btnClaimStreak');
+            
+            if (db) {
+                btn.innerText = "CLAIMING...";
+                try {
+                    let newStreak = (user.streak_count || 0) + 1;
+                    let reward = Math.min(newStreak * 50, 1000);
+                    const { error } = await db.from('Users').update({ 
+                        streak_count: newStreak, 
+                        points: (user.points || 0) + reward,
+                        last_claim_date: new Date().toISOString()
+                    }).eq('email', user.email);
+                    
+                    if (!error) {
+                        user.streak_count = newStreak;
+                        user.points = (user.points || 0) + reward;
+                        localStorage.setItem('tournyx_user', JSON.stringify(user));
+                        buildStreakTimeline(newStreak);
+                        syncLiveWalletPoints(user);
+                    }
+                } catch(e) { console.error(e); }
+            }
+            
+            if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
             btn.innerText = "CLAIMED"; btn.style.background = "#444"; btn.style.color = "white"; btn.style.borderColor = "#444"; btn.disabled = true;
-            showToast("Daily Points Claimed!");
+            showToast("Daily Points Claimed! Added to DB.");
             triggerConfetti(btn);
         }
 
@@ -1806,108 +1860,212 @@
         }
 
         // --- INFINITE SCROLL FEED FOR VIDEOS & REELS ---
-        let reelPage = 0; 
-        let hasMoreReels = true;
-        let isFetchingReels = false;
+        let feedPage = 0; 
+        let hasMoreFeed = true;
+        let isFetchingFeed = false;
 
         function initEndlessReels() {
             const observer = new IntersectionObserver((entries) => {
-                if(entries[0].isIntersecting && hasMoreReels && !isFetchingReels) {
+                if(entries[0].isIntersecting && hasMoreFeed && !isFetchingFeed) {
                     fetchClipsFeed();
                 }
-            }, { rootMargin: "200px" });
+            }, { rootMargin: "300px" });
             const feedLoader = document.getElementById('feedLoader');
             if (feedLoader) observer.observe(feedLoader);
         }
 
         async function fetchClipsFeed() {
-            if(isFetchingReels) return;
-            isFetchingReels = true;
-            const reelsContainer = document.getElementById('reelsContainer');
-            const trendingContainer = document.getElementById('trendingClipsContainer');
-            document.getElementById('feedLoader').style.display = 'block';
+            if(isFetchingFeed) return;
+            isFetchingFeed = true;
+            const container = document.getElementById('infiniteHighlightsContainer');
+            const feedLoader = document.getElementById('feedLoader');
+            const endFeed = document.getElementById('endOfFeed');
+            
+            if(feedLoader) feedLoader.style.display = 'flex';
             
             if(db) {
                 try {
-                    // Fetch both Reels and Videos from Supabase "Clips"
-                    const { data, error } = await db.from('Clips').select('*').range(reelPage * 4, (reelPage + 1) * 4 - 1);
+                    const { data, error } = await db.from('Highlights').select('*').range(feedPage * 5, (feedPage + 1) * 5 - 1);
                     if(data && data.length > 0) {
-                        if(reelPage === 0) { reelsContainer.innerHTML = ''; trendingContainer.innerHTML = ''; }
+                        if(feedPage === 0 && container) container.innerHTML = '';
                         
-                        let reels = data.filter(c => c.format === 'vertical' || !c.format);
-                        let videos = data.filter(c => c.format === 'horizontal');
+                        data.forEach(item => {
+                            if (item.type === 'reel' || item.format === 'vertical') {
+                                if(container) container.innerHTML += renderReelHTML(item);
+                            } else {
+                                if(container) container.innerHTML += renderTrendingClipHTML(item);
+                            }
+                        });
                         
-                        if(reels.length > 0) renderReels(reels, reelsContainer);
-                        if(videos.length > 0) renderTrendingClips(videos, trendingContainer);
-                        
-                        reelPage++;
-                    } else { hasMoreReels = false; }
-                } catch(e) { hasMoreReels = false; }
+                        feedPage++;
+                    } else { 
+                        hasMoreFeed = false; 
+                        if(endFeed) endFeed.style.display = 'block'; 
+                    }
+                } catch(e) { hasMoreFeed = false; if(endFeed) endFeed.style.display = 'block'; }
             } else {
                 // Mock Infinite Fetch
                 setTimeout(() => {
-                    if(reelPage < 3) { 
-                        let mockReels = [], mockVideos = [];
-                        for(let i=1; i<=2; i++) {
-                            mockReels.push({ id: `mock_r_${reelPage}_${i}`, creator: "Tournyx Hub", title: "Insane Clutch Play", views: 12, format: 'vertical' });
-                            mockVideos.push({ id: `mock_v_${reelPage}_${i}`, author: "Gamer X", title: "Tournament Grand Finals", views: 45, type: 'youtube' });
+                    if(feedPage < 3) { 
+                        if(feedPage === 0 && container) container.innerHTML = '';
+                        for(let i=1; i<=3; i++) {
+                            if(container) container.innerHTML += renderTrendingClipHTML({ id: `mock_v_${feedPage}_${i}`, author: "Tournyx Hub", title: "Insane Clutch Play", views: 12, type: 'youtube' });
                         }
-                        if(reelPage === 0) { reelsContainer.innerHTML = ''; trendingContainer.innerHTML = ''; }
-                        renderReels(mockReels, reelsContainer);
-                        renderTrendingClips(mockVideos, trendingContainer);
-                        reelPage++;
-                    } else { hasMoreReels = false; document.getElementById('feedLoader').innerHTML = 'End of Feed'; }
-                    document.getElementById('feedLoader').style.display = 'none';
-                    isFetchingReels = false;
+                        feedPage++;
+                    } else { 
+                        hasMoreFeed = false; 
+                        if(endFeed) endFeed.style.display = 'block'; 
+                    }
+                    if(feedLoader) feedLoader.style.display = 'none';
+                    isFetchingFeed = false;
                 }, 800);
                 return; 
             }
-            document.getElementById('feedLoader').style.display = 'none';
-            isFetchingReels = false;
+            if(feedLoader) feedLoader.style.display = 'none';
+            isFetchingFeed = false;
         }
 
-        function renderReels(data, container) {
-            data.forEach((vid) => {
-                container.innerHTML += `
-                    <div class="reel-card" style="animation:none;">
-                        <video class="reel-video" loop muted playsinline poster="${vid.thumbnail || 'https://via.placeholder.com/300x500/111/444?text=Reel'}">
-                            <source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4">
-                        </video>
-                        <div class="reel-overlay">
-                            <i class="fa-solid fa-ellipsis-vertical" style="color:white; align-self:flex-end;"></i>
-                            <i class="fa-solid fa-play reel-play-btn" onclick="this.style.display='none'; this.previousElementSibling.previousElementSibling.play();"></i>
-                            <div class="reel-bottom">
-                                <div class="reel-creator-name"><img src="${vid.avatar || 'https://ui-avatars.com/api/?name=T&background=bd00ff&color=fff'}">${vid.creator}</div>
-                                <div style="font-size:0.75rem; color:#ccc;">${vid.title}</div>
-                                <span style="font-size:0.65rem; color:var(--accent-cyan); font-weight:bold;">${vid.views}K Views</span>
-                            </div>
+        function renderReelHTML(vid) {
+            return `
+                <div class="reel-card" style="width: 100%; height: 350px; flex-shrink: 0; animation: none;">
+                    <video class="reel-video" loop muted playsinline poster="${vid.thumbnail || 'https://via.placeholder.com/400x500/111/444?text=Reel'}">
+                        <source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4">
+                    </video>
+                    <div class="reel-overlay">
+                        <i class="fa-solid fa-play reel-play-btn" onclick="this.style.display='none'; this.previousElementSibling.previousElementSibling.play();"></i>
+                        <div class="reel-bottom">
+                            <div class="reel-creator-name"><img src="${vid.avatar || 'https://ui-avatars.com/api/?name=T&background=bd00ff&color=fff'}">${vid.creator_name || vid.creator || 'Tournyx Hub'}</div>
+                            <div style="font-size:0.75rem; color:#ccc;">${vid.title || vid.description || 'Highlight Clip'}</div>
+                            <span style="font-size:0.65rem; color:var(--accent-cyan); font-weight:bold;">${vid.views || 0}K Views</span>
                         </div>
                     </div>
-                `;
-            });
+                </div>
+            `;
         }
-        
-        function renderTrendingClips(data, container) {
-            data.forEach(clip => {
-                let iconClass = clip.type && clip.type.toLowerCase() === 'instagram' ? 'fa-brands fa-instagram instagram' : 'fa-brands fa-youtube youtube';
-                container.innerHTML += `
-                    <a href="${clip.url || '#'}" target="_blank" class="video-card">
-                        <div class="vid-thumb">
-                            <img src="${clip.thumbnail || 'https://via.placeholder.com/120x75/222/555'}">
-                            <i class="fa-solid fa-circle-play vid-play"></i>
-                            <span class="vid-duration">HD</span>
+
+        function renderTrendingClipHTML(clip) {
+            return `
+                <a href="${clip.url || '#'}" target="_blank" class="video-card">
+                    <div class="vid-thumb">
+                        <img src="${clip.thumbnail || 'https://via.placeholder.com/120x75/222/555'}">
+                        <i class="fa-solid fa-circle-play vid-play"></i>
+                        <span class="vid-duration">HD</span>
+                    </div>
+                    <div class="vid-info">
+                        <i class="fa-brands fa-youtube vid-icon-tag youtube"></i>
+                        <div class="vid-text">
+                            <h4>${clip.title || clip.description || 'Pro Highlight'}</h4>
+                            <p>${clip.author || clip.creator_name || 'Gamer X'} • ${clip.views || 0} views</p>
                         </div>
-                        <div class="vid-info">
-                            <i class="${iconClass} vid-icon-tag"></i>
-                            <div class="vid-text">
-                                <h4>${clip.title}</h4>
-                                <p>${clip.author} • ${clip.views} views</p>
-                            </div>
-                        </div>
-                    </a>
-                `;
-            });
+                    </div>
+                </a>
+            `;
         }
+        // --- TOURNYX VISION AI (WEBRTC CAPTURE LOGIC) ---
+        let visionStream = null;
+        let visionInterval = null;
+        let currentAiTask = null;
+        let currentAiReward = 0;
+
+        function openVisionAIModal(taskName, reward) {
+            currentAiTask = taskName;
+            currentAiReward = reward;
+            document.getElementById('visionAIModal').classList.add('active');
+            document.getElementById('visionAIStatusText').innerText = `Task: ${taskName} (${reward} PTS)`;
+            document.getElementById('visionStartBtn').style.display = 'block';
+            document.getElementById('visionStartBtn').innerText = "INITIALIZE NEURAL LINK";
+            document.getElementById('visionAIScanLine').style.display = 'none';
+            document.getElementById('visionAIVideo').srcObject = null;
+        }
+
+        async function startVisionAI() {
+            if(!checkAuth()) return;
+            const btn = document.getElementById('visionStartBtn');
+            const status = document.getElementById('visionAIStatusText');
+            const video = document.getElementById('visionAIVideo');
+            const scanLine = document.getElementById('visionAIScanLine');
+            const chip = document.getElementById('aiChipIcon');
+
+            try {
+                btn.innerText = "AWAITING PERMISSION...";
+                // Request Screen Share
+                visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+                
+                video.srcObject = visionStream;
+                btn.style.display = 'none';
+                status.innerText = "LINK ESTABLISHED. SCANNING MATRIX...";
+                status.style.color = "var(--accent-cyan)";
+                scanLine.style.display = 'block';
+                chip.classList.add('fa-spin');
+                chip.style.color = "var(--accent-orange)";
+
+                // Simulate processing frames every 1.5s
+                let processingSteps = 0;
+                visionInterval = setInterval(async () => {
+                    processingSteps++;
+                    // In a real scenario, you'd draw the video to canvas and send to an AI endpoint here:
+                    /*
+                    const canvas = document.getElementById('visionAICanvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    let base64Frame = canvas.toDataURL('image/jpeg');
+                    let apiResult = await fetch('YOUR_AI_ENDPOINT', { method: 'POST', body: JSON.stringify({ image: base64Frame }) });
+                    */
+                    
+                    if(processingSteps >= 4) { // Simulate AI Success after ~6 seconds
+                        clearInterval(visionInterval);
+                        status.innerText = "AI VERIFICATION SUCCESSFUL! HEADSHOT DETECTED.";
+                        status.style.color = "var(--accent-green)";
+                        chip.classList.remove('fa-spin');
+                        chip.style.color = "var(--accent-green)";
+                        scanLine.style.display = 'none';
+                        
+                        // Stop stream
+                        if(visionStream) visionStream.getTracks().forEach(track => track.stop());
+                        
+                        // Update DB
+                        if(db) {
+                            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                            let newPts = (user.points || 0) + currentAiReward;
+                            await db.from('Match_Analytics').insert([{ user_email: user.email, task_verified: currentAiTask, points_awarded: currentAiReward }]);
+                            await db.from('Users').update({ points: newPts }).eq('email', user.email);
+                            user.points = newPts;
+                            localStorage.setItem('tournyx_user', JSON.stringify(user));
+                            syncLiveWalletPoints(user);
+                        }
+                        
+                        setTimeout(() => {
+                            showToast(`AI Verified: +${currentAiReward} PTS`);
+                            document.getElementById('visionAIModal').classList.remove('active');
+                        }, 2000);
+                    }
+                }, 1500);
+
+                // Handle manual stream stop by user
+                visionStream.getVideoTracks()[0].onended = () => {
+                    if(processingSteps < 4) {
+                        stopVisionAI();
+                        showToast("Neural Link Terminated early.", true);
+                    }
+                };
+
+            } catch(err) {
+                console.error("Screen capture error: ", err);
+                status.innerText = "PERMISSION DENIED OR FAILED.";
+                status.style.color = "var(--accent-red)";
+                btn.innerText = "RETRY NEURAL LINK";
+                if(visionStream) visionStream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function stopVisionAI() {
+            if(visionInterval) clearInterval(visionInterval);
+            if(visionStream) visionStream.getTracks().forEach(track => track.stop());
+            document.getElementById('aiChipIcon').classList.remove('fa-spin');
+            document.getElementById('visionAIScanLine').style.display = 'none';
+        }
+
     </script>
 </body>
 </html>
