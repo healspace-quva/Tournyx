@@ -26,24 +26,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Added Chart.js to prevent fatal engine crash -->
+    <!-- Chart.js for Matrix Map -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-            (function() {
-                try {
-                    if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
-                    const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
-                    let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
-                    if(THEMES[tIndex]) {
-                        document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
-                        document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
-                        document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
-                    }
-                    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-                    if (user && String(user.is_premium).toLowerCase() === 'true') { document.documentElement.classList.add('theme-vip'); }
-                } catch(e) {}
-            })();
+        (function() {
+            try {
+                if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
+                const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
+                let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
+                if(THEMES[tIndex]) {
+                    document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
+                    document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
+                    document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
+                }
+                let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                if (user && String(user.is_premium).toLowerCase() === 'true') { document.documentElement.classList.add('theme-vip'); }
+            } catch(e) {}
+        })();
     </script>
     <style>
         /* --- GLOBAL VARIABLES (THRYL DEEP BLACK THEME) --- */
@@ -72,16 +72,19 @@
             --glass-border: rgba(212, 175, 55, 0.4);
         }
         
-        * { -ms-overflow-style: none !important; scrollbar-width: none !important; box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        /* Hide global scrollbar but allow custom ones inside components */
+        ::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+        html, body { width: 100%; overflow-x: hidden; }
 
         body {
             background-color: var(--primary-bg); color: var(--text-main); font-family: var(--font-body);
-            overflow-x: hidden; padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
-            padding-top: calc(85px + env(safe-area-inset-top, 0px)); width: 100%;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
+            padding-top: calc(85px + env(safe-area-inset-top, 0px)); 
         }
 
-        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 18px; }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 18px; }
 
         /* --- DESKTOP PERFECT ALIGNMENT --- */
         .main-content-wrapper {
@@ -96,18 +99,21 @@
         @media (min-width: 1024px) {
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
             
+            /* Professional Left Sidebar fixed to the screen edge */
             .overlay-menu { 
                 display: flex !important; position: fixed; left: 0; top: 0; 
                 transform: none !important; width: 280px; height: 100vh; 
                 z-index: 3000; box-shadow: 5px 0 30px rgba(0,0,0,0.5); 
                 background: var(--secondary-bg); border-right: 1px solid var(--glass-border);
             }
+            /* Push the rest of the body smoothly to the right */
             body { padding-left: 280px; } 
             .top-header { left: 280px; width: calc(100% - 280px); }
             
-            .close-menu-btn, .menu-backdrop, .menu-btn { display: none !important; } /* Right menu hidden on PC */
+            /* Completely hide mobile menu toggles */
+            .close-menu-btn, .menu-backdrop, .menu-btn { display: none !important; } 
             
-            /* Professional Desktop Scrollbars for sliders */
+            /* Easy Desktop Sliders with custom scrollbars */
             .tourney-slider::-webkit-scrollbar, .reels-container::-webkit-scrollbar, .streak-bottom::-webkit-scrollbar { 
                 display: block !important; height: 8px !important; 
             }
@@ -121,12 +127,13 @@
         }
         
         @media (max-width: 1023px) { 
-            .desktop-sidebar { display: none !important; } 
-            .menu-btn { display: none !important; } /* Hidden on mobile as Dock has menu */
+            /* On mobile, Sidebar vanishes. Relies strictly on Bottom Sheet Menu */
+            .desktop-sidebar, .overlay-menu { display: none !important; } 
+            .menu-btn { display: none !important; } /* Hamburger hidden from header */
         }
         
         /* --- FLAWLESS MENISCUS DOCK UI (MEDIUM, ARTIFACT-FREE) --- */
-        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
+        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 380px; z-index: 9000; }
         .ios-dock { 
             background: rgba(21, 25, 35, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 20px; 
@@ -136,10 +143,19 @@
             border: 1px solid rgba(255,255,255,0.08);
         }
         
+        /* Magic Mask: Matches body bg to perfectly slice into the dock */
+        .dock-cutout {
+            position: absolute; top: -20px; 
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--primary-bg); 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1; pointer-events: none;
+        }
+        
+        /* The floating circle that holds the icon */
         .m-bead-wrapper {
-            position: absolute; top: -16px; 
-            width: 48px; height: 48px; border-radius: 50%;
-            background: transparent; 
+            position: absolute; top: -14px; 
+            width: 56px; height: 56px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10; pointer-events: none;
@@ -147,14 +163,14 @@
         .m-bead {
             width: 42px; height: 42px; border-radius: 50%;
             background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
-            color: #050608; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
+            color: #050608; font-size: 1.15rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
             transition: background 0.4s, box-shadow 0.4s;
         }
         .m-bead i { transition: opacity 0.2s, transform 0.2s; }
         
         .m-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-decoration: none; cursor: pointer; position: relative; }
         .m-icon { font-size: 1.2rem; color: #5a6b8c; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
-        .m-text { font-size: 0.6rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: 0.4s; pointer-events: none; }
+        .m-text { font-size: 0.6rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 5px; opacity: 0; transform: translateY(10px); transition: 0.4s; pointer-events: none; }
         
         .m-item.active .m-icon { opacity: 0; transform: translateY(20px); }
         .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
@@ -171,7 +187,7 @@
         .bs-item:active .bs-icon { transform: scale(0.9); background: var(--accent-cyan); color: #000; }
 
         /* --- THRYL ENGINE & STREAK --- */
-        .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;}
+        .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%; box-sizing: border-box; overflow: hidden;}
         @media(min-width: 768px) { .engine-container-row { flex-direction: row; align-items: stretch; } .engine-widget, .streak-widget-v2 { flex: 1; margin-bottom: 0 !important; min-width: 0; } }
         
         .engine-widget { padding: 20px; background: linear-gradient(180deg, var(--secondary-bg) 0%, #0d1017 100%); display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box;}
@@ -188,14 +204,14 @@
         .streak-left h1 { font-size: 3rem; font-family: var(--font-head); margin: 0; line-height: 1; z-index: 2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .streak-left p { font-size: 0.85rem; font-weight: bold; z-index: 2; text-align: center; margin-top: 5px;}
         .streak-left i { position: absolute; bottom: -15px; right: -15px; font-size: 5.5rem; opacity: 0.2; transform: rotate(-15deg);}
-        .streak-right { flex: 1; padding: 18px 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0;}
+        .streak-right { flex: 1; padding: 18px 15px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0; box-sizing: border-box;}
         .sr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .sr-texts h4 { color: white; font-family: var(--font-head); font-size: 1.1rem; margin-bottom: 4px; }
         .sr-texts p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
         .btn-claim-streak { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-family: var(--font-head); font-weight: bold; cursor: pointer; transition: 0.3s; flex-shrink: 0;}
         .btn-claim-streak:active { background: var(--accent-orange); border-color: var(--accent-orange); }
 
-        .streak-bottom { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 5px;}
+        .streak-bottom { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 5px; box-sizing: border-box;}
         .ts-timeline { display: flex; align-items: flex-start; position: relative; gap: 25px; min-width: max-content; padding: 10px 15px; }
         .ts-line-bg { position: absolute; top: 23px; left: 15px; right: 15px; height: 4px; background: rgba(255,255,255,0.05); border-radius:5px;}
         .ts-line-fill { position: absolute; top: 23px; left: 15px; height: 4px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
@@ -206,7 +222,7 @@
         .ts-val { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-align: center; }
 
         /* Reels specific */
-        .reels-container { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 20px; scroll-snap-type: x mandatory; scrollbar-width: none;}
+        .reels-container { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 20px; scroll-snap-type: x mandatory; scrollbar-width: none; width: 100%; box-sizing: border-box;}
         .reel-card { flex: 0 0 220px; height: 380px; scroll-snap-align: center; border-radius: 16px; background: #000; position: relative; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 8px 25px rgba(0,0,0,0.5);}
         .reel-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85;}
         .reel-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%, rgba(0,0,0,0.3) 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 15px; pointer-events: none; z-index: 2;}
@@ -225,7 +241,7 @@
         .skeleton { 
             background: linear-gradient(90deg, #151923 25%, #1f2533 50%, #151923 75%); 
             background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
-            border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); width: 100%;
         }
         @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
@@ -253,7 +269,7 @@
         @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
 
         /* --- HEADER & NAV --- */
-        .top-header { position: fixed; top: 0; left: 0; width: 100%; height: 65px; padding: 0 15px; background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; transition: 0.3s; }
+        .top-header { position: fixed; top: 0; left: 0; width: 100%; height: 65px; padding: 0 15px; background: rgba(11, 14, 20, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); display: flex; align-items: center; transition: 0.3s; box-sizing: border-box; }
         .header-wrapper { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px;}
         .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .app-logo { width: 30px; height: 30px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 15px var(--accent-purple); border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;}
@@ -291,7 +307,7 @@
         .quva-powered { margin-top: 20px; font-size: 0.8rem; color: #888; font-family: var(--font-head); letter-spacing: 1px; }
         .quva-powered span { color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
 
-        /* --- SMOOTH MENU --- */
+        /* --- DESKTOP SIDEBAR STYLES --- */
         .menu-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .menu-backdrop.active { opacity: 1; pointer-events: auto; }
         .overlay-menu { position: fixed; top: 0; right: 0; width: 100%; max-width: 320px; height: 100vh; background: rgba(21, 25, 35, 0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.1); z-index: 3000; padding: 45px 20px 25px; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.8); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -358,7 +374,7 @@
         .view-all { font-size: 0.85rem; color: var(--accent-cyan); text-decoration: none; font-family: var(--font-head); font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; padding-bottom:2px;}
         .view-all:active { color: white; text-shadow: 0 0 15px white; }
 
-        .tourney-slider { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 25px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .tourney-slider { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 25px; scroll-snap-type: x mandatory; scrollbar-width: none; width: 100%; box-sizing: border-box;}
         .tourney-card { flex: 0 0 88%; scroll-snap-align: center; overflow: hidden; transition: 0.4s; position: relative; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--secondary-bg);}
         @media(min-width:768px){ .tourney-card { flex: 0 0 320px; } }
         .tourney-card:hover, .tourney-card:active { border-color: var(--accent-cyan); transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0, 242, 255, 0.15); }
@@ -391,16 +407,16 @@
         .match-score span { font-size: 0.7rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; }
         .score-vs-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-head); font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.02); z-index: 1; pointer-events: none;}
         
-        .section-pad { padding: 0 15px 40px; position: relative; z-index: 2; }
+        .section-pad { padding: 0 15px 40px; position: relative; z-index: 2; width: 100%; box-sizing: border-box; }
         .section-title { text-align: left; font-family: var(--font-head); font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.1); font-weight:900; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;}
         .section-title span { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
 
-        .lb-tabs { display: flex; gap: 10px; margin-bottom: 25px; padding: 8px; border-radius: 15px; }
+        .lb-tabs { display: flex; gap: 10px; margin-bottom: 25px; padding: 8px; border-radius: 15px; width: 100%; box-sizing: border-box;}
         .lb-tab { flex: 1; text-align: center; padding: 12px; font-size: 0.85rem; color: var(--text-muted); border-radius: 10px; cursor: pointer; transition: 0.3s; font-family: var(--font-body); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .lb-tab.active { background: var(--accent-gradient); color: #fff; box-shadow: 0 0 20px rgba(189,0,255,0.4); }
 
-        .people-list { display: flex; flex-direction: column; gap: 12px; }
-        .person-row { display: flex; align-items: center; gap: 15px; padding: 15px; transition: 0.3s; position: relative; animation: slideInUp 0.5s ease backwards; background: var(--secondary-bg); border-radius: 16px;}
+        .people-list { display: flex; flex-direction: column; gap: 12px; width: 100%; box-sizing: border-box;}
+        .person-row { display: flex; align-items: center; gap: 15px; padding: 15px; transition: 0.3s; position: relative; animation: slideInUp 0.5s ease backwards; background: var(--secondary-bg); border-radius: 16px; width: 100%; box-sizing: border-box;}
         .person-row:nth-child(1) { animation-delay: 0.05s; } .person-row:nth-child(2) { animation-delay: 0.1s; } .person-row:nth-child(3) { animation-delay: 0.15s; }
         .person-row:active { border-color: var(--accent-cyan); transform: translateX(8px); box-shadow: 0 8px 25px rgba(0,242,255,0.15); }
         .person-img-small { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.2); z-index: 2; background:#000;}
@@ -463,8 +479,6 @@
         <div class="glow-orb g-cyan"></div>
     </div>
 
-    <div class="menu-backdrop" id="menuBackdrop" onclick="toggleMenu()"></div>
-
     <div class="auth-popup-overlay" id="authPopup" onclick="if(event.target === this) closeAuthPopup()">
         <div class="auth-popup-box glass-panel">
             <i class="fa-solid fa-xmark auth-close" onclick="closeAuthPopup()"></i>
@@ -502,7 +516,6 @@
                     <span class="wallet-divider">|</span> 
                     <span class="pass-text"><i class="fa-solid fa-ticket"></i> <span id="homePassBalance">0</span></span>
                 </a>
-                <i class="fa-solid fa-bars menu-btn" onclick="toggleMenu()"></i>
             </div>
         </div>
     </header>
@@ -518,7 +531,6 @@
 
     <!-- SIDEBAR FOR DESKTOP ONLY -->
     <div class="overlay-menu" id="overlayMenu">
-        <i class="fa-solid fa-xmark close-menu-btn" onclick="toggleMenu()"></i>
         <a href="profile.html" class="menu-user-info-link" onclick="return checkAuth(event)">
             <div class="menu-user-info" id="menuUserInfo">
                 <img src="https://via.placeholder.com/60" class="menu-user-img" id="menuUserImg">
@@ -649,7 +661,11 @@
                         </div>
                         <div class="streak-bottom">
                             <div class="ts-timeline" id="streakTimeline">
-                                <!-- 10 Nodes injected via JS. Clean spacing logic. -->
+                                <!-- Base HTML to prevent empty state layout shift -->
+                                <div class="ts-line-bg"></div>
+                                <div class="ts-node active"><div class="ts-circle" style="background:var(--accent-orange)"><i class="fa-solid fa-fire" style="color:white"></i></div></div>
+                                <div class="ts-node"><div class="ts-circle" style="border: 2px solid rgba(255,255,255,0.1)"></div></div>
+                                <div class="ts-node"><div class="ts-circle" style="border: 2px solid rgba(255,255,255,0.1)"></div></div>
                             </div>
                         </div>
                     </div>
@@ -855,6 +871,7 @@
     <!-- PERFECT MENISCUS DOCK UI (MEDIUM SIZE & NO ARTIFACTS) -->
     <div class="ios-dock-wrapper">
         <nav class="ios-dock" id="mobileDock">
+            <div class="dock-cutout" id="dockCutout"></div>
             <div class="m-bead-wrapper" id="beadWrapper">
                 <div class="m-bead" id="dockBead">
                     <i class="fa-solid fa-house" id="beadIcon"></i>
@@ -1070,7 +1087,7 @@
                     else document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">NO PRO MATCHES SCHEDULED</div>';
                 }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">UNABLE TO LOAD MATCHES</div>'; });
 
-                // 5. Scouting Data
+                // 5. Scouting Data (Mapping Users table to Scouting perfectly)
                 db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
                     if (!error && data && data.length > 0) renderScouting(data);
                     else document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted); font-family:var(--font-head);">NO SCOUTING PROFILES FOUND</div>';
@@ -1659,8 +1676,8 @@
             
             const center = (elRect.left - dockRect.left) + (elRect.width / 2);
             
-            // Cutout/Wrapper are 48px wide, so offset by 24px to properly center them
-            const offset = center - 24; 
+            // Cutout/Wrapper are 56px wide, so offset by 28px to properly center them
+            const offset = center - 28; 
             
             beadWrapper.style.transform = `translateX(${offset}px)`;
             cutout.style.transform = `translateX(${offset}px)`;
