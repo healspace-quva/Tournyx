@@ -78,7 +78,8 @@
         }
         
         body {
-            padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); 
+            /* Increased bottom padding to prevent dock overlapping content completely */
+            padding-bottom: calc(115px + env(safe-area-inset-bottom, 0px)); 
             padding-top: calc(85px + env(safe-area-inset-top, 0px));
         }
 
@@ -104,6 +105,7 @@
         
         @media (min-width: 1024px) {
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
+            #mobileMenuBtn { display: none !important; } /* Hidden on desktop */
             
             .overlay-menu { 
                 display: flex !important; position: fixed; left: 0; top: 0; 
@@ -113,6 +115,7 @@
             }
             body { padding-left: 280px; } 
             .top-header { left: 280px; width: calc(100% - 280px); }
+            .header-left { padding-left: 0; }
             
             .close-menu-btn, .menu-backdrop { display: none !important; }
             
@@ -131,39 +134,63 @@
         
         @media (max-width: 1023px) { .desktop-sidebar { display: none !important; } }
         
-        /* --- FLAWLESS MENISCUS DOCK UI (MEDIUM, ARTIFACT-FREE) --- */
-        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
+        /* --- FLAWLESS MENISCUS DOCK UI (THEMED & ANIMATED) --- */
+        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 420px; z-index: 9000; }
         .ios-dock { 
-            background: var(--secondary-bg); border-radius: 22px; 
+            background: var(--secondary-bg); border-radius: 25px; 
             display: flex; justify-content: space-around; align-items: center; 
-            height: 60px; padding: 0 10px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9); position: relative; 
-            border: 1px solid rgba(255,255,255,0.08);
+            height: 70px; padding: 0 10px; 
+            box-shadow: 0 15px 45px rgba(0,0,0,0.9); position: relative; 
+            border: 1px solid rgba(255,255,255,0.04); border-top: none;
         }
         
-        /* The magical gap ring that hides the border without CSS shadow artifacts */
+        /* The exact parametric meniscus curve utilizing CSS pseudo-elements */
         .m-bead-wrapper {
-            position: absolute; top: -18px; 
-            width: 50px; height: 50px; border-radius: 50%;
-            background: var(--primary-bg); /* Exact match to page bg creates the cutout */
+            position: absolute; top: -25px; left: 0; /* Left bound to slide with transform */
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--primary-bg);
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10; pointer-events: none;
         }
-        .m-bead {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
-            color: #000; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
-            transition: background 0.4s, box-shadow 0.4s;
+        /* The shoulders of the socket */
+        .m-bead-wrapper::before, .m-bead-wrapper::after {
+            content: ''; position: absolute; top: 25px; width: 20px; height: 20px;
+            background: transparent; pointer-events: none;
         }
+        .m-bead-wrapper::before { left: -20px; border-top-right-radius: 20px; box-shadow: 6px -6px 0 0 var(--primary-bg); }
+        .m-bead-wrapper::after { right: -20px; border-top-left-radius: 20px; box-shadow: -6px -6px 0 0 var(--primary-bg); }
+
+        .m-bead {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
+            color: #000; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(0,242,255,0.4);
+            transition: background 0.4s, box-shadow 0.4s; z-index: 11;
+        }
+        /* Depth Cutout inside bead */
+        .m-bead::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; box-shadow: inset 0 -3px 8px rgba(0,0,0,0.3); pointer-events: none; }
         .m-bead i { transition: opacity 0.2s, transform 0.2s; }
         
         .m-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-decoration: none; cursor: pointer; position: relative; }
-        .m-icon { font-size: 1.2rem; color: #5a6b8c; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
-        .m-text { font-size: 0.6rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(10px); transition: 0.4s; pointer-events: none; }
+        .m-icon { font-size: 1.3rem; color: #5a6b8c; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .m-text { font-size: 0.65rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 8px; opacity: 0; transform: translateY(15px); transition: 0.4s; pointer-events: none; }
         
         .m-item.active .m-icon { opacity: 0; transform: translateY(20px); }
         .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
+
+        /* --- SKELETON LOADER (UPGRADED FOR OLED BLACK) --- */
+        .skeleton { 
+            background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
+            background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.02);
+        }
+        @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- HEADER CRASH FIXES --- */
+        .slider-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; width: 100%; gap: 10px; }
+        .section-title { font-family: var(--font-head); font-size: 1.35rem; margin-bottom: 0; text-shadow: 0 0 15px rgba(255,255,255,0.1); font-weight:900; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px; line-height: 1.1;}
+        .section-title span { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
+        .view-all { font-size: 0.85rem; color: var(--accent-cyan); text-decoration: none; font-family: var(--font-head); font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; padding-bottom: 2px;}
 
         /* --- THRYL ENGINE & STREAK --- */
         .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;}
@@ -211,14 +238,6 @@
         .reel-creator-name { font-size: 0.85rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px;}
         .reel-creator-name img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;}
 
-        /* --- SKELETON LOADER --- */
-        .skeleton { 
-            background: linear-gradient(90deg, #151923 25%, #1f2533 50%, #151923 75%); 
-            background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
-            border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);
-        }
-        @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
         /* --- BG EFFECTS --- */
         .optimized-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: var(--primary-bg); pointer-events: none; overflow: hidden;}
         .grid-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-image: linear-gradient(rgba(0,242,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.02) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.8;}
@@ -250,6 +269,7 @@
         .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .app-logo { width: 30px; height: 30px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 15px var(--accent-purple); border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;}
         .app-title { font-family: var(--font-head); font-size: 0.85rem; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; white-space: normal; line-height: 1.2; word-wrap: break-word; max-width: 140px; }
+        .menu-btn { font-size: 1.25rem; color: white; cursor: pointer; transition: 0.3s; padding: 2px; flex-shrink: 0; display: none; margin-right: 8px; } /* Hidden by default for guests */
         
         .desktop-nav { display: none; align-items: center; gap: 20px; }
         .desktop-nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px;}
@@ -261,7 +281,6 @@
         .header-balance i { font-size: 0.8rem; color: var(--accent-orange); }
         .wallet-divider { opacity: 0.4; margin: 0 2px; }
         .pass-text { color: var(--accent-cyan); display:flex; align-items:center; gap:3px;}
-        .menu-btn { font-size: 1.25rem; color: white; cursor: pointer; transition: 0.3s; padding: 2px; flex-shrink: 0;}
 
         /* --- NOTIFICATION SLIDER --- */
         .notification-bar { width: 100%; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; overflow: hidden; display: flex; align-items: center; transform: translateZ(0); }
@@ -287,7 +306,7 @@
         /* --- SMOOTH MENU --- */
         .menu-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 2999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .menu-backdrop.active { opacity: 1; pointer-events: auto; }
-        .overlay-menu { position: fixed; top: 0; right: 0; width: 100%; max-width: 320px; height: 100vh; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.1); z-index: 3000; padding: 45px 20px 25px; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.9); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .overlay-menu { position: fixed; top: 0; left: 0; width: 100%; max-width: 320px; height: 100vh; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.1); z-index: 3000; padding: 45px 20px 25px; display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.9); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .overlay-menu.active { transform: translateX(0); }
         .close-menu-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #aaa; cursor: pointer; transition: 0.3s; z-index: 10; }
         .close-menu-btn:hover { color: white; transform: scale(1.1); }
@@ -346,10 +365,6 @@
         .player .role-v2-link { color: var(--accent-purple); }
         .organizer .role-v2-link { color: var(--accent-cyan); }
         .role-card-v2:hover .role-v2-link i { transform: translateX(5px); }
-
-        .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .view-all { font-size: 0.85rem; color: var(--accent-cyan); text-decoration: none; font-family: var(--font-head); font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; padding-bottom:2px;}
-        .view-all:active { color: white; text-shadow: 0 0 15px white; }
 
         .tourney-slider { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 25px; scroll-snap-type: x mandatory; scrollbar-width: none; }
         .tourney-card { flex: 0 0 88%; scroll-snap-align: center; overflow: hidden; transition: 0.4s; position: relative; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--secondary-bg);}
@@ -449,7 +464,7 @@
         .beta-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--accent-gradient); color: white; font-family: var(--font-head); font-weight: bold; font-size: 1rem; cursor: pointer; }
 
         /* Missing App Footer Styles */
-        .app-footer { padding: 40px 15px; background: #000; border-top: 1px solid var(--glass-border); margin-top: 40px; text-align: center; }
+        .app-footer { width: 100%; padding: 40px 15px 120px; background: #000; border-top: 1px solid var(--glass-border); margin-top: 40px; text-align: center; }
         .footer-about-box { padding: 20px; margin-bottom: 30px; text-align: left; cursor: pointer; transition: 0.3s; }
         .footer-about-box:hover { border-color: var(--accent-cyan); transform: translateY(-5px); }
         .about-title { color: white; font-family: var(--font-head); font-size: 1.2rem; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -488,9 +503,7 @@
         @keyframes popConfetti { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-50px) scale(1.5); opacity: 0; } }
 
         .section-pad { padding: 0 15px 40px; position: relative; z-index: 2; }
-        .section-title { text-align: left; font-family: var(--font-head); font-size: 1.4rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.1); font-weight:900; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;}
-        .section-title span { color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
-
+        
         .lb-tabs { display: flex; gap: 10px; margin-bottom: 25px; padding: 8px; border-radius: 15px; }
         .lb-tab { flex: 1; text-align: center; padding: 12px; font-size: 0.85rem; color: var(--text-muted); border-radius: 10px; cursor: pointer; transition: 0.3s; font-family: var(--font-body); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .lb-tab.active { background: var(--accent-gradient); color: #fff; box-shadow: 0 0 20px rgba(189,0,255,0.4); }
@@ -577,7 +590,9 @@
 
     <header class="top-header">
         <div class="header-wrapper">
+            <!-- Left Side Mobile Menu Adjusted Here -->
             <div class="header-left">
+                <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn" onclick="toggleMenu()"></i>
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" alt="Logo" class="app-logo">
                 <div class="app-title" id="welcomeText">TOURNYX</div>
             </div>
@@ -599,7 +614,6 @@
                     <span class="wallet-divider">|</span> 
                     <span class="pass-text"><i class="fa-solid fa-ticket"></i> <span id="homePassBalance">0</span></span>
                 </a>
-                <i class="fa-solid fa-bars menu-btn" onclick="toggleMenu()"></i>
             </div>
         </div>
     </header>
@@ -645,7 +659,6 @@
         </div>
     </div>
 
-    <!-- WRAPPER TO PREVENT SIDEBAR OVERLAP ON DESKTOP AND STOP OVERFLOW -->
     <main class="main-content-wrapper">
         <div class="next-match-card glass-panel fade-up visible" id="nextMatchWidget" style="cursor:pointer;" onclick="window.location.href='matches.html'; triggerHaptic();">
             <div class="nm-label"><i class="fa-solid fa-bolt"></i> Your Next Match</div>
@@ -794,7 +807,7 @@
                 <h2 class="section-title">Esports <span>Highlights</span></h2>
             </div>
             <div class="reels-container" id="reelsContainer">
-                <!-- Endless Reels Injected Here -->
+                <!-- Endless Reels Skeletons -->
                 <div class="reel-card skeleton" style="height: 380px;"></div>
                 <div class="reel-card skeleton" style="height: 380px;"></div>
                 <div class="reel-card skeleton" style="height: 380px;"></div>
@@ -803,7 +816,6 @@
             <div id="feedLoader" style="text-align:center; color:var(--accent-cyan); display:none; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Matrix...</div>
         </section>
         
-        <!-- Trending Clips Injector Fix -->
         <section class="section-pad fade-up" id="trendingClipsSection" style="display:none;">
              <div class="slider-header">
                 <h2 class="section-title">Trending <span>Clips</span></h2>
@@ -811,7 +823,6 @@
              <div id="trendingClipsContainer"></div>
         </section>
 
-        <!-- ULTIMATE SYSTEM POPUP MODULE -->
         <div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) document.getElementById('ultimateSystemModal').classList.remove('active')">
             <div class="auth-popup-box glass-panel" style="max-width: 450px;">
                 <i class="fa-solid fa-xmark auth-close" onclick="document.getElementById('ultimateSystemModal').classList.remove('active')"></i>
@@ -959,10 +970,9 @@
         #customToast.show { bottom: 100px; opacity: 1; pointer-events: auto; }
     </style>
 
-    <!-- PERFECT MENISCUS DOCK UI (MEDIUM SIZE & NO ARTIFACTS) -->
+    <!-- PERFECT MENISCUS DOCK UI (FLUID PARAMETRIC ANIMATION) -->
     <div class="ios-dock-wrapper">
         <nav class="ios-dock" id="mobileDock">
-            <div class="dock-cutout" id="dockCutout"></div>
             <div class="m-bead-wrapper" id="beadWrapper">
                 <div class="m-bead" id="dockBead">
                     <i class="fa-solid fa-house" id="beadIcon"></i>
@@ -1021,7 +1031,15 @@
         let animPaused = false;
         try { animPaused = localStorage.getItem('tournyx_psm') === 'true'; } catch(e) {}
 
-        // Toggle Bottom Sheet Fix
+        // Centralized Empty State UI Generator
+        function getEmptyState(icon, title, subtitle) {
+            return `<div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.05); grid-column: 1 / -1; margin-bottom: 20px;">
+                <i class="${icon}" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 15px; opacity: 0.4;"></i>
+                <h3 style="font-family: var(--font-head); color: white; margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase;">${title}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">${subtitle}</p>
+            </div>`;
+        }
+
         function toggleBottomSheet() {
             const menu = document.getElementById('bsMenu');
             const overlay = document.getElementById('bsOverlay');
@@ -1029,7 +1047,6 @@
             if(overlay) overlay.classList.toggle('active');
         }
 
-        // --- UNIVERSAL PUSH ENGINE ---
         async function sendTournyxPush(targetEmail, title, message) {
             try {
                 await fetch(CLOUDFLARE_WORKER_URL, {
@@ -1040,7 +1057,6 @@
             } catch (e) {}
         }
 
-        // --- SECURE POST FETCHER LOGIC (SUPABASE WRAPPER) ---
         async function secureFetch(payload) {
             try {
                 if (['update_wallet', 'claim_quest_cloud'].includes(payload.action)) {
@@ -1091,7 +1107,6 @@
             } catch (error) { return { status: 'error', message: error.message }; }
         }
 
-        // --- AUTH CHECKER FOR GUESTS ---
         function checkAuth(e) {
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(err){}
@@ -1104,7 +1119,6 @@
         }
         function closeAuthPopup() { document.getElementById('authPopup').classList.remove('active'); }
 
-        // --- LAUNCH CELEBRATION (BETA BANNER) ---
         function closeBetaBanner() {
             document.getElementById('betaOverlay').classList.remove('active');
             try { localStorage.setItem('tournyx_beta_seen', 'true'); } catch(e){}
@@ -1139,6 +1153,11 @@
                 document.getElementById('welcomeText').innerText = (user.username || user.ign || "Player");
                 document.getElementById('menuUserName').innerHTML = (user.username || "Player") + vipBadge;
                 document.getElementById('menuUserImg').src = user.avatar || "https://via.placeholder.com/60";
+                
+                // Unlock Hamburger Menu for Logged Users
+                const mobMenu = document.getElementById('mobileMenuBtn');
+                if(mobMenu) mobMenu.style.display = 'block';
+
                 fetchNextMatch(user);
                 syncLiveWalletPoints(user); 
             } else {
@@ -1146,61 +1165,57 @@
                 document.getElementById('menuUserName').innerText = "Guest Player";
                 document.getElementById('homeWalletBalance').innerText = "0";
                 document.getElementById('homePassBalance').innerText = "0";
+                
+                // Hide Hamburger Menu for Guests
+                const mobMenu = document.getElementById('mobileMenuBtn');
+                if(mobMenu) mobMenu.style.display = 'none';
             }
 
             loadLiveBackendData();
             initScrollAnimations(); 
             if(!animPaused) typeWriterEffect();
 
-            // SET INITIAL MENISCUS
             setTimeout(() => {
                 const firstBtn = document.querySelector('.m-item.active');
                 if(firstBtn) moveBead(0, firstBtn, 'fa-solid fa-house', 'var(--accent-cyan)');
             }, 100);
         });
 
-        // --- MASTER BACKEND FETCH COORDINATOR ---
         function loadLiveBackendData() {
-            // 1. Tournaments
             secureFetch({ action: 'get_tournaments' }).then(res => {
                 if (res.status === "success" && res.data && res.data.length > 0) {
                     renderFeaturedTournaments(res.data);
                     loadLiveTournamentsSlider(res.data);
                 } else {
-                    document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No tournaments available right now.</div>';
+                    document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Campaigns Running', 'We are preparing new tournaments for you.');
                 }
-            }).catch(() => { document.getElementById('featuredSlider').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load tournaments.</div>'; });
+            }).catch(() => { document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); });
             
             if (db) {
-                // 2. Flash Drops
                 db.from('Drops').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderFlashDrops(data);
                     else document.getElementById('flashDropsSection').style.display = 'none';
                 }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; });
 
-                // 3. Trending Clips
                 db.from('Clips').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderTrendingClips(data);
                 }).catch(()=>{});
 
-                // 4. Pro Matches
                 db.from('ProMatches').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderProMatches(data);
-                    else document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No pro matches scheduled.</div>';
-                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load matches.</div>'; });
+                    else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
+                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); });
 
-                // 5. Scouting Data
                 db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
                     if (!error && data && data.length > 0) renderScouting(data);
-                    else document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">No scouting profiles found.</div>';
-                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">Unable to load scouting data.</div>'; });
+                    else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
+                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); });
             } else {
                 document.getElementById('flashDropsSection').style.display = 'none';
-                document.getElementById('proMatchesContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
-                document.getElementById('scoutingContainer').innerHTML = '<div style="width:100%; text-align:center; padding:20px; color:var(--text-muted);">System offline.</div>';
+                document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
+                document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
             }
 
-            // 6. Quests & Leaderboard
             loadQuestsFromSheets(); 
             loadLeaderboard(); 
         }
@@ -1214,7 +1229,6 @@
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         }
 
-        // --- 3. ANIMATIONS & EFFECTS ---
         const words = ["Compete globally.", "Organize seamlessly.", "Earn real rewards securely.", "Join the revolution."];
         let i = 0; let timer;
         function typeWriterEffect() {
@@ -1268,7 +1282,6 @@
             document.querySelectorAll('.fade-up').forEach((el) => { observer.observe(el); });
         }
 
-        // --- 4. DATA FORMATTERS ---
         function formatDateTime(dateStr) {
             if (!dateStr || dateStr === "TBD") return "TBA";
             try {
@@ -1329,7 +1342,6 @@
             } catch(e) {}
         }
 
-        // --- 5. LIVE RENDERERS ---
         function renderFeaturedTournaments(featuredArray) {
             const slider = document.getElementById('featuredSlider');
             slider.innerHTML = "";
@@ -1496,7 +1508,6 @@
             });
         }
 
-        // --- 6. USER, WALLET & LOGOUT ---
         function syncLiveWalletPoints(user) {
             const balanceDisplay = document.getElementById('homeWalletBalance');
             const passDisplay = document.getElementById('homePassBalance');
@@ -1544,10 +1555,10 @@
                     currentDynamicQuests = data; 
                     renderQuests(); 
                 } else {
-                    document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding: 20px;">No daily quests active right now. Check back later!</div>';
+                    document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
                 }
             }).catch(e => {
-                document.getElementById('dynamicQuestsWrapper').innerHTML = '<div style="text-align:center; color:var(--text-muted); padding: 20px;">Unable to fetch quests.</div>';
+                document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to fetch daily tasks.');
             });
         }
 
@@ -1596,7 +1607,6 @@
             let btn = document.querySelector(`#${questId} .quest-btn`);
             if(btn) { btn.innerText = "CLAIMED"; btn.style.borderColor = "rgba(255,255,255,0.1)"; btn.style.color = "var(--accent-green)"; btn.classList.add("claimed"); btn.onclick = null; triggerConfetti(btn); }
 
-            // Sync to cloud securely
             secureFetch({ action: "claim_quest_cloud", email: user.email, quest_id: questId, points: rewardPts }).catch(()=>{});
             secureFetch({ action: "update_wallet", email: user.email, points: user.points }).catch(()=>{});
         }
@@ -1608,7 +1618,6 @@
             tabElement.classList.add('active');
         }
 
-        // --- 8. LEADERBOARD FETCH LOGIC ---
         async function loadLeaderboard() {
             try {
                 const apiRes = await secureFetch({ action: 'get_community_leaderboard', t: new Date().getTime() });
@@ -1633,12 +1642,7 @@
             const container = document.getElementById(containerId);
             
             if (!list || list.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px dashed rgba(255,255,255,0.1); width: 100%;">
-                        <i class="fa-solid fa-ghost" style="font-size:3rem; color:var(--text-muted); margin-bottom:15px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));"></i>
-                        <h3 style="font-family:var(--font-head); color:#888;">No Legends Yet</h3>
-                        <p style="color:var(--text-muted); font-size:0.9rem;">Data will sync automatically when available.</p>
-                    </div>`;
+                container.innerHTML = getEmptyState('fa-solid fa-ghost', 'No Legends Yet', 'Data will sync automatically when available.');
                 return;
             }
 
@@ -1670,7 +1674,6 @@
             container.innerHTML = html;
         }
         
-        // --- 9. TOURNYX ENGINE, MENISCUS DOCK & REELS LOGIC ---
         let radarChartInstance = null;
 
         function loadTournyxEngine() {
@@ -1751,11 +1754,11 @@
             triggerConfetti(btn);
         }
 
+        // --- FLUID MENISCUS DOCK LOGIC ---
         function moveBead(index, el, iconClass, color) {
             const dock = document.getElementById('mobileDock');
             const beadWrapper = document.getElementById('beadWrapper');
             const bead = document.getElementById('dockBead');
-            const cutout = document.getElementById('dockCutout');
             const beadIcon = document.getElementById('beadIcon');
             
             if(!dock || !bead || !el) return;
@@ -1763,11 +1766,11 @@
             const dockRect = dock.getBoundingClientRect();
             const elRect = el.getBoundingClientRect();
             
+            // Calculate absolute center of the icon relative to dock, then subtract half of wrapper width (30px)
             const center = (elRect.left - dockRect.left) + (elRect.width / 2);
-            const offset = center - 25; 
+            const offset = center - 30; 
             
             beadWrapper.style.transform = `translateX(${offset}px)`;
-            if(cutout) cutout.style.transform = `translateX(${offset}px)`;
             
             bead.style.background = color;
             bead.style.boxShadow = `0 5px 15px ${color}80`;
@@ -1822,7 +1825,7 @@
                             return;
                         }
                     } else if (loadedReelIds.size === 0) {
-                        container.innerHTML = `<div style="width:100%; text-align:center; padding:30px; color:var(--text-muted); font-family:var(--font-head);">NO HIGHLIGHTS FOUND</div>`;
+                        container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'No Highlights Found', 'Check back later for epic moments.');
                         hasMoreReels = false;
                     } else { hasMoreReels = false; }
                 } catch(e) { hasMoreReels = false; }
@@ -1835,7 +1838,7 @@
                         renderReels(mockData, container);
                         reelPage++;
                     } else if (loadedReelIds.size === 0) {
-                        container.innerHTML = `<div style="width:100%; text-align:center; padding:30px; color:var(--text-muted); font-family:var(--font-head);">NO HIGHLIGHTS FOUND</div>`;
+                        container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'No Highlights Found', 'Check back later for epic moments.');
                         hasMoreReels = false;
                     } else { hasMoreReels = false; }
                     document.getElementById('feedLoader').style.display = 'none';
@@ -1875,11 +1878,6 @@
             if(video.paused) { video.play(); btn.style.opacity = '0'; } 
             else { video.pause(); btn.style.opacity = '1'; }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTournyxEngine();
-            initEndlessReels();
-        });
 
     </script>
 
