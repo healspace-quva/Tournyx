@@ -152,9 +152,8 @@
         .top-action-btn { width: 35px; height: 35px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; position: relative;}
         .top-action-btn:hover { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
         .top-action-btn .badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-family: var(--font-body); font-weight: bold; border: 2px solid var(--primary-bg);}
-        @media (max-width: 1023px) { 
-          
-            /* --- Desktop Sidebar Setup (Overflow & UI Fixed) --- */
+        
+        /* --- Desktop Sidebar Setup (Overflow & UI Fixed) --- */
         .desktop-sidebar { display: none; position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); z-index: 3000; padding: 20px 15px; box-shadow: 5px 0 30px rgba(0,0,0,0.8); overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
         .desktop-sidebar::-webkit-scrollbar { display: none; }
         .desk-menu-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); color: var(--text-main); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; text-decoration: none; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; border: 1px solid transparent; margin-bottom: 8px;}
@@ -1001,7 +1000,7 @@
                 <div class="scout-card skeleton" style="min-width: 300px; height: 100px;"></div>
             </div>
         </section>
-       
+        
         <section class="section-pad fade-up">
             <h2 class="section-title" style="justify-content: center;">Community <span>Leaderboard</span></h2>
             <div class="lb-tabs glass-panel">
@@ -1158,14 +1157,6 @@
         try {
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) { console.error("Supabase not initialized"); }
-
-        function getEmptyState(icon, title, desc) {
-            return `<div style="text-align:center; padding: 40px 20px; background:var(--secondary-bg); border:1px dashed var(--glass-border); border-radius: 16px; margin-bottom:15px; width:100%;">
-                <i class="${icon}" style="font-size:3rem; color:var(--text-muted); margin-bottom:15px; opacity:0.5;"></i>
-                <h3 style="font-family:var(--font-head); color:white; margin-bottom:5px;">${title}</h3>
-                <p style="color:var(--text-muted); font-size:0.85rem;">${desc}</p>
-            </div>`;
-        }
 
         // Supabase Fetch Integration
         async function secureFetch(params) {
@@ -1777,7 +1768,7 @@
             container.innerHTML = html;
         }
         
-function getEmptyState(icon, title, desc) {
+        function getEmptyState(icon, title, desc) {
             return `<div class="empty-state-box">
                 <i class="${icon}"></i>
                 <h3>${title}</h3>
@@ -1804,10 +1795,10 @@ function getEmptyState(icon, title, desc) {
             if(!user || !user.email) {
                 authView.style.display = 'none';
                 newPlayerView.style.display = 'none';
-                guestView.style.display = 'flex';
+                if(guestView) guestView.style.display = 'flex';
                 buildStreakTimeline(0); 
             } else {
-                guestView.style.display = 'none';
+                if(guestView) guestView.style.display = 'none';
                 let matchesPlayed = parseInt(user.matches) || 0;
                 let wins = parseInt(user.wins) || 0;
                 
@@ -1912,33 +1903,6 @@ function getEmptyState(icon, title, desc) {
             triggerConfetti(btn);
         }
 
-        function moveBead(index, el, iconClass, color) {
-            const dock = document.getElementById('mobileDock');
-            const beadWrapper = document.getElementById('beadWrapper');
-            const bead = document.getElementById('dockBead');
-            const beadIcon = document.getElementById('beadIcon');
-            
-            if(!dock || !bead || !el || !beadWrapper) return;
-            const center = (el.getBoundingClientRect().left - dock.getBoundingClientRect().left) + (el.getBoundingClientRect().width / 2);
-            const offset = center - 33; 
-            
-            beadWrapper.style.transform = `translateX(${offset}px)`;
-            bead.style.background = color;
-            bead.style.boxShadow = `0 5px 20px ${color}80`;
-            
-            beadIcon.style.opacity = 0;
-            beadIcon.style.transform = "scale(0.5)";
-            setTimeout(() => {
-                beadIcon.className = iconClass;
-                beadIcon.style.opacity = 1;
-                beadIcon.style.transform = "scale(1)";
-            }, 150);
-            
-            document.querySelectorAll('.m-item').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            el.style.setProperty('--active-color', color);
-        }
-
         let feedPage = 0; 
         let hasMoreFeed = true;
         let isFetchingFeed = false;
@@ -2021,11 +1985,6 @@ function getEmptyState(icon, title, desc) {
                 </div></div>`;
         }
 
-        
-
-       
-
-
         // --- FLUID MENISCUS DOCK LOGIC ---
         function moveBead(index, el, iconClass, color) {
             const dock = document.getElementById('mobileDock');
@@ -2059,9 +2018,6 @@ function getEmptyState(icon, title, desc) {
             el.style.setProperty('--active-color', color);
         }
 
-       
-       
-       
         // --- TOURNYX VISION AI (WEBRTC CAPTURE LOGIC) ---
         let visionStream = null;
         let visionInterval = null;
@@ -2104,15 +2060,6 @@ function getEmptyState(icon, title, desc) {
                 let processingSteps = 0;
                 visionInterval = setInterval(async () => {
                     processingSteps++;
-                    // In a real scenario, you'd draw the video to canvas and send to an AI endpoint here:
-                    /*
-                    const canvas = document.getElementById('visionAICanvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    let base64Frame = canvas.toDataURL('image/jpeg');
-                    let apiResult = await fetch('YOUR_AI_ENDPOINT', { method: 'POST', body: JSON.stringify({ image: base64Frame }) });
-                    */
                     
                     if(processingSteps >= 4) { // Simulate AI Success after ~6 seconds
                         clearInterval(visionInterval);
