@@ -112,7 +112,7 @@
         }
         
         @media (min-width: 1024px) {
-            .ios-dock-wrapper, .bottom-nav { display: none !important; } 
+            .glass-nav-wrapper, .bottom-nav { display: none !important; } 
             #mobileMenuBtn { display: none !important; } 
             
             .overlay-menu { 
@@ -201,46 +201,35 @@
         .logout-link i { color: #ff4d4d !important; text-shadow: none !important;}
         .logout-link:hover { background: rgba(255, 77, 77, 0.15) !important; border-color: #ff4d4d !important; box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3) !important; transform: translateX(0) scale(0.98) !important;}
 
-        /* --- FLAWLESS LIQUID MENISCUS DOCK --- */
-        .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 96%; max-width: 450px; z-index: 9000; }
-        .ios-dock { 
-            background: rgba(12, 12, 16, 0.95); backdrop-filter: blur(20px); border-radius: 25px; 
-            display: flex; justify-content: space-around; align-items: center; 
-            height: 70px; padding: 0 5px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; 
-            border: 1px solid rgba(255,255,255,0.05); border-top: none;
+        /* --- PREMIUM GLASSMORPHIC BOTTOM NAV (NEW) --- */
+        .glass-nav-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 96%; max-width: 400px; z-index: 9000; }
+        .glass-nav { 
+            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 35px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            height: 65px; padding: 0 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); 
         }
-        .m-bead-wrapper {
-            position: absolute; top: -28px; left: 0; 
-            width: 70px; height: 70px; border-radius: 50%;
-            background: transparent; display: flex; justify-content: center; align-items: center;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 10; pointer-events: none;
+        .g-item { 
+            flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: #5a6b8c; text-decoration: none; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
-        .m-bead-wrapper::before {
-            content: ''; position: absolute; top: 28px; left: -24px; width: 24px; height: 24px;
-            background: transparent; border-top-right-radius: 20px; box-shadow: 6px -6px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
+        .g-icon { font-size: 1.3rem; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .g-text { 
+            font-size: 0.65rem; font-family: var(--font-head); font-weight: bold; margin-top: 4px; opacity: 0; 
+            transform: translateY(10px) scale(0.8); transition: 0.4s; position: absolute; bottom: 8px; 
+            color: var(--active-color, var(--accent-cyan)); text-transform: uppercase;
         }
-        .m-bead-wrapper::after {
-            content: ''; position: absolute; top: 28px; right: -24px; width: 24px; height: 24px;
-            background: transparent; border-top-left-radius: 20px; box-shadow: -6px -6px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
+        .g-item.active { color: var(--active-color, var(--accent-cyan)); }
+        .g-item.active .g-icon { transform: translateY(-12px); filter: drop-shadow(0 0 10px var(--active-color, var(--accent-cyan))); color: var(--active-color, var(--accent-cyan)); }
+        .g-item.active .g-text { opacity: 1; transform: translateY(0) scale(1); }
+        .g-action-plus { 
+            width: 55px; height: 55px; background: var(--accent-gradient); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; color: white; font-size: 1.6rem; 
+            transform: translateY(-15px); border: 4px solid var(--primary-bg); box-shadow: 0 5px 15px rgba(0,242,255,0.4); flex-shrink: 0;
+            transition: 0.3s;
         }
-        .m-bead-ring { position: absolute; inset: 2px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.4); animation: rotateRing 4s linear infinite; pointer-events: none; z-index: 10;}
-        @keyframes rotateRing { 100% { transform: rotate(360deg); } }
-        
-        .m-bead {
-            width: 54px; height: 54px; border-radius: 50%; background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
-            color: #000; font-size: 1.3rem; box-shadow: 0 0 20px rgba(0,242,255,0.6);
-            transition: background 0.4s, box-shadow 0.4s; z-index: 11; border: 4px solid var(--primary-bg); position: relative; overflow: hidden;
-        }
-        .m-bead::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%); pointer-events: none; }
-        .m-bead i { transition: opacity 0.2s, transform 0.2s; }
-        
-        .m-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-decoration: none; cursor: pointer; position: relative; }
-        .m-icon { font-size: 1.3rem; color: #5a6b8c; transition: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
-        .m-text { font-size: 0.65rem; color: var(--accent-cyan); font-family: var(--font-head); font-weight: bold; position: absolute; bottom: 6px; opacity: 0; transform: translateY(15px); transition: 0.4s; pointer-events: none; text-transform: uppercase;}
-        .m-item.active .m-icon { opacity: 0; transform: translateY(25px); }
-        .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--active-color, var(--accent-cyan)); }
-        .m-item.action-plus .m-icon { font-size: 1.6rem; color: var(--text-main); transform: translateY(-10px); }
+        .g-action-plus:hover { transform: translateY(-18px) scale(1.05); box-shadow: 0 8px 25px rgba(0,242,255,0.6); }
 
         /* --- SKELETON LOADER --- */
         .skeleton { 
@@ -745,7 +734,7 @@
             </nav>
 
             <div class="header-right">
-                <div class="top-action-btn" onclick="window.location.href='explore.html'"><i class="fa-solid fa-search"></i></div>
+                <div class="top-action-btn" onclick="window.location.href='explore.html'"><i class="fa-solid fa-magnifying-glass"></i></div>
                 <div class="currency-pill diamond" onclick="if(checkAuth(event)) window.location.href='tickets.html'">
                     <i class="fa-solid fa-ticket" style="color: #00f2ff; filter: drop-shadow(0 0 8px rgba(0,242,255,0.6)); font-size: 0.9rem;"></i> 
                     <span id="homePassBalance" style="font-family: var(--font-head); font-weight: 800; font-size: 0.85rem; color: #fff;">0</span>
@@ -1112,33 +1101,23 @@
         #customToast.show { bottom: 120px; opacity: 1; pointer-events: auto; }
     </style>
 
-    <!-- PERFECT MENISCUS DOCK UI (FLUID PARAMETRIC ANIMATION) - MOBILE ONLY -->
-    <div class="ios-dock-wrapper">
-       <nav class="ios-dock" id="mobileDock">
-            <div class="m-bead-wrapper" id="beadWrapper">
-                <div class="m-bead-ring"></div>
-                <div class="m-bead" id="dockBead">
-                    <i class="fa-solid fa-house" id="beadIcon"></i>
-                </div>
-            </div>
-            
-            <a href="home.html" class="m-item active" onclick="moveBead(0, this, 'fa-solid fa-house', 'var(--accent-cyan)');">
-                <i class="fa-solid fa-house m-icon"></i><span class="m-text">Home</span>
+    <!-- PREMIUM GLASSMORPHIC BOTTOM NAV -->
+    <div class="glass-nav-wrapper">
+       <nav class="glass-nav">
+            <a href="home.html" class="g-item active" onclick="switchNav(this, 'var(--accent-cyan)');">
+                <i class="fa-solid fa-house g-icon"></i><span class="g-text">Home</span>
             </a>
-            <a href="explore.html" class="m-item" onclick="moveBead(1, this, 'fa-solid fa-compass', 'var(--accent-purple)');">
-                <i class="fa-solid fa-compass m-icon"></i><span class="m-text">Explore</span>
+            <a href="explore.html" class="g-item" onclick="switchNav(this, 'var(--accent-purple)');">
+                <i class="fa-solid fa-compass g-icon"></i><span class="g-text">Explore</span>
             </a>
-            <a href="matches.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(2, this, 'fa-solid fa-trophy', 'var(--accent-orange)'); }">
-                <i class="fa-solid fa-trophy m-icon"></i><span class="m-text">Matches</span>
+            <a href="tournament.html" class="g-item g-action-plus" onclick="if(checkAuth(event)) window.location.href='tournament.html'">
+                <i class="fa-solid fa-plus"></i>
             </a>
-            <a href="tournament.html" class="m-item action-plus" onclick="if(checkAuth(event)){ moveBead(3, this, 'fa-solid fa-plus', 'var(--accent-green)'); }">
-                <i class="fa-solid fa-plus m-icon" style="font-size:1.8rem; transform:translateY(-8px); filter:drop-shadow(0 0 5px rgba(255,255,255,0.3));"></i>
+            <a href="tickets.html" class="g-item" onclick="if(checkAuth(event)){ switchNav(this, 'var(--accent-cyan)'); }">
+                <i class="fa-solid fa-ticket g-icon"></i><span class="g-text">Tickets</span>
             </a>
-            <a href="tickets.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(4, this, 'fa-solid fa-ticket', 'var(--accent-cyan)'); }">
-                <i class="fa-solid fa-ticket m-icon"></i><span class="m-text">Tickets</span>
-            </a>
-            <a href="javascript:void(0)" class="m-item" onclick="moveBead(5, this, 'fa-solid fa-bars', '#fff'); toggleBottomSheet();">
-                <i class="fa-solid fa-bars m-icon"></i><span class="m-text">Menu</span>
+            <a href="javascript:void(0)" class="g-item" onclick="switchNav(this, '#fff'); toggleBottomSheet();">
+                <i class="fa-solid fa-bars g-icon"></i><span class="g-text">Menu</span>
             </a>
         </nav>
     </div>
@@ -1277,11 +1256,6 @@
             initScrollAnimations(); 
             initEndlessReels();
             if(!animPaused) typeWriterEffect();
-
-            setTimeout(() => {
-                const firstBtn = document.querySelector('.m-item.active');
-                if(firstBtn) moveBead(0, firstBtn, 'fa-solid fa-house', 'var(--accent-cyan)');
-            }, 100);
         });
 
         function loadLiveBackendData() {
@@ -1751,6 +1725,13 @@
                     <i class="fa-solid fa-play" onclick="this.style.display='none'; this.previousElementSibling.play();" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; color:rgba(255,255,255,0.8); pointer-events:auto; cursor:pointer;"></i>
                     <div style="margin-top:auto;"><div style="font-size:0.9rem; font-weight:bold; color:white;"><img src="https://ui-avatars.com/api/?name=V&background=ff6a00&color=fff" style="width:25px; border-radius:50%; margin-right:8px; vertical-align:middle;">${vid.creator || 'VOD Channel'}</div><div style="font-size:0.8rem; color:#ccc; margin-top:5px;">${vid.title || 'Recap'}</div><span style="font-size:0.7rem; color:var(--accent-orange); font-weight:bold;">${vid.views || 0}K Views</span></div>
                 </div></div>`;
+        }
+
+        function switchNav(el, color) {
+            document.querySelectorAll('.g-item').forEach(b => b.classList.remove('active'));
+            if(el.classList.contains('g-action-plus')) return; // keep center un-highlighted by default styles
+            el.classList.add('active');
+            el.style.setProperty('--active-color', color);
         }
 
         // --- CLOUD-SYNCED DAILY QUESTS ---
