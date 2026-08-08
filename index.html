@@ -148,11 +148,19 @@
             }
             .tourney-slider, .reels-container, .streak-bottom { scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2) !important; padding-bottom: 20px;}
         }
-        
+        .top-action-bar { display: flex; align-items: center; gap: 12px; }
+        .top-action-btn { width: 35px; height: 35px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; position: relative;}
+        .top-action-btn:hover { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .top-action-btn .badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-family: var(--font-body); font-weight: bold; border: 2px solid var(--primary-bg);}
         @media (max-width: 1023px) { 
-            .desktop-sidebar { display: none !important; } 
-            .overlay-menu { display: none !important; } /* Hidden entirely on mobile, using bottom sheet */
-        }
+          
+            /* --- Desktop Sidebar Setup (Overflow & UI Fixed) --- */
+        .desktop-sidebar { display: none; position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); z-index: 3000; padding: 20px 15px; box-shadow: 5px 0 30px rgba(0,0,0,0.8); overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+        .desktop-sidebar::-webkit-scrollbar { display: none; }
+        .desk-menu-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); color: var(--text-main); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; text-decoration: none; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; border: 1px solid transparent; margin-bottom: 8px;}
+        .desk-menu-link i { width: 25px; text-align: center; font-size: 1.1rem; transition: 0.3s; }
+        .desk-menu-link:hover { background: rgba(0,242,255,0.05); border-color: rgba(0,242,255,0.2); transform: translateX(5px); color: var(--accent-cyan);}
+        .desk-menu-link:hover i { transform: scale(1.1); filter: drop-shadow(0 0 8px currentColor); }
         
         /* --- FLAWLESS LIQUID MENISCUS DOCK --- */
         .ios-dock-wrapper { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 96%; max-width: 450px; z-index: 9000; }
@@ -164,28 +172,38 @@
             border: 1px solid rgba(255,255,255,0.05); border-top: none;
         }
         
+        /* --- UPGRADED MENISCUS DOCK WITH GLOW RING --- */
         .m-bead-wrapper {
-            position: absolute; top: -25px; left: 0; 
-            width: 66px; height: 66px; border-radius: 50%;
+            position: absolute; top: -28px; left: 0; 
+            width: 70px; height: 70px; border-radius: 50%;
             background: transparent;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 10; pointer-events: none;
         }
         .m-bead-wrapper::before {
-            content: ''; position: absolute; top: 25px; left: -22px; width: 22px; height: 22px;
-            background: transparent; border-top-right-radius: 20px; box-shadow: 5px -5px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
+            content: ''; position: absolute; top: 28px; left: -24px; width: 24px; height: 24px;
+            background: transparent; border-top-right-radius: 20px; box-shadow: 6px -6px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
         }
         .m-bead-wrapper::after {
-            content: ''; position: absolute; top: 25px; right: -22px; width: 22px; height: 22px;
-            background: transparent; border-top-left-radius: 20px; box-shadow: -5px -5px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
+            content: ''; position: absolute; top: 28px; right: -24px; width: 24px; height: 24px;
+            background: transparent; border-top-left-radius: 20px; box-shadow: -6px -6px 0 0 rgba(12, 12, 16, 0.95); pointer-events: none;
         }
+        /* Outer Glowing Ring */
+        .m-bead-ring {
+            position: absolute; inset: 2px; border-radius: 50%;
+            border: 2px dashed rgba(255,255,255,0.4); animation: rotateRing 4s linear infinite; pointer-events: none; z-index: 10;
+        }
+        @keyframes rotateRing { 100% { transform: rotate(360deg); } }
+        
         .m-bead {
-            width: 52px; height: 52px; border-radius: 50%;
+            width: 54px; height: 54px; border-radius: 50%;
             background: var(--accent-cyan); display: flex; justify-content: center; align-items: center;
-            color: #000; font-size: 1.3rem; box-shadow: 0 5px 20px rgba(0,242,255,0.5);
+            color: #000; font-size: 1.3rem; box-shadow: 0 0 20px rgba(0,242,255,0.6);
             transition: background 0.4s, box-shadow 0.4s; z-index: 11; border: 4px solid var(--primary-bg);
+            position: relative; overflow: hidden;
         }
+        .m-bead::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%); pointer-events: none; }
         .m-bead i { transition: opacity 0.2s, transform 0.2s; }
         
         .m-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-decoration: none; cursor: pointer; position: relative; }
@@ -256,6 +274,8 @@
         .ts-line-fill { position: absolute; top: 25px; left: 15px; height: 6px; background: var(--accent-orange); transition: width 1.5s var(--transition-smooth); width: 0%; border-radius:5px; box-shadow: 0 0 10px var(--accent-orange); z-index: 1;}
         .ts-node { display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 2;}
         .ts-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: transparent; transition: 0.4s;}
+        /* Fixed Streak Node Visuals */
+        .ts-node.claimed { opacity: 0.5; filter: grayscale(100%); }
         .ts-node.claimed .ts-circle { background: #111; border-color: #333; color: #555; }
         .ts-node.active .ts-circle { background: rgba(255,102,0,0.2); border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 0 20px rgba(255,102,0,0.6); transform: scale(1.15); }
         .ts-val { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-align: center; }
@@ -632,17 +652,19 @@
             </div>
         </a>
         <div class="menu-links">
-            <a href="premium.html"><i class="fa-solid fa-crown"></i> Premium Plans</a>
-            <a href="settings.html" onclick="return checkAuth(event)"><i class="fa-solid fa-id-card-clip"></i> Game Profiles</a>
-            <a href="clans.html" onclick="return checkAuth(event)"><i class="fa-solid fa-globe"></i> Community</a>
-            <a href="leaderboard.html" onclick="return checkAuth(event)"><i class="fa-solid fa-trophy"></i> Leaderboard</a>
-            <a href="giveaway.html"><i class="fa-solid fa-gift"></i> Giveaways</a>
-            <a href="offer.html" onclick="return checkAuth(event)"><i class="fa-solid fa-bullhorn"></i> Offers Wall</a>
-            <a href="explore.html"><i class="fa-solid fa-magnifying-glass-location"></i> All Tournaments</a>
-            <a href="refer.html" onclick="return checkAuth(event)"><i class="fa-solid fa-handshake-angle"></i> Refer & Earn</a>
-            <a href="support.html"><i class="fa-solid fa-headset"></i> Help & Support</a>
-            <a href="settings.html" onclick="return checkAuth(event)"><i class="fa-solid fa-sliders"></i> Settings</a>
-            <a href="#" onclick="logoutUser()" class="logout-link"><i class="fa-solid fa-power-off"></i> Logout</a>
+            <nav style="display:flex; flex-direction:column;">
+            <a href="premium.html" class="desk-menu-link"><i class="fa-solid fa-crown" style="color:#FFD700;"></i> Premium Plans</a>
+            <a href="settings.html" class="desk-menu-link"><i class="fa-solid fa-id-card-clip" style="color:var(--accent-cyan);"></i> Game Profiles</a>
+            <a href="clans.html" class="desk-menu-link"><i class="fa-solid fa-shield-cat" style="color:var(--accent-purple);"></i> Clans & Guilds</a>
+            <a href="leaderboard.html" class="desk-menu-link"><i class="fa-solid fa-trophy" style="color:var(--accent-orange);"></i> Leaderboards</a>
+            <a href="giveaway.html" class="desk-menu-link"><i class="fa-solid fa-gift" style="color:var(--accent-green);"></i> Flash Drops</a>
+            <a href="offer.html" class="desk-menu-link"><i class="fa-solid fa-bullhorn" style="color:#FFD700;"></i> Offer Wall</a>
+            <a href="explore.html" class="desk-menu-link"><i class="fa-solid fa-magnifying-glass-location" style="color:var(--accent-cyan);"></i> Tournaments</a>
+            <a href="refer.html" class="desk-menu-link"><i class="fa-solid fa-handshake-angle" style="color:var(--accent-purple);"></i> Refer & Earn</a>
+            <a href="support.html" class="desk-menu-link"><i class="fa-solid fa-headset" style="color:var(--accent-orange);"></i> Support</a>
+            <a href="settings.html" class="desk-menu-link"><i class="fa-solid fa-gear" style="color:var(--text-muted);"></i> Settings</a>
+            <a href="#" onclick="logoutUser()" class="desk-menu-link" style="background:rgba(255,77,77,0.05); color:#ff4d4d; border-color:rgba(255,77,77,0.2); margin-top:15px;"><i class="fa-solid fa-power-off" style="color:#ff4d4d;"></i> Disconnect</a>
+        </nav>
             
             <div style="margin-top: 25px; text-align: center; color: #555; font-size: 0.75rem; font-family: var(--font-head); letter-spacing: 2px;">
                 APP VERSION 3.0.0<br>
@@ -664,11 +686,12 @@
         </div>
     </div>
 
-    <header class="top-header">
+   <header class="top-header">
         <div class="header-wrapper">
             <div class="header-left">
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" alt="Logo" class="app-logo">
-                <div class="app-title" id="welcomeText">TOURNYX</div>
+                <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn" onclick="toggleMenu()"></i>
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="app-logo">
+                <div class="app-title">TOURNYX</div>
             </div>
             
             <nav class="desktop-nav">
@@ -678,22 +701,28 @@
                 <a href="clans.html" onclick="return checkAuth(event)"><i class="fa-solid fa-shield-halved"></i> Clan</a>
             </nav>
 
-<div class="header-right">
-                <div class="top-nav-icon" onclick="if(checkAuth(event)) window.location.href='notifications.html'" style="position:relative; margin-right:5px;">
-                    <i class="fa-regular fa-bell" style="font-size: 1.3rem; color: white;"></i>
-                    <div style="position: absolute; top: -4px; right: -6px; background: var(--accent-purple); color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 10px; font-weight: bold;">2</div>
+            <div class="header-right">
+                <!-- Utility Icons -->
+                <div class="top-action-bar">
+                    <div class="top-action-btn" onclick="window.location.href='explore.html'"><i class="fa-solid fa-search"></i></div>
+                    <div class="top-action-btn" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift" style="color: var(--accent-orange);"></i></div>
+                    <div class="top-action-btn" onclick="window.location.href='notifications.html'">
+                        <i class="fa-solid fa-bell"></i><div class="badge">2</div>
+                    </div>
                 </div>
-                <!-- Diamond Pill -->
-                <div onclick="if(checkAuth(event)) window.location.href='tickets.html'" style="background: #151923; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
-                    <i class="fa-solid fa-gem" style="color: #00f2ff; filter: drop-shadow(0 0 8px rgba(0,242,255,0.6)); font-size: 0.9rem;"></i> 
-                    <span id="homePassBalance" style="font-family: var(--font-head); font-weight: 800; font-size: 0.85rem; color: #fff;">0</span><span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">+</span>
+
+                <!-- Ticket Pill -->
+                <div class="currency-pill diamond" onclick="if(checkAuth(event)) window.location.href='tickets.html'">
+                    <i class="fa-solid fa-ticket" style="color: #00f2ff; filter: drop-shadow(0 0 8px rgba(0,242,255,0.6)); font-size: 0.9rem;"></i> 
+                    <span id="homePassBalance" style="font-family: var(--font-head); font-weight: 800; font-size: 0.85rem; color: #fff;">0</span>
                 </div>
                 <!-- Coin Pill -->
-                <div onclick="if(checkAuth(event)) window.location.href='wallet.html'" style="background: #151923; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                <div class="currency-pill coin" onclick="if(checkAuth(event)) window.location.href='reedem.html'">
                     <i class="fa-solid fa-coins" style="color: #FFD700; filter: drop-shadow(0 0 8px rgba(255,215,0,0.6)); font-size: 0.9rem;"></i> 
-                    <span id="homeWalletBalance" style="font-family: var(--font-head); font-weight: 800; font-size: 0.85rem; color: #fff;">0</span><span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">+</span>
+                    <span id="homeWalletBalance" style="font-family: var(--font-head); font-weight: 800; font-size: 0.85rem; color: #fff;">0</span>
                 </div>
             </div>
+        </div>
     </header>
 
     <div class="notification-bar fade-up visible">
@@ -886,42 +915,35 @@
             </div>
         </section>
 
-        <!-- ENGINE MODAL (Upgraded AI Analysis Panel - No Radar) -->
+      <!-- ENGINE MODAL (Clean UI - Ready for Modules) -->
     <div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) document.getElementById('ultimateSystemModal').classList.remove('active')">
-        <div class="auth-popup-box glass-panel" style="max-width: 480px; text-align: left; padding: 20px;">
+        <div class="auth-popup-box glass-panel" style="max-width: 500px; text-align: left; padding: 25px;">
             <i class="fa-solid fa-xmark auth-close" onclick="document.getElementById('ultimateSystemModal').classList.remove('active')"></i>
             
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
                 <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(0,242,255,0.1); border: 2px solid var(--accent-cyan); display: flex; justify-content: center; align-items: center; font-size: 2rem; color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.4);"><i class="fa-solid fa-microchip"></i></div>
                 <div>
-                    <h2 style="font-family:var(--font-head); color:white; margin:0; text-transform:uppercase; font-size:1.3rem;">System Analysis</h2>
-                    <p style="font-size: 0.8rem; color: var(--accent-cyan); margin:0; font-weight:bold;">Synchronization Complete</p>
+                    <h2 style="font-family:var(--font-head); color:white; margin:0; text-transform:uppercase; font-size:1.4rem;">Tournyx Engine</h2>
+                    <p style="font-size: 0.85rem; color: var(--accent-cyan); margin:0; font-weight:bold;">Synchronization Complete</p>
                 </div>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 25px;">
                 <div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-crosshairs" style="color:var(--accent-green)"></i> Combat Skill</span><span>91%</span></div>
-                    <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:91%; height:100%; background:var(--accent-green); box-shadow:0 0 10px var(--accent-green);"></div></div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-crosshairs" style="color:var(--accent-green)"></i> Combat Skill</span><span>91%</span></div>
+                    <div style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:91%; height:100%; background:var(--accent-green); box-shadow:0 0 10px var(--accent-green);"></div></div>
                 </div>
                 <div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> Reaction Time</span><span>87%</span></div>
-                    <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:87%; height:100%; background:var(--accent-cyan); box-shadow:0 0 10px var(--accent-cyan);"></div></div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> Reaction Time</span><span>87%</span></div>
+                    <div style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:87%; height:100%; background:var(--accent-cyan); box-shadow:0 0 10px var(--accent-cyan);"></div></div>
                 </div>
                 <div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-brain" style="color:var(--accent-purple)"></i> Strategy</span><span>95%</span></div>
-                    <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:95%; height:100%; background:var(--accent-purple); box-shadow:0 0 10px var(--accent-purple);"></div></div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:bold; color:white; margin-bottom:5px;"><span><i class="fa-solid fa-brain" style="color:var(--accent-purple)"></i> Strategy</span><span>95%</span></div>
+                    <div style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:5px; overflow:hidden;"><div style="width:95%; height:100%; background:var(--accent-purple); box-shadow:0 0 10px var(--accent-purple);"></div></div>
                 </div>
             </div>
-
-            <div style="background: rgba(0,242,255,0.05); border: 1px solid rgba(0,242,255,0.2); border-radius: 12px; padding: 15px;">
-                <h4 style="font-family:var(--font-head); color:var(--accent-cyan); font-size:0.9rem; margin-bottom:8px;">AI REPORT</h4>
-                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4; margin:0;">
-                    You perform better in Squad mode.<br>
-                    <span style="color:var(--accent-orange); font-weight:bold;">Weakest Area:</span> Close Combat<br>
-                    <span style="color:white; font-weight:bold;">Recommendation:</span> Practice TDM today to increase accuracy.
-                </p>
-            </div>
+            
+            <button class="auth-btn" style="margin-top:20px;" onclick="document.getElementById('ultimateSystemModal').classList.remove('active')">CLOSE SYSTEM</button>
         </div>
     </div>
 
@@ -1083,27 +1105,28 @@
 
     <!-- PERFECT MENISCUS DOCK UI (FLUID PARAMETRIC ANIMATION) - MOBILE ONLY -->
     <div class="ios-dock-wrapper">
-        <nav class="ios-dock" id="mobileDock">
+       <nav class="ios-dock" id="mobileDock">
             <div class="m-bead-wrapper" id="beadWrapper">
+                <div class="m-bead-ring"></div>
                 <div class="m-bead" id="dockBead">
                     <i class="fa-solid fa-house" id="beadIcon"></i>
                 </div>
             </div>
             
-           <a href="home.html" class="m-item active" onclick="moveBead(0, this, 'fa-solid fa-house', 'var(--accent-cyan)');">
+            <a href="home.html" class="m-item active" onclick="moveBead(0, this, 'fa-solid fa-house', 'var(--accent-cyan)');">
                 <i class="fa-solid fa-house m-icon"></i><span class="m-text">Home</span>
             </a>
             <a href="explore.html" class="m-item" onclick="moveBead(1, this, 'fa-solid fa-compass', 'var(--accent-purple)');">
                 <i class="fa-solid fa-compass m-icon"></i><span class="m-text">Explore</span>
             </a>
-            <a href="tournament.html" class="m-item action-plus" onclick="if(checkAuth(event)){ moveBead(2, this, 'fa-solid fa-plus', 'var(--accent-green)'); }">
-                <i class="fa-solid fa-plus m-icon"></i>
-            </a>
-            <a href="matches.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(3, this, 'fa-solid fa-trophy', 'var(--accent-orange)'); }">
+            <a href="matches.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(2, this, 'fa-solid fa-trophy', 'var(--accent-orange)'); }">
                 <i class="fa-solid fa-trophy m-icon"></i><span class="m-text">Matches</span>
             </a>
-            <a href="tickets.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(4, this, 'fa-solid fa-gem', 'var(--accent-cyan)'); }">
-                <i class="fa-solid fa-gem m-icon"></i><span class="m-text">Passes</span>
+            <a href="tournament.html" class="m-item action-plus" onclick="if(checkAuth(event)){ moveBead(3, this, 'fa-solid fa-plus', 'var(--accent-green)'); }">
+                <i class="fa-solid fa-plus m-icon" style="font-size:1.8rem; transform:translateY(-8px); filter:drop-shadow(0 0 5px rgba(255,255,255,0.3));"></i>
+            </a>
+            <a href="tickets.html" class="m-item" onclick="if(checkAuth(event)){ moveBead(4, this, 'fa-solid fa-ticket', 'var(--accent-cyan)'); }">
+                <i class="fa-solid fa-ticket m-icon"></i><span class="m-text">Tickets</span>
             </a>
             <a href="javascript:void(0)" class="m-item" onclick="moveBead(5, this, 'fa-solid fa-bars', '#fff'); toggleBottomSheet();">
                 <i class="fa-solid fa-bars m-icon"></i><span class="m-text">Menu</span>
@@ -1129,8 +1152,8 @@
 
     <script>
         // Supabase Initialization Placeholder
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         let db = null;
         try {
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1764,7 +1787,11 @@ function getEmptyState(icon, title, desc) {
 
         // Removed Canvas logic, instant open
         function openSystemPopup() {
+            // Instantly open the modal without loading screen or radar chart logic
             document.getElementById('ultimateSystemModal').classList.add('active');
+            
+            let btn = document.querySelector('.btn-pulse-system');
+            if(btn) triggerConfetti(btn);
         }
 
         function loadTournyxEngine() {
@@ -1799,7 +1826,7 @@ function getEmptyState(icon, title, desc) {
             }
         }
 
-        function buildStreakTimeline(currentStreak) {
+       function buildStreakTimeline(currentStreak) {
             document.getElementById('streakCountMain').innerText = currentStreak;
             const timeline = document.getElementById('streakTimeline');
             timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
@@ -1817,13 +1844,26 @@ function getEmptyState(icon, title, desc) {
                 `);
             }
             
+            // Real-Time 24 Hour Lock Logic
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            if(user && user.last_claim_date) {
-                let lastClaim = new Date(user.last_claim_date).toDateString();
-                let today = new Date().toDateString();
-                if(lastClaim === today) {
-                    const btn = document.getElementById('btnClaimStreak');
-                    if(btn) { btn.innerText = "CLAIMED"; btn.classList.add('claimed'); btn.disabled = true; }
+            const btn = document.getElementById('btnClaimStreak');
+            if(user && user.last_claim_date && btn) {
+                let lastClaim = new Date(user.last_claim_date);
+                let today = new Date();
+                
+                // If claimed today, lock it.
+                if(lastClaim.toDateString() === today.toDateString()) {
+                    btn.innerText = "CLAIMED TODAY"; 
+                    btn.classList.add('claimed'); 
+                    btn.disabled = true;
+                } else {
+                    // Check if streak is broken (more than 48 hours passed)
+                    let diffTime = Math.abs(today - lastClaim);
+                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    if(diffDays > 1) {
+                        currentStreak = 0; // Reset streak
+                        document.getElementById('streakCountMain').innerText = "0";
+                    }
                 }
             }
 
@@ -1838,14 +1878,24 @@ function getEmptyState(icon, title, desc) {
             let newStreak = (user.streak_count || 0) + 1;
             let reward = Math.min(newStreak * 50, 1000);
 
-            btn.innerText = "CLAIMING...";
+            btn.innerText = "SYNCING...";
             
+            // LIVE SUPABASE DATABASE SAVE
             if (db) {
                 try {
-                    await db.from('Users').update({ streak_count: newStreak, points: (user.points || 0) + reward, last_claim_date: new Date().toISOString() }).eq('email', user.email);
-                } catch(e) {}
+                    const { error } = await db.from('Users').update({ 
+                        streak_count: newStreak, 
+                        points: (user.points || 0) + reward,
+                        last_claim_date: new Date().toISOString()
+                    }).eq('email', user.email);
+                    
+                    if (error) throw error;
+                } catch(e) { 
+                    console.error("DB Sync failed"); 
+                }
             }
             
+            // Instantly update UI and Local Storage
             user.streak_count = newStreak;
             user.points = (user.points || 0) + reward;
             user.last_claim_date = new Date().toISOString();
@@ -1855,8 +1905,10 @@ function getEmptyState(icon, title, desc) {
             syncLiveWalletPoints(user);
             
             if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-            btn.innerText = "CLAIMED"; btn.classList.add('claimed'); btn.disabled = true;
-            showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved!`);
+            btn.innerText = "CLAIMED TODAY"; 
+            btn.classList.add('claimed'); 
+            btn.disabled = true;
+            showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
             triggerConfetti(btn);
         }
 
