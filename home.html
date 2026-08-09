@@ -119,21 +119,38 @@
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
             #mobileMenuBtn { display: none !important; } 
             
-            /* Hide sidebar by default for desktop guests */
-            .overlay-menu { 
-                display: none; position: fixed; left: 0; top: 0; 
-                transform: none !important; width: 260px; height: 100vh; 
-                z-index: 3000; box-shadow: 5px 0 30px rgba(0,0,0,0.5); 
-                background: var(--secondary-bg); border-right: 1px solid var(--glass-border);
-                overflow-y: auto; overflow-x: hidden;
-            }
-            body.has-sidebar { padding-left: 260px; } 
-            body.has-sidebar .overlay-menu { display: flex !important; flex-direction: column; }
+            /* --- 1. RESIZED DESKTOP MENU & ADAPTABLE LAYOUT --- */
+@media (min-width: 1024px) {
+    .overlay-menu { width: 220px !important; } /* Shrunk from 260px */
+    body.has-sidebar { padding-left: 220px !important; }
+    body.has-sidebar .top-header { left: 220px !important; width: calc(100% - 220px) !important; }
+    .desk-menu-link { padding: 10px 15px !important; font-size: 0.75rem !important; margin-bottom: 5px !important; }
+    .main-content-wrapper { max-width: 1200px !important; } /* Adaptive wider layout */
+}
+
+/* Forcefully hide sidebar hamburger on mobile */
+@media (max-width: 1023px) {
+    #mobileMenuBtn { display: none !important; }
+}
             
-            /* Fix Header Alignment */
-            .top-header { width: 100%; display: flex; justify-content: center; }
-            body.has-sidebar .top-header { left: 260px; width: calc(100% - 260px); }
-            .header-wrapper { max-width: 1100px; }
+          /* --- 2. MOBILE HEADER OVERFLOW FIX (2-Tier Layout) --- */
+.top-header { height: auto; min-height: 65px; padding: 10px 15px; display: flex; flex-direction: column; justify-content: center; }
+.header-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.mobile-sub-header { display: none; width: 100%; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+@media (max-width: 1023px) {
+    .header-right { display: none !important; } /* Hide bundled desktop right-side */
+    .mobile-sub-header { display: flex; } /* Show clean mobile row */
+}
+
+.util-icons-group { display: flex; gap: 15px; align-items: center; }
+.util-icon { font-size: 1.2rem; color: var(--text-main); position: relative; cursor: pointer; transition: 0.3s; }
+.util-icon:hover { color: var(--accent-cyan); filter: drop-shadow(0 0 5px var(--accent-cyan)); }
+.util-badge { position: absolute; top: -6px; right: -8px; background: var(--accent-purple); color: white; font-size: 0.55rem; padding: 2px 5px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; }
+
+/* Organizer Dual Wallet Pill */
+.dual-wallet-pill { display: flex; align-items: center; background: rgba(10,10,12,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 10px; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.8rem; font-weight: bold; }
+.dw-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
             .header-left { padding-left: 0; }
             
             .close-menu-btn, .menu-backdrop { display: none !important; }
@@ -227,10 +244,22 @@
         .btn-pulse-system { padding: 14px; font-size:0.9rem; background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); border-radius: 12px; color: var(--accent-cyan); font-family: var(--font-head); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; animation: heartbeat 2s infinite; text-shadow: 0 0 10px rgba(0,242,255,0.5);}
         .btn-pulse-system:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 30px rgba(0,242,255,0.6); animation: none; transform: scale(1.02);}
         @keyframes heartbeat { 0% { transform: scale(1); box-shadow: 0 0 10px rgba(0,242,255,0.2); } 15% { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,242,255,0.5); } 30% { transform: scale(1); box-shadow: 0 0 10px rgba(0,242,255,0.2); } 100% { transform: scale(1); } }
-        
+
+        /* --- 5. SEARCH FULLSCREEN OVERLAY --- */
+.search-fs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; opacity: 0; transition: 0.3s; }
+.search-fs-overlay.active { display: flex; opacity: 1; }
+.search-header-bar { display: flex; align-items: center; gap: 15px; padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.search-header-bar i { font-size: 1.5rem; color: white; cursor: pointer; }
+.search-input-box { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 10px 15px; color: white; font-family: var(--font-head); font-size: 1rem; outline: none; }
+.search-results-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.search-item { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; }
+.search-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+.search-item-info { display: flex; flex-direction: column; }
+.search-item-title { font-family: var(--font-head); color: white; font-size: 0.95rem; }
+.search-item-type { font-size: 0.75rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: bold; }
         /* OVERHAULED 20 DAY STREAK */
-        .streak-widget-v2 { display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; background: var(--panel-bg); padding: 0; align-items: stretch; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); width: 100%; box-sizing: border-box;}
-        @media(min-width: 500px) { .streak-widget-v2 { flex-direction: row; min-height: 180px; } }
+        .streak-widget-v2 { width: 100%; min-height: 200px; margin-bottom: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+@media(max-width: 768px) { .streak-widget-v2 { min-height: 240px; } .streak-left h1 { font-size: 4rem; } }
         .streak-left { background: linear-gradient(180deg, #ff8c00, #ff3300); padding: 20px 15px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; position: relative; overflow: hidden;}
         .streak-left h1 { font-size: 3rem; font-family: var(--font-head); margin: 0; line-height: 1; z-index: 2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         .streak-left p { font-size: 0.85rem; font-weight: bold; z-index: 2; text-align: center; margin-top: 5px;}
@@ -520,33 +549,27 @@
         .footer-made-with { margin-top: 10px; font-weight: bold; }
 
         /* --- ENGINE MODAL HUD STYLES --- */
-.engine-modal-box {
-    width: 95%; max-width: 900px; height: 85vh; max-height: 550px;
-    background: #08080a; border: 1px solid var(--accent-purple);
-    box-shadow: 0 0 35px rgba(189, 0, 255, 0.3); border-radius: 20px;
-    display: flex; flex-direction: column; overflow: hidden; padding: 0;
-}
+/* --- 3. TOURNYX ENGINE V2 (Exact Match) --- */
+.engine-widget-v2 { background: #0c0814; border: 1px solid #bd00ff; border-radius: 20px; padding: 20px; box-shadow: 0 0 30px rgba(189,0,255,0.15); width: 100%; margin-bottom: 25px; position: relative; overflow: hidden; }
+.ew2-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 15px; }
+.ew2-title { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-status { font-size: 0.65rem; color: var(--accent-green); font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-body { display: flex; justify-content: space-between; align-items: center; }
+.ew2-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+.ew2-stat { display: flex; flex-direction: column; gap: 4px; }
+.ew2-stat span { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-stat b.cyan { color: var(--accent-cyan); font-size: 1.4rem; font-family: var(--font-head); }
+.ew2-stat b.gold { color: #FFD700; font-size: 1.2rem; font-family: var(--font-head); display: flex; align-items: center; gap: 5px; }
+.ew2-stat b.purple { color: var(--accent-purple); font-size: 1.2rem; font-family: var(--font-head); }
+.ew2-stat b.white { color: white; font-size: 1.2rem; font-family: var(--font-head); }
 
-.engine-modal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 15px 20px; background: #0c0c10; border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.em-header-left { display: flex; align-items: center; gap: 10px; }
-.em-chip-icon { font-size: 1.5rem; color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
-.em-header-left h2 { font-family: var(--font-head); font-size: 1.1rem; color: white; margin: 0; letter-spacing: 1px; }
+.ew2-open-btn { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: transparent; color: var(--accent-cyan); display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; box-shadow: 0 0 20px rgba(0,242,255,0.4), inset 0 0 15px rgba(0,242,255,0.2); cursor: pointer; transition: 0.3s; margin-left: 15px; flex-shrink: 0; }
+.ew2-open-btn:hover { background: rgba(0,242,255,0.1); transform: scale(1.05); }
 
-.em-user-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 5px 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08); }
-.em-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--accent-cyan); }
-.em-user-info { display: flex; flex-direction: column; font-size: 0.75rem; }
-.em-username { font-family: var(--font-head); font-weight: bold; color: white; }
-.em-user-lvl { color: var(--text-muted); font-size: 0.65rem; }
-
-.em-header-stats { display: flex; gap: 15px; }
-.em-stat-item { display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; font-family: var(--font-head); }
-.em-stat-item span { color: var(--text-muted); }
-.em-stat-item b { color: white; font-size: 0.9rem; margin-top: 2px; }
-
-.engine-modal-body { display: flex; flex: 1; overflow: hidden; }
+.ew2-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding-top: 15px; }
+.ew2-foot-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.7rem; font-family: var(--font-body); font-weight: bold; cursor: pointer; transition: 0.3s;}
+.ew2-foot-icon i { font-size: 1.3rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; color: white; }
+.ew2-foot-icon:hover i { background: rgba(255,255,255,0.1); color: var(--accent-cyan); transform: translateY(-3px); }
 
 /* Left Navigation Menu */
 .em-nav-menu {
@@ -792,10 +815,13 @@
         </div>
     </div>
 
-   <header class="top-header">
+ <!-- EXACT REPLACEMENT FOR <header class="top-header"> -->
+    <header class="top-header">
+        <!-- Row 1: Logo & Desktop Right -->
         <div class="header-wrapper">
             <div class="header-left">
-                <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn" onclick="toggleBottomSheet()"></i>
+                <!-- Mobile Hamburger forcefully hidden via CSS now -->
+                <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn"></i>
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="app-logo">
                 <div class="app-title">TOURNYX</div>
             </div>
@@ -807,16 +833,44 @@
                 <a href="clans.html" onclick="return checkAuth(event)"><i class="fa-solid fa-shield-halved"></i> Clan</a>
             </nav>
 
-            <div class="header-right">
-                <!-- Utility Icons -->
+            <!-- Desktop Right Utilities (Hidden on Mobile) -->
+            <div class="header-right desktop-utilities">
                 <div class="top-action-bar">
-                    <div class="top-action-btn" onclick="window.location.href='explore.html'"><i class="fa-solid fa-search"></i></div>
-                    <div class="top-action-btn" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i><div class="badge" style="background:var(--accent-purple);">2</div></div>
+                    <div class="top-action-btn" onclick="openFSsearch()"><i class="fa-solid fa-search"></i></div>
+                    <div class="top-action-btn" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i><div class="badge">2</div></div>
                     <div class="top-action-btn" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift" style="color: var(--accent-orange);"></i></div>
-                    <div class="top-action-btn" onclick="window.location.href='notifications.html'">
-                        <i class="fa-solid fa-bell"></i>
-                    </div>
+                    <div class="top-action-btn" onclick="window.location.href='notifications.html'"><i class="fa-solid fa-bell"></i></div>
                 </div>
+                <div id="desktopWalletContainer" style="display:flex; gap:10px;">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Row 2: Clean Mobile Utilities (Hidden on Desktop) -->
+        <div class="mobile-sub-header">
+            <div class="util-icons-group">
+                <div class="util-icon" onclick="openFSsearch()"><i class="fa-solid fa-search" style="color:var(--accent-cyan);"></i></div>
+                <div class="util-icon" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i><div class="util-badge">2</div></div>
+                <div class="util-icon" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift" style="color:var(--accent-orange);"></i></div>
+                <div class="util-icon" onclick="window.location.href='notifications.html'"><i class="fa-solid fa-bell"></i></div>
+            </div>
+            <div id="mobileWalletContainer">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- FULLSCREEN SEARCH OVERLAY (Place right below header) -->
+    <div class="search-fs-overlay" id="searchFSoverlay">
+        <div class="search-header-bar">
+            <i class="fa-solid fa-arrow-left" onclick="closeFSsearch()"></i>
+            <input type="text" class="search-input-box" id="globalSearchInput" placeholder="Search Tournaments, Reels, Highlights..." onkeyup="executeGlobalSearch()">
+        </div>
+        <div class="search-results-area" id="searchResultsArea">
+            <div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>
+        </div>
+    </div>
 
                 <!-- Ticket Pill -->
                 <div class="currency-pill ticket" onclick="if(checkAuth(event)) window.location.href='tickets.html'">
@@ -896,74 +950,72 @@
             </div>
         </section>
 
+       <!-- EXACT UI MATCH TOURNYX ENGINE (Separated from Streak) -->
         <section class="section-pad fade-up">
-            <div class="engine-container-row">
-                <!-- TOURNYX ENGINE (Live Demostration) -->
-                <div class="engine-widget glass-panel" id="tournyxEngine">
-                    <div class="eng-head">
-                        <h3><i class="fa-solid fa-bolt" style="color:var(--accent-cyan);"></i> TOURNYX ENGINE</h3>
-                        <span class="eng-status">SYSTEM ACTIVE</span>
+            <div class="engine-widget-v2">
+                <div class="ew2-header">
+                    <div class="ew2-title"><i class="fa-solid fa-microchip" style="color:var(--accent-cyan);"></i> TOURNYX ENGINE</div>
+                    <div class="ew2-status">AI STATUS: ACTIVE</div>
+                </div>
+                
+                <div class="ew2-body">
+                    <div class="ew2-stats-grid">
+                        <div class="ew2-stat">
+                            <span>POWER LEVEL</span>
+                            <b class="cyan" id="engPower">450</b>
+                        </div>
+                        <div class="ew2-stat">
+                            <span>CURRENT RANK</span>
+                            <b class="gold" id="engRank"><i class="fa-solid fa-shield"></i> Pro</b>
+                        </div>
+                        <div class="ew2-stat">
+                            <span>TODAY'S XP</span>
+                            <b class="purple" id="engXP">+420 XP</b>
+                        </div>
+                        <div class="ew2-stat">
+                            <span>DAILY PROGRESS</span>
+                            <b class="white" id="engProg">68%</b>
+                        </div>
                     </div>
                     
-                   <div id="engineAuth" style="display: none;">
-                        <div class="eng-auth-grid">
-                            <div class="eng-stat-box"><span>Power Level</span><b style="color:var(--accent-cyan);" id="txtPower">--</b></div>
-                            <div class="eng-stat-box"><span>Current Rank</span><b style="color:gold;" id="txtRank">--</b></div>
-                            <div class="eng-stat-box"><span>Win Rate</span><b style="color:white;" id="txtWinRate">--</b></div>
-                            <div class="eng-stat-box"><span>Total Wins</span><b style="color:var(--accent-purple);" id="txtWins">--</b></div>
-                        </div>
-                        <button class="btn-pulse-system" onclick="openSystemPopup()">OPEN SYSTEM MATRIX</button>
-                    </div>
+                    <button class="ew2-open-btn" onclick="openSystemPopup()">
+                        OPEN<br>SYSTEM<br><i class="fa-solid fa-arrow-right" style="margin-top:2px;"></i>
+                    </button>
+                </div>
 
-                    <div id="engineNewPlayer" style="display: none; flex-direction: column; align-items: center; text-align: center; gap: 10px; z-index: 2; padding: 10px 0;">
-                        <i class="fa-solid fa-user-astronaut" style="font-size: 2.5rem; color: var(--text-muted); opacity: 0.5;"></i>
-                        <h4 style="color: white; font-family: var(--font-head); font-size: 1rem;">No Data Collected</h4>
-                        <p style="color: var(--text-muted); font-size: 0.8rem;">Start your journey to unlock stats.</p>
-                        <button class="t-btn" onclick="window.location.href='explore.html'" style="margin-top:10px; width:80%;">ENTER ARENA</button>
-                    </div>
-
-                    <!-- 10 UPGRADED PLATFORM FEATURES -->
-        <section class="section-pad fade-up">
-            <div class="slider-header"><h2 class="section-title">Advanced <span>Features</span></h2></div>
-            <div style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 25px; scrollbar-width: none; scroll-snap-type: x mandatory;">
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-microchip"></i></div><h4 style="color:white; font-family:var(--font-head);">AI Combat Analysis</h4><p style="color:var(--text-muted); font-size:0.8rem;">Real-time breakdown of your strongest and weakest mechanics.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-crosshairs"></i></div><h4 style="color:white; font-family:var(--font-head);">Predictive Matchmaking</h4><p style="color:var(--text-muted); font-size:0.8rem;">Algorithmically pairs you with opponents of exact skill tier.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-globe"></i></div><h4 style="color:white; font-family:var(--font-head);">Global Scouting Radar</h4><p style="color:var(--text-muted); font-size:0.8rem;">Get discovered by verified Tier-1 Esports organizations.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-network-wired"></i></div><h4 style="color:white; font-family:var(--font-head);">Latency-Sync Brackets</h4><p style="color:var(--text-muted); font-size:0.8rem;">Fair-play infrastructure optimizing regional ping limits.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-file-contract"></i></div><h4 style="color:white; font-family:var(--font-head);">Dynamic Bounties</h4><p style="color:var(--text-muted); font-size:0.8rem;">Execute in-game contracts for immediate token payouts.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-user-ninja"></i></div><h4 style="color:white; font-family:var(--font-head);">Hidden Elite Quests</h4><p style="color:var(--text-muted); font-size:0.8rem;">Unlock secret missions by achieving flawless victory streaks.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-users-rays"></i></div><h4 style="color:white; font-family:var(--font-head);">Squad Synergy Mapping</h4><p style="color:var(--text-muted); font-size:0.8rem;">Calculates team chemistry based on role distribution.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-chart-pie"></i></div><h4 style="color:white; font-family:var(--font-head);">Live Telemetry</h4><p style="color:var(--text-muted); font-size:0.8rem;">Post-match data parsing mapped directly to your profile.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-vault"></i></div><h4 style="color:white; font-family:var(--font-head);">Automated Payouts</h4><p style="color:var(--text-muted); font-size:0.8rem;">Smart-contract logic distributes prize pools instantly.</p></div>
-                <div style="flex: 0 0 260px; scroll-snap-align: start; background: var(--secondary-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px;"><div style="font-size:1.5rem; color:var(--accent-cyan);"><i class="fa-solid fa-ranking-star"></i></div><h4 style="color:white; font-family:var(--font-head);">Skill-Tier Calibration</h4><p style="color:var(--text-muted); font-size:0.8rem;">Anti-smurf algorithms ensure hyper-accurate ranking.</p></div>
+                <div class="ew2-footer">
+                    <div class="ew2-foot-icon"><i class="fa-regular fa-calendar-check"></i> Daily Check-In</div>
+                    <div class="ew2-foot-icon" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-dharmachakra"></i> Lucky Spin</div>
+                    <div class="ew2-foot-icon" onclick="window.location.href='explore.html'"><i class="fa-solid fa-trophy"></i> Upcoming</div>
+                    <div class="ew2-foot-icon" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i> Shop</div>
+                </div>
             </div>
         </section>
 
-                <!-- 20 DAY POINTS STREAK (UPGRADED) -->
-                <div class="streak-widget-v2 glass-panel">
-                    <div class="streak-left">
-                        <h1 id="streakCountMain">--</h1>
-                        <p>Day Streak</p>
-                        <i class="fa-solid fa-fire"></i>
-                    </div>
-                    <div class="streak-right">
-                        <div class="sr-header">
-                            <div class="sr-texts">
-                                <h4>Next Reward</h4>
-                                <p>Come back tomorrow for more Tokens!</p>
-                            </div>
-                            <button class="btn-claim-streak" onclick="claimDailyStreak()" id="btnClaimStreak">Claim Next</button>
+        <!-- WIDER / TALLER DAILY STREAK SEPARATED -->
+        <section class="section-pad fade-up">
+            <div class="streak-widget-v2 glass-panel">
+                <div class="streak-left">
+                    <h1 id="streakCountMain">--</h1>
+                    <p>Day Streak</p>
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="streak-right">
+                    <div class="sr-header">
+                        <div class="sr-texts">
+                            <h4>Next Reward</h4>
+                            <p>Come back tomorrow for more Tokens!</p>
                         </div>
-                        <div class="streak-bottom">
-                            <div class="ts-timeline" id="streakTimeline">
-                                <!-- Nodes injected via JS -->
-                            </div>
+                        <button class="btn-claim-streak" onclick="claimDailyStreak()" id="btnClaimStreak">Claim Next</button>
+                    </div>
+                    <div class="streak-bottom">
+                        <div class="ts-timeline" id="streakTimeline">
+                            <!-- Nodes injected via JS -->
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
         <section class="section-pad glow-section fade-up delay-1">
             <div class="slider-header" style="justify-content: center;">
                 <h2 class="section-title" style="margin:0; font-size:1.4rem;">Daily <span style="color:var(--accent-orange); text-shadow:0 0 10px rgba(255,106,0,0.5);">Quests</span></h2>
@@ -2156,66 +2208,7 @@
             setTimeout(() => { document.getElementById('streakFill').style.width = currentStreak > 0 ? `${(currentStreak / (total - 1)) * 100}%` : "0%"; }, 100);
         }
 
-        async function claimDailyStreak() {
-            if(!checkAuth()) return;
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            const btn = document.getElementById('btnClaimStreak');
-            
-            let now = new Date().getTime();
-            if(user.last_claim_date) {
-                let lastClaim = new Date(user.last_claim_date).getTime();
-                if(now - lastClaim < 24 * 60 * 60 * 1000) {
-                    showToast("You can only claim once every 24 hours!", true);
-                    return;
-                }
-            }
-            
-            let newStreak = (user.streak_count || 0) + 1;
-            let reward = Math.min(newStreak * 50, 1000);
-
-            btn.innerText = "SYNCING...";
-            btn.disabled = true;
-            
-            // LIVE SUPABASE DATABASE SAVE
-            if (db) {
-                try {
-                    const { error } = await db.from('Users').update({ 
-                        streak_count: newStreak, 
-                        points: (user.points || 0) + reward,
-                        last_claim_date: new Date().toISOString()
-                    }).eq('email', user.email);
-                    
-                    if (error) throw error;
-                } catch(e) { 
-                    console.error("DB Sync failed"); 
-                    showToast("Backend update failed. Please try again.", true);
-                    btn.innerText = "CLAIM NEXT";
-                    btn.disabled = false;
-                    return; // DO NOT update UI if backend fails to maintain real-time sync
-                }
-            } else {
-                showToast("Server connection error.", true);
-                btn.innerText = "CLAIM NEXT";
-                btn.disabled = false;
-                return;
-            }
-            
-            // Instantly update UI and Local Storage only after backend success
-            user.streak_count = newStreak;
-            user.points = (user.points || 0) + reward;
-            user.last_claim_date = new Date().toISOString();
-            localStorage.setItem('tournyx_user', JSON.stringify(user));
-            
-            buildStreakTimeline(newStreak);
-            syncLiveWalletPoints(user);
-            
-            if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-            btn.innerText = "CLAIMED TODAY"; 
-            btn.classList.add('claimed'); 
-            btn.disabled = true;
-            showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
-            triggerConfetti(btn);
-        }
+      
 
         let feedPage = 0; 
         let hasMoreFeed = true;
@@ -2433,7 +2426,200 @@ function selectRole(roleCard, roleName) {
     document.getElementById('roleTrainingHeading').innerText = roleName.toUpperCase() + " TRAINING";
     showToast(`Selected Role: ${roleName}`);
 }
+// --- 1. ORGANIZER WALLET DISPLAY LOGIC ---
+        function syncLiveWalletPoints(user) {
+            if (!user) return;
+            
+            // 10 Rupees = 1 Ticket Math logic explicitly defined
+            let earnings = parseInt(user.earnings || user.points || 0);
+            let tickets = Math.floor(earnings / 10);
+            
+            let walletHTML = '';
+            
+            if (user.role === 'Organizer') {
+                // Organizer gets dual-pill without overflow
+                walletHTML = `
+                    <div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
+                        <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${earnings}</span>
+                        <div class="dw-divider"></div>
+                        <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${tickets}</span>
+                    </div>
+                `;
+            } else {
+                // Regular player gets two separate pills (optimized for space)
+                walletHTML = `
+                    <div style="display:flex; gap:8px;">
+                        <div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
+                            <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${tickets}</span>
+                        </div>
+                        <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
+                            <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${earnings}</span>
+                        </div>
+                    </div>
+                `;
+            }
 
+            // Inject into both Mobile and Desktop containers
+            document.getElementById('mobileWalletContainer').innerHTML = walletHTML;
+            document.getElementById('desktopWalletContainer').innerHTML = walletHTML;
+
+            // Background Sync from Supabase to keep Real-time
+            if (user.email && db) {
+                db.from('Users').select('earnings, points, role').eq('email', user.email).single()
+                .then(({data, error}) => {
+                    if (!error && data) {
+                        user.earnings = data.earnings || data.points || user.earnings;
+                        user.role = data.role || user.role;
+                        localStorage.setItem('tournyx_user', JSON.stringify(user));
+                        
+                        // Re-render UI with fresh DB data
+                        let freshTickets = Math.floor(user.earnings / 10);
+                        if (user.role === 'Organizer') {
+                            let hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
+                                <span style="color:#FFD700; display:flex; gap:5px;"><i class="fa-solid fa-coins"></i> ${user.earnings}</span>
+                                <div class="dw-divider"></div>
+                                <span style="color:var(--accent-cyan); display:flex; gap:5px;"><i class="fa-solid fa-ticket"></i> ${freshTickets}</span>
+                            </div>`;
+                            document.getElementById('mobileWalletContainer').innerHTML = hw;
+                            document.getElementById('desktopWalletContainer').innerHTML = hw;
+                        } else {
+                            // Target standard pill text elements if they exist
+                            document.querySelectorAll('.currency-pill.ticket span').forEach(el => el.innerText = freshTickets);
+                            document.querySelectorAll('.currency-pill.coin span').forEach(el => el.innerText = user.earnings);
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- 2. SEARCH BAR LOGIC ---
+        function openFSsearch() {
+            document.getElementById('searchFSoverlay').classList.add('active');
+            document.getElementById('globalSearchInput').focus();
+        }
+        function closeFSsearch() {
+            document.getElementById('searchFSoverlay').classList.remove('active');
+            document.getElementById('globalSearchInput').value = "";
+            document.getElementById('searchResultsArea').innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>`;
+        }
+
+        async function executeGlobalSearch() {
+            let query = document.getElementById('globalSearchInput').value.toLowerCase();
+            const resultsArea = document.getElementById('searchResultsArea');
+            
+            if(query.length < 2) {
+                resultsArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>`;
+                return;
+            }
+
+            resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-cyan); margin-top:20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching...</div>`;
+
+            let resultsHTML = '';
+            
+            if (db) {
+                try {
+                    // Search Tournaments
+                    const { data: tData } = await db.from('Tournaments').select('*').ilike('title', `%${query}%`).limit(3);
+                    if(tData) tData.forEach(t => {
+                        resultsHTML += `
+                            <div class="search-item" onclick="window.location.href='explore.html?tournament=${t.id}'">
+                                <img src="${formatImageUrl(t.banner)}">
+                                <div class="search-item-info">
+                                    <span class="search-item-type">Tournament</span>
+                                    <span class="search-item-title">${t.title}</span>
+                                </div>
+                            </div>`;
+                    });
+
+                    // Search Reels/Highlights
+                    const { data: hData } = await db.from('Highlights').select('*').ilike('title', `%${query}%`).limit(4);
+                    if(hData) hData.forEach(h => {
+                        resultsHTML += `
+                            <div class="search-item">
+                                <img src="${h.thumbnail || 'https://via.placeholder.com/60'}">
+                                <div class="search-item-info">
+                                    <span class="search-item-type">${h.type.toUpperCase()} - ${h.creator}</span>
+                                    <span class="search-item-title">${h.title}</span>
+                                </div>
+                            </div>`;
+                    });
+                } catch(e) {}
+            }
+
+            if(resultsHTML === '') {
+                resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-red); margin-top:50px; font-family:var(--font-head);">No matches found in the matrix.</div>`;
+            } else {
+                resultsArea.innerHTML = resultsHTML;
+            }
+        }
+
+        // --- 3. LIVE DB DAILY STREAK PERSISTENCE FIX ---
+        async function claimDailyStreak() {
+            if(!checkAuth()) return;
+            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            const btn = document.getElementById('btnClaimStreak');
+            
+            let now = new Date().getTime();
+            if(user.last_claim_date) {
+                let lastClaim = new Date(user.last_claim_date).getTime();
+                if(now - lastClaim < 24 * 60 * 60 * 1000) {
+                    showToast("You can only claim once every 24 hours!", true);
+                    return;
+                }
+            }
+            
+            let newStreak = (user.streak_count || 0) + 1;
+            let reward = Math.min(newStreak * 50, 1000);
+            let newEarnings = parseInt(user.earnings || user.points || 0) + reward;
+
+            btn.innerText = "SYNCING...";
+            btn.disabled = true;
+            
+            // STRICT BACKEND VERIFICATION
+            if (db) {
+                try {
+                    // Update both 'earnings' and 'points' for backward compatibility
+                    const { data, error } = await db.from('Users').update({ 
+                        streak_count: newStreak, 
+                        earnings: newEarnings,
+                        points: newEarnings,
+                        last_claim_date: new Date().toISOString()
+                    }).eq('email', user.email).select();
+                    
+                    if (error) throw error;
+                    
+                    // ONLY update local storage if DB update was successful
+                    user.streak_count = newStreak;
+                    user.earnings = newEarnings;
+                    user.points = newEarnings;
+                    user.last_claim_date = new Date().toISOString();
+                    localStorage.setItem('tournyx_user', JSON.stringify(user));
+
+                } catch(e) { 
+                    console.error("DB Sync failed", e); 
+                    showToast("Cloud sync failed. Make sure table columns exist.", true);
+                    btn.innerText = "CLAIM NEXT";
+                    btn.disabled = false;
+                    return; // Abort UI update if backend fails
+                }
+            } else {
+                showToast("Server offline. Cannot verify claim.", true);
+                btn.innerText = "CLAIM NEXT";
+                btn.disabled = false;
+                return;
+            }
+            
+            // Rebuild UI after verified success
+            buildStreakTimeline(newStreak);
+            syncLiveWalletPoints(user);
+            
+            if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
+            btn.innerText = "CLAIMED TODAY"; 
+            btn.classList.add('claimed'); 
+            btn.disabled = true;
+            showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
+            triggerConfetti(btn);
+        }
     </script>
 </body>
 </html>
