@@ -29,21 +29,33 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- SMART LOADER LOGIC (6 HOUR CHECK) -->
     <script>
-            (function() {
-                try {
-                    if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
-                    const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
-                    let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
-                    if(THEMES[tIndex]) {
-                        document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
-                        document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
-                        document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
-                    }
-                    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-                    if (user && String(user.is_premium).toLowerCase() === 'true') { document.documentElement.classList.add('theme-vip'); }
-                } catch(e) {}
-            })();
+        (function() {
+            const lastFetch = localStorage.getItem('tournyx_last_fetch_time');
+            const currentTime = new Date().getTime();
+            const sixHours = 6 * 60 * 60 * 1000;
+            // If data was fetched within 6 hours, immediately hide the loader via CSS to prevent flashing
+            if (lastFetch && (currentTime - parseInt(lastFetch) < sixHours)) {
+                document.write('<style>#tournyx-loader { display: none !important; opacity: 0 !important; visibility: hidden !important; }</style>');
+            } else {
+                // If over 6 hours, update time, loader will show until data arrives naturally
+                localStorage.setItem('tournyx_last_fetch_time', currentTime.toString());
+            }
+
+            try {
+                if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
+                const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
+                let tIndex = parseInt(localStorage.getItem('tournyx_theme_index')) || 0;
+                if(THEMES[tIndex]) {
+                    document.documentElement.style.setProperty('--accent-cyan', THEMES[tIndex].cyan);
+                    document.documentElement.style.setProperty('--accent-purple', THEMES[tIndex].purple);
+                    document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${THEMES[tIndex].purple}, ${THEMES[tIndex].cyan})`);
+                }
+                let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                if (user && String(user.is_premium).toLowerCase() === 'true') { document.documentElement.classList.add('theme-vip'); }
+            } catch(e) {}
+        })();
     </script>
     <style>
         /* --- GLOBAL VARIABLES (DEEP PREMIUM OLED BLACK) --- */
@@ -77,7 +89,7 @@
 
         html, body {
             background-color: var(--primary-bg); color: var(--text-main); font-family: var(--font-body);
-            overflow-x: hidden; width: 100vw; max-width: 100%; position: relative; /* FIX: Strict overflow hidden */
+            overflow-x: hidden; width: 100vw; max-width: 100%; position: relative; 
         }
         
         body {
@@ -96,19 +108,16 @@
             border-radius: inherit; box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03); pointer-events: none;
         }
 
-      /* Fixed Desktop Width & Squishing */
         .main-content-wrapper {
             width: 100%; max-width: 1050px; margin: 0 auto; 
             display: flex; flex-direction: column; align-items: center; overflow-x: hidden;
         }
         
-        /* Reusable Empty State Box */
         .empty-state-box { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.05); text-align: center; margin-bottom: 20px; }
         .empty-state-box i { font-size: 3rem; color: var(--text-muted); margin-bottom: 15px; opacity: 0.4; }
         .empty-state-box h3 { font-family: var(--font-head); color: white; margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase; }
         .empty-state-box p { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* Fixed App Footer Gaps */
         .app-footer { width: 100%; padding: 40px 15px 40px; background: #000; border-top: 1px solid var(--glass-border); margin-top: 20px; text-align: center; }
 
         .hero, .role-cards, .stats-area, .section-pad, .pay-section, .app-footer, .next-match-card, .engine-container-row {
@@ -119,53 +128,47 @@
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
             #mobileMenuBtn { display: none !important; } 
             
-            /* --- 1. RESIZED DESKTOP MENU & ADAPTABLE LAYOUT --- */
-            .overlay-menu { width: 220px !important; display: block !important; position: fixed; height: 100vh; overflow-y: auto;} /* Fixed sidebar */
+            .overlay-menu { width: 220px !important; display: block !important; position: fixed; height: 100vh; overflow-y: auto;} 
             body.has-sidebar { padding-left: 220px !important; }
             body.has-sidebar .top-header { left: 220px !important; width: calc(100% - 220px) !important; }
             .desk-menu-link { padding: 10px 15px !important; font-size: 0.75rem !important; margin-bottom: 5px !important; }
-            .main-content-wrapper { max-width: 1200px !important; } /* Adaptive wider layout */
+            .main-content-wrapper { max-width: 1200px !important; } 
         }
 
-        /* Forcefully hide sidebar hamburger on mobile */
+        /* Forcefully hide sidebar on mobile completely to stop overlap */
         @media (max-width: 1023px) {
             #mobileMenuBtn { display: none !important; }
-            .overlay-menu { display: none; } /* Hide desktop sidebar on mobile */
+            .overlay-menu { display: none !important; visibility: hidden !important; } 
+            body.has-sidebar { padding-left: 0 !important; }
         }
             
-         /* --- 2. MOBILE HEADER OVERFLOW FIX (2-Tier Layout based on UI reference) --- */
-        .top-header { height: auto; min-height: 65px; padding: 10px 15px; display: flex; flex-direction: column; justify-content: center; width: 100%; }
+        /* --- 2. MOBILE HEADER OVERFLOW FIX --- */
+        .top-header { height: auto; min-height: 65px; padding: 15px; display: flex; flex-direction: column; justify-content: center; width: 100%; }
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .mobile-sub-header { display: none; width: 100%; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; flex-wrap: wrap;}
-
-        @media (max-width: 1023px) {
-            .header-right { display: none !important; } /* Hide bundled desktop right-side */
-            .mobile-sub-header { display: flex; } /* Show clean mobile row */
-        }
-
-        .util-icons-group { display: flex; gap: 18px; align-items: center; flex: 1; justify-content: flex-start; }
-        .util-icon { font-size: 1.2rem; color: var(--text-main); position: relative; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        
+        /* Structured Mobile Sub-Header Alignment */
+        .mobile-sub-header { display: none; width: 100%; flex-direction: column; align-items: flex-start; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .util-icons-group { display: flex; gap: 15px; justify-content: flex-start; align-items: center; width: 100%; }
+        .util-icon { width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-size: 1.1rem; color: var(--text-main); position: relative; cursor: pointer; transition: 0.3s; }
         .util-icon:hover { color: var(--accent-cyan); background: rgba(0,242,255,0.1); }
         .util-badge { position: absolute; top: -6px; right: -6px; background: var(--accent-purple); color: white; font-size: 0.55rem; padding: 2px 5px; border-radius: 10px; font-family: var(--font-head); font-weight: bold; border: 2px solid var(--primary-bg);}
 
-        /* Organizer Dual Wallet Pill & Regular Pills */
-        #mobileWalletContainer, #desktopWalletContainer { display: flex; align-items: center; justify-content: flex-end; }
-        .dual-wallet-pill, .currency-pill { display: flex; align-items: center; background: rgba(10,10,12,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 12px; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        #mobileWalletContainer, #desktopWalletContainer { display: flex; align-items: center; gap: 10px; justify-content: flex-start; width: 100%; }
+        .dual-wallet-pill, .currency-pill { display: flex; align-items: center; background: rgba(10,10,12,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 8px 14px; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .currency-pill:hover, .dual-wallet-pill:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px rgba(0,242,255,0.2); }
         .dw-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); }
+
+        @media (max-width: 1023px) {
+            .header-right { display: none !important; } 
+            .mobile-sub-header { display: flex; } 
+        }
 
         .header-left { padding-left: 0; }
         .close-menu-btn, .menu-backdrop { display: none !important; }
         
-        .tourney-slider::-webkit-scrollbar, .reels-container::-webkit-scrollbar, .streak-bottom::-webkit-scrollbar { 
-            display: block !important; height: 8px !important; 
-        }
-        .tourney-slider::-webkit-scrollbar-thumb, .reels-container::-webkit-scrollbar-thumb, .streak-bottom::-webkit-scrollbar-thumb { 
-            background: rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer;
-        }
-        .tourney-slider::-webkit-scrollbar-track, .reels-container::-webkit-scrollbar-track, .streak-bottom::-webkit-scrollbar-track { 
-            background: rgba(0,0,0,0.2); border-radius: 10px;
-        }
+        .tourney-slider::-webkit-scrollbar, .reels-container::-webkit-scrollbar, .streak-bottom::-webkit-scrollbar { display: block !important; height: 8px !important; }
+        .tourney-slider::-webkit-scrollbar-thumb, .reels-container::-webkit-scrollbar-thumb, .streak-bottom::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer;}
+        .tourney-slider::-webkit-scrollbar-track, .reels-container::-webkit-scrollbar-track, .streak-bottom::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px;}
         .tourney-slider, .reels-container, .streak-bottom { scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,0.15) rgba(0,0,0,0.2) !important; padding-bottom: 20px;}
         .menu-links a { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -174,7 +177,7 @@
         .top-action-btn:hover { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
         .top-action-btn .badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-family: var(--font-body); font-weight: bold; border: 2px solid var(--primary-bg);}
         
-        /* --- Desktop Sidebar Setup (Overflow & UI Fixed) --- */
+        /* --- Desktop Sidebar Setup --- */
         .overlay-menu { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); z-index: 3000; padding: 20px 15px; box-shadow: 5px 0 30px rgba(0,0,0,0.8); overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
         .overlay-menu::-webkit-scrollbar { display: none; }
         .desk-menu-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; background: rgba(255,255,255,0.02); color: var(--text-main); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; text-decoration: none; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; border: 1px solid transparent; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -182,29 +185,26 @@
         .desk-menu-link:hover { background: rgba(0,242,255,0.05); border-color: rgba(0,242,255,0.2); transform: translateX(5px); color: var(--accent-cyan);}
         .desk-menu-link:hover i { transform: scale(1.1); filter: drop-shadow(0 0 8px currentColor); }
         
-        /* --- PREMIUM GLASSMORPHISM DOCK (Fixed System Animations) --- */
+        /* --- DYNAMIC GLASSMORPHISM DOCK ANIMATION --- */
         .ios-dock-wrapper { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
         .ios-dock { 
             background: rgba(15, 15, 20, 0.65); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
             border-radius: 24px; display: flex; justify-content: space-around; align-items: center; 
-            height: 70px; padding: 0 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            height: 75px; padding: 0 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
             border: 1px solid rgba(255,255,255,0.08);
         }
         
-        .m-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; position: relative; height: 100%; transition: 0.3s ease; cursor: pointer; }
-        .m-icon { font-size: 1.3rem; color: var(--text-muted); transition: 0.3s ease; margin-bottom: 3px; }
-        .m-text { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); font-weight: bold; transition: 0.3s ease; opacity: 0.7; }
-        .m-item.active .m-icon, .m-item:active .m-icon, .m-item:hover .m-icon { color: var(--accent-cyan); transform: translateY(-3px); filter: drop-shadow(0 0 8px var(--accent-cyan)); }
-        .m-item.active .m-text, .m-item:active .m-text, .m-item:hover .m-text { color: var(--accent-cyan); opacity: 1; }
+        .m-item { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; height: 100%; text-decoration: none; cursor: pointer; transition: 0.3s; }
+        .m-icon { font-size: 1.4rem; color: var(--text-muted); position: absolute; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .m-text { position: absolute; bottom: 8px; font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); font-weight: bold; opacity: 0; transform: translateY(15px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .m-item.action-plus .m-icon { 
-            font-size: 1.6rem; color: #fff; background: var(--accent-gradient); width: 45px; height: 45px; 
-            display: flex; justify-content: center; align-items: center; border-radius: 15px; margin-bottom: 0; 
-            box-shadow: 0 5px 15px rgba(0,242,255,0.4); transform: translateY(-10px); 
-        }
-        .m-item.action-plus.active .m-icon, .m-item.action-plus:active .m-icon { transform: translateY(-13px) scale(1.05); }
+        .m-item.active .m-icon { color: var(--accent-cyan); transform: translateY(-12px); filter: drop-shadow(0 0 8px var(--accent-cyan)); }
+        .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--accent-cyan); }
+        
+        .m-item.action-plus .m-icon { position: relative; font-size: 1.6rem; color: #fff; background: var(--accent-gradient); width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,242,255,0.4); transform: translateY(-15px); }
+        .m-item.action-plus.active .m-icon { transform: translateY(-18px) scale(1.05); }
 
-        /* --- SKELETON LOADER (UPGRADED FOR OLED BLACK) --- */
+        /* --- SKELETON LOADER --- */
         .skeleton { 
             background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
             background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
@@ -229,7 +229,6 @@
         .engine-container-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;}
         @media(min-width: 768px) { .engine-container-row { flex-direction: row; align-items: stretch; } .engine-widget, .streak-widget-v2 { flex: 1; margin-bottom: 0 !important; min-width: 0; } }
         
-        /* 5. SEARCH FULLSCREEN OVERLAY --- */
         .search-fs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 9999; display: none; flex-direction: column; opacity: 0; transition: 0.3s; }
         .search-fs-overlay.active { display: flex; opacity: 1; }
         .search-header-bar { display: flex; align-items: center; gap: 15px; padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -242,7 +241,6 @@
         .search-item-title { font-family: var(--font-head); color: white; font-size: 0.95rem; }
         .search-item-type { font-size: 0.75rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: bold; }
         
-        /* OVERHAULED 20 DAY STREAK */
         .streak-widget-v2 { width: 100%; min-height: 200px; margin-bottom: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         @media(max-width: 768px) { .streak-widget-v2 { min-height: 240px; } .streak-left h1 { font-size: 4rem; } }
         .streak-left { background: linear-gradient(180deg, #ff8c00, #ff3300); padding: 20px 15px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; position: relative; overflow: hidden;}
@@ -288,22 +286,15 @@
         .g-purple { width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%); top: -10vh; left: -10vw; }
         .g-cyan { width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(0,242,255,0.15) 0%, transparent 60%); bottom: -10vh; right: -10vw; }
 
-        /* --- LOADER --- */
-        #tournyx-loader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease-out; overflow: hidden; transform: translateZ(0); }
-        .loader-logo { font-family: var(--font-head); font-size: 4rem; font-weight: 900; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.3); position: relative; z-index: 10; }
-        .loader-logo::after { content: 'T'; position: absolute; top: 0; left: 0; color: #fff; text-shadow: 0 0 50px var(--accent-purple), 0 0 70px var(--accent-cyan); opacity: 0; animation: flashHit 0.5s infinite; }
-        .bullet { position: absolute; height: 4px; width: 100px; background: linear-gradient(90deg, transparent, var(--accent-cyan)); border-radius: 4px; box-shadow: 0 0 10px var(--accent-cyan); opacity: 0; }
-        .b1 { top: 40%; left: -150px; animation: shootRight 0.5s infinite; }
-        .b2 { top: 60%; right: -150px; background: linear-gradient(-90deg, transparent, var(--accent-purple)); box-shadow: 0 0 10px var(--accent-purple); animation: shootLeft 0.5s 0.25s infinite; }
-        .b3 { animation-delay: 0.6s; left: 80px; } 
-        .b4 { top: 40%; bottom: -100px; animation:shootup 0.5s infinite; animation-delay: 0.7s; left: 90px; }
-        .b5 { top: 40%; margin-top: -90px; animation:shootdown 0.5s infinite; animation-delay: 0.75s; left: 120px; }
-        @keyframes shootRight { 0% { left: -150px; opacity: 1; } 50% { left: 50%; opacity: 0; } 100% { left: 50%; opacity: 0; } }
-        @keyframes shootLeft { 0% { right: -150px; opacity: 1; } 50% { right: 50%; opacity: 0; } 100% { right: 50%; opacity: 0; } }
-        @keyframes shootup { 0% { bottom: -100px; opacity: 1; } 50% { bottom: 50%; opacity: 0; } 100% { bottom: 50%; opacity: 0; } }
-        @keyframes shootdown { 0% { margin-top: -90px; opacity: 1; } 50% { margin-top: 50%; opacity: 0; } 100% { margin-top: 50%; opacity: 0; } }
-        @keyframes flashHit { 0%, 48% { opacity: 0; } 50% { opacity: 1; text-shadow: 0 0 60px white; } 52%, 100% { opacity: 0; } }
-        .loader-text { margin-top: 30px; font-family: var(--font-body); font-size: 1rem; letter-spacing: 3px; color: var(--accent-purple); text-transform: uppercase; animation: blink 1s infinite alternate; text-shadow: 0 0 10px rgba(189,0,255,0.5); }
+        /* --- REDESIGNED PROFESSIONAL LOADER --- */
+        #tournyx-loader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--primary-bg); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease-out; }
+        .cyber-loader { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;}
+        .cyber-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--accent-cyan); animation: spin 1.5s linear infinite; }
+        .cyber-ring:nth-child(2) { border-top-color: transparent; border-bottom-color: var(--accent-purple); animation: spinReverse 2s linear infinite; width: 80%; height: 80%; }
+        .cyber-logo { font-family: var(--font-head); font-size: 2.5rem; font-weight: 900; color: white; text-shadow: 0 0 15px var(--accent-cyan); animation: pulseBeat 2s infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spinReverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        .loader-text { margin-top: 20px; font-family: var(--font-head); font-size: 0.9rem; letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase; animation: blink 1s infinite alternate; text-shadow: 0 0 10px rgba(0,242,255,0.5); font-weight:bold;}
         @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
 
         /* --- HEADER & NAV --- */
@@ -556,6 +547,9 @@
     display: flex; justify-content: space-between; align-items: center;
     padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
 }
+.em-user-badge { display: flex; align-items: center; gap: 12px; }
+.em-avatar { width: 40px !important; height: 40px !important; border-radius: 50% !important; object-fit: cover !important; border: 2px solid var(--accent-cyan) !important; box-shadow: 0 0 10px rgba(0,242,255,0.3) !important; flex-shrink: 0 !important; }
+
 .engine-modal-body {
     display: flex; flex-direction: row;
     overflow: hidden; flex: 1; /* FIX: allows internal scrolling */
@@ -717,24 +711,24 @@
 </head>
 <body>
     
-    <!-- 💥 ABSOLUTE FAILSAFE LOADER REMOVAL 💥 -->
+    <!-- 💥 FUTURISTIC 6-HOUR ESPORTS LOADER 💥 -->
     <div id="tournyx-loader">
-        <div class="loader-logo">T</div>
-        <div class="bullet b1"></div><div class="bullet b2"></div><div class="bullet b3"></div><div class="bullet b4"></div><div class="bullet b5"></div>
-        <div class="loader-text">INITIALIZING BATTLEGROUNDS...</div>
+        <div class="cyber-loader">
+            <div class="cyber-ring"></div>
+            <div class="cyber-ring"></div>
+            <div class="cyber-logo">T</div>
+        </div>
+        <div class="loader-text">SYNCING TO MATRIX...</div>
     </div>
+    
     <script>
         const hideLoader = function() {
             var l = document.getElementById('tournyx-loader');
             if(l && l.style.display !== 'none') { 
                 l.style.opacity = '0'; 
-                setTimeout(function(){ l.style.display = 'none'; }, 400); 
+                setTimeout(function(){ l.style.display = 'none'; }, 500); 
             }
         };
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(hideLoader, 800);
-        });
-        setTimeout(hideLoader, 3000);
     </script>
 
     <div class="beta-overlay" id="betaOverlay">
@@ -1489,6 +1483,15 @@
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) { console.error("Supabase not initialized"); }
 
+        // Nav Dock Interactivity Pre-Navigation
+        document.querySelectorAll('.m-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if(this.classList.contains('action-plus')) return;
+                document.querySelectorAll('.m-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
         // Supabase Fetch Integration
         async function secureFetch(params) {
             if (db) {
@@ -1604,11 +1607,10 @@
                 document.body.classList.remove('has-sidebar');
                 document.getElementById('welcomeText')?.innerText && (document.getElementById('welcomeText').innerText = "Guest");
                 document.getElementById('menuUserName').innerText = "Guest Player";
-                document.getElementById('homeWalletBalance').innerText = "0";
-                document.getElementById('homePassBalance').innerText = "0";
             }
 
             loadTournyxEngine();
+            // Call the synchronized parallel fetch loader
             loadLiveBackendData();
             initScrollAnimations(); 
             initEndlessReels();
@@ -1616,9 +1618,11 @@
 
         });
 
-        function loadLiveBackendData() {
-            // Mocking secureFetch for Tournaments since Supabase schema might be different
-            secureFetch({ action: 'get_tournaments' }).then(res => {
+        async function loadLiveBackendData() {
+            let fetchPromises = [];
+
+            // 1. Tournaments
+            fetchPromises.push(secureFetch({ action: 'get_tournaments' }).then(res => {
                 if (res.status === "success" && res.data && res.data.length > 0) {
                     renderFeaturedTournaments(res.data);
                     loadLiveTournamentsSlider(res.data);
@@ -1629,31 +1633,37 @@
             }).catch(() => { 
                 document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
                 document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
-            });
+            }));
             
+            // 2. Drops, ProMatches, Scouting
             if (db) {
-                db.from('Drops').select('*').then(({data, error}) => {
+                fetchPromises.push(db.from('Drops').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderFlashDrops(data);
                     else document.getElementById('flashDropsSection').style.display = 'none';
-                }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; });
+                }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; }));
 
-                db.from('ProMatches').select('*').then(({data, error}) => {
+                fetchPromises.push(db.from('ProMatches').select('*').then(({data, error}) => {
                     if (!error && data && data.length > 0) renderProMatches(data);
                     else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
-                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); });
+                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
 
-                db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
+                fetchPromises.push(db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
                     if (!error && data && data.length > 0) renderScouting(data);
                     else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
-                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); });
+                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
             } else {
                 document.getElementById('flashDropsSection').style.display = 'none';
                 document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
                 document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
             }
 
-            loadQuestsFromSheets(); 
-            loadLeaderboard(); 
+            // Fire parallel generic loads
+            fetchPromises.push(loadQuestsFromSheets());
+            fetchPromises.push(loadLeaderboard()); 
+
+            // Wait for everything to resolve before killing loader
+            await Promise.allSettled(fetchPromises);
+            hideLoader();
         }
 
         function showToast(msg, isError = false) {
@@ -1919,46 +1929,65 @@
             });
         }
 
+        // --- 1. ORGANIZER WALLET DISPLAY LOGIC ---
         function syncLiveWalletPoints(user) {
-            const balanceDisplay = document.getElementById('homeWalletBalance');
-            const passDisplay = document.getElementById('homePassBalance');
-            let displayPasses = user.passes !== undefined ? user.passes : Math.floor((parseInt(user.rupees)||0) / 10);
-            if (user.points !== undefined && balanceDisplay) { balanceDisplay.innerText = user.points; }
-            if(passDisplay) passDisplay.innerText = displayPasses;
-            if (user.email) {
-                secureFetch({ action: 'sync_user', email: user.email })
-                .then(data => {
-                    if (data.status === 'success') {
-                        user.points = data.data.points !== undefined ? data.data.points : user.points; 
-                        user.rupees = data.data.rupees !== undefined ? data.data.rupees : user.rupees;
-                        user.passes = data.data.passes !== undefined ? data.data.passes : user.passes;
-                        try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
-                        let livePasses = user.passes !== undefined ? user.passes : Math.floor((parseInt(user.rupees)||0) / 10);
+            if (!user) return;
+            
+            let earnings = parseInt(user.earnings || user.points || 0);
+            let tickets = Math.floor(earnings / 10);
+            let walletHTML = '';
+            
+            if (user.role === 'Organizer') {
+                walletHTML = `
+                    <div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
+                        <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${earnings}</span>
+                        <div class="dw-divider"></div>
+                        <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${tickets}</span>
+                    </div>
+                `;
+            } else {
+                walletHTML = `
+                    <div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
+                        <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${tickets}</span>
+                    </div>
+                    <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
+                        <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${earnings}</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('mobileWalletContainer').innerHTML = walletHTML;
+            document.getElementById('desktopWalletContainer').innerHTML = walletHTML;
+
+            if (user.email && db) {
+                db.from('Users').select('earnings, points, role').eq('email', user.email).single()
+                .then(({data, error}) => {
+                    if (!error && data) {
+                        user.earnings = data.earnings || data.points || user.earnings;
+                        user.role = data.role || user.role;
+                        localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
-                        // FIX: Ensure UI wallet functions don't try to target missing elements. 
-                        // The custom wallet logic function handles mobile/desktop injections already.
-                        let hw = `
-                            <div style="display:flex; gap:8px;">
-                                <div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
-                                    <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${livePasses}</span>
-                                </div>
-                                <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
-                                    <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${user.points || 0}</span>
-                                </div>
-                            </div>
-                        `;
+                        let freshTickets = Math.floor(user.earnings / 10);
                         if (user.role === 'Organizer') {
-                            hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
-                                <span style="color:#FFD700; display:flex; gap:5px;"><i class="fa-solid fa-coins"></i> ${user.points || 0}</span>
+                            let hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
+                                <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${user.earnings}</span>
                                 <div class="dw-divider"></div>
-                                <span style="color:var(--accent-cyan); display:flex; gap:5px;"><i class="fa-solid fa-ticket"></i> ${livePasses}</span>
+                                <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${freshTickets}</span>
                             </div>`;
+                            document.getElementById('mobileWalletContainer').innerHTML = hw;
+                            document.getElementById('desktopWalletContainer').innerHTML = hw;
+                        } else {
+                            let hw = `<div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
+                                <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${freshTickets}</span>
+                            </div>
+                            <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
+                                <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${user.earnings}</span>
+                            </div>`;
+                            document.getElementById('mobileWalletContainer').innerHTML = hw;
+                            document.getElementById('desktopWalletContainer').innerHTML = hw;
                         }
-                        
-                        document.getElementById('mobileWalletContainer').innerHTML = hw;
-                        document.getElementById('desktopWalletContainer').innerHTML = hw;
                     }
-                }).catch(err => console.log("Sync skipped."));
+                });
             }
         }
         
@@ -1979,9 +2008,9 @@
 
         // --- CLOUD-SYNCED DAILY QUESTS ---
         let currentDynamicQuests = [];
-        function loadQuestsFromSheets() {
-            secureFetch({ action: 'get_quests' })
-            .then(result => {
+        async function loadQuestsFromSheets() {
+            try {
+                let result = await secureFetch({ action: 'get_quests' });
                 let data = result.data || result.message || result.result || result;
                 if (result.status === "success" && data && data.length > 0) {
                     currentDynamicQuests = data; 
@@ -1989,7 +2018,7 @@
                 } else {
                     document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
                 }
-            }).catch(e => {
+            } catch(e) {
                 // Mock fallback for UI demo
                 currentDynamicQuests = [
                     { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: '#' },
@@ -1997,7 +2026,7 @@
                     { id: 'q3', title: 'Ignore Penalty Zone Demo', reward: 0, reqType: 'penalty', reqVal: '', redirect: '#' }
                 ];
                 renderQuests();
-            });
+            }
         }
 
         function renderQuests() {
@@ -2042,7 +2071,6 @@
         function verifyQuest(questId, rewardPts, user) {
             user.points = (parseInt(user.points) || 0) + parseInt(rewardPts);
             try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
-            // Trigger wallet sync rather than finding hardcoded ID that might have changed based on role
             syncLiveWalletPoints(user); 
             showToast(`+${rewardPts} PTS verified & added to Wallet!`);
 
@@ -2120,8 +2148,6 @@
             </div>`;
         }
 
-        
-
         function loadTournyxEngine() {
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
@@ -2188,7 +2214,6 @@
                         btn.classList.add('claimed'); 
                         btn.disabled = true;
                     } else if(hoursPassed > 48) {
-                        // Check if streak is broken (more than 48 hours passed)
                         currentStreak = 0; // Reset streak
                         document.getElementById('streakCountMain').innerText = "0";
                         btn.innerText = "CLAIM NEXT";
@@ -2204,8 +2229,6 @@
 
             setTimeout(() => { document.getElementById('streakFill').style.width = currentStreak > 0 ? `${(currentStreak / (total - 1)) * 100}%` : "0%"; }, 100);
         }
-
-      
 
         let feedPage = 0; 
         let hasMoreFeed = true;
@@ -2289,7 +2312,6 @@
                 </div></div>`;
         }
 
-        // --- TOURNYX VISION AI (WEBRTC CAPTURE LOGIC) ---
         let visionStream = null;
         let visionInterval = null;
         let currentAiTask = null;
@@ -2316,7 +2338,6 @@
 
             try {
                 btn.innerText = "AWAITING PERMISSION...";
-                // Request Screen Share
                 visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
                 
                 video.srcObject = visionStream;
@@ -2327,12 +2348,11 @@
                 chip.classList.add('fa-spin');
                 chip.style.color = "var(--accent-orange)";
 
-                // Simulate processing frames every 1.5s
                 let processingSteps = 0;
                 visionInterval = setInterval(async () => {
                     processingSteps++;
                     
-                    if(processingSteps >= 4) { // Simulate AI Success after ~6 seconds
+                    if(processingSteps >= 4) {
                         clearInterval(visionInterval);
                         status.innerText = "AI VERIFICATION SUCCESSFUL! HEADSHOT DETECTED.";
                         status.style.color = "var(--accent-green)";
@@ -2340,10 +2360,8 @@
                         chip.style.color = "var(--accent-green)";
                         scanLine.style.display = 'none';
                         
-                        // Stop stream
                         if(visionStream) visionStream.getTracks().forEach(track => track.stop());
                         
-                        // Update DB
                         if(db) {
                             let user = JSON.parse(localStorage.getItem('tournyx_user'));
                             let newPts = (user.points || 0) + currentAiReward;
@@ -2361,7 +2379,6 @@
                     }
                 }, 1500);
 
-                // Handle manual stream stop by user
                 visionStream.getVideoTracks()[0].onended = () => {
                     if(processingSteps < 4) {
                         stopVisionAI();
@@ -2390,7 +2407,6 @@
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             
-            // Update Header Badges in Modal
             if(user) {
                 document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
                 document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
@@ -2408,12 +2424,9 @@
         }
 
         function switchEngineTab(tabId, btnEl) {
-            // Hide all panes
             document.querySelectorAll('.em-pane').forEach(pane => pane.classList.remove('active'));
-            // Remove active button class
             document.querySelectorAll('.em-nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            // Show selected pane and set button active
             document.getElementById('tab-' + tabId).classList.add('active');
             btnEl.classList.add('active');
         }
@@ -2451,7 +2464,6 @@
             
             if (db) {
                 try {
-                    // Search Tournaments
                     const { data: tData } = await db.from('Tournaments').select('*').ilike('title', `%${query}%`).limit(3);
                     if(tData) tData.forEach(t => {
                         resultsHTML += `
@@ -2464,7 +2476,6 @@
                             </div>`;
                     });
 
-                    // Search Reels/Highlights
                     const { data: hData } = await db.from('Highlights').select('*').ilike('title', `%${query}%`).limit(4);
                     if(hData) hData.forEach(h => {
                         resultsHTML += `
@@ -2508,10 +2519,8 @@
             btn.innerText = "SYNCING...";
             btn.disabled = true;
             
-            // STRICT BACKEND VERIFICATION
             if (db) {
                 try {
-                    // Update both 'earnings' and 'points' for backward compatibility
                     const { data, error } = await db.from('Users').update({ 
                         streak_count: newStreak, 
                         earnings: newEarnings,
@@ -2521,7 +2530,6 @@
                     
                     if (error) throw error;
                     
-                    // ONLY update local storage if DB update was successful
                     user.streak_count = newStreak;
                     user.earnings = newEarnings;
                     user.points = newEarnings;
@@ -2533,7 +2541,7 @@
                     showToast("Cloud sync failed. Make sure table columns exist.", true);
                     btn.innerText = "CLAIM NEXT";
                     btn.disabled = false;
-                    return; // Abort UI update if backend fails
+                    return; 
                 }
             } else {
                 showToast("Server offline. Cannot verify claim.", true);
@@ -2542,7 +2550,6 @@
                 return;
             }
             
-            // Rebuild UI after verified success
             buildStreakTimeline(newStreak);
             syncLiveWalletPoints(user);
             
