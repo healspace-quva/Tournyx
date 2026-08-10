@@ -142,24 +142,20 @@
             body.has-sidebar { padding-left: 0 !important; }
         }
             
-        /* --- 2. MOBILE HEADER OVERFLOW FIX --- */
-        .top-header { height: auto; min-height: 65px; padding: 15px; display: flex; flex-direction: column; justify-content: center; width: 100%; }
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        /* --- REDESIGNED MOBILE HEADER & MODERN PILLS --- */
+        .top-header { height: auto; min-height: 60px; padding: 10px 15px; display: flex; flex-direction: column; justify-content: center; width: 100%; }
+        .mobile-sub-header { display: none; width: 100%; flex-direction: row; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); align-items: center; justify-content: space-between; }
         
-        /* Structured Mobile Sub-Header Alignment */
-        .mobile-sub-header { display: none; width: 100%; flex-direction: column; gap: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
-        
-        /* Perfectly spaced icons */
-        .util-icons-group { display: flex; gap: 12px; justify-content: space-between; align-items: center; width: 100%; }
-        .util-icon { flex: 1; height: 45px; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-size: 1.2rem; color: var(--text-main); position: relative; cursor: pointer; transition: 0.3s; }
-        .util-icon:hover { color: var(--accent-cyan); background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); box-shadow: 0 4px 15px rgba(0,242,255,0.2); }
-        .util-badge { position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; font-family: var(--font-body); font-weight: bold; border: 2px solid var(--primary-bg);}
+        .util-icons-group { display: flex; gap: 12px; justify-content: flex-start; align-items: center; }
+        .util-icon { width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border-radius: 50%; border: 1px solid rgba(255,255,255,0.08); font-size: 1.1rem; color: var(--text-main); position: relative; cursor: pointer; transition: 0.3s; }
+        .util-icon:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); }
 
-        /* Perfectly spaced wallets */
-        #mobileWalletContainer, #desktopWalletContainer { display: flex; align-items: center; width: 100%; }
+        #mobileWalletContainer, #desktopWalletContainer { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
         #mobileWalletContainer > div, #desktopWalletContainer > div { width: 100%; display: flex; gap: 12px; }
-        .dual-wallet-pill, .currency-pill { flex: 1; display: flex; justify-content: center; align-items: center; background: rgba(10,10,12,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 10px 5px; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .currency-pill:hover, .dual-wallet-pill:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px rgba(0,242,255,0.2); }
+        /* Modernized Rounded Pills */
+        .currency-pill { display: flex; align-items: center; background: linear-gradient(90deg, #111, #000); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 12px; gap: 6px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.05), 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .currency-pill:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+        .dual-wallet-pill { display: flex; align-items: center; background: linear-gradient(90deg, #111, #000); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 14px; gap: 10px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.05), 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .dw-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
 
        @media (max-width: 1023px) {
@@ -219,11 +215,13 @@
         .m-item.action-plus .m-icon { position: absolute; font-size: 1.6rem; color: #000; background: var(--accent-cyan); width: 52px; height: 52px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 5px 20px rgba(0,242,255,0.5); transform: translateY(-15px); border: 4px solid var(--primary-bg); transition: 0.3s; z-index: 2;}
         .m-item.action-plus:hover .m-icon { transform: translateY(-18px) scale(1.05); }
         
-        /* --- ACTION HUB MODAL --- */
-        .action-hub-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s; display: flex; align-items: flex-end; justify-content: center;}
+        /* --- ACTION HUB MODAL (HARDWARE ACCELERATED GLITCH FIX) --- */
+        .action-hub-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s ease; display: flex; align-items: flex-end; justify-content: center;}
         .action-hub-overlay.active { opacity: 1; pointer-events: auto; }
-        .action-hub-modal { width: 100%; max-width: 450px; background: var(--panel-bg); border-radius: 24px 24px 0 0; padding: 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-top: 1px solid var(--accent-cyan); box-shadow: 0 -10px 40px rgba(0,242,255,0.15);}
-        .action-hub-overlay.active .action-hub-modal { transform: translateY(0); }
+        
+        /* The 3D transforms force GPU rendering, stopping mobile flicker/glitch */
+        .action-hub-modal { width: 100%; max-width: 450px; background: var(--panel-bg); border-radius: 24px 24px 0 0; padding: 25px; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; transform: translate3d(0, 100%, 0); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-top: 1px solid var(--accent-cyan); box-shadow: 0 -10px 40px rgba(0,242,255,0.15);}
+        .action-hub-overlay.active .action-hub-modal { transform: translate3d(0, 0, 0); }
         @media(min-width: 768px) { .action-hub-overlay { align-items: center; } .action-hub-modal { border-radius: 24px; border: 1px solid var(--accent-cyan); } }
         
         .ah-header { text-align: center; margin-bottom: 20px; }
@@ -843,7 +841,7 @@
                 <!-- Mobile Hamburger forcefully hidden via CSS now -->
                 <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn"></i>
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="app-logo">
-                <div class="app-title">TOURNYX</div>
+                <div class="app-title">TOURNYX ESPORTS</div>
             </div>
             
             <nav class="desktop-nav">
@@ -2009,18 +2007,20 @@
             });
         }
 
-        // --- 1. ORGANIZER WALLET DISPLAY LOGIC ---
+        // --- 1. PERFECTLY SEPARATED WALLET LOGIC ---
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
-            let earnings = parseInt(user.earnings || user.points || 0);
-            let tickets = Math.floor(earnings / 10);
+            // Explicitly separate columns. No mathematical division.
+            let points = parseInt(user.points) || 0; 
+            let tickets = parseInt(user.tickets || user.passes) || 0; 
+            
             let walletHTML = '';
             
             if (user.role === 'Organizer') {
                 walletHTML = `
                     <div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
-                        <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${earnings}</span>
+                        <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${points}</span>
                         <div class="dw-divider"></div>
                         <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${tickets}</span>
                     </div>
@@ -2031,41 +2031,47 @@
                         <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${tickets}</span>
                     </div>
                     <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
-                        <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${earnings}</span>
+                        <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${points}</span>
                     </div>
                 `;
             }
 
-            document.getElementById('mobileWalletContainer').innerHTML = walletHTML;
-            document.getElementById('desktopWalletContainer').innerHTML = walletHTML;
+            const mobileContainer = document.getElementById('mobileWalletContainer');
+            const desktopContainer = document.getElementById('desktopWalletContainer');
+            if(mobileContainer) mobileContainer.innerHTML = walletHTML;
+            if(desktopContainer) desktopContainer.innerHTML = walletHTML;
 
+            // Strict Backend Syncing
             if (user.email && db) {
-                db.from('Users').select('earnings, points, role').eq('email', user.email).single()
+                // Fetch strictly points and tickets
+                db.from('Users').select('points, tickets, passes, role').eq('email', user.email).single()
                 .then(({data, error}) => {
                     if (!error && data) {
-                        user.earnings = data.earnings || data.points || user.earnings;
+                        user.points = data.points !== undefined ? data.points : user.points;
+                        user.tickets = data.tickets !== undefined ? data.tickets : (data.passes !== undefined ? data.passes : user.tickets);
                         user.role = data.role || user.role;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
-                        let freshTickets = Math.floor(user.earnings / 10);
+                        let livePoints = parseInt(user.points) || 0;
+                        let liveTickets = parseInt(user.tickets || user.passes) || 0;
+
+                        let hw = '';
                         if (user.role === 'Organizer') {
-                            let hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
-                                <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${user.earnings}</span>
+                            hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
+                                <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${livePoints}</span>
                                 <div class="dw-divider"></div>
-                                <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${freshTickets}</span>
+                                <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${liveTickets}</span>
                             </div>`;
-                            document.getElementById('mobileWalletContainer').innerHTML = hw;
-                            document.getElementById('desktopWalletContainer').innerHTML = hw;
                         } else {
-                            let hw = `<div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
-                                <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${freshTickets}</span>
+                            hw = `<div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
+                                <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${liveTickets}</span>
                             </div>
                             <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
-                                <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${user.earnings}</span>
+                                <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${livePoints}</span>
                             </div>`;
-                            document.getElementById('mobileWalletContainer').innerHTML = hw;
-                            document.getElementById('desktopWalletContainer').innerHTML = hw;
                         }
+                        if(mobileContainer) mobileContainer.innerHTML = hw;
+                        if(desktopContainer) desktopContainer.innerHTML = hw;
                     }
                 });
             }
@@ -2263,9 +2269,24 @@
             }
         }
 
-        // --- ACTION HUB & SCROLL HIDE DOCK LOGIC ---
-        function openActionHub() { document.getElementById('actionHubOverlay').classList.add('active'); }
-        function closeActionHub() { document.getElementById('actionHubOverlay').classList.remove('active'); }
+      // --- 2. MODAL GLITCH PREVENTION LOGIC ---
+        function openActionHub() { 
+            document.getElementById('actionHubOverlay').classList.add('active'); 
+            document.body.style.overflow = 'hidden'; // Locks body scroll to prevent flicker
+        }
+        
+        function closeActionHub() { 
+            document.getElementById('actionHubOverlay').classList.remove('active'); 
+            document.body.style.overflow = ''; // Unlocks body scroll
+        }
+
+        // Fixes the visual glitch when user hits back button on mobile browser
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { 
+                closeActionHub(); 
+                hideLoader(); 
+            }
+        });
 
         let lastScrollY = window.scrollY;
         window.addEventListener('scroll', () => {
