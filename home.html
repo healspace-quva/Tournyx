@@ -162,10 +162,15 @@
         .currency-pill:hover, .dual-wallet-pill:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px rgba(0,242,255,0.2); }
         .dw-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
 
-        @media (max-width: 1023px) {
+       @media (max-width: 1023px) {
+            body { padding-top: 155px !important; } /* FIX: Pushes 'Own the Arena' below the taller mobile header */
             .header-right { display: none !important; } 
             .mobile-sub-header { display: flex; } 
         }
+
+        /* FIX: Lock Engine Modal Profile Icon Size */
+        .em-user-badge { display: flex; align-items: center; gap: 12px; }
+        .em-avatar { width: 45px !important; height: 45px !important; border-radius: 50% !important; object-fit: cover !important; border: 2px solid var(--accent-cyan) !important; box-shadow: 0 0 10px rgba(0,242,255,0.3) !important; flex-shrink: 0 !important; display: block !important; }
 
         .header-left { padding-left: 0; }
         .close-menu-btn, .menu-backdrop { display: none !important; }
@@ -189,24 +194,53 @@
         .desk-menu-link:hover { background: rgba(0,242,255,0.05); border-color: rgba(0,242,255,0.2); transform: translateX(5px); color: var(--accent-cyan);}
         .desk-menu-link:hover i { transform: scale(1.1); filter: drop-shadow(0 0 8px currentColor); }
         
+        /* --- UPGRADED EMPTY STATE ANIMATIONS --- */
+        .empty-state-box .animated-char { font-size: 3.5rem; animation: floatChar 3s ease-in-out infinite; margin-bottom: 15px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+        @keyframes floatChar { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+
         /* --- DYNAMIC GLASSMORPHISM DOCK ANIMATION --- */
-        .ios-dock-wrapper { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; }
+        .ios-dock-wrapper { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .ios-dock-wrapper.hide-dock { transform: translate(-50%, 150%); } /* Hides on scroll */
         .ios-dock { 
-            background: rgba(15, 15, 20, 0.65); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
-            border-radius: 24px; display: flex; justify-content: space-around; align-items: center; 
-            height: 75px; padding: 0 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
+            border-radius: 22px; display: flex; justify-content: space-around; align-items: center; 
+            height: 65px; padding: 0 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); 
             border: 1px solid rgba(255,255,255,0.08);
         }
         
-        .m-item { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; height: 100%; text-decoration: none; cursor: pointer; transition: 0.3s; }
-        .m-icon { font-size: 1.4rem; color: var(--text-muted); position: absolute; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .m-text { position: absolute; bottom: 8px; font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); font-weight: bold; opacity: 0; transform: translateY(15px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .m-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%; text-decoration: none; cursor: pointer; }
+        .m-icon { font-size: 1.3rem; color: var(--text-muted); position: absolute; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(0); }
+        .m-text { position: absolute; font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); font-weight: bold; opacity: 0; transform: translateY(20px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .m-item.active .m-icon { color: var(--accent-cyan); transform: translateY(-12px); filter: drop-shadow(0 0 8px var(--accent-cyan)); }
-        .m-item.active .m-text { opacity: 1; transform: translateY(0); color: var(--accent-cyan); }
+        .m-item.active .m-icon { color: var(--accent-cyan); transform: translateY(-10px); filter: drop-shadow(0 0 8px var(--accent-cyan)); }
+        .m-item.active .m-text { opacity: 1; transform: translateY(12px); color: var(--accent-cyan); }
         
-        .m-item.action-plus .m-icon { position: relative; font-size: 1.6rem; color: #fff; background: var(--accent-gradient); width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,242,255,0.4); transform: translateY(-15px); }
-        .m-item.action-plus.active .m-icon { transform: translateY(-18px) scale(1.05); }
+        /* Unique Center Plus Button */
+        .m-item.action-plus .m-icon { position: absolute; font-size: 1.6rem; color: #000; background: var(--accent-cyan); width: 52px; height: 52px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 5px 20px rgba(0,242,255,0.5); transform: translateY(-15px); border: 4px solid var(--primary-bg); transition: 0.3s; z-index: 2;}
+        .m-item.action-plus:hover .m-icon { transform: translateY(-18px) scale(1.05); }
+        
+        /* --- ACTION HUB MODAL --- */
+        .action-hub-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s; display: flex; align-items: flex-end; justify-content: center;}
+        .action-hub-overlay.active { opacity: 1; pointer-events: auto; }
+        .action-hub-modal { width: 100%; max-width: 450px; background: var(--panel-bg); border-radius: 24px 24px 0 0; padding: 25px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-top: 1px solid var(--accent-cyan); box-shadow: 0 -10px 40px rgba(0,242,255,0.15);}
+        .action-hub-overlay.active .action-hub-modal { transform: translateY(0); }
+        @media(min-width: 768px) { .action-hub-overlay { align-items: center; } .action-hub-modal { border-radius: 24px; border: 1px solid var(--accent-cyan); } }
+        
+        .ah-header { text-align: center; margin-bottom: 20px; }
+        .ah-header h3 { color: white; font-family: var(--font-head); font-size: 1.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .ah-header p { color: var(--text-muted); font-size: 0.85rem; }
+        .ah-grid { display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; padding-right: 5px; scrollbar-width: none; }
+        .ah-btn { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; transition: 0.3s; cursor: pointer; text-align: left; }
+        .ah-btn:hover { background: rgba(0,242,255,0.08); border-color: var(--accent-cyan); transform: translateX(5px); }
+        .ah-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; font-size: 1.3rem; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;}
+        .ah-text h4 { color: white; font-family: var(--font-head); font-size: 1rem; margin-bottom: 3px; }
+        .ah-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
+        .ah-close { margin-top: 15px; width: 100%; padding: 12px; border-radius: 16px; background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.2); font-family: var(--font-head); font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .ah-close:hover { background: var(--accent-red); color: white; }
+
+        /* Desktop specific + CREATE button */
+        .desktop-create-btn { background: var(--accent-gradient); border: none; color: white; padding: 8px 18px; border-radius: 20px; font-family: var(--font-head); font-weight: bold; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,242,255,0.3); transition: 0.3s; text-transform: uppercase; margin-left: 15px;}
+        .desktop-create-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,242,255,0.5); }
 
         /* --- SKELETON LOADER --- */
         .skeleton { 
@@ -817,6 +851,9 @@
                 <a href="explore.html"><i class="fa-solid fa-compass"></i> Explore</a>
                 <a href="matches.html" onclick="return checkAuth(event)"><i class="fa-solid fa-trophy"></i> Matches</a>
                 <a href="clans.html" onclick="return checkAuth(event)"><i class="fa-solid fa-shield-halved"></i> Clan</a>
+                
+                <!-- NEW DESKTOP CREATE BUTTON -->
+                <button class="desktop-create-btn" onclick="openActionHub()"><i class="fa-solid fa-plus"></i> Create</button>
             </nav>
 
             <!-- Desktop Right Utilities (Hidden on Mobile) -->
@@ -1442,7 +1479,8 @@
     </style>
 
     <!-- PERFECT PREMIUM GLASSMORPHISM NAV (MOBILE ONLY) -->
-    <div class="ios-dock-wrapper">
+   <!-- PERFECT PREMIUM GLASSMORPHISM NAV (MOBILE ONLY) -->
+    <div class="ios-dock-wrapper" id="dockWrapper">
         <nav class="ios-dock" id="mobileDock">
             <a href="home.html" class="m-item active">
                 <i class="fa-solid fa-house m-icon"></i><span class="m-text">Home</span>
@@ -1450,8 +1488,9 @@
             <a href="explore.html" class="m-item">
                 <i class="fa-solid fa-compass m-icon"></i><span class="m-text">Explore</span>
             </a>
-            <a href="tournament.html" class="m-item action-plus" onclick="return checkAuth(event)">
-                <i class="fa-solid fa-plus m-icon" style="font-size:1.6rem;"></i>
+            <!-- UPDATED CENTER BUTTON (NO REDIRECT, TRIGGERS MODAL) -->
+            <a href="javascript:void(0)" class="m-item action-plus" onclick="openActionHub()">
+                <i class="fa-solid fa-plus m-icon"></i>
             </a>
             <a href="tickets.html" class="m-item" onclick="return checkAuth(event)">
                 <i class="fa-solid fa-ticket m-icon"></i><span class="m-text">Tickets</span>
@@ -1460,6 +1499,43 @@
                 <i class="fa-solid fa-bars m-icon"></i><span class="m-text">Menu</span>
             </a>
         </nav>
+    </div>
+
+    <!-- ACTION HUB MODAL (SLIDES FROM BOTTOM) -->
+    <div class="action-hub-overlay" id="actionHubOverlay" onclick="if(event.target === this) closeActionHub()">
+        <div class="action-hub-modal">
+            <div class="ah-header">
+                <h3>Create / Action Hub</h3>
+                <p>What do you want to do today?</p>
+            </div>
+            <div class="ah-grid">
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='tournament.html')">
+                    <div class="ah-icon" style="color:#FFD700;"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="ah-text"><h4>Host Tournament</h4><p>Create and manage an event</p></div>
+                </div>
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='clans.html')">
+                    <div class="ah-icon" style="color:var(--accent-cyan);"><i class="fa-solid fa-users"></i></div>
+                    <div class="ah-text"><h4>Create Team</h4><p>Build your competitive roster</p></div>
+                </div>
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='matches.html')">
+                    <div class="ah-icon" style="color:var(--accent-red);"><i class="fa-solid fa-swords"></i></div>
+                    <div class="ah-text"><h4>Create Challenge</h4><p>Challenge players or teams</p></div>
+                </div>
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='missions.html')">
+                    <div class="ah-icon" style="color:var(--accent-purple);"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="ah-text"><h4>Create Mission</h4><p>Train • Practice • Level Up</p></div>
+                </div>
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='social.html')">
+                    <div class="ah-icon" style="color:var(--accent-orange);"><i class="fa-solid fa-bullhorn"></i></div>
+                    <div class="ah-text"><h4>Create Post</h4><p>Share with the community</p></div>
+                </div>
+                <div class="ah-btn" onclick="checkAuth(event) && (window.location.href='practice.html')">
+                    <div class="ah-icon" style="color:var(--accent-green);"><i class="fa-solid fa-crosshairs"></i></div>
+                    <div class="ah-text"><h4>Practice Room</h4><p>Create a private practice</p></div>
+                </div>
+            </div>
+            <button class="ah-close" onclick="closeActionHub()"><i class="fa-solid fa-xmark"></i> Close</button>
+        </div>
     </div>
 
     <!-- DYNAMIC BOTTOM SHEET MENU -->
@@ -2144,9 +2220,12 @@
             container.innerHTML = html;
         }
         
+       // --- UPGRADED EMPTY STATE FUNCTION WITH ANIMATED CHARACTERS ---
         function getEmptyState(icon, title, desc) {
+            const chars = ['🤖', '👾', '👻', '👽', '💀'];
+            const randomChar = chars[Math.floor(Math.random() * chars.length)];
             return `<div class="empty-state-box">
-                <i class="${icon}"></i>
+                <div class="animated-char">${randomChar}</div>
                 <h3>${title}</h3>
                 <p>${desc}</p>
             </div>`;
@@ -2184,6 +2263,22 @@
             }
         }
 
+        // --- ACTION HUB & SCROLL HIDE DOCK LOGIC ---
+        function openActionHub() { document.getElementById('actionHubOverlay').classList.add('active'); }
+        function closeActionHub() { document.getElementById('actionHubOverlay').classList.remove('active'); }
+
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const dock = document.getElementById('dockWrapper');
+            if(dock) {
+                if (window.scrollY > lastScrollY && window.scrollY > 150) {
+                    dock.classList.add('hide-dock'); // Scrolling down, hide dock
+                } else {
+                    dock.classList.remove('hide-dock'); // Scrolling up, show dock
+                }
+            }
+            lastScrollY = window.scrollY;
+        });
        function buildStreakTimeline(currentStreak) {
             document.getElementById('streakCountMain').innerText = currentStreak;
             const timeline = document.getElementById('streakTimeline');
@@ -2247,6 +2342,7 @@
             if (feedLoader) observer.observe(feedLoader);
         }
 
+        // --- UPDATE MATRIX FEED TO SHOW CHARACTER IF EMPTY ---
         async function fetchClipsFeed() {
             if(isFetchingFeed) return;
             isFetchingFeed = true;
@@ -2276,8 +2372,16 @@
                         } else {
                             feedPage++; isFetchingFeed = false; fetchClipsFeed(); return;
                         }
-                    } else { hasMoreFeed = false; if(endFeed) endFeed.style.display = 'block'; }
-                } catch(e) { hasMoreFeed = false; if(endFeed) endFeed.style.display = 'block'; }
+                    } else { 
+                        hasMoreFeed = false; 
+                        if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+                        if(endFeed) endFeed.style.display = 'block'; 
+                    }
+                } catch(e) { 
+                    hasMoreFeed = false; 
+                    if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+                    if(endFeed) endFeed.style.display = 'block'; 
+                }
             } else {
                 setTimeout(() => {
                     if(feedPage < 4) { 
@@ -2288,7 +2392,11 @@
                             if(container) container.innerHTML += isPortrait ? renderReelHTML(mockItem) : renderVideoHTML(mockItem);
                         }
                         feedPage++;
-                    } else { hasMoreFeed = false; if(endFeed) endFeed.style.display = 'block'; }
+                    } else { 
+                        hasMoreFeed = false; 
+                        if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+                        if(endFeed) endFeed.style.display = 'block'; 
+                    }
                     if(feedLoader) feedLoader.style.display = 'none';
                     isFetchingFeed = false;
                 }, 800);
@@ -2297,7 +2405,6 @@
             if(feedLoader) feedLoader.style.display = 'none';
             isFetchingFeed = false;
         }
-
         function renderReelHTML(vid) {
             return `<div style="width: 100%; height: 450px; max-width:350px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
                 <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/400x600/111/444?text=Reel'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
