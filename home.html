@@ -30,17 +30,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- SMART LOADER LOGIC (6 HOUR CHECK) -->
+   <!-- SMART LOADER LOGIC (ALWAYS SHOW) -->
     <script>
         (function() {
-            const lastFetch = localStorage.getItem('tournyx_last_fetch_time');
-            const currentTime = new Date().getTime();
-            const sixHours = 6 * 60 * 60 * 1000;
-            if (lastFetch && (currentTime - parseInt(lastFetch) < sixHours)) {
-                document.write('<style>#tournyx-loader { display: none !important; opacity: 0 !important; visibility: hidden !important; }</style>');
-            } else {
-                localStorage.setItem('tournyx_last_fetch_time', currentTime.toString());
-            }
-
             try {
                 if(localStorage.getItem('tournyx_psm') === 'true') { document.documentElement.classList.add('psm-active'); }
                 const THEMES = [{cyan: '#00f2ff', purple: '#bd00ff'}, {cyan: '#00ff7f', purple: '#00b09b'}, {cyan: '#ff9900', purple: '#ff4d4d'}];
@@ -612,55 +604,60 @@
 
 /* --- FIRE-THEMED ANNOUNCEMENT BANNER SYSTEM --- */
 .announcement-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: 0.4s;
+    opacity: 0; pointer-events: none; transition: 0.4s; overflow: hidden;
 }
 .announcement-overlay.active { opacity: 1; pointer-events: auto; }
+
 .announcement-card {
     background: var(--panel-bg); border-radius: 20px; overflow: hidden;
     border: 2px solid var(--accent-orange); box-shadow: 0 0 40px rgba(255, 106, 0, 0.5);
     transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative; cursor: pointer; width: 90%; max-width: 500px;
+    position: relative; cursor: pointer; width: 90%; 
+    display: flex; flex-direction: column; z-index: 20;
 }
 .announcement-overlay.active .announcement-card { transform: scale(1); }
 
 @media (max-width: 768px) {
-    .announcement-card { height: 65vh; display: flex; flex-direction: column; }
-    .announcement-img { flex: 1; }
+    .announcement-card { height: 65vh; max-width: 500px; }
+    .announcement-img { flex: 1; height: auto; }
 }
-@media (min-width: 769px) { .announcement-img { height: 250px; } }
+@media (min-width: 769px) { 
+    .announcement-card { width: 70vw; height: 70vh; max-width: none; }
+    .announcement-img { flex: 1; height: auto; }
+}
 
-/* Highlighted Close Button */
+/* Subtle, Theme-Merged Close Button (No Red, No Circle) */
 .announcement-close {
-    position: absolute; top: 15px; right: 15px; z-index: 20;
-    background: rgba(0,0,0,0.8); border: 2px solid white; color: white;
-    width: 35px; height: 35px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 1.2rem;
-    transition: 0.3s; box-shadow: 0 0 15px rgba(0,0,0,0.9);
+    position: absolute; top: 15px; right: 20px; z-index: 30;
+    background: transparent; border: none; color: rgba(255,255,255,0.6);
+    font-size: 1.8rem; cursor: pointer; transition: 0.3s;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8); display: flex;
+    align-items: center; justify-content: center;
 }
-.announcement-close:hover { background: var(--accent-red); border-color: var(--accent-red); transform: scale(1.1); }
+.announcement-close:hover { color: white; transform: scale(1.1); text-shadow: 0 0 15px var(--accent-orange); }
 
 .announcement-img { background-size: cover; background-position: center; position: relative; }
-.announcement-img::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:50%; background:linear-gradient(to top, var(--panel-bg), transparent); }
+.announcement-img::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:60%; background:linear-gradient(to top, var(--panel-bg), transparent); }
 
-.announcement-content { padding: 25px; text-align: center; position: relative; z-index: 5; }
-.announcement-content h2 { font-family: var(--font-head); font-size: 1.8rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 10px rgba(255,106,0,0.8); }
-.announcement-content p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+.announcement-content { padding: 30px; text-align: center; position: relative; z-index: 5; }
+.announcement-content h2 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,106,0,0.8); }
+.announcement-content p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
 
-/* Tailored Realistic Esports Fire Particles */
+/* Tailored Realistic Esports Fire Particles (Positioned at Screen Edges) */
 .tx-flames {
-    position: absolute; top: 0; bottom: 0; width: 70px; pointer-events: none; z-index: 10;
+    position: absolute; bottom: -10px; height: 50vh; width: 25vw; pointer-events: none; z-index: 10;
     mix-blend-mode: screen; opacity: 0.85;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G"/></filter><rect width="100%" height="100%" fill="%23ff6a00" filter="url(%23f)"/></svg>');
-    animation: fireFlicker 2s infinite alternate;
+    animation: fireFlicker 2s infinite alternate; background-size: cover; background-position: bottom;
 }
-.tx-flame-left { left: -20px; -webkit-mask-image: linear-gradient(to right, black, transparent); mask-image: linear-gradient(to right, black, transparent); }
-.tx-flame-right { right: -20px; -webkit-mask-image: linear-gradient(to left, black, transparent); mask-image: linear-gradient(to left, black, transparent); }
+.tx-flame-left { left: 0; -webkit-mask-image: linear-gradient(to right, black, transparent); mask-image: linear-gradient(to right, black, transparent); }
+.tx-flame-right { right: 0; -webkit-mask-image: linear-gradient(to left, black, transparent); mask-image: linear-gradient(to left, black, transparent); }
 @keyframes fireFlicker {
     0% { opacity: 0.6; filter: hue-rotate(0deg) brightness(1); transform: scaleY(1); }
-    100% { opacity: 0.9; filter: hue-rotate(-20deg) brightness(1.5); transform: scaleY(1.05); }
+    100% { opacity: 0.9; filter: hue-rotate(-15deg) brightness(1.3); transform: scaleY(1.05); }
 }
         /* App Footer Styles - FIXED GAP */
         .app-footer { width: 100%; padding: 40px 15px 30px; background: #000; border-top: 1px solid var(--glass-border); margin-top: 40px; text-align: center; }
@@ -913,13 +910,13 @@
 
     <!-- DYNAMIC FIRE-THEMED ANNOUNCEMENT BANNER -->
     <div class="announcement-overlay" id="announcementOverlay">
+        <!-- Screen Edge Flames (Now attached to the overlay, not the card) -->
+        <div class="tx-flames tx-flame-left"></div>
+        <div class="tx-flames tx-flame-right"></div>
+        
         <!-- Click card to redirect automatically -->
         <div class="announcement-card" id="announcementCard" onclick="window.location.href=currentBannerData.link">
-            <!-- Unique Flame Borders -->
-            <div class="tx-flames tx-flame-left"></div>
-            <div class="tx-flames tx-flame-right"></div>
-            
-            <!-- Highly visible Close button -->
+            <!-- Subtle Close button -->
             <div class="announcement-close" onclick="event.stopPropagation(); closeAnnouncement()"><i class="fa-solid fa-xmark"></i></div>
             
             <div class="announcement-img" id="announcementImg"></div>
@@ -1781,8 +1778,6 @@
         let currentBannerData = announcementBanners[0];
 
         function triggerAnnouncementBanner() {
-            try { if(localStorage.getItem('tournyx_announcement_seen_date') === new Date().toDateString()) return; } catch(e){}
-            
             // Randomly pick one banner to avoid combined view
             currentBannerData = announcementBanners[Math.floor(Math.random() * announcementBanners.length)];
             
@@ -1798,7 +1793,6 @@
 
         function closeAnnouncement() {
             document.getElementById('announcementOverlay').classList.remove('active');
-            try { localStorage.setItem('tournyx_announcement_seen_date', new Date().toDateString()); } catch(e){}
         }
 
         let animPaused = false;
