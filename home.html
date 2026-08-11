@@ -152,12 +152,30 @@
 
         #mobileWalletContainer, #desktopWalletContainer { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
         #mobileWalletContainer > div, #desktopWalletContainer > div { width: 100%; display: flex; gap: 12px; }
-        /* Modernized Rounded Pills */
-        .currency-pill { display: flex; align-items: center; background: linear-gradient(90deg, #111, #000); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 12px; gap: 6px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.05), 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .currency-pill:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
-        .dual-wallet-pill { display: flex; align-items: center; background: linear-gradient(90deg, #111, #000); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 14px; gap: 10px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.05), 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .dw-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+       /* --- 3. GLASSMORPHISM ICONS & PILLS --- */
+        .header-right-mobile { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        
+        .glass-search-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; font-size: 0.9rem;}
+        .glass-search-btn:hover { background: rgba(0,242,255,0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.3); transform: scale(1.05); }
 
+        .currency-pill { display: flex; align-items: center; background: rgba(15,15,20,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 4px 8px; gap: 5px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.3); font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .currency-pill:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .currency-pill.ticket-pill { color: #00f2ff; }
+        .currency-pill.point-pill { color: #FFD700; }
+        .currency-pill i { font-size: 0.85rem; filter: drop-shadow(0 0 5px currentColor); }
+        .currency-pill span { color: white; margin-left: 2px; }
+
+        /* Hide desktop nav on mobile */
+        .desktop-nav { display: none; }
+        @media(min-width: 1024px) { 
+            .desktop-nav { display: flex; align-items: center; gap: 12px; } 
+            .desktop-nav a { font-size: 0.8rem; padding: 5px; } 
+        }
+        @media (max-width: 1023px) {
+            body { padding-top: 85px !important; } /* Corrected padding since header is single line */
+            .overlay-menu { display: none !important; visibility: hidden !important; } 
+            body.has-sidebar { padding-left: 0 !important; }
+        }
        @media (max-width: 1023px) {
             body { padding-top: 155px !important; } /* FIX: Pushes 'Own the Arena' below the taller mobile header */
             .header-right { display: none !important; } 
@@ -334,12 +352,21 @@
         @keyframes blink { from { opacity: 0.5; } to { opacity: 1; } }
 
         /* --- HEADER & NAV --- */
-        .top-header { position: fixed; top: 0; left: 0; height: auto; padding: 10px 15px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); display: flex; align-items: center; transition: 0.3s; }
-        .header-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px;}
+       .top-header { height: 65px; padding: 0 12px; display: flex; align-items: center; width: 100%; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 100%; gap: 5px; }
         .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-        .app-logo { width: 30px; height: 30px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 15px var(--accent-purple); border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;}
-        .app-title { font-family: var(--font-head); font-size: 0.85rem; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; white-space: normal; line-height: 1.2; word-wrap: break-word; max-width: 140px; }
+        /* --- 2. LOGO & TEXT ANIMATIONS --- */
+        .app-logo { width: 30px; height: 30px; border-radius: 50%; object-fit: contain; border: 1px solid rgba(0,242,255,0.4); box-shadow: 0 0 10px rgba(0,242,255,0.3); flex-shrink: 0; animation: floatLogo 3s ease-in-out infinite; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 18px rgba(0,242,255,0.6); } }
         
+        .app-title { 
+            font-family: var(--font-head); font-size: 0.95rem; font-weight: 900; 
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; 
+            background: linear-gradient(90deg, #b0bec5 0%, #ffffff 25%, #00f2ff 50%, #bd00ff 75%, #b0bec5 100%);
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: textShinePro 4s linear infinite; text-overflow: ellipsis; overflow: hidden;
+        }
+        @keyframes textShinePro { to { background-position: 200% center; } }
         .desktop-nav { display: none; align-items: center; gap: 20px; }
         @media(min-width: 1024px) { .desktop-nav { display: flex; } }
         .desktop-nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-head); font-size: 0.95rem; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px;}
@@ -833,52 +860,31 @@
         </div>
     </div>
 
- <!-- EXACT REPLACEMENT FOR <header class="top-header"> FIX: Properly scoped closing tags -->
+ <!-- EXACT REPLACEMENT FOR THE ENTIRE <header> SECTION -->
     <header class="top-header">
-        <!-- Row 1: Logo & Desktop Right -->
         <div class="header-wrapper">
+            
+            <!-- Left: Menu, Animated Logo, Animated Title -->
             <div class="header-left">
-                <!-- Mobile Hamburger forcefully hidden via CSS now -->
                 <i class="fa-solid fa-bars menu-btn" id="mobileMenuBtn"></i>
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="app-logo">
                 <div class="app-title">TOURNYX ESPORTS</div>
             </div>
             
+            <!-- Right Mobile: Glassmorphism Search & Wallets (Injected via JS) -->
+            <div class="header-right-mobile" id="masterWalletContainer">
+                <!-- Data will load here automatically -->
+            </div>
+            
+            <!-- Desktop Nav (Hidden on Mobile) -->
             <nav class="desktop-nav">
                 <a href="home.html" class="active"><i class="fa-solid fa-house"></i> Home</a>
                 <a href="explore.html"><i class="fa-solid fa-compass"></i> Explore</a>
                 <a href="matches.html" onclick="return checkAuth(event)"><i class="fa-solid fa-trophy"></i> Matches</a>
                 <a href="clans.html" onclick="return checkAuth(event)"><i class="fa-solid fa-shield-halved"></i> Clan</a>
-                
-                <!-- NEW DESKTOP CREATE BUTTON -->
                 <button class="desktop-create-btn" onclick="openActionHub()"><i class="fa-solid fa-plus"></i> Create</button>
             </nav>
 
-            <!-- Desktop Right Utilities (Hidden on Mobile) -->
-            <div class="header-right desktop-utilities">
-                <div class="top-action-bar">
-                    <div class="top-action-btn" onclick="openFSsearch()"><i class="fa-solid fa-search"></i></div>
-                    <div class="top-action-btn" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i><div class="badge">2</div></div>
-                    <div class="top-action-btn" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift" style="color: var(--accent-orange);"></i></div>
-                    <div class="top-action-btn" onclick="window.location.href='notifications.html'"><i class="fa-solid fa-bell"></i></div>
-                </div>
-                <div id="desktopWalletContainer" style="display:flex; gap:10px;">
-                    <!-- Filled by JS -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Row 2: Clean Mobile Utilities (Hidden on Desktop - matches ui reference spacing) -->
-        <div class="mobile-sub-header">
-            <div class="util-icons-group">
-                <div class="util-icon" onclick="openFSsearch()"><i class="fa-solid fa-search" style="color:var(--accent-cyan);"></i></div>
-                <div class="util-icon" onclick="window.location.href='shop.html'"><i class="fa-solid fa-cart-shopping"></i><div class="util-badge">2</div></div>
-                <div class="util-icon" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-gift" style="color:var(--accent-orange);"></i></div>
-                <div class="util-icon" onclick="window.location.href='notifications.html'"><i class="fa-solid fa-bell"></i></div>
-            </div>
-            <div id="mobileWalletContainer">
-                <!-- Filled by JS perfectly inside container now -->
-            </div>
         </div>
     </header>
 
@@ -894,12 +900,11 @@
     </div>
 
 
+    <!-- DELETE THIS ENTIRE BLOCK FROM YOUR CODE -->
     <div class="notification-bar fade-up visible">
         <div class="noti-track">
             <div class="noti-item"><i class="fa-solid fa-bell" style="color:var(--accent-orange)"></i> Free Fire Showdown Live! Prize Pool ₹5,000</div>
-            <div class="noti-item"><i class="fa-solid fa-gift" style="color:var(--accent-purple)"></i> Claim 500 Bonus PTS in the Offer Wall today!</div>
-            <div class="noti-item"><i class="fa-solid fa-trophy" style="color:var(--accent-green)"></i> Team K9 Esports just won ₹8,840</div>
-            <div class="noti-item"><i class="fa-solid fa-bell" style="color:var(--accent-orange)"></i> BGMI Masters Series Open for Registration</div>
+            ...
         </div>
     </div>
 
@@ -2006,72 +2011,52 @@
                 `;
             });
         }
-
-        // --- 1. PERFECTLY SEPARATED WALLET LOGIC ---
+// --- PERFECTLY SEPARATED WALLET & MATH LOGIC ---
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
-            // Explicitly separate columns. No mathematical division.
+            // MATH RULE: Tickets = (Earnings / 10). Points = Points.
             let points = parseInt(user.points) || 0; 
-            let tickets = parseInt(user.tickets || user.passes) || 0; 
+            let earnings = parseInt(user.earnings) || 0;
+            let tickets = Math.floor(earnings / 10); 
             
-            let walletHTML = '';
+            const masterContainer = document.getElementById('masterWalletContainer');
             
-            if (user.role === 'Organizer') {
-                walletHTML = `
-                    <div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
-                        <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${points}</span>
-                        <div class="dw-divider"></div>
-                        <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${tickets}</span>
+            // Build the modern Glassmorphism UI
+            const buildWalletUI = (pts, tix) => {
+                return `
+                    <div class="glass-search-btn" onclick="openFSsearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <div class="currency-pill ticket-pill" onclick="window.location.href='tickets.html'">
+                        <i class="fa-solid fa-ticket-simple"></i> <span>${tix}</span>
+                    </div>
+                    <div class="currency-pill point-pill" onclick="window.location.href='reedem.html'">
+                        <i class="fa-solid fa-coins"></i> <span>${pts}</span>
                     </div>
                 `;
-            } else {
-                walletHTML = `
-                    <div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
-                        <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${tickets}</span>
-                    </div>
-                    <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
-                        <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${points}</span>
-                    </div>
-                `;
-            }
+            };
 
-            const mobileContainer = document.getElementById('mobileWalletContainer');
-            const desktopContainer = document.getElementById('desktopWalletContainer');
-            if(mobileContainer) mobileContainer.innerHTML = walletHTML;
-            if(desktopContainer) desktopContainer.innerHTML = walletHTML;
+            // Inject offline/cached data instantly
+            if(masterContainer) masterContainer.innerHTML = buildWalletUI(points, tickets);
 
-            // Strict Backend Syncing
+            // Fetch Strict Columns from Database
             if (user.email && db) {
-                // Fetch strictly points and tickets
-                db.from('Users').select('points, tickets, passes, role').eq('email', user.email).single()
+                db.from('Users').select('points, earnings, role').eq('email', user.email).single()
                 .then(({data, error}) => {
                     if (!error && data) {
+                        // Update local object
                         user.points = data.points !== undefined ? data.points : user.points;
-                        user.tickets = data.tickets !== undefined ? data.tickets : (data.passes !== undefined ? data.passes : user.tickets);
+                        user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
                         user.role = data.role || user.role;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
+                        // Recalculate Live Math
                         let livePoints = parseInt(user.points) || 0;
-                        let liveTickets = parseInt(user.tickets || user.passes) || 0;
+                        let liveTickets = Math.floor((parseInt(user.earnings) || 0) / 10);
 
-                        let hw = '';
-                        if (user.role === 'Organizer') {
-                            hw = `<div class="dual-wallet-pill" onclick="window.location.href='reedem.html'">
-                                <span style="color:#FFD700; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-coins"></i> ${livePoints}</span>
-                                <div class="dw-divider"></div>
-                                <span style="color:var(--accent-cyan); display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-ticket"></i> ${liveTickets}</span>
-                            </div>`;
-                        } else {
-                            hw = `<div class="currency-pill ticket" onclick="window.location.href='tickets.html'">
-                                <i class="fa-solid fa-ticket" style="color:#00f2ff;"></i> <span style="color:#fff;">${liveTickets}</span>
-                            </div>
-                            <div class="currency-pill coin" onclick="window.location.href='reedem.html'">
-                                <i class="fa-solid fa-coins" style="color:#FFD700;"></i> <span style="color:#fff;">${livePoints}</span>
-                            </div>`;
+                        // Inject Live Data
+                        if(masterContainer) {
+                            masterContainer.innerHTML = buildWalletUI(livePoints, liveTickets);
                         }
-                        if(mobileContainer) mobileContainer.innerHTML = hw;
-                        if(desktopContainer) desktopContainer.innerHTML = hw;
                     }
                 });
             }
