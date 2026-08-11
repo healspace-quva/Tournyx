@@ -1792,19 +1792,18 @@
                 `;
             });
         }
-
-        // --- PERFECTLY SEPARATED WALLET & MATH LOGIC ---
+// --- PERFECTLY SEPARATED WALLET & MATH LOGIC ---
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
-            // STRICT MATH: Tickets derive from Earnings column. Points derive from Points column.
+            // MATH RULE: Tickets = (Earnings / 10). Points = Points.
             let points = parseInt(user.points) || 0; 
             let earnings = parseInt(user.earnings) || 0;
             let tickets = Math.floor(earnings / 10); 
             
             const masterContainer = document.getElementById('masterWalletContainer');
             
-            // Build the modern Glassmorphism UI (Order: Search -> Tickets -> Points)
+            // Build the modern Glassmorphism UI
             const buildWalletUI = (pts, tix) => {
                 return `
                     <div class="glass-search-btn" onclick="openFSsearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
@@ -1817,16 +1816,15 @@
                 `;
             };
 
-            // Inject offline/cached data instantly so the UI never looks broken
+            // Inject offline/cached data instantly
             if(masterContainer) masterContainer.innerHTML = buildWalletUI(points, tickets);
 
-            // Fetch Strict Columns from Database Real-Time
+            // Fetch Strict Columns from Database
             if (user.email && db) {
-                // Fetch strictly points and earnings (points = currency, earnings = source for tickets)
                 db.from('Users').select('points, earnings, role').eq('email', user.email).single()
                 .then(({data, error}) => {
                     if (!error && data) {
-                        // Update local object without mixing columns
+                        // Update local object
                         user.points = data.points !== undefined ? data.points : user.points;
                         user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
                         user.role = data.role || user.role;
@@ -1836,7 +1834,7 @@
                         let livePoints = parseInt(user.points) || 0;
                         let liveTickets = Math.floor((parseInt(user.earnings) || 0) / 10);
 
-                        // Inject Perfect Live Data
+                        // Inject Live Data
                         if(masterContainer) {
                             masterContainer.innerHTML = buildWalletUI(livePoints, liveTickets);
                         }
@@ -1993,40 +1991,8 @@
             
             container.innerHTML = html;
         }
-
-        // --- ACTION HUB & SCROLL HIDE DOCK LOGIC ---
-        function openActionHub() { 
-            document.getElementById('actionHubOverlay').classList.add('active'); 
-            document.body.style.overflow = 'hidden'; // Locks body scroll to prevent flicker
-        }
         
-        function closeActionHub() { 
-            document.getElementById('actionHubOverlay').classList.remove('active'); 
-            document.body.style.overflow = ''; // Unlocks body scroll
-        }
-
-        // Fixes the visual glitch when user hits back button on mobile browser
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) { 
-                closeActionHub(); 
-                hideLoader(); 
-            }
-        });
-
-        let lastScrollY = window.scrollY;
-        window.addEventListener('scroll', () => {
-            const dock = document.getElementById('dockWrapper');
-            if(dock) {
-                if (window.scrollY > lastScrollY && window.scrollY > 150) {
-                    dock.classList.add('hide-dock'); // Scrolling down, hide dock
-                } else {
-                    dock.classList.remove('hide-dock'); // Scrolling up, show dock
-                }
-            }
-            lastScrollY = window.scrollY;
-        });
-
-        // --- UPGRADED EMPTY STATE FUNCTION WITH ANIMATED CHARACTERS ---
+       // --- UPGRADED EMPTY STATE FUNCTION WITH ANIMATED CHARACTERS ---
         function getEmptyState(icon, title, desc) {
             const chars = ['🤖', '👾', '👻', '👽', '💀'];
             const randomChar = chars[Math.floor(Math.random() * chars.length)];
@@ -2069,6 +2035,37 @@
             }
         }
 
+      // --- 2. MODAL GLITCH PREVENTION LOGIC ---
+        function openActionHub() { 
+            document.getElementById('actionHubOverlay').classList.add('active'); 
+            document.body.style.overflow = 'hidden'; // Locks body scroll to prevent flicker
+        }
+        
+        function closeActionHub() { 
+            document.getElementById('actionHubOverlay').classList.remove('active'); 
+            document.body.style.overflow = ''; // Unlocks body scroll
+        }
+
+        // Fixes the visual glitch when user hits back button on mobile browser
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) { 
+                closeActionHub(); 
+                hideLoader(); 
+            }
+        });
+
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const dock = document.getElementById('dockWrapper');
+            if(dock) {
+                if (window.scrollY > lastScrollY && window.scrollY > 150) {
+                    dock.classList.add('hide-dock'); // Scrolling down, hide dock
+                } else {
+                    dock.classList.remove('hide-dock'); // Scrolling up, show dock
+                }
+            }
+            lastScrollY = window.scrollY;
+        });
        function buildStreakTimeline(currentStreak) {
             document.getElementById('streakCountMain').innerText = currentStreak;
             const timeline = document.getElementById('streakTimeline');
@@ -2132,6 +2129,7 @@
             if (feedLoader) observer.observe(feedLoader);
         }
 
+        // --- UPDATE MATRIX FEED TO SHOW CHARACTER IF EMPTY ---
         async function fetchClipsFeed() {
             if(isFetchingFeed) return;
             isFetchingFeed = true;
@@ -2194,7 +2192,6 @@
             if(feedLoader) feedLoader.style.display = 'none';
             isFetchingFeed = false;
         }
-
         function renderReelHTML(vid) {
             return `<div style="width: 100%; height: 450px; max-width:350px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
                 <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/400x600/111/444?text=Reel'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
