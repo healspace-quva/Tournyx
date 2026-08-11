@@ -124,66 +124,72 @@
         .hero, .role-cards, .stats-area, .section-pad, .pay-section, .app-footer, .next-match-card, .engine-container-row {
             width: 100%; max-width: 960px; padding-left: 15px; padding-right: 15px; box-sizing: border-box; overflow: hidden;
         }
+
+        /* --- PRO ESPORTS LOGO LOADER (NO TEXT) --- */
+        #tournyx-loader { position: fixed; inset: 0; background-color: var(--primary-bg); z-index: 999999; display: flex; justify-content: center; align-items: center; transition: opacity 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .esports-loader-core { position: relative; width: 130px; height: 130px; display: flex; justify-content: center; align-items: center; }
+        .esports-loader-logo { width: 65px; height: 65px; border-radius: 50%; z-index: 3; animation: pulseLogoCore 1.5s infinite alternate; border: 2px solid var(--accent-cyan); object-fit: contain; background: #000; padding: 2px;}
+        .esports-ring-1 { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--accent-cyan); border-bottom-color: var(--accent-purple); animation: spinRing 1s linear infinite; z-index: 2; }
+        .esports-ring-2 { position: absolute; inset: -15px; border-radius: 50%; border: 2px dashed rgba(255,215,0,0.5); animation: spinRingRev 3s linear infinite; z-index: 1; }
+        .esports-ring-3 { position: absolute; inset: 15px; border-radius: 50%; background: radial-gradient(circle, rgba(0,242,255,0.25) 0%, transparent 70%); animation: pulseGlowBg 2s infinite; z-index: 0;}
         
-        /* --- CUSTOM ESPORTS LOGO LOADER --- */
-        #tournyx-loader { position: fixed; inset: 0; background-color: var(--primary-bg); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease-out; }
-        .tournyx-logo-loader { position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; }
-        .loader-pulse-logo { width: 55px; height: 55px; border-radius: 50%; z-index: 2; animation: logoHeartbeat 1.5s ease-in-out infinite; filter: drop-shadow(0 0 15px var(--accent-purple)); object-fit: contain;}
-        .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--accent-cyan); border-bottom-color: var(--accent-purple); animation: spinFast 1s linear infinite; }
-        .loader-ring::before { content: ''; position: absolute; inset: 6px; border-radius: 50%; border: 2px solid transparent; border-left-color: #FFD700; border-right-color: #FFD700; animation: spinFastReverse 2s linear infinite; }
-        @keyframes spinFast { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes spinFastReverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(-360deg); } }
-        @keyframes logoHeartbeat { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--accent-purple)); } 50% { transform: scale(1.15); filter: drop-shadow(0 0 25px var(--accent-cyan)); } }
+        @keyframes pulseLogoCore { 0% { transform: scale(0.9); box-shadow: 0 0 10px var(--accent-cyan); } 100% { transform: scale(1.15); box-shadow: 0 0 35px var(--accent-purple); } }
+        @keyframes spinRing { 100% { transform: rotate(360deg); } }
+        @keyframes spinRingRev { 100% { transform: rotate(-360deg); } }
+        @keyframes pulseGlowBg { 0%, 100% { opacity: 0.5; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); } }
 
         /* --- 1. SINGLE-LINE PERFECT HEADER LAYOUT --- */
-        .top-header { height: 65px; padding: 0 12px; display: flex; align-items: center; width: 100%; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); position: fixed; top: 0; left: 0;}
+        .top-header { height: 65px; padding: 0 10px; display: flex; align-items: center; width: 100%; background: rgba(10, 10, 12, 0.7); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 2000; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.9); position: fixed; top: 0; left: 0;}
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 100%; gap: 5px; }
-        .header-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        
+        /* Left: Logo and Title */
+        .header-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .menu-btn { font-size: 1.3rem; margin-right: 2px; color: var(--text-main); cursor: pointer; transition: 0.3s;}
         .menu-btn:hover { color: var(--accent-cyan); }
         
-        /* --- 2. LOGO & TEXT ANIMATIONS --- */
-        .app-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 10px rgba(0,242,255,0.3); flex-shrink: 0; animation: floatLogo 3s ease-in-out infinite; border: 1px solid rgba(0,242,255,0.4); }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 0 10px rgba(0,242,255,0.3); } 50% { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 20px rgba(189,0,255,0.6); } }
+        /* --- 2. DYNAMIC LOGO & TEXT ANIMATIONS --- */
+        .app-logo { width: 34px; height: 34px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 15px rgba(0,242,255,0.4); flex-shrink: 0; animation: floatLogoApp 3s ease-in-out infinite; border: 1px solid rgba(0,242,255,0.6); background: #000; }
+        @keyframes floatLogoApp { 0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 0 10px rgba(0,242,255,0.3); } 50% { transform: translateY(-2px) scale(1.05); box-shadow: 0 0 20px rgba(189,0,255,0.7); } }
         
         .app-title { 
-            font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; 
+            font-family: var(--font-head); font-size: 0.95rem; font-weight: 900; 
             text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; 
-            background: linear-gradient(90deg, #b0bec5 0%, #ffffff 25%, #00f2ff 50%, #bd00ff 75%, #b0bec5 100%);
-            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: textShinePro 4s linear infinite; text-overflow: ellipsis; overflow: hidden;
+            background: linear-gradient(90deg, #ffffff 0%, #777 25%, var(--accent-cyan) 50%, var(--accent-purple) 75%, #ffffff 100%);
+            background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: textShineEsports 4s linear infinite; text-overflow: ellipsis; overflow: hidden;
         }
-        @keyframes textShinePro { to { background-position: 200% center; } }
+        @keyframes textShineEsports { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- 3. GLASSMORPHISM ICONS & PILLS --- */
-        .header-right { display: flex; align-items: center; gap: 6px; justify-content: flex-end; flex: 1; overflow: hidden; }
+        /* --- 3. PREMIUM GLASSMORPHISM ICONS & PILLS --- */
+        .header-right-mobile { display: flex; align-items: center; gap: 6px; justify-content: flex-end; flex-shrink: 0; }
         
-        .glass-search-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; font-size: 0.9rem; flex-shrink: 0;}
-        .glass-search-btn:hover { background: rgba(0,242,255,0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0,242,255,0.3); transform: scale(1.05); }
+        /* Search Icon */
+        .glass-search-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; font-size: 0.9rem; flex-shrink: 0; box-shadow: inset 0 0 8px rgba(255,255,255,0.02), 0 4px 15px rgba(0,0,0,0.5);}
+        .glass-search-btn:hover { background: rgba(0,242,255,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: inset 0 0 10px rgba(0,242,255,0.2), 0 0 15px rgba(0,242,255,0.4); transform: scale(1.05); }
 
-        .currency-pill { display: flex; align-items: center; background: rgba(15, 15, 20, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; padding: 5px 10px; gap: 5px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.3s; white-space: nowrap; flex-shrink: 0;}
-        .currency-pill:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); background: rgba(255, 255, 255, 0.1); }
-        .currency-pill.ticket-pill { color: #00f2ff; text-shadow: 0 0 5px rgba(0,242,255,0.4); }
-        .currency-pill.point-pill { color: #FFD700; text-shadow: 0 0 5px rgba(255,215,0,0.4); }
-        .currency-pill i { font-size: 0.85rem; filter: drop-shadow(0 0 5px currentColor); }
+        /* Ticket & Point Pills */
+        .currency-pill { display: flex; align-items: center; background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; padding: 5px 10px; gap: 5px; box-shadow: inset 0 0 8px rgba(255,255,255,0.02), 0 4px 15px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; cursor: pointer; transition: 0.3s; white-space: nowrap; flex-shrink: 0;}
+        .currency-pill:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); background: rgba(255, 255, 255, 0.08); }
+        
+        .currency-pill.ticket-pill i { color: #00f2ff; text-shadow: 0 0 8px rgba(0,242,255,0.6); animation: pulseIcon 2s infinite ease-in-out; }
+        .currency-pill.point-pill i { color: #FFD700; text-shadow: 0 0 8px rgba(255,215,0,0.6); animation: pulseIcon 2s infinite ease-in-out 1s; }
         .currency-pill span { color: white; text-shadow: none; margin-left: 2px;}
 
-        .dual-wallet-pill { display: flex; align-items: center; background: rgba(15, 15, 20, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; padding: 5px 12px; gap: 8px; box-shadow: inset 0 2px 10px rgba(255,255,255,0.02), 0 4px 10px rgba(0,0,0,0.5); font-family: var(--font-head); font-size: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.3s; white-space: nowrap; flex-shrink: 0;}
-        .dw-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+        @keyframes pulseIcon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); filter: brightness(1.2); } }
 
         /* --- 4. RESPONSIVE DESKTOP OVERFLOW FIX --- */
         .desktop-nav { display: none; }
-        .desktop-create-btn { background: var(--accent-gradient); border: none; color: white; padding: 6px 14px; border-radius: 20px; font-family: var(--font-head); font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 5px 15px rgba(0,242,255,0.3); transition: 0.3s; text-transform: uppercase; margin-left: 10px;}
-        .desktop-create-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,242,255,0.5); }
-        
-        .overlay-menu { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); z-index: 3000; padding: 20px 15px; box-shadow: 5px 0 30px rgba(0,0,0,0.8); overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
-        .overlay-menu::-webkit-scrollbar { display: none; }
-
         @media(min-width: 1024px) { 
-            .desktop-nav { display: flex; align-items: center; gap: 10px; margin-left: auto; justify-content: center; } 
-            .desktop-nav a { font-size: 0.75rem; padding: 5px; white-space: nowrap;} 
+            .desktop-nav { display: flex; align-items: center; gap: 15px; margin-left: auto; flex: 2; justify-content: center; } 
+            .desktop-nav a { color: var(--text-muted); text-decoration: none; font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 1px; padding: 5px; white-space: nowrap;}
+            .desktop-nav a:hover, .desktop-nav a.active { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,242,255,0.4); }
             
-            .overlay-menu { width: 220px !important; display: block !important; } 
+            .desktop-create-btn { background: var(--accent-gradient); border: none; color: white; padding: 8px 18px; border-radius: 20px; font-family: var(--font-head); font-weight: bold; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,242,255,0.3); transition: 0.3s; text-transform: uppercase; margin-left: 15px;}
+            .desktop-create-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,242,255,0.5); }
+            
+            .header-right-mobile { flex: initial; }
+
+            .overlay-menu { width: 220px !important; display: block !important; position: fixed; height: 100vh; overflow-y: auto; background: var(--secondary-bg); border-right: 1px solid var(--glass-border); z-index: 3000; padding: 20px 15px; box-shadow: 5px 0 30px rgba(0,0,0,0.8); scrollbar-width: none;} 
             body.has-sidebar { padding-left: 220px !important; }
             body.has-sidebar .top-header { left: 220px !important; width: calc(100% - 220px) !important; }
             .desk-menu-link { padding: 10px 15px !important; font-size: 0.75rem !important; margin-bottom: 5px !important; }
@@ -191,18 +197,32 @@
         }
 
         @media (max-width: 1023px) {
-            body { padding-top: 85px !important; } 
+            body { padding-top: 85px !important; } /* Clean spacing below single-line header */
             .overlay-menu { display: none !important; visibility: hidden !important; } 
             body.has-sidebar { padding-left: 0 !important; }
-            #mobileMenuBtn { display: none !important; } /* Use bottom nav for menu on mobile */
-            .app-title { max-width: 120px; text-overflow: ellipsis; } 
+            .app-title { max-width: 120px; } 
         }
 
-        @media (max-width: 380px) { 
-            .app-title { font-size: 0.75rem; max-width: 80px; }
-            .currency-pill { padding: 4px 6px; font-size: 0.7rem; gap: 3px; }
-            .glass-search-btn { width: 26px; height: 26px; font-size: 0.75rem;}
+        @media (max-width: 380px) { /* Ultra-small screen safety */
+            .app-title { font-size: 0.8rem; max-width: 90px; }
+            .currency-pill { padding: 4px 8px; font-size: 0.75rem; gap: 4px; }
+            .glass-search-btn { width: 30px; height: 30px; font-size: 0.8rem;}
         }
+
+        /* --- SKELETON LOADER --- */
+        .skeleton { 
+            background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
+            background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.02);
+            position: relative; overflow: hidden;
+        }
+        .skeleton::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            animation: skeletonSweep 2s infinite;
+        }
+        @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes skeletonSweep { 100% { left: 200%; } }
 
         /* --- DYNAMIC GLASSMORPHISM DOCK ANIMATION --- */
         .ios-dock-wrapper { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; z-index: 9000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -243,21 +263,6 @@
         .ah-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
         .ah-close { margin-top: 15px; width: 100%; padding: 12px; border-radius: 16px; background: rgba(255,77,77,0.1); color: var(--accent-red); border: 1px solid rgba(255,77,77,0.2); font-family: var(--font-head); font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .ah-close:hover { background: var(--accent-red); color: white; }
-
-        /* --- SKELETON LOADER --- */
-        .skeleton { 
-            background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
-            background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
-            border-radius: 16px; border: 1px solid rgba(255,255,255,0.02);
-            position: relative; overflow: hidden;
-        }
-        .skeleton::after {
-            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-            animation: skeletonSweep 2s infinite;
-        }
-        @keyframes metalShine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        @keyframes skeletonSweep { 100% { left: 200%; } }
 
         /* --- UI FIXES & MODULES --- */
         .slider-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; width: 100%; gap: 10px; }
@@ -364,149 +369,148 @@
         .footer-bottom { border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; font-size: 0.8rem; color: var(--text-muted); }
         .footer-made-with { margin-top: 10px; font-weight: bold; }
 
-        /* --- 3. TOURNYX ENGINE V2 (Exact Match) --- */
-        .engine-widget-v2 { background: #0c0814; border: 1px solid #bd00ff; border-radius: 20px; padding: 20px; box-shadow: 0 0 30px rgba(189,0,255,0.15); width: 100%; margin-bottom: 25px; position: relative; overflow: hidden; }
-        .ew2-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 15px; }
-        .ew2-title { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; text-transform: uppercase; }
-        .ew2-status { font-size: 0.65rem; color: var(--accent-green); font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
-        .ew2-body { display: flex; justify-content: space-between; align-items: center; }
-        .ew2-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
-        .ew2-stat { display: flex; flex-direction: column; gap: 4px; }
-        .ew2-stat span { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
-        .ew2-stat b.cyan { color: var(--accent-cyan); font-size: 1.4rem; font-family: var(--font-head); }
-        .ew2-stat b.gold { color: #FFD700; font-size: 1.2rem; font-family: var(--font-head); display: flex; align-items: center; gap: 5px; }
-        .ew2-stat b.purple { color: var(--accent-purple); font-size: 1.2rem; font-family: var(--font-head); }
-        .ew2-stat b.white { color: white; font-size: 1.2rem; font-family: var(--font-head); }
+/* --- 3. TOURNYX ENGINE V2 (Exact Match) --- */
+.engine-widget-v2 { background: #0c0814; border: 1px solid #bd00ff; border-radius: 20px; padding: 20px; box-shadow: 0 0 30px rgba(189,0,255,0.15); width: 100%; margin-bottom: 25px; position: relative; overflow: hidden; }
+.ew2-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 15px; }
+.ew2-title { font-family: var(--font-head); font-size: 1.1rem; color: white; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-status { font-size: 0.65rem; color: var(--accent-green); font-family: var(--font-head); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-body { display: flex; justify-content: space-between; align-items: center; }
+.ew2-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+.ew2-stat { display: flex; flex-direction: column; gap: 4px; }
+.ew2-stat span { font-size: 0.65rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+.ew2-stat b.cyan { color: var(--accent-cyan); font-size: 1.4rem; font-family: var(--font-head); }
+.ew2-stat b.gold { color: #FFD700; font-size: 1.2rem; font-family: var(--font-head); display: flex; align-items: center; gap: 5px; }
+.ew2-stat b.purple { color: var(--accent-purple); font-size: 1.2rem; font-family: var(--font-head); }
+.ew2-stat b.white { color: white; font-size: 1.2rem; font-family: var(--font-head); }
 
-        .ew2-open-btn { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: transparent; color: var(--accent-cyan); display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; box-shadow: 0 0 20px rgba(0,242,255,0.4), inset 0 0 15px rgba(0,242,255,0.2); cursor: pointer; transition: 0.3s; margin-left: 15px; flex-shrink: 0; }
-        .ew2-open-btn:hover { background: rgba(0,242,255,0.1); transform: scale(1.05); }
+.ew2-open-btn { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: transparent; color: var(--accent-cyan); display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: var(--font-head); font-size: 0.75rem; font-weight: 900; box-shadow: 0 0 20px rgba(0,242,255,0.4), inset 0 0 15px rgba(0,242,255,0.2); cursor: pointer; transition: 0.3s; margin-left: 15px; flex-shrink: 0; }
+.ew2-open-btn:hover { background: rgba(0,242,255,0.1); transform: scale(1.05); }
 
-        .ew2-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding-top: 15px; }
-        .ew2-foot-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.7rem; font-family: var(--font-body); font-weight: bold; cursor: pointer; transition: 0.3s;}
-        .ew2-foot-icon i { font-size: 1.3rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; color: white; }
-        .ew2-foot-icon:hover i { background: rgba(255,255,255,0.1); color: var(--accent-cyan); transform: translateY(-3px); }
+.ew2-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding-top: 15px; }
+.ew2-foot-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.7rem; font-family: var(--font-body); font-weight: bold; cursor: pointer; transition: 0.3s;}
+.ew2-foot-icon i { font-size: 1.3rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; color: white; }
+.ew2-foot-icon:hover i { background: rgba(255,255,255,0.1); color: var(--accent-cyan); transform: translateY(-3px); }
 
-        /* Left Navigation Menu (Modal fixes included) */
-        .engine-modal-box {
-            width: 95%; max-width: 900px; max-height: 90vh; /* FIX: Modal overflow contained */
-            display: flex; flex-direction: column;
-            overflow: hidden; 
-        }
-        .engine-modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .em-user-badge { display: flex; align-items: center; gap: 12px; }
-        /* FIX: Lock Engine Modal Profile Icon Size */
-        .em-avatar { width: 45px !important; height: 45px !important; border-radius: 50% !important; object-fit: cover !important; border: 2px solid var(--accent-cyan) !important; box-shadow: 0 0 10px rgba(0,242,255,0.3) !important; flex-shrink: 0 !important; display: block !important;}
+/* Left Navigation Menu (Modal fixes included) */
+.engine-modal-box {
+    width: 95%; max-width: 900px; max-height: 90vh; /* FIX: Modal overflow contained */
+    display: flex; flex-direction: column;
+    overflow: hidden; 
+}
+.engine-modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.em-user-badge { display: flex; align-items: center; gap: 12px; }
+.em-avatar { width: 40px !important; height: 40px !important; border-radius: 50% !important; object-fit: cover !important; border: 2px solid var(--accent-cyan) !important; box-shadow: 0 0 10px rgba(0,242,255,0.3) !important; flex-shrink: 0 !important; }
 
-        .engine-modal-body {
-            display: flex; flex-direction: row;
-            overflow: hidden; flex: 1; /* FIX: allows internal scrolling */
-        }
+.engine-modal-body {
+    display: flex; flex-direction: row;
+    overflow: hidden; flex: 1; /* FIX: allows internal scrolling */
+}
 
-        .em-nav-menu {
-            width: 220px; background: #0a0a0d; border-right: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; gap: 5px; padding: 15px 10px; overflow-y: auto;
-        }
-        .em-nav-btn {
-            display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px;
-            background: transparent; border: 1px solid transparent; color: var(--text-muted);
-            font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; cursor: pointer;
-            transition: 0.3s; text-align: left;
-        }
-        .em-nav-btn i { width: 18px; text-align: center; font-size: 0.9rem; }
-        .em-nav-btn:hover { color: white; background: rgba(255,255,255,0.03); }
-        .em-nav-btn.active {
-            color: var(--accent-cyan); background: rgba(0,242,255,0.08);
-            border-color: rgba(0,242,255,0.3); box-shadow: 0 0 15px rgba(0,242,255,0.15);
-        }
+.em-nav-menu {
+    width: 220px; background: #0a0a0d; border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex; flex-direction: column; gap: 5px; padding: 15px 10px; overflow-y: auto;
+}
+.em-nav-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px;
+    background: transparent; border: 1px solid transparent; color: var(--text-muted);
+    font-family: var(--font-head); font-size: 0.75rem; font-weight: bold; cursor: pointer;
+    transition: 0.3s; text-align: left;
+}
+.em-nav-btn i { width: 18px; text-align: center; font-size: 0.9rem; }
+.em-nav-btn:hover { color: white; background: rgba(255,255,255,0.03); }
+.em-nav-btn.active {
+    color: var(--accent-cyan); background: rgba(0,242,255,0.08);
+    border-color: rgba(0,242,255,0.3); box-shadow: 0 0 15px rgba(0,242,255,0.15);
+}
 
-        /* Right Content Area */
-        .em-tab-content { flex: 1; padding: 20px; overflow-y: auto; background: #08080a; }
-        .em-pane { display: none; }
-        .em-pane.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+/* Right Content Area */
+.em-tab-content { flex: 1; padding: 20px; overflow-y: auto; background: #08080a; }
+.em-pane { display: none; }
+.em-pane.active { display: block; animation: fadeIn 0.3s ease-in-out; }
 
-        .em-section-box {
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 14px; padding: 18px; position: relative;
-        }
-        .em-section-box.margin-top { margin-top: 15px; }
-        .em-box-title { font-family: var(--font-head); font-size: 0.9rem; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+.em-section-box {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px; padding: 18px; position: relative;
+}
+.em-section-box.margin-top { margin-top: 15px; }
+.em-box-title { font-family: var(--font-head); font-size: 0.9rem; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* Player Analysis Bars */
-        .em-skill-bars { display: flex; flex-direction: column; gap: 12px; }
-        .em-skill-info { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; color: white; margin-bottom: 4px; }
-        .em-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
-        .em-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+/* Player Analysis Bars */
+.em-skill-bars { display: flex; flex-direction: column; gap: 12px; }
+.em-skill-info { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; color: white; margin-bottom: 4px; }
+.em-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.em-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
-        .em-report-text { font-size: 0.85rem; color: #ccc; margin-bottom: 6px; }
-        .em-report-reward { margin-top: 10px; font-size: 0.8rem; color: var(--accent-purple); font-family: var(--font-head); }
+.em-report-text { font-size: 0.85rem; color: #ccc; margin-bottom: 6px; }
+.em-report-reward { margin-top: 10px; font-size: 0.8rem; color: var(--accent-purple); font-family: var(--font-head); }
 
-        /* Tasks List */
-        .em-task-list { display: flex; flex-direction: column; gap: 10px; }
-        .em-task-card {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; background: rgba(255,255,255,0.02); border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem;
-        }
-        .em-task-info { display: flex; align-items: center; gap: 10px; color: white; }
-        .em-task-info small { color: var(--text-muted); font-size: 0.7rem; margin-left: 5px; }
-        .em-task-xp { color: var(--accent-purple); font-family: var(--font-head); font-weight: bold; font-size: 0.8rem; }
-        .em-task-status { color: var(--accent-green); font-family: var(--font-head); font-weight: bold; font-size: 0.8rem; }
+/* Tasks List */
+.em-task-list { display: flex; flex-direction: column; gap: 10px; }
+.em-task-card {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 15px; background: rgba(255,255,255,0.02); border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem;
+}
+.em-task-info { display: flex; align-items: center; gap: 10px; color: white; }
+.em-task-info small { color: var(--text-muted); font-size: 0.7rem; margin-left: 5px; }
+.em-task-xp { color: var(--accent-purple); font-family: var(--font-head); font-weight: bold; font-size: 0.8rem; }
+.em-task-status { color: var(--accent-green); font-family: var(--font-head); font-weight: bold; font-size: 0.8rem; }
 
-        .em-progress-footer { margin-top: 15px; }
-        .em-pf-label { display: flex; justify-content: space-between; font-family: var(--font-head); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
+.em-progress-footer { margin-top: 15px; }
+.em-pf-label { display: flex; justify-content: space-between; font-family: var(--font-head); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
 
-        /* Role Cards */
-        .em-role-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .em-role-card {
-            display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 15px;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;
-            cursor: pointer; transition: 0.3s; color: var(--text-muted); font-family: var(--font-head); font-size: 0.75rem;
-        }
-        .em-role-card i { font-size: 1.5rem; }
-        .em-role-card.active, .em-role-card:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,242,255,0.05); }
+/* Role Cards */
+.em-role-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.em-role-card {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 15px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;
+    cursor: pointer; transition: 0.3s; color: var(--text-muted); font-family: var(--font-head); font-size: 0.75rem;
+}
+.em-role-card i { font-size: 1.5rem; }
+.em-role-card.active, .em-role-card:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,242,255,0.05); }
 
-        /* Evolution Circle */
-        .em-power-circle {
-            width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent-cyan);
-            box-shadow: 0 0 25px rgba(0,242,255,0.4); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; margin: 10px 0 20px;
-        }
-        .em-power-circle span { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); }
-        .em-power-circle b { font-size: 1.5rem; font-family: var(--font-head); color: white; }
+/* Evolution Circle */
+.em-power-circle {
+    width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent-cyan);
+    box-shadow: 0 0 25px rgba(0,242,255,0.4); display: flex; flex-direction: column;
+    justify-content: center; align-items: center; margin: 10px 0 20px;
+}
+.em-power-circle span { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-head); }
+.em-power-circle b { font-size: 1.5rem; font-family: var(--font-head); color: white; }
 
-        .em-evo-stats { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 250px; margin-bottom: 20px; }
-        .em-evo-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: white; }
+.em-evo-stats { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 250px; margin-bottom: 20px; }
+.em-evo-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: white; }
 
-        /* Inventory Items */
-        .em-inventory-list { display: flex; flex-direction: column; gap: 10px; }
-        .em-inv-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
-            background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(255,255,255,0.04);
-        }
-        .em-inv-name { display: flex; align-items: center; gap: 10px; color: white; font-family: var(--font-head); font-size: 0.85rem; }
-        .em-inv-item b { font-family: var(--font-head); color: white; }
+/* Inventory Items */
+.em-inventory-list { display: flex; flex-direction: column; gap: 10px; }
+.em-inv-item {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+    background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid rgba(255,255,255,0.04);
+}
+.em-inv-name { display: flex; align-items: center; gap: 10px; color: white; font-family: var(--font-head); font-size: 0.85rem; }
+.em-inv-item b { font-family: var(--font-head); color: white; }
 
-        /* Logs */
-        .em-log-list { display: flex; flex-direction: column; gap: 10px; }
-        .em-log-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
-            background: rgba(255,255,255,0.02); border-radius: 10px; font-size: 0.85rem; color: var(--text-muted);
-        }
-        .em-log-left { display: flex; align-items: center; gap: 12px; }
-        .em-log-left b { display: block; color: white; font-size: 0.85rem; }
-        .em-log-left small { color: var(--text-muted); font-size: 0.7rem; }
+/* Logs */
+.em-log-list { display: flex; flex-direction: column; gap: 10px; }
+.em-log-item {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;
+    background: rgba(255,255,255,0.02); border-radius: 10px; font-size: 0.85rem; color: var(--text-muted);
+}
+.em-log-left { display: flex; align-items: center; gap: 12px; }
+.em-log-left b { display: block; color: white; font-size: 0.85rem; }
+.em-log-left small { color: var(--text-muted); font-size: 0.7rem; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @media(max-width: 768px) {
-            .engine-modal-body { flex-direction: column; }
-            .em-nav-menu { width: 100%; flex-direction: row; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px; }
-            .em-nav-btn { white-space: nowrap; padding: 8px 12px; font-size: 0.65rem; }
-            .em-header-stats { display: none; }
-        }
+@media(max-width: 768px) {
+    .engine-modal-body { flex-direction: column; }
+    .em-nav-menu { width: 100%; flex-direction: row; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px; }
+    .em-nav-btn { white-space: nowrap; padding: 8px 12px; font-size: 0.65rem; }
+    .em-header-stats { display: none; }
+}
         /* Missing Bottom Sheet Menu Styles */
         .bs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 8000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .bs-overlay.active { opacity: 1; pointer-events: auto; }
@@ -563,9 +567,11 @@
     
     <!-- 💥 FUTURISTIC ESPORTS LOGO LOADER (NO TEXT) 💥 -->
     <div id="tournyx-loader">
-        <div class="tournyx-logo-loader">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="loader-pulse-logo" alt="Tournyx">
-            <div class="loader-ring"></div>
+        <div class="esports-loader-core">
+            <div class="esports-ring-1"></div>
+            <div class="esports-ring-2"></div>
+            <div class="esports-ring-3"></div>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" class="esports-loader-logo" alt="Tournyx">
         </div>
     </div>
     
@@ -645,7 +651,7 @@
         </div>
     </div>
 
-    <!-- EXACT REPLACEMENT FOR THE ENTIRE <header> SECTION -->
+    <!-- PERFECT SINGLE-LINE HEADER LAYOUT -->
     <header class="top-header">
         <div class="header-wrapper">
             
@@ -665,9 +671,9 @@
                 <button class="desktop-create-btn" onclick="openActionHub()"><i class="fa-solid fa-plus"></i> Create</button>
             </nav>
             
-            <!-- Right: Glass Search & Wallets (Injected via JS for both Desktop & Mobile) -->
-            <div class="header-right" id="masterWalletContainer">
-                <!-- Data loads here automatically -->
+            <!-- Right: Search + Tickets + Points (Injected via JS dynamically) -->
+            <div class="header-right-mobile" id="masterWalletContainer">
+                <!-- Data will load here automatically via JS -->
             </div>
 
         </div>
@@ -863,7 +869,7 @@
             </div>
         </section>
 
-      <!-- TOURNYX ENGINE SYSTEM MODAL (EXACT MATCH & FIX FOR OVERFLOW) -->
+      <!-- TOURNYX ENGINE SYSTEM MODAL -->
 <div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) closeEngineModal()">
     <div class="engine-modal-box glass-panel">
         
@@ -1791,14 +1797,14 @@
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
-            // MATH RULE STRICT: Tickets = Math.floor(earnings / 10). Points = points.
+            // STRICT MATH: Tickets derive from Earnings column. Points derive from Points column.
             let points = parseInt(user.points) || 0; 
             let earnings = parseInt(user.earnings) || 0;
             let tickets = Math.floor(earnings / 10); 
             
             const masterContainer = document.getElementById('masterWalletContainer');
             
-            // Build the modern Glassmorphism UI (unified for both Mobile and Desktop in one bar)
+            // Build the modern Glassmorphism UI (Order: Search -> Tickets -> Points)
             const buildWalletUI = (pts, tix) => {
                 return `
                     <div class="glass-search-btn" onclick="openFSsearch()"><i class="fa-solid fa-magnifying-glass"></i></div>
@@ -1811,25 +1817,26 @@
                 `;
             };
 
-            // Inject cached data instantly
+            // Inject offline/cached data instantly so the UI never looks broken
             if(masterContainer) masterContainer.innerHTML = buildWalletUI(points, tickets);
 
-            // Fetch Strict Columns from Database
+            // Fetch Strict Columns from Database Real-Time
             if (user.email && db) {
-                // Fetch strictly points and earnings (points = currency, earnings = math source for tickets)
-                db.from('Users').select('points, earnings').eq('email', user.email).single()
+                // Fetch strictly points and earnings (points = currency, earnings = source for tickets)
+                db.from('Users').select('points, earnings, role').eq('email', user.email).single()
                 .then(({data, error}) => {
                     if (!error && data) {
-                        // Update local object
+                        // Update local object without mixing columns
                         user.points = data.points !== undefined ? data.points : user.points;
                         user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
+                        user.role = data.role || user.role;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
                         // Recalculate Live Math
                         let livePoints = parseInt(user.points) || 0;
                         let liveTickets = Math.floor((parseInt(user.earnings) || 0) / 10);
 
-                        // Inject Live Data
+                        // Inject Perfect Live Data
                         if(masterContainer) {
                             masterContainer.innerHTML = buildWalletUI(livePoints, liveTickets);
                         }
