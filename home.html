@@ -608,7 +608,7 @@
     100% { opacity: 0; transform: translate(0, 0) rotate(var(--rot)) scaleY(0.2); }
 }
 
-/* --- FIRE-THEMED ANNOUNCEMENT BANNER SYSTEM --- */
+/* --- DYNAMIC SPARKLE ANNOUNCEMENT BANNER --- */
 .announcement-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000;
@@ -623,19 +623,21 @@
     transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative; cursor: pointer; width: 90%; 
     display: flex; flex-direction: column; z-index: 20;
+    aspect-ratio: 16 / 9; /* Enforce exactly 16:9 */
+    max-height: 80vh; 
 }
 .announcement-overlay.active .announcement-card { transform: scale(1); }
 
 @media (max-width: 768px) {
-    .announcement-card { height: 65vh; max-width: 500px; }
-    .announcement-img { flex: 1; height: auto; }
+    .announcement-card { width: 95%; max-width: 500px; aspect-ratio: auto; height: auto; min-height: 50vh; }
+    .announcement-img { flex: 1; min-height: 200px; }
 }
 @media (min-width: 769px) { 
-    .announcement-card { width: 70vw; height: 70vh; max-width: none; }
-    .announcement-img { flex: 1; height: auto; }
+    .announcement-card { width: 70vw; max-width: 900px; }
+    .announcement-img { flex: 1; height: 100%; }
 }
 
-/* Subtle, Theme-Merged Close Button (No Red, No Circle) */
+/* Subtle, Theme-Merged Close Button */
 .announcement-close {
     position: absolute; top: 15px; right: 20px; z-index: 30;
     background: transparent; border: none; color: rgba(255,255,255,0.6);
@@ -652,18 +654,23 @@
 .announcement-content h2 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,106,0,0.8); }
 .announcement-content p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
 
-/* Tailored Realistic Esports Fire Particles (Pure CSS) */
-.tx-flames {
-    position: absolute; bottom: 0; width: 150px; height: 60vh; pointer-events: none; z-index: 10;
-    background: radial-gradient(ellipse at bottom, rgba(255,106,0,0.8) 0%, rgba(255,0,0,0.3) 40%, transparent 70%);
-    mix-blend-mode: screen; filter: blur(12px); animation: fireFlicker 2s infinite alternate ease-in-out;
+/* Edge Sparkles Moving UP the surface of the banner */
+.banner-sparkles {
+    position: absolute; inset: 0; pointer-events: none; z-index: 25;
+    background-image: radial-gradient(circle at center, rgba(255,106,0,1) 0%, transparent 3px), 
+                      radial-gradient(circle at center, rgba(255,200,0,1) 0%, transparent 2px);
+    background-size: 60px 100px, 90px 150px;
+    background-position: 0 0, 30px 50px;
+    animation: sparksRise 3s linear infinite;
+    /* Mask hides the middle, only showing sparkles on the far left and right edges */
+    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
+    mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
 }
-.tx-flame-left { left: -40px; }
-.tx-flame-right { right: -40px; }
-@keyframes fireFlicker {
-    0% { transform: scaleY(1) scaleX(1); opacity: 0.5; }
-    50% { transform: scaleY(1.15) scaleX(0.95); opacity: 0.7; filter: blur(15px) hue-rotate(5deg); }
-    100% { transform: scaleY(1.05) scaleX(1.1); opacity: 0.9; filter: blur(10px) hue-rotate(-10deg); }
+@keyframes sparksRise {
+    0% { background-position: 0 150px, 30px 200px; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { background-position: 0 0, 30px 50px; opacity: 0; }
 }
 
 /* Banner Skeleton Loader */
@@ -921,14 +928,14 @@
         };
     </script>
 
-    <!-- DYNAMIC FIRE-THEMED ANNOUNCEMENT BANNER -->
+   <!-- DYNAMIC SPARKLE ANNOUNCEMENT BANNER -->
     <div class="announcement-overlay" id="announcementOverlay">
-        <!-- Screen Edge Flames (Now attached to the overlay, not the card) -->
-        <div class="tx-flames tx-flame-left"></div>
-        <div class="tx-flames tx-flame-right"></div>
-        
         <!-- Click card to redirect automatically -->
         <div class="announcement-card" id="announcementCard" onclick="window.location.href=currentBannerData.link">
+            
+            <!-- Upward edge sparkles over the banner -->
+            <div class="banner-sparkles"></div>
+            
             <!-- Subtle Close button -->
             <div class="announcement-close" onclick="event.stopPropagation(); closeAnnouncement()"><i class="fa-solid fa-xmark"></i></div>
             
@@ -1782,27 +1789,24 @@
         }
         function closeAuthPopup() { document.getElementById('authPopup').classList.remove('active'); }
 
-        // --- MULTIPLE SEPARATE ANNOUNCEMENT BANNERS LOGIC ---
-        const announcementBanners = [
-            { title: "Diwali Showdown", desc: "Prize pool of ₹50,000! Click anywhere on this banner to join the arena directly.", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png", link: "explore.html" },
-            { title: "Season 5 Rush", desc: "Climb the community leaderboards and claim exclusive real rewards. Tap to enter!", img: "https://via.placeholder.com/600x400/00f2ff/000?text=Esports+Season+5", link: "leaderboard.html" },
-            { title: "New Shop Drops", desc: "Grab unique Clan skins and Premium Passes at a 50% discount today.", img: "https://via.placeholder.com/600x400/bd00ff/fff?text=Flash+Drops", link: "shop.html" }
-        ];
-        let currentBannerData = announcementBanners[0];
-
-        // --- MULTIPLE QUEUED ANNOUNCEMENT BANNERS LOGIC ---
+        // --- MULTIPLE QUEUED ANNOUNCEMENT BANNERS LOGIC (2 HOUR COOLDOWN) ---
         const rawBanners = [
             { title: "Diwali Showdown", desc: "Prize pool of ₹50,000! Click anywhere on this banner to join the arena directly.", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png", link: "explore.html" },
             { title: "Season 5 Rush", desc: "Climb the community leaderboards and claim exclusive real rewards. Tap to enter!", img: "https://via.placeholder.com/600x400/00f2ff/000?text=Esports+Season+5", link: "leaderboard.html" },
             { title: "New Shop Drops", desc: "Grab unique Clan skins and Premium Passes at a 50% discount today.", img: "https://via.placeholder.com/600x400/bd00ff/fff?text=Flash+Drops", link: "shop.html" }
         ];
         
-        // Validation: Only keep banners that have both an image and a link
-        let validBanners = rawBanners.filter(b => b.img && b.link);
+        // Strict Validation: Only keep banners with valid images and links
+        let validBanners = rawBanners.filter(b => b.img && b.link && b.img.trim() !== "" && b.link.trim() !== "");
         let currentBannerIndex = 0;
 
         function triggerAnnouncementBanner() {
-            try { if(localStorage.getItem('tournyx_announcements_cleared') === new Date().toDateString()) return; } catch(e){}
+            try { 
+                let cooldown = localStorage.getItem('tournyx_banner_cooldown'); 
+                // Checks if 2 hours (7,200,000 ms) have passed
+                if(cooldown && (Date.now() - parseInt(cooldown) < 7200000)) return; 
+            } catch(e){}
+            
             if(validBanners.length === 0) return;
             showBannerAtIndex(0);
         }
@@ -1811,10 +1815,10 @@
             let overlay = document.getElementById('announcementOverlay');
             let card = document.getElementById('announcementCard');
 
-            // If we've reached the end of the banners, close overlay and save to local storage
+            // End of queue: Save timestamp for 2-hour cooldown
             if(index >= validBanners.length) {
                 overlay.classList.remove('active');
-                try { localStorage.setItem('tournyx_announcements_cleared', new Date().toDateString()); } catch(e){}
+                try { localStorage.setItem('tournyx_banner_cooldown', Date.now()); } catch(e){}
                 return;
             }
             
@@ -1824,9 +1828,9 @@
             // Set text data
             document.getElementById('announcementTitle').innerText = banner.title;
             document.getElementById('announcementDesc').innerText = banner.desc;
-            currentBannerData = banner; // Store for link click
+            currentBannerData = banner; 
             
-            // Handle Skeleton Loader for Images
+            // Handle Skeleton Loader safely
             let imgEl = document.getElementById('announcementImg');
             imgEl.innerHTML = '<div class="banner-skeleton" id="bannerSkeleton"></div>';
             imgEl.style.backgroundImage = 'none';
@@ -1839,7 +1843,7 @@
                 if(skel) skel.remove();
             };
 
-            // Animate In: If overlay isn't active yet, show it. Otherwise, pop the card smoothly.
+            // Animate In smoothly
             if(!overlay.classList.contains('active')) {
                 setTimeout(() => overlay.classList.add('active'), 800);
                 card.style.opacity = '1';
@@ -1855,7 +1859,7 @@
             card.style.transform = 'scale(0.8)';
             card.style.opacity = '0';
             
-            // Wait for shrink animation, then load the next banner
+            // Wait for shrink, then load next banner
             setTimeout(() => {
                 showBannerAtIndex(currentBannerIndex + 1);
             }, 300);
@@ -2481,6 +2485,7 @@
             lastScrollY = window.scrollY;
         });
 
+       // --- 100% SECURE LIVE DB STREAK (ISOLATING POINTS & TICKETS) ---
         function buildStreakTimeline(currentStreak) {
             document.getElementById('streakCountMain').innerText = currentStreak;
             const timeline = document.getElementById('streakTimeline');
@@ -2513,17 +2518,23 @@
                         btn.innerText = `NEXT IN ${hoursLeft}H`; 
                         btn.classList.add('claimed'); 
                         btn.disabled = true;
-                    } else if(hoursPassed > 48) {
-                        currentStreak = 0;
+                    } else if(hoursPassed >= 48) {
+                        // Reset if a day was missed
+                        currentStreak = 0; 
                         document.getElementById('streakCountMain').innerText = "0";
                         btn.innerText = "CLAIM NEXT";
                         btn.classList.remove('claimed');
                         btn.disabled = false;
                     } else {
+                        // Between 24h and 48h - Valid to claim next
                         btn.innerText = "CLAIM NEXT";
                         btn.classList.remove('claimed');
                         btn.disabled = false;
                     }
+                } else {
+                    btn.innerText = "CLAIM NEXT";
+                    btn.classList.remove('claimed');
+                    btn.disabled = false;
                 }
             }
 
@@ -2809,8 +2820,7 @@
             }
         }
 
-       // --- SECURE LIVE DB DAILY STREAK & ISOLATED POINTS FIX ---
-        async function claimDailyStreak() {
+       async function claimDailyStreak() {
             if(!checkAuth()) return;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             const btn = document.getElementById('btnClaimStreak');
@@ -2826,49 +2836,58 @@
             }
 
             try {
-                // 1. Fetch live server data to prevent local storage bypass
-                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', user.email).single();
+                // 1. Fetch strict live data to prevent UI local storage exploits
+                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points, earnings').eq('email', user.email).single();
                 if (fetchError) throw fetchError;
 
-                // 2. Validate 24-hour live timestamp
+                // 2. Validate 24-hour timestamp against live DB
                 let now = new Date().getTime();
                 if(liveData.last_claim_date) {
                     let lastClaim = new Date(liveData.last_claim_date).getTime();
                     if(now - lastClaim < 24 * 60 * 60 * 1000) {
                         let hoursLeft = Math.ceil(24 - ((now - lastClaim) / (1000 * 60 * 60)));
-                        showToast("You can only claim once every 24 hours!", true);
+                        showToast("Already claimed! Next in " + hoursLeft + "H", true);
                         btn.innerText = `NEXT IN ${hoursLeft}H`; 
                         btn.classList.add('claimed'); 
                         return;
                     }
                 }
 
-                // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
+                // 3. Isolated Math Logic: ONLY update Points
                 let newStreak = (liveData.streak_count || 0) + 1;
+                
+                // If over 48 hours, they broke the streak
+                if(liveData.last_claim_date) {
+                    let lastClaim = new Date(liveData.last_claim_date).getTime();
+                    if(now - lastClaim > 48 * 60 * 60 * 1000) newStreak = 1; 
+                }
+
                 let reward = Math.min(newStreak * 50, 1000);
                 let currentPoints = parseInt(liveData.points) || 0;
                 let newPoints = currentPoints + reward; 
+                let newDate = new Date().toISOString();
 
                 btn.innerText = "SYNCING...";
 
-                // 4. Secure DB Push
+                // 4. Secure DB Push - updating ONLY points and streak info
                 const { error: updateError } = await db.from('Users').update({ 
                     streak_count: newStreak, 
                     points: newPoints,
-                    last_claim_date: new Date().toISOString()
+                    last_claim_date: newDate
                 }).eq('email', user.email);
                 
                 if (updateError) throw updateError;
                 
-                // 5. Update local cache ONLY with Points data
+                // 5. Update local cache safely (leaving earnings/tickets entirely alone)
                 user.streak_count = newStreak;
                 user.points = newPoints;
-                user.last_claim_date = new Date().toISOString();
+                user.last_claim_date = newDate;
+                user.earnings = liveData.earnings !== undefined ? liveData.earnings : user.earnings;
                 localStorage.setItem('tournyx_user', JSON.stringify(user));
 
                 // 6. UI Updates
                 buildStreakTimeline(newStreak);
-                syncLiveWalletPoints(user); // Will sync cleanly without touching tickets
+                syncLiveWalletPoints(user); // Instantly syncs the UI values
                 
                 if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
                 btn.innerText = "CLAIMED TODAY"; 
