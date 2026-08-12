@@ -961,69 +961,69 @@ const TxSound = new TournyxAudioEngine();
 
         /* Urgent Alert Banner */
         .urgent-alert { background: rgba(255, 77, 77, 0.1); border-left: 4px solid var(--accent-red); padding: 10px 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; display: flex; align-items: center; gap: 10px; animation: pulseAlert 2s infinite; font-size: 0.85rem; font-weight: bold;}
-        @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 0 rgba(255,77,77,0); } 50% { box-shadow: inset 50px 0 50px -50px rgba(255,77,77,0.5); } }
-      <!-- SOLO LEVELING "SYSTEM AWAKENING" OVERLAY -->
-<div id="systemAwakenOverlay" class="awakening-overlay">
-    <div class="awakening-card glass-panel">
-        <div class="system-glitch-tag">[ SYSTEM NOTIFICATION ]</div>
-        <h1 class="awakening-title">PLAYER AWAKENING</h1>
-        <p class="awakening-desc">
-            Welcome, Athlete. The Tournyx Engine has detected your presence. 
-            Initiate calibration to evaluate your Player DNA, unlock skill tracking, and claim starter Points.
-        </p>
-        <div class="awakening-stats-preview">
-            <span>CALIBRATION QUESTS READY</span>
-            <div class="quest-pills">
-                <span class="q-pill"><i class="fa-solid fa-crosshairs"></i> Aim Calibration</span>
-                <span class="q-pill"><i class="fa-solid fa-bolt"></i> Reaction Test</span>
-            </div>
-        </div>
-        <button class="awakening-btn" onclick="triggerSystemAwakening()">
-            <i class="fa-solid fa-power-off"></i> BEGIN AWAKENING
-        </button>
-    </div>
-</div>
+      @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 0 rgba(255,77,77,0); } 50% { box-shadow: inset 50px 0 50px -50px rgba(255,77,77,0.5); } }
 
-<style>
-.awakening-overlay {
-    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(20px); z-index: 99999;
-    display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.awakening-overlay.active { display: flex; animation: awakenFadeIn 0.5s ease-out; }
-.awakening-card {
-    max-width: 480px; width: 100%; text-align: center; padding: 35px 25px;
-    border: 2px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0,242,255,0.3);
-    border-radius: 24px; background: #08080c;
-}
-.system-glitch-tag {
-    font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-purple);
-    letter-spacing: 2px; margin-bottom: 10px; font-weight: bold;
-}
-.awakening-title {
-    font-family: var(--font-head); font-size: 2rem; color: #fff;
-    text-shadow: 0 0 20px var(--accent-cyan); margin-bottom: 15px; font-weight: 900;
-}
-.awakening-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px; }
-.awakening-stats-preview {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 15px; margin-bottom: 25px;
-}
-.awakening-stats-preview span { font-family: var(--font-head); font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
-.quest-pills { display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-.q-pill { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-family: var(--font-head); }
-.awakening-btn {
-    width: 100%; padding: 16px; background: var(--accent-gradient); border: none;
-    border-radius: 14px; color: white; font-family: var(--font-head); font-weight: 900;
-    font-size: 1.1rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
-    box-shadow: 0 0 25px rgba(189,0,255,0.5);
-}
-.awakening-btn:hover { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,242,255,0.7); }
-@keyframes awakenFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
+        /* System Awakening Overlay CSS */
+        .awakening-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(20px); z-index: 99999;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .awakening-overlay.active { display: flex; animation: awakenFadeIn 0.5s ease-out; }
+        .awakening-card {
+            max-width: 480px; width: 100%; text-align: center; padding: 35px 25px;
+            border: 2px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0,242,255,0.3);
+            border-radius: 24px; background: #08080c;
+        }
+        .system-glitch-tag {
+            font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-purple);
+            letter-spacing: 2px; margin-bottom: 10px; font-weight: bold;
+        }
+        .awakening-title {
+            font-family: var(--font-head); font-size: 2rem; color: #fff;
+            text-shadow: 0 0 20px var(--accent-cyan); margin-bottom: 15px; font-weight: 900;
+        }
+        .awakening-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px; }
+        .awakening-stats-preview {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 15px; margin-bottom: 25px;
+        }
+        .awakening-stats-preview span { font-family: var(--font-head); font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
+        .quest-pills { display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+        .q-pill { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-family: var(--font-head); }
+        .awakening-btn {
+            width: 100%; padding: 16px; background: var(--accent-gradient); border: none;
+            border-radius: 14px; color: white; font-family: var(--font-head); font-weight: 900;
+            font-size: 1.1rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 0 25px rgba(189,0,255,0.5);
+        }
+        .awakening-btn:hover { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,242,255,0.7); }
+        @keyframes awakenFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
+
+    <!-- SOLO LEVELING "SYSTEM AWAKENING" OVERLAY -->
+    <div id="systemAwakenOverlay" class="awakening-overlay">
+        <div class="awakening-card glass-panel">
+            <div class="system-glitch-tag">[ SYSTEM NOTIFICATION ]</div>
+            <h1 class="awakening-title">PLAYER AWAKENING</h1>
+            <p class="awakening-desc">
+                Welcome, Athlete. The Tournyx Engine has detected your presence. 
+                Initiate calibration to evaluate your Player DNA, unlock skill tracking, and claim starter Points.
+            </p>
+            <div class="awakening-stats-preview">
+                <span>CALIBRATION QUESTS READY</span>
+                <div class="quest-pills">
+                    <span class="q-pill"><i class="fa-solid fa-crosshairs"></i> Aim Calibration</span>
+                    <span class="q-pill"><i class="fa-solid fa-bolt"></i> Reaction Test</span>
+                </div>
+            </div>
+            <button class="awakening-btn" onclick="triggerSystemAwakening()">
+                <i class="fa-solid fa-power-off"></i> BEGIN AWAKENING
+            </button>
+        </div>
+    </div>
     
     <!-- 💥 NEW ABSORB & ZOOM LOADER 💥 -->
     <div id="tournyx-loader">
@@ -2146,13 +2146,7 @@ async function selectRole(roleCard, roleName) {
     }
 }
 
-// Attach sound to your existing buttons
-document.querySelectorAll('.em-nav-btn, .ew2-open-btn, .lb-tab, .m-item').forEach(el => {
-    el.addEventListener('click', () => TxSound.playUiClick());
-});
 
-// Run Awakening Check immediately
-checkPlayerAwakeningStatus();
 
         // Nav Dock Interactivity Pre-Navigation
         document.querySelectorAll('.m-item').forEach(item => {
@@ -2294,10 +2288,16 @@ checkPlayerAwakeningStatus();
                 showBannerAtIndex(currentBannerIndex + 1);
             }, 300);
         }
-        let animPaused = false;
+       let animPaused = false;
         
         // --- STARTUP & LOADER ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Audio & Awakening Checks safely AFTER the DOM is fully loaded
+            document.querySelectorAll('.em-nav-btn, .ew2-open-btn, .lb-tab, .m-item').forEach(el => {
+                el.addEventListener('click', () => TxSound.playUiClick());
+            });
+            checkPlayerAwakeningStatus();
+
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             let isGuestMode = !user || !user.email;
