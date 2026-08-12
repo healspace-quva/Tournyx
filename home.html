@@ -28,7 +28,86 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+// --- SOLO LEVELING WEB AUDIO SYNTHESIZER ---
+class TournyxAudioEngine {
+    constructor() {
+        this.ctx = null;
+    }
 
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    playUiClick() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+    }
+
+    playSystemAwaken() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.8);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.9);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.9);
+    }
+
+    playLevelUp() {
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const start = this.ctx.currentTime + (idx * 0.08);
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.2, start);
+            gain.gain.linearRampToValueAtTime(0.01, start + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.2);
+        });
+    }
+
+    playWarningAlert() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.setValueAtTime(600, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    }
+}
+
+const TxSound = new TournyxAudioEngine();
+</script>
     <!-- SMART LOADER LOGIC (6 HOUR CHECK) -->
    <!-- SMART LOADER LOGIC (ALWAYS SHOW) -->
     <script>
@@ -883,6 +962,64 @@
         /* Urgent Alert Banner */
         .urgent-alert { background: rgba(255, 77, 77, 0.1); border-left: 4px solid var(--accent-red); padding: 10px 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; display: flex; align-items: center; gap: 10px; animation: pulseAlert 2s infinite; font-size: 0.85rem; font-weight: bold;}
         @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 0 rgba(255,77,77,0); } 50% { box-shadow: inset 50px 0 50px -50px rgba(255,77,77,0.5); } }
+      <!-- SOLO LEVELING "SYSTEM AWAKENING" OVERLAY -->
+<div id="systemAwakenOverlay" class="awakening-overlay">
+    <div class="awakening-card glass-panel">
+        <div class="system-glitch-tag">[ SYSTEM NOTIFICATION ]</div>
+        <h1 class="awakening-title">PLAYER AWAKENING</h1>
+        <p class="awakening-desc">
+            Welcome, Athlete. The Tournyx Engine has detected your presence. 
+            Initiate calibration to evaluate your Player DNA, unlock skill tracking, and claim starter Points.
+        </p>
+        <div class="awakening-stats-preview">
+            <span>CALIBRATION QUESTS READY</span>
+            <div class="quest-pills">
+                <span class="q-pill"><i class="fa-solid fa-crosshairs"></i> Aim Calibration</span>
+                <span class="q-pill"><i class="fa-solid fa-bolt"></i> Reaction Test</span>
+            </div>
+        </div>
+        <button class="awakening-btn" onclick="triggerSystemAwakening()">
+            <i class="fa-solid fa-power-off"></i> BEGIN AWAKENING
+        </button>
+    </div>
+</div>
+
+<style>
+.awakening-overlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(20px); z-index: 99999;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.awakening-overlay.active { display: flex; animation: awakenFadeIn 0.5s ease-out; }
+.awakening-card {
+    max-width: 480px; width: 100%; text-align: center; padding: 35px 25px;
+    border: 2px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0,242,255,0.3);
+    border-radius: 24px; background: #08080c;
+}
+.system-glitch-tag {
+    font-family: var(--font-head); font-size: 0.75rem; color: var(--accent-purple);
+    letter-spacing: 2px; margin-bottom: 10px; font-weight: bold;
+}
+.awakening-title {
+    font-family: var(--font-head); font-size: 2rem; color: #fff;
+    text-shadow: 0 0 20px var(--accent-cyan); margin-bottom: 15px; font-weight: 900;
+}
+.awakening-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 25px; }
+.awakening-stats-preview {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 15px; margin-bottom: 25px;
+}
+.awakening-stats-preview span { font-family: var(--font-head); font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
+.quest-pills { display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.q-pill { background: rgba(0,242,255,0.1); border: 1px solid var(--accent-cyan); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-family: var(--font-head); }
+.awakening-btn {
+    width: 100%; padding: 16px; background: var(--accent-gradient); border: none;
+    border-radius: 14px; color: white; font-family: var(--font-head); font-weight: 900;
+    font-size: 1.1rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 0 25px rgba(189,0,255,0.5);
+}
+.awakening-btn:hover { transform: scale(1.02); box-shadow: 0 0 35px rgba(0,242,255,0.7); }
+@keyframes awakenFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
     </style>
 </head>
@@ -1718,6 +1855,304 @@
         try {
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) { console.error("Supabase not initialized"); }
+        // --- SOLO LEVELING WEB AUDIO SYNTHESIZER ---
+class TournyxAudioEngine {
+    constructor() { this.ctx = null; }
+    init() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } }
+    playUiClick() { /* ... code from previous response ... */ }
+    playSystemAwaken() { /* ... code from previous response ... */ }
+    playLevelUp() { /* ... code from previous response ... */ }
+    playWarningAlert() { /* ... code from previous response ... */ }
+}
+const TxSound = new TournyxAudioEngine();
+
+// --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
+// IMPORTANT: Replace this link with your actual Cloudflare Worker URL from Step 1
+const WORKER_VISION_ENDPOINT = 'https://tournyx-vision-ai.your-subdomain.workers.dev';
+
+let telemetryStream = null;
+let telemetryTimer = null;
+let currentActiveTask = null;
+
+// 1. CHECK AWAKENING STATUS
+async function checkPlayerAwakeningStatus() {
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+    if (!user || !user.email) return;
+
+    if (db) {
+        try {
+            let { data, error } = await db.from('player_stats').select('*').eq('user_email', user.email).single();
+            
+            // If user has no record in player_stats, initialize entry and launch Awakening
+            if (error || !data) {
+                await db.from('player_stats').insert([{
+                    user_email: user.email,
+                    is_awakened: false,
+                    selected_role: 'Rusher',
+                    power_level: 450,
+                    combat_skill: 70,
+                    reaction_time: 65,
+                    strategy_skill: 60,
+                    aim_skill: 75,
+                    leadership_skill: 50
+                }]);
+                showAwakeningOverlay();
+            } else if (!data.is_awakened) {
+                showAwakeningOverlay();
+            } else {
+                updateEngineUiStats(data);
+            }
+        } catch (e) {
+            console.error("Awakening check error:", e);
+        }
+    }
+}
+
+function showAwakeningOverlay() {
+    document.getElementById('systemAwakenOverlay').classList.add('active');
+    TxSound.playWarningAlert();
+}
+
+async function triggerSystemAwakening() {
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+    TxSound.playSystemAwaken();
+
+    if (db && user) {
+        await db.from('player_stats').update({
+            is_awakened: true,
+            today_xp: 250,
+            power_level: 500
+        }).eq('user_email', user.email);
+
+        // Award starter Points safely
+        let newPts = (parseInt(user.points) || 0) + 200;
+        await db.from('Users').update({ points: newPts }).eq('email', user.email);
+        user.points = newPts;
+        localStorage.setItem('tournyx_user', JSON.stringify(user));
+        syncLiveWalletPoints(user);
+    }
+
+    document.getElementById('systemAwakenOverlay').classList.remove('active');
+    showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
+    TxSound.playLevelUp();
+    
+    // Refresh stats UI
+    checkPlayerAwakeningStatus();
+}
+
+// 2. UPDATE ENGINE HUD UI WITH LIVE DB STATS
+function updateEngineUiStats(stats) {
+    if (!stats) return;
+
+    // Main Engine Widget Updates
+    if (document.getElementById('engPower')) document.getElementById('engPower').innerText = stats.power_level || 450;
+    if (document.getElementById('engRank')) document.getElementById('engRank').innerHTML = `<i class="fa-solid fa-shield"></i> ${stats.rank_tier || 'Pro'}`;
+    if (document.getElementById('engXP')) document.getElementById('engXP').innerText = `+${stats.today_xp || 0} XP`;
+    if (document.getElementById('engProg')) document.getElementById('engProg').innerText = `${stats.daily_progress || 0}%`;
+
+    // System Modal Statistics
+    if (document.getElementById('emStatPower')) document.getElementById('emStatPower').innerText = stats.power_level || 450;
+    if (document.getElementById('emStatRank')) document.getElementById('emStatRank').innerText = stats.rank_tier || 'Pro';
+
+    // Skill Progress Bars
+    updateSkillBar('Combat Skill', stats.combat_skill);
+    updateSkillBar('Reaction Time', stats.reaction_time);
+    updateSkillBar('Strategy', stats.strategy_skill);
+    updateSkillBar('Aim', stats.aim_skill);
+
+    // AI Report Updates
+    const aiReportContainer = document.querySelector('#tab-player-analysis .em-section-box.margin-top');
+    if (aiReportContainer) {
+        aiReportContainer.innerHTML = `
+            <div class="em-box-title"><i class="fa-solid fa-robot" style="color:var(--accent-cyan)"></i> AI Vision Analysis</div>
+            <p class="em-report-text">Role Specialization: <b style="color:var(--accent-cyan);">${stats.selected_role || 'Rusher'}</b></p>
+            <p class="em-report-text">Weakest Area: <span style="color:var(--accent-red); font-weight:bold;">${stats.weakest_area || 'Close Combat'}</span></p>
+            <p class="em-report-text">Recommendation: <span style="color:var(--accent-green); font-weight:bold;">${stats.ai_recommendation || 'Practice TDM today.'}</span></p>
+            <div class="em-report-reward">Reward: <b>+250 XP</b></div>
+        `;
+    }
+}
+
+function updateSkillBar(label, val) {
+    const items = document.querySelectorAll('.em-skill-item');
+    items.forEach(item => {
+        if (item.innerText.includes(label)) {
+            const bar = item.querySelector('.em-bar-fill');
+            const num = item.querySelector('b');
+            if (bar) bar.style.width = `${val}%`;
+            if (num) num.innerText = `${val}%`;
+        }
+    });
+}
+
+// 3. SILENT TOURNYX VISION AI TELEMETRY CAPTURE
+async function launchVisionAiTelemetry(taskId, taskTitle, rewardPts) {
+    if (!checkAuth()) return;
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+
+    try {
+        showToast("INITIALIZING VISION AI TELEMETRY...", false);
+        
+        // Request Background Screen Share / Window Capture Stream
+        telemetryStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "never" },
+            audio: false
+        });
+
+        showToast("VISION AI ACTIVE: Silent Monitoring Enabled", false);
+        TxSound.playUiClick();
+
+        // Canvas for Frame Sampling
+        const canvas = document.createElement('canvas');
+        const video = document.createElement('video');
+        video.srcObject = telemetryStream;
+        await video.play();
+
+        // Sample frame silently every 12 seconds
+        telemetryTimer = setInterval(async () => {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = 640; // Downscale frame for fast edge transmission
+                canvas.height = 360;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const frameBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+                // Process Snapshot via Edge Worker Async
+                processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameBase64);
+            }
+        }, 12000);
+
+        // Handle user stopping screen share manually
+        telemetryStream.getVideoTracks()[0].onended = () => {
+            stopVisionAiTelemetry();
+            showToast("VISION AI TELEMETRY PAUSED", true);
+        };
+
+    } catch (err) {
+        console.warn("Screen capture not supported or cancelled. Falling back to Snapshot Mode.", err);
+        // Fallback for Mobile Web Browsers: Prompt Image Capture
+        triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts);
+    }
+}
+
+function stopVisionAiTelemetry() {
+    if (telemetryTimer) clearInterval(telemetryTimer);
+    if (telemetryStream) telemetryStream.getTracks().forEach(t => t.stop());
+    telemetryStream = null;
+    telemetryTimer = null;
+}
+
+// 4. EDGE WORKER TRANSMISSION & DUAL VERIFICATION PIPELINE
+async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameBase64) {
+    try {
+        let selectedRole = 'Rusher';
+        if (db) {
+            let { data } = await db.from('player_stats').select('selected_role').eq('user_email', user.email).single();
+            if (data) selectedRole = data.selected_role;
+        }
+
+        // Send payload to Cloudflare Edge Function
+        const res = await fetch(WORKER_VISION_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: user.email,
+                selected_role: selectedRole,
+                task_id: taskId,
+                task_title: taskTitle,
+                frame_data: frameBase64
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.task_completed) {
+            stopVisionAiTelemetry();
+            TxSound.playLevelUp();
+            showToast(`VISION AI VERIFIED: +${data.points_awarded} PTS!`);
+
+            // 1. Update Supabase User Wallet Points safely
+            let newPts = (parseInt(user.points) || 0) + data.points_awarded;
+            user.points = newPts;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+            syncLiveWalletPoints(user);
+
+            if (db) {
+                await db.from('Users').update({ points: newPts }).eq('email', user.email);
+                
+                // Update Player Evolution Stats based on AI finding
+                await db.from('player_stats').update({
+                    today_xp: (data.xp_awarded || 100),
+                    weakest_area: data.detected_weakness || 'CQC Crosshair',
+                    ai_recommendation: data.ai_recommendation || 'Focus on headshots'
+                }).eq('user_email', user.email);
+
+                // 2. Stage Two: Insert to vision_vods for Tournyx Esports Team Review
+                await db.from('vision_vods').insert([{
+                    user_email: user.email,
+                    task_id: taskId,
+                    task_title: taskTitle,
+                    frame_snapshot: frameBase64.substring(0, 500) + '...', // Truncated thumbnail
+                    ai_verdict: true,
+                    ai_confidence: data.confidence || 0.9,
+                    ai_suggestions: data.ai_recommendation,
+                    points_awarded: data.points_awarded,
+                    xp_awarded: data.xp_awarded,
+                    human_verified: false
+                }]);
+            }
+
+            // Refresh UI HUD
+            checkPlayerAwakeningStatus();
+        }
+    } catch (e) {
+        console.error("Vision AI Edge processing error:", e);
+    }
+}
+
+// 5. MOBILE SNAPSHOT FALLBACK PROMPT
+function triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = async event => {
+            const base64Image = event.target.result;
+            showToast("ANALYZING MATCH SNAPSHOT...", false);
+            await processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, base64Image);
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
+// 6. ADAPTIVE ROLE SELECTION
+async function selectRole(roleCard, roleName) {
+    document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
+    roleCard.classList.add('active');
+    
+    if (document.getElementById('roleTrainingHeading')) {
+        document.getElementById('roleTrainingHeading').innerText = `${roleName.toUpperCase()} TRAINING`;
+    }
+    
+    TxSound.playUiClick();
+    showToast(`Role Set: ${roleName}`);
+
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+    if (db && user) {
+        await db.from('player_stats').update({ selected_role: roleName }).eq('user_email', user.email);
+    }
+}
+
+// Attach sound to your existing buttons
+document.querySelectorAll('.em-nav-btn, .ew2-open-btn, .lb-tab, .m-item').forEach(el => {
+    el.addEventListener('click', () => TxSound.playUiClick());
+});
+
+// Run Awakening Check immediately
+checkPlayerAwakeningStatus();
 
         // Nav Dock Interactivity Pre-Navigation
         document.querySelectorAll('.m-item').forEach(item => {
