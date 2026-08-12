@@ -119,6 +119,12 @@
             .ios-dock-wrapper, .bottom-nav { display: none !important; } 
             #mobileMenuBtn { display: none !important; } 
             .overlay-menu { width: 220px !important; display: block !important; position: fixed; height: 100vh; overflow-y: auto;} 
+            /* Hide sidebar completely if guest */
+        body:not(.has-sidebar) .overlay-menu { display: none !important; }
+        @media (min-width: 1024px) {
+            body:not(.has-sidebar) { padding-left: 0 !important; }
+            body:not(.has-sidebar) .top-header { left: 0 !important; width: 100% !important; }
+        }
             body.has-sidebar { padding-left: 220px !important; }
             body.has-sidebar .top-header { left: 220px !important; width: calc(100% - 220px) !important; }
             .desk-menu-link { padding: 10px 15px !important; font-size: 0.75rem !important; margin-bottom: 5px !important; }
@@ -646,18 +652,25 @@
 .announcement-content h2 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,106,0,0.8); }
 .announcement-content p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
 
-/* Tailored Realistic Esports Fire Particles (Positioned at Screen Edges) */
+/* Tailored Realistic Esports Fire Particles (Pure CSS) */
 .tx-flames {
-    position: absolute; bottom: -10px; height: 50vh; width: 25vw; pointer-events: none; z-index: 10;
-    mix-blend-mode: screen; opacity: 0.85;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G"/></filter><rect width="100%" height="100%" fill="%23ff6a00" filter="url(%23f)"/></svg>');
-    animation: fireFlicker 2s infinite alternate; background-size: cover; background-position: bottom;
+    position: absolute; bottom: 0; width: 150px; height: 60vh; pointer-events: none; z-index: 10;
+    background: radial-gradient(ellipse at bottom, rgba(255,106,0,0.8) 0%, rgba(255,0,0,0.3) 40%, transparent 70%);
+    mix-blend-mode: screen; filter: blur(12px); animation: fireFlicker 2s infinite alternate ease-in-out;
 }
-.tx-flame-left { left: 0; -webkit-mask-image: linear-gradient(to right, black, transparent); mask-image: linear-gradient(to right, black, transparent); }
-.tx-flame-right { right: 0; -webkit-mask-image: linear-gradient(to left, black, transparent); mask-image: linear-gradient(to left, black, transparent); }
+.tx-flame-left { left: -40px; }
+.tx-flame-right { right: -40px; }
 @keyframes fireFlicker {
-    0% { opacity: 0.6; filter: hue-rotate(0deg) brightness(1); transform: scaleY(1); }
-    100% { opacity: 0.9; filter: hue-rotate(-15deg) brightness(1.3); transform: scaleY(1.05); }
+    0% { transform: scaleY(1) scaleX(1); opacity: 0.5; }
+    50% { transform: scaleY(1.15) scaleX(0.95); opacity: 0.7; filter: blur(15px) hue-rotate(5deg); }
+    100% { transform: scaleY(1.05) scaleX(1.1); opacity: 0.9; filter: blur(10px) hue-rotate(-10deg); }
+}
+
+/* Banner Skeleton Loader */
+.banner-skeleton { 
+    background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
+    background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; 
 }
         /* App Footer Styles - FIXED GAP */
         .app-footer { width: 100%; padding: 40px 15px 30px; background: #000; border-top: 1px solid var(--glass-border); margin-top: 40px; text-align: center; }
@@ -1777,24 +1790,76 @@
         ];
         let currentBannerData = announcementBanners[0];
 
+        // --- MULTIPLE QUEUED ANNOUNCEMENT BANNERS LOGIC ---
+        const rawBanners = [
+            { title: "Diwali Showdown", desc: "Prize pool of ₹50,000! Click anywhere on this banner to join the arena directly.", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png", link: "explore.html" },
+            { title: "Season 5 Rush", desc: "Climb the community leaderboards and claim exclusive real rewards. Tap to enter!", img: "https://via.placeholder.com/600x400/00f2ff/000?text=Esports+Season+5", link: "leaderboard.html" },
+            { title: "New Shop Drops", desc: "Grab unique Clan skins and Premium Passes at a 50% discount today.", img: "https://via.placeholder.com/600x400/bd00ff/fff?text=Flash+Drops", link: "shop.html" }
+        ];
+        
+        // Validation: Only keep banners that have both an image and a link
+        let validBanners = rawBanners.filter(b => b.img && b.link);
+        let currentBannerIndex = 0;
+
         function triggerAnnouncementBanner() {
-            // Randomly pick one banner to avoid combined view
-            currentBannerData = announcementBanners[Math.floor(Math.random() * announcementBanners.length)];
+            try { if(localStorage.getItem('tournyx_announcements_cleared') === new Date().toDateString()) return; } catch(e){}
+            if(validBanners.length === 0) return;
+            showBannerAtIndex(0);
+        }
+
+        function showBannerAtIndex(index) {
+            let overlay = document.getElementById('announcementOverlay');
+            let card = document.getElementById('announcementCard');
+
+            // If we've reached the end of the banners, close overlay and save to local storage
+            if(index >= validBanners.length) {
+                overlay.classList.remove('active');
+                try { localStorage.setItem('tournyx_announcements_cleared', new Date().toDateString()); } catch(e){}
+                return;
+            }
             
-            document.getElementById('announcementTitle').innerText = currentBannerData.title;
-            document.getElementById('announcementDesc').innerText = currentBannerData.desc;
-            document.getElementById('announcementImg').style.backgroundImage = `url('${currentBannerData.img}')`;
+            currentBannerIndex = index;
+            let banner = validBanners[index];
             
-            // Short delay so it appears smoothly after loader
-            setTimeout(() => {
-                document.getElementById('announcementOverlay').classList.add('active');
-            }, 800);
+            // Set text data
+            document.getElementById('announcementTitle').innerText = banner.title;
+            document.getElementById('announcementDesc').innerText = banner.desc;
+            currentBannerData = banner; // Store for link click
+            
+            // Handle Skeleton Loader for Images
+            let imgEl = document.getElementById('announcementImg');
+            imgEl.innerHTML = '<div class="banner-skeleton" id="bannerSkeleton"></div>';
+            imgEl.style.backgroundImage = 'none';
+            
+            let tempImg = new Image();
+            tempImg.src = banner.img;
+            tempImg.onload = () => {
+                imgEl.style.backgroundImage = `url('${banner.img}')`;
+                let skel = document.getElementById('bannerSkeleton');
+                if(skel) skel.remove();
+            };
+
+            // Animate In: If overlay isn't active yet, show it. Otherwise, pop the card smoothly.
+            if(!overlay.classList.contains('active')) {
+                setTimeout(() => overlay.classList.add('active'), 800);
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            } else {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }
         }
 
         function closeAnnouncement() {
-            document.getElementById('announcementOverlay').classList.remove('active');
+            let card = document.getElementById('announcementCard');
+            card.style.transform = 'scale(0.8)';
+            card.style.opacity = '0';
+            
+            // Wait for shrink animation, then load the next banner
+            setTimeout(() => {
+                showBannerAtIndex(currentBannerIndex + 1);
+            }, 300);
         }
-
         let animPaused = false;
         
         // --- STARTUP & LOADER ---
@@ -2744,68 +2809,79 @@
             }
         }
 
-        // --- 3. LIVE DB DAILY STREAK PERSISTENCE FIX ---
+       // --- SECURE LIVE DB DAILY STREAK & ISOLATED POINTS FIX ---
         async function claimDailyStreak() {
             if(!checkAuth()) return;
             let user = JSON.parse(localStorage.getItem('tournyx_user'));
             const btn = document.getElementById('btnClaimStreak');
             
-            let now = new Date().getTime();
-            if(user.last_claim_date) {
-                let lastClaim = new Date(user.last_claim_date).getTime();
-                if(now - lastClaim < 24 * 60 * 60 * 1000) {
-                    showToast("You can only claim once every 24 hours!", true);
-                    return;
-                }
-            }
-            
-            let newStreak = (user.streak_count || 0) + 1;
-            let reward = Math.min(newStreak * 50, 1000);
-            let newEarnings = parseInt(user.earnings || user.points || 0) + reward;
-
-            btn.innerText = "SYNCING...";
+            btn.innerText = "VERIFYING...";
             btn.disabled = true;
-            
-            if (db) {
-                try {
-                    const { data, error } = await db.from('Users').update({ 
-                        streak_count: newStreak, 
-                        earnings: newEarnings,
-                        points: newEarnings,
-                        last_claim_date: new Date().toISOString()
-                    }).eq('email', user.email).select();
-                    
-                    if (error) throw error;
-                    
-                    user.streak_count = newStreak;
-                    user.earnings = newEarnings;
-                    user.points = newEarnings;
-                    user.last_claim_date = new Date().toISOString();
-                    localStorage.setItem('tournyx_user', JSON.stringify(user));
 
-                } catch(e) { 
-                    console.error("DB Sync failed", e); 
-                    showToast("Cloud sync failed. Make sure table columns exist.", true);
-                    btn.innerText = "CLAIM NEXT";
-                    btn.disabled = false;
-                    return; 
-                }
-            } else {
+            if (!db) {
                 showToast("Server offline. Cannot verify claim.", true);
                 btn.innerText = "CLAIM NEXT";
                 btn.disabled = false;
                 return;
             }
-            
-            buildStreakTimeline(newStreak);
-            syncLiveWalletPoints(user);
-            
-            if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-            btn.innerText = "CLAIMED TODAY"; 
-            btn.classList.add('claimed'); 
-            btn.disabled = true;
-            showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
-            triggerConfetti(btn);
+
+            try {
+                // 1. Fetch live server data to prevent local storage bypass
+                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', user.email).single();
+                if (fetchError) throw fetchError;
+
+                // 2. Validate 24-hour live timestamp
+                let now = new Date().getTime();
+                if(liveData.last_claim_date) {
+                    let lastClaim = new Date(liveData.last_claim_date).getTime();
+                    if(now - lastClaim < 24 * 60 * 60 * 1000) {
+                        let hoursLeft = Math.ceil(24 - ((now - lastClaim) / (1000 * 60 * 60)));
+                        showToast("You can only claim once every 24 hours!", true);
+                        btn.innerText = `NEXT IN ${hoursLeft}H`; 
+                        btn.classList.add('claimed'); 
+                        return;
+                    }
+                }
+
+                // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
+                let newStreak = (liveData.streak_count || 0) + 1;
+                let reward = Math.min(newStreak * 50, 1000);
+                let currentPoints = parseInt(liveData.points) || 0;
+                let newPoints = currentPoints + reward; 
+
+                btn.innerText = "SYNCING...";
+
+                // 4. Secure DB Push
+                const { error: updateError } = await db.from('Users').update({ 
+                    streak_count: newStreak, 
+                    points: newPoints,
+                    last_claim_date: new Date().toISOString()
+                }).eq('email', user.email);
+                
+                if (updateError) throw updateError;
+                
+                // 5. Update local cache ONLY with Points data
+                user.streak_count = newStreak;
+                user.points = newPoints;
+                user.last_claim_date = new Date().toISOString();
+                localStorage.setItem('tournyx_user', JSON.stringify(user));
+
+                // 6. UI Updates
+                buildStreakTimeline(newStreak);
+                syncLiveWalletPoints(user); // Will sync cleanly without touching tickets
+                
+                if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                btn.innerText = "CLAIMED TODAY"; 
+                btn.classList.add('claimed'); 
+                showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
+                triggerConfetti(btn);
+
+            } catch(e) { 
+                console.error("DB Sync failed", e); 
+                showToast("Cloud sync failed. Make sure your network is stable.", true);
+                btn.innerText = "CLAIM NEXT";
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
