@@ -608,7 +608,7 @@
     100% { opacity: 0; transform: translate(0, 0) rotate(var(--rot)) scaleY(0.2); }
 }
 
-/* --- DYNAMIC SPARKLE ANNOUNCEMENT BANNER --- */
+/* --- DYNAMIC SPARKLE ANNOUNCEMENT BANNER & SCREEN EDGES --- */
 .announcement-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000;
@@ -617,63 +617,57 @@
 }
 .announcement-overlay.active { opacity: 1; pointer-events: auto; }
 
+/* Screen Edge Sparkles (Fullscreen, masked to left/right edges) */
+.screen-edge-sparkles {
+    position: absolute; bottom: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 15;
+    background-image: radial-gradient(circle at center, rgba(255,106,0,1) 0%, transparent 4px), 
+                      radial-gradient(circle at center, rgba(255,200,0,1) 0%, transparent 3px);
+    background-size: 80px 120px, 120px 180px;
+    animation: screenSparksRise 4s linear infinite;
+    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
+    mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
+}
+@keyframes screenSparksRise {
+    0% { background-position: 0 100vh, 40px 120vh; opacity: 0; }
+    10% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { background-position: 0 -10vh, 40px 10vh; opacity: 0; }
+}
+
 .announcement-card {
     background: var(--panel-bg); border-radius: 20px; overflow: hidden;
     border: 2px solid var(--accent-orange); box-shadow: 0 0 40px rgba(255, 106, 0, 0.5);
     transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative; cursor: pointer; width: 90%; 
+    position: relative; cursor: pointer; width: 90%; max-width: 550px;
     display: flex; flex-direction: column; z-index: 20;
-    aspect-ratio: 16 / 9; /* Enforce exactly 16:9 */
-    max-height: 80vh; 
 }
 .announcement-overlay.active .announcement-card { transform: scale(1); }
 
-@media (max-width: 768px) {
-    .announcement-card { width: 95%; max-width: 500px; aspect-ratio: auto; height: auto; min-height: 50vh; }
-    .announcement-img { flex: 1; min-height: 200px; }
+/* Exact 16:9 Image Ratio */
+.announcement-img { 
+    width: 100%; aspect-ratio: 16 / 9; 
+    background-size: cover; background-position: center; position: relative; 
 }
-@media (min-width: 769px) { 
-    .announcement-card { width: 70vw; max-width: 900px; }
-    .announcement-img { flex: 1; height: 100%; }
+.announcement-img::after { 
+    content:''; position:absolute; bottom:0; left:0; width:100%; height:40%; 
+    background:linear-gradient(to top, var(--panel-bg), transparent); 
 }
 
-/* Subtle, Theme-Merged Close Button */
+.announcement-content { padding: 25px; text-align: center; position: relative; z-index: 5; }
+.announcement-content h2 { font-family: var(--font-head); font-size: 1.8rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,106,0,0.8); }
+.announcement-content p { font-size: 1rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+/* Subtle Close Button */
 .announcement-close {
-    position: absolute; top: 15px; right: 20px; z-index: 30;
-    background: transparent; border: none; color: rgba(255,255,255,0.6);
-    font-size: 1.8rem; cursor: pointer; transition: 0.3s;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8); display: flex;
-    align-items: center; justify-content: center;
+    position: absolute; top: 15px; right: 15px; z-index: 30;
+    background: rgba(0,0,0,0.5); border: none; color: rgba(255,255,255,0.8);
+    width: 35px; height: 35px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+    backdrop-filter: blur(5px);
 }
-.announcement-close:hover { color: white; transform: scale(1.1); text-shadow: 0 0 15px var(--accent-orange); }
+.announcement-close:hover { color: white; background: var(--accent-red); transform: scale(1.1); }
 
-.announcement-img { background-size: cover; background-position: center; position: relative; }
-.announcement-img::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:60%; background:linear-gradient(to top, var(--panel-bg), transparent); }
-
-.announcement-content { padding: 30px; text-align: center; position: relative; z-index: 5; }
-.announcement-content h2 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 10px; color: white; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,106,0,0.8); }
-.announcement-content p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
-
-/* Edge Sparkles Moving UP the surface of the banner */
-.banner-sparkles {
-    position: absolute; inset: 0; pointer-events: none; z-index: 25;
-    background-image: radial-gradient(circle at center, rgba(255,106,0,1) 0%, transparent 3px), 
-                      radial-gradient(circle at center, rgba(255,200,0,1) 0%, transparent 2px);
-    background-size: 60px 100px, 90px 150px;
-    background-position: 0 0, 30px 50px;
-    animation: sparksRise 3s linear infinite;
-    /* Mask hides the middle, only showing sparkles on the far left and right edges */
-    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
-    mask-image: linear-gradient(to right, black 0%, transparent 15%, transparent 85%, black 100%);
-}
-@keyframes sparksRise {
-    0% { background-position: 0 150px, 30px 200px; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { background-position: 0 0, 30px 50px; opacity: 0; }
-}
-
-/* Banner Skeleton Loader */
 .banner-skeleton { 
     background: linear-gradient(90deg, #121214 25%, #1c1c22 50%, #121214 75%); 
     background-size: 200% 100%; animation: metalShine 1.5s infinite linear; 
@@ -928,13 +922,14 @@
         };
     </script>
 
-   <!-- DYNAMIC SPARKLE ANNOUNCEMENT BANNER -->
+  <!-- DYNAMIC SPARKLE ANNOUNCEMENT BANNER -->
     <div class="announcement-overlay" id="announcementOverlay">
+        
+        <!-- Fullscreen edge sparkles -->
+        <div class="screen-edge-sparkles"></div>
+        
         <!-- Click card to redirect automatically -->
         <div class="announcement-card" id="announcementCard" onclick="window.location.href=currentBannerData.link">
-            
-            <!-- Upward edge sparkles over the banner -->
-            <div class="banner-sparkles"></div>
             
             <!-- Subtle Close button -->
             <div class="announcement-close" onclick="event.stopPropagation(); closeAnnouncement()"><i class="fa-solid fa-xmark"></i></div>
@@ -2485,7 +2480,7 @@
             lastScrollY = window.scrollY;
         });
 
-       // --- 100% SECURE LIVE DB STREAK (ISOLATING POINTS & TICKETS) ---
+      // --- 100% BULLETPROOF STREAK LOGIC (SAFE MATH & POINTS ISOLATION) ---
         function buildStreakTimeline(currentStreak) {
             document.getElementById('streakCountMain').innerText = currentStreak;
             const timeline = document.getElementById('streakTimeline');
@@ -2504,32 +2499,38 @@
                 `);
             }
             
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
             const btn = document.getElementById('btnClaimStreak');
             
             if(user && btn) {
                 if(user.last_claim_date) {
-                    let lastClaim = new Date(user.last_claim_date).getTime();
-                    let today = new Date().getTime();
-                    let hoursPassed = (today - lastClaim) / (1000 * 60 * 60);
+                    // Safe UTC Math
+                    let lastClaimMs = Date.parse(user.last_claim_date);
+                    let nowMs = Date.now();
                     
-                    if(hoursPassed < 24) {
-                        let hoursLeft = Math.ceil(24 - hoursPassed);
-                        btn.innerText = `NEXT IN ${hoursLeft}H`; 
-                        btn.classList.add('claimed'); 
-                        btn.disabled = true;
-                    } else if(hoursPassed >= 48) {
-                        // Reset if a day was missed
-                        currentStreak = 0; 
-                        document.getElementById('streakCountMain').innerText = "0";
-                        btn.innerText = "CLAIM NEXT";
-                        btn.classList.remove('claimed');
-                        btn.disabled = false;
-                    } else {
-                        // Between 24h and 48h - Valid to claim next
-                        btn.innerText = "CLAIM NEXT";
-                        btn.classList.remove('claimed');
-                        btn.disabled = false;
+                    if (!isNaN(lastClaimMs)) {
+                        let hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
+                        
+                        if(hoursPassed >= 0 && hoursPassed < 24) {
+                            // Under 24h: Must wait
+                            let hoursLeft = Math.ceil(24 - hoursPassed);
+                            btn.innerText = `NEXT IN ${hoursLeft}H`; 
+                            btn.classList.add('claimed'); 
+                            btn.disabled = true;
+                        } else if(hoursPassed >= 48) {
+                            // Over 48h: Missed a day, reset visual streak to 0 (can claim immediately)
+                            currentStreak = 0; 
+                            document.getElementById('streakCountMain').innerText = "0";
+                            btn.innerText = "CLAIM NEXT";
+                            btn.classList.remove('claimed');
+                            btn.disabled = false;
+                        } else {
+                            // Between 24h and 48h: Ready to claim!
+                            btn.innerText = "CLAIM NEXT";
+                            btn.classList.remove('claimed');
+                            btn.disabled = false;
+                        }
                     }
                 } else {
                     btn.innerText = "CLAIM NEXT";
@@ -2540,7 +2541,6 @@
 
             setTimeout(() => { document.getElementById('streakFill').style.width = currentStreak > 0 ? `${(currentStreak / (total - 1)) * 100}%` : "0%"; }, 100);
         }
-
         let feedPage = 0; 
         let hasMoreFeed = true;
         let isFetchingFeed = false;
@@ -2836,58 +2836,58 @@
             }
 
             try {
-                // 1. Fetch strict live data to prevent UI local storage exploits
-                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points, earnings').eq('email', user.email).single();
+                // 1. Fetch strictly from DB to prevent exploits
+                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', user.email).single();
                 if (fetchError) throw fetchError;
 
-                // 2. Validate 24-hour timestamp against live DB
-                let now = new Date().getTime();
-                if(liveData.last_claim_date) {
-                    let lastClaim = new Date(liveData.last_claim_date).getTime();
-                    if(now - lastClaim < 24 * 60 * 60 * 1000) {
-                        let hoursLeft = Math.ceil(24 - ((now - lastClaim) / (1000 * 60 * 60)));
-                        showToast("Already claimed! Next in " + hoursLeft + "H", true);
-                        btn.innerText = `NEXT IN ${hoursLeft}H`; 
-                        btn.classList.add('claimed'); 
-                        return;
-                    }
+                let nowMs = Date.now();
+                let lastClaimMs = liveData.last_claim_date ? Date.parse(liveData.last_claim_date) : 0;
+                let hoursPassed = 999; // Default to allow if no claim exists
+                
+                if (lastClaimMs > 0 && !isNaN(lastClaimMs)) {
+                    hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
                 }
 
-                // 3. Isolated Math Logic: ONLY update Points
-                let newStreak = (liveData.streak_count || 0) + 1;
-                
-                // If over 48 hours, they broke the streak
-                if(liveData.last_claim_date) {
-                    let lastClaim = new Date(liveData.last_claim_date).getTime();
-                    if(now - lastClaim > 48 * 60 * 60 * 1000) newStreak = 1; 
+                // 2. Validate Time
+                if(hoursPassed >= 0 && hoursPassed < 24) {
+                    let hoursLeft = Math.ceil(24 - hoursPassed);
+                    showToast("Already claimed! Next in " + hoursLeft + "H", true);
+                    btn.innerText = `NEXT IN ${hoursLeft}H`; 
+                    btn.classList.add('claimed'); 
+                    return;
                 }
+
+                // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
+                let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
+                
+                // If over 48 hours, they broke the streak, restart at Day 1
+                if(hoursPassed >= 48) newStreak = 1; 
 
                 let reward = Math.min(newStreak * 50, 1000);
                 let currentPoints = parseInt(liveData.points) || 0;
                 let newPoints = currentPoints + reward; 
-                let newDate = new Date().toISOString();
+                let newDateISO = new Date(nowMs).toISOString();
 
                 btn.innerText = "SYNCING...";
 
-                // 4. Secure DB Push - updating ONLY points and streak info
+                // 4. Secure DB Push - ONLY pushing points and streak
                 const { error: updateError } = await db.from('Users').update({ 
                     streak_count: newStreak, 
                     points: newPoints,
-                    last_claim_date: newDate
+                    last_claim_date: newDateISO
                 }).eq('email', user.email);
                 
                 if (updateError) throw updateError;
                 
-                // 5. Update local cache safely (leaving earnings/tickets entirely alone)
+                // 5. Update local cache safely (do NOT overwrite earnings)
                 user.streak_count = newStreak;
                 user.points = newPoints;
-                user.last_claim_date = newDate;
-                user.earnings = liveData.earnings !== undefined ? liveData.earnings : user.earnings;
+                user.last_claim_date = newDateISO;
                 localStorage.setItem('tournyx_user', JSON.stringify(user));
 
                 // 6. UI Updates
                 buildStreakTimeline(newStreak);
-                syncLiveWalletPoints(user); // Instantly syncs the UI values
+                syncLiveWalletPoints(user); 
                 
                 if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
                 btn.innerText = "CLAIMED TODAY"; 
