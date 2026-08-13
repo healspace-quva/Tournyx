@@ -2304,53 +2304,44 @@ async function selectRole(roleCard, roleName) {
 
         });
 
-        async function loadLiveBackendData() {
-            let fetchPromises = [];
+        // ✅ AFTER — every db.from() call replaced with the matching Worker action
+async function loadLiveBackendData() {
+    let fetchPromises = [];
 
-            // 1. Tournaments
-            fetchPromises.push(secureFetch({ action: 'get_tournaments' }).then(res => {
-                if (res.status === "success" && res.data && res.data.length > 0) {
-                    renderFeaturedTournaments(res.data);
-                    loadLiveTournamentsSlider(res.data);
-                } else {
-                    document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Campaigns Running', 'We are preparing new tournaments for you.');
-                    document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Live Events', 'Check back later.');
-                }
-            }).catch(() => { 
-                document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
-                document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
-            }));
-            
-            // 2. Drops, ProMatches, Scouting
-            if (db) {
-                fetchPromises.push(db.from('Drops').select('*').then(({data, error}) => {
-                    if (!error && data && data.length > 0) renderFlashDrops(data);
-                    else document.getElementById('flashDropsSection').style.display = 'none';
-                }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; }));
-
-                fetchPromises.push(db.from('ProMatches').select('*').then(({data, error}) => {
-                    if (!error && data && data.length > 0) renderProMatches(data);
-                    else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
-                }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
-
-                fetchPromises.push(db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
-                    if (!error && data && data.length > 0) renderScouting(data);
-                    else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
-                }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
-            } else {
-                document.getElementById('flashDropsSection').style.display = 'none';
-                document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
-                document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
-            }
-
-            // Fire parallel generic loads
-            fetchPromises.push(loadQuestsFromSheets());
-            fetchPromises.push(loadLeaderboard()); 
-
-            // Wait for everything to resolve before killing loader
-            await Promise.allSettled(fetchPromises);
-            hideLoader();
+    fetchPromises.push(secureFetch({ action: 'get_tournaments' }).then(res => {
+        if (res.status === "success" && res.data && res.data.length > 0) {
+            renderFeaturedTournaments(res.data);
+            loadLiveTournamentsSlider(res.data);
+        } else {
+            document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Campaigns Running', 'We are preparing new tournaments for you.');
+            document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Live Events', 'Check back later.');
         }
+    }).catch(() => { 
+        document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
+        document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
+    }));
+
+    fetchPromises.push(secureFetch({ action: 'get_drops' }).then(res => {
+        if (res.status === "success" && res.data && res.data.length > 0) renderFlashDrops(res.data);
+        else document.getElementById('flashDropsSection').style.display = 'none';
+    }).catch(() => { document.getElementById('flashDropsSection').style.display = 'none'; }));
+
+    fetchPromises.push(secureFetch({ action: 'get_promatches' }).then(res => {
+        if (res.status === "success" && res.data && res.data.length > 0) renderProMatches(res.data);
+        else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
+    }).catch(() => { document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
+
+    fetchPromises.push(secureFetch({ action: 'get_scouting' }).then(res => {
+        if (res.status === "success" && res.data && res.data.length > 0) renderScouting(res.data);
+        else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
+    }).catch(() => { document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
+
+    fetchPromises.push(loadQuestsFromSheets());
+    fetchPromises.push(loadLeaderboard()); 
+
+    await Promise.allSettled(fetchPromises);
+    hideLoader();
+}
 
         function showToast(msg, isError = false) {
             var x = document.getElementById("customToast");
