@@ -26,7 +26,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 // --- SOLO LEVELING WEB AUDIO SYNTHESIZER ---
@@ -1019,7 +1018,8 @@ const TxSound = new TournyxAudioEngine();
                     <span class="q-pill"><i class="fa-solid fa-bolt"></i> Reaction Test</span>
                 </div>
             </div>
-            <button class="awakening-btn" onclick="triggerSystemAwakening()">
+            <!-- ID added to button for proper JavaScript control -->
+            <button class="awakening-btn" id="awakenBtn" onclick="triggerSystemAwakening()">
                 <i class="fa-solid fa-power-off"></i> BEGIN AWAKENING
             </button>
         </div>
@@ -1849,7 +1849,8 @@ const TxSound = new TournyxAudioEngine();
 
     <script>
         // --- SECURE CLOUDFLARE API TUNNEL ---
-const API_ENDPOINT = 'https://tournyx-api.annadurailthilakjeevesh.workers.dev'; // Ensure this matches your worker URL
+// --- SECURE CLOUDFLARE API TUNNEL ---
+const API_ENDPOINT = 'https://tournyx-api.annadurailthilakjeevesh.workers.dev'; 
 
 async function secureFetch(params) {
     try {
@@ -1865,103 +1866,179 @@ async function secureFetch(params) {
         return { status: 'error', message: 'Unable to connect to Engine.' };
     }
 }
-       
 
-// --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
-// IMPORTANT: Replace this link with your actual Cloudflare Worker URL from Step 1
+// --- ENGINE VARIABLES ---
 const WORKER_VISION_ENDPOINT = 'https://tournyx-vision-ai.your-subdomain.workers.dev';
-
 let telemetryStream = null;
 let telemetryTimer = null;
-let currentActiveTask = null;
+let currentAiTask = null;
+let currentAiReward = 0;
+let feedPage = 0; 
+let hasMoreFeed = true;
+let isFetchingFeed = false;
+let loadedFeedIds = new Set();
+let animPaused = false;
 
-// 1. CHECK AWAKENING STATUS
-async function checkPlayerAwakeningStatus() {
+// --- 1. BOOT SEQUENCE & LOADER ---
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // UI Click Sounds
+        document.querySelectorAll('.em-nav-btn, .ew2-open-btn, .lb-tab, .m-item').forEach(el => {
+            el.addEventListener('click', () => { if(typeof TxSound !== 'undefined') TxSound.playUiClick(); });
+        });
+
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+        let isGuestMode = !user || !user.email;
+        
+        triggerAnnouncementBanner();
+        
+        if (user && !isGuestMode) {
+            if(db) {
+                try {
+                    const { data, error } = await db.from('Users').select('*').eq('email', user.email).single();
+                    if (data && !error) {
+                        user.wins = data.wins || user.wins;
+                        user.ign = data.ign || user.ign;
+                        user.avatar = data.avatar || user.avatar;
+                        user.points = data.points !== undefined ? data.points : user.points;
+                        user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
+                        user.streak_count = data.streak_count !== undefined ? data.streak_count : (user.streak_count || 0);
+                        user.last_claim_date = data.last_claim_date || user.last_claim_date || null;
+                        localStorage.setItem('tournyx_user', JSON.stringify(user));
+                    }
+                } catch(e){}
+            }
+
+            document.body.classList.add('has-sidebar');
+            let vipBadge = user.is_premium === true || String(user.is_premium).toLowerCase() === 'true' ? ' <i class="fa-solid fa-crown" style="color:#FFD700; font-size:0.9rem; margin-left:5px; filter:drop-shadow(0 0 5px #FFD700);"></i>' : '';
+            if(document.getElementById('welcomeText')) document.getElementById('welcomeText').innerText = (user.username || user.ign || "Player");
+            if(document.getElementById('menuUserName')) document.getElementById('menuUserName').innerHTML = (user.username || "Player") + vipBadge;
+            if(document.getElementById('menuUserImg')) document.getElementById('menuUserImg').src = user.avatar || "https://via.placeholder.com/60";
+
+            fetchNextMatch(user);
+            syncLiveWalletPoints(user); 
+            await syncStreakFromCloud(); // Pull true streak state
+        } else {
+            document.body.classList.remove('has-sidebar');
+            if(document.getElementById('welcomeText')) document.getElementById('welcomeText').innerText = "Guest";
+            if(document.getElementById('menuUserName')) document.getElementById('menuUserName').innerText = "Guest Player";
+            buildStreakTimeline(0); 
+        }
+
+        loadTournyxEngine(user);
+        await loadLiveBackendData();
+        initScrollAnimations(); 
+        initEndlessReels();
+        if(!animPaused) typeWriterEffect();
+
+    } catch (error) {
+        console.error("Boot Sequence Error:", error);
+    } finally {
+        // BULLETPROOF HIDE LOADER: Guaranteed to run even if an error occurs above
+        if (typeof hideLoader === 'function') { hideLoader(); }
+    }
+});
+
+// --- 2. PLAYER AWAKENING & OPEN SYSTEM LOGIC ---
+async function openSystemPopup() {
+    if(!checkAuth(null)) return;
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    if (!user || !user.email) return;
-
-    if (db) {
+    
+    // Check DB to see if they have Awakened
+    let isAwakened = false;
+    if(db && user) {
         try {
-            let { data, error } = await db.from('player_stats').select('*').eq('user_email', user.email).single();
-            
-            // If user has no record in player_stats, initialize entry and launch Awakening
-            if (error || !data) {
-                await db.from('player_stats').insert([{
-                    user_email: user.email,
-                    is_awakened: false,
-                    selected_role: 'Rusher',
-                    power_level: 450,
-                    combat_skill: 70,
-                    reaction_time: 65,
-                    strategy_skill: 60,
-                    aim_skill: 75,
-                    leadership_skill: 50
-                }]);
-                showAwakeningOverlay();
-            } else if (!data.is_awakened) {
-                showAwakeningOverlay();
-            } else {
+            let { data } = await db.from('player_stats').select('*').eq('user_email', user.email).single();
+            if (data && data.is_awakened) {
+                isAwakened = true;
                 updateEngineUiStats(data);
             }
-        } catch (e) {
-            console.error("Awakening check error:", e);
-        }
+        } catch(e) {}
     }
-}
 
-function showAwakeningOverlay() {
-    document.getElementById('systemAwakenOverlay').classList.add('active');
-    TxSound.playWarningAlert();
+    if (!isAwakened) {
+        // Show Awakening Screen
+        document.getElementById('systemAwakenOverlay').classList.add('active');
+        if(typeof TxSound !== 'undefined') TxSound.playWarningAlert();
+    } else {
+        // Already Awakened -> Show Engine
+        launchEngineModal(user);
+    }
 }
 
 async function triggerSystemAwakening() {
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    TxSound.playSystemAwaken();
+    const btn = document.getElementById('awakenBtn');
+    
+    if(btn.disabled) return; // Block unlimited clicks
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> AWAKENING...';
+    if(typeof TxSound !== 'undefined') TxSound.playSystemAwaken();
 
     if (db && user) {
-        await db.from('player_stats').update({
-            is_awakened: true,
-            today_xp: 250,
-            power_level: 500
-        }).eq('user_email', user.email);
+        try {
+            let { data: existing } = await db.from('player_stats').select('is_awakened').eq('user_email', user.email).single();
+            
+            if (!existing) {
+                await db.from('player_stats').insert([{ user_email: user.email, is_awakened: true, power_level: 500, today_xp: 250 }]);
+                let newPts = (parseInt(user.points) || 0) + 200;
+                await db.from('Users').update({ points: newPts }).eq('email', user.email);
+                user.points = newPts;
+                showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
+            } else if (!existing.is_awakened) {
+                await db.from('player_stats').update({ is_awakened: true, today_xp: 250, power_level: 500 }).eq('user_email', user.email);
+                let newPts = (parseInt(user.points) || 0) + 200;
+                await db.from('Users').update({ points: newPts }).eq('email', user.email);
+                user.points = newPts;
+                showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
+            }
 
-        // Award starter Points safely
-        let newPts = (parseInt(user.points) || 0) + 200;
-        await db.from('Users').update({ points: newPts }).eq('email', user.email);
-        user.points = newPts;
-        localStorage.setItem('tournyx_user', JSON.stringify(user));
-        syncLiveWalletPoints(user);
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+            syncLiveWalletPoints(user);
+            
+            // Fetch updated stats for the Engine UI
+            let { data: newStats } = await db.from('player_stats').select('*').eq('user_email', user.email).single();
+            updateEngineUiStats(newStats);
+        } catch(e) { console.error(e); }
     }
 
     document.getElementById('systemAwakenOverlay').classList.remove('active');
-    showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
-    TxSound.playLevelUp();
+    if(typeof TxSound !== 'undefined') TxSound.playLevelUp();
     
-    // Refresh stats UI
-    checkPlayerAwakeningStatus();
+    // Reset button for future
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-power-off"></i> BEGIN AWAKENING';
+    
+    // Instantly launch the engine now that they are awakened
+    launchEngineModal(user);
 }
 
-// 2. UPDATE ENGINE HUD UI WITH LIVE DB STATS
+function launchEngineModal(user) {
+    document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
+    document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
+    document.getElementById('ultimateSystemModal').classList.add('active');
+    triggerConfetti(document.querySelector('.btn-pulse-system'));
+}
+
+function closeEngineModal() {
+    document.getElementById('ultimateSystemModal').classList.remove('active');
+}
+
 function updateEngineUiStats(stats) {
     if (!stats) return;
-
-    // Main Engine Widget Updates
     if (document.getElementById('engPower')) document.getElementById('engPower').innerText = stats.power_level || 450;
     if (document.getElementById('engRank')) document.getElementById('engRank').innerHTML = `<i class="fa-solid fa-shield"></i> ${stats.rank_tier || 'Pro'}`;
     if (document.getElementById('engXP')) document.getElementById('engXP').innerText = `+${stats.today_xp || 0} XP`;
     if (document.getElementById('engProg')) document.getElementById('engProg').innerText = `${stats.daily_progress || 0}%`;
-
-    // System Modal Statistics
     if (document.getElementById('emStatPower')) document.getElementById('emStatPower').innerText = stats.power_level || 450;
     if (document.getElementById('emStatRank')) document.getElementById('emStatRank').innerText = stats.rank_tier || 'Pro';
 
-    // Skill Progress Bars
-    updateSkillBar('Combat Skill', stats.combat_skill);
-    updateSkillBar('Reaction Time', stats.reaction_time);
-    updateSkillBar('Strategy', stats.strategy_skill);
-    updateSkillBar('Aim', stats.aim_skill);
+    updateSkillBar('Combat Skill', stats.combat_skill || 70);
+    updateSkillBar('Reaction Time', stats.reaction_time || 65);
+    updateSkillBar('Strategy', stats.strategy_skill || 60);
+    updateSkillBar('Aim', stats.aim_skill || 75);
 
-    // AI Report Updates
     const aiReportContainer = document.querySelector('#tab-player-analysis .em-section-box.margin-top');
     if (aiReportContainer) {
         aiReportContainer.innerHTML = `
@@ -1986,52 +2063,259 @@ function updateSkillBar(label, val) {
     });
 }
 
-// 3. SILENT TOURNYX VISION AI TELEMETRY CAPTURE
+// --- 3. BULLETPROOF DAILY STREAK ---
+async function syncStreakFromCloud() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+    if (!user || !user.email || !db) return buildStreakTimeline(0);
+
+    try {
+        const { data, error } = await db.from('Users').select('streak_count, last_claim_date, points').eq('email', user.email).single();
+        if (!error && data) {
+            user.streak_count = data.streak_count || 0;
+            user.last_claim_date = data.last_claim_date || null;
+            user.points = data.points !== undefined ? data.points : user.points;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+        }
+    } catch(e) {}
+    buildStreakTimeline(user.streak_count || 0);
+}
+
+function buildStreakTimeline(currentStreak) {
+    if(document.getElementById('streakCountMain')) document.getElementById('streakCountMain').innerText = currentStreak;
+    const timeline = document.getElementById('streakTimeline');
+    if(!timeline) return;
+    timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
+    
+    const total = 20; 
+    for(let i=1; i<=total; i++) {
+        let sClass = i <= currentStreak ? "claimed" : (i === currentStreak + 1 ? "active" : "");
+        let icon = i <= currentStreak ? `<i class="fa-solid fa-check"></i>` : (i === currentStreak + 1 ? `<i class="fa-solid fa-fire"></i>` : "");
+        let pts = Math.min(i * 50, 1000); 
+        timeline.insertAdjacentHTML('beforeend', `
+            <div class="ts-node ${sClass}">
+                <div class="ts-circle">${icon}</div>
+                <div class="ts-val"><b>${pts} PTS</b><span>Day ${i}</span></div>
+            </div>
+        `);
+    }
+    
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+    const btn = document.getElementById('btnClaimStreak');
+    
+    if(user && btn) {
+        if(user.last_claim_date) {
+            let lastClaimMs = Date.parse(user.last_claim_date);
+            let nowMs = Date.now();
+            
+            if (!isNaN(lastClaimMs)) {
+                let hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
+                
+                if(hoursPassed >= 0 && hoursPassed < 24) {
+                    let hoursLeft = Math.ceil(24 - hoursPassed);
+                    btn.innerText = `NEXT IN ${hoursLeft}H`; 
+                    btn.classList.add('claimed'); 
+                    btn.disabled = true;
+                } else if(hoursPassed >= 48) {
+                    currentStreak = 0; 
+                    if(document.getElementById('streakCountMain')) document.getElementById('streakCountMain').innerText = "0";
+                    btn.innerText = "CLAIM NEXT";
+                    btn.classList.remove('claimed');
+                    btn.disabled = false;
+                } else {
+                    btn.innerText = "CLAIM NEXT";
+                    btn.classList.remove('claimed');
+                    btn.disabled = false;
+                }
+            }
+        } else {
+            btn.innerText = "CLAIM NEXT";
+            btn.classList.remove('claimed');
+            btn.disabled = false;
+        }
+    }
+    setTimeout(() => { if(document.getElementById('streakFill')) document.getElementById('streakFill').style.width = currentStreak > 0 ? `${(currentStreak / (total - 1)) * 100}%` : "0%"; }, 100);
+}
+
+async function claimDailyStreak() {
+    if(!checkAuth()) return;
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+    const btn = document.getElementById('btnClaimStreak');
+    
+    btn.innerText = "VERIFYING...";
+    btn.disabled = true;
+
+    if (!db) {
+        showToast("Server offline. Cannot verify claim.", true);
+        btn.innerText = "CLAIM NEXT";
+        btn.disabled = false;
+        return;
+    }
+
+    try {
+        const cleanEmail = String(user.email).trim().toLowerCase();
+        const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', cleanEmail).single();
+        if (fetchError) throw fetchError;
+
+        let nowMs = Date.now();
+        let lastClaimMs = liveData.last_claim_date ? Date.parse(liveData.last_claim_date) : 0;
+        let hoursPassed = 999; 
+        
+        if (lastClaimMs > 0 && !isNaN(lastClaimMs)) {
+            hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
+        }
+
+        // Validate Cooldown
+        if(hoursPassed >= 0 && hoursPassed < 24) {
+            let hoursLeft = Math.ceil(24 - hoursPassed);
+            showToast("Already claimed! Next in " + hoursLeft + "H", true);
+            btn.innerText = `NEXT IN ${hoursLeft}H`; 
+            btn.classList.add('claimed'); 
+            btn.disabled = true; // Ensure disabled
+            return;
+        }
+
+        // Clean Point Update
+        let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
+        if(hoursPassed >= 48) newStreak = 1; 
+
+        let reward = Math.min(newStreak * 50, 1000);
+        let currentPoints = parseInt(liveData.points) || 0;
+        let newPoints = currentPoints + reward; 
+        let newDateISO = new Date(nowMs).toISOString();
+
+        btn.innerText = "SYNCING...";
+
+        const { data: updatedRows, error: updateError } = await db.from('Users').update({ 
+            streak_count: newStreak, 
+            points: newPoints,
+            last_claim_date: newDateISO
+        }).eq('email', cleanEmail).select(); 
+
+        if (updateError) throw updateError;
+        
+        // Cache update
+        user.streak_count = newStreak;
+        user.points = newPoints;
+        user.last_claim_date = newDateISO;
+        localStorage.setItem('tournyx_user', JSON.stringify(user));
+
+        buildStreakTimeline(newStreak);
+        syncLiveWalletPoints(user); 
+        
+        if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        btn.innerText = "CLAIMED TODAY"; 
+        btn.classList.add('claimed'); 
+        showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved!`);
+        triggerConfetti(btn);
+
+    } catch(e) { 
+        showToast("Cloud sync failed. Check network.", true);
+        btn.innerText = "CLAIM NEXT";
+        btn.disabled = false;
+    }
+}
+
+// --- 4. MULTIPLE QUEUED ANNOUNCEMENT BANNERS LOGIC ---
+const rawBanners = [
+    { title: "Diwali Showdown", desc: "Prize pool of ₹50,000! Click anywhere on this banner to join the arena directly.", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png", link: "explore.html" },
+    { title: "Season 5 Rush", desc: "Climb the community leaderboards and claim exclusive real rewards. Tap to enter!", img: "https://via.placeholder.com/600x400/00f2ff/000?text=Esports+Season+5", link: "leaderboard.html" },
+    { title: "New Shop Drops", desc: "Grab unique Clan skins and Premium Passes at a 50% discount today.", img: "https://via.placeholder.com/600x400/bd00ff/fff?text=Flash+Drops", link: "shop.html" }
+];
+
+let validBanners = rawBanners.filter(b => b.img && b.link && b.img.trim() !== "" && b.link.trim() !== "");
+let currentBannerIndex = 0;
+let currentBannerData = null;
+
+function triggerAnnouncementBanner() {
+    try { 
+        let cooldown = localStorage.getItem('tournyx_banner_cooldown'); 
+        if(cooldown && (Date.now() - parseInt(cooldown) < 7200000)) return; // 2 hours
+    } catch(e){}
+    
+    if(validBanners.length === 0) return;
+    showBannerAtIndex(0);
+}
+
+function showBannerAtIndex(index) {
+    let overlay = document.getElementById('announcementOverlay');
+    let card = document.getElementById('announcementCard');
+
+    if(index >= validBanners.length) {
+        overlay.classList.remove('active');
+        try { localStorage.setItem('tournyx_banner_cooldown', Date.now()); } catch(e){}
+        return;
+    }
+    
+    currentBannerIndex = index;
+    let banner = validBanners[index];
+    currentBannerData = banner; 
+    
+    document.getElementById('announcementTitle').innerText = banner.title;
+    document.getElementById('announcementDesc').innerText = banner.desc;
+    
+    let imgEl = document.getElementById('announcementImg');
+    imgEl.innerHTML = '<div class="banner-skeleton" id="bannerSkeleton"></div>';
+    imgEl.style.backgroundImage = 'none';
+    
+    let tempImg = new Image();
+    tempImg.src = banner.img;
+    tempImg.onload = () => {
+        imgEl.style.backgroundImage = `url('${banner.img}')`;
+        let skel = document.getElementById('bannerSkeleton');
+        if(skel) skel.remove();
+    };
+
+    if(!overlay.classList.contains('active')) {
+        setTimeout(() => overlay.classList.add('active'), 800);
+    }
+    card.style.opacity = '1';
+    card.style.transform = 'scale(1)';
+}
+
+function closeAnnouncement() {
+    let card = document.getElementById('announcementCard');
+    card.style.transform = 'scale(0.8)';
+    card.style.opacity = '0';
+    setTimeout(() => { showBannerAtIndex(currentBannerIndex + 1); }, 300);
+}
+
+// --- 5. VISION AI TELEMETRY CAPTURE ---
 async function launchVisionAiTelemetry(taskId, taskTitle, rewardPts) {
     if (!checkAuth()) return;
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
 
     try {
         showToast("INITIALIZING VISION AI TELEMETRY...", false);
-        
-        // Request Background Screen Share / Window Capture Stream
-        telemetryStream = await navigator.mediaDevices.getDisplayMedia({
-            video: { cursor: "never" },
-            audio: false
-        });
+        telemetryStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "never" }, audio: false });
 
         showToast("VISION AI ACTIVE: Silent Monitoring Enabled", false);
-        TxSound.playUiClick();
+        if(typeof TxSound !== 'undefined') TxSound.playUiClick();
 
-        // Canvas for Frame Sampling
         const canvas = document.createElement('canvas');
         const video = document.createElement('video');
         video.srcObject = telemetryStream;
         await video.play();
 
-        // Sample frame silently every 12 seconds
         telemetryTimer = setInterval(async () => {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                canvas.width = 640; // Downscale frame for fast edge transmission
+                canvas.width = 640; 
                 canvas.height = 360;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const frameBase64 = canvas.toDataURL('image/jpeg', 0.6);
-
-                // Process Snapshot via Edge Worker Async
                 processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameBase64);
             }
         }, 12000);
 
-        // Handle user stopping screen share manually
         telemetryStream.getVideoTracks()[0].onended = () => {
             stopVisionAiTelemetry();
             showToast("VISION AI TELEMETRY PAUSED", true);
         };
 
     } catch (err) {
-        console.warn("Screen capture not supported or cancelled. Falling back to Snapshot Mode.", err);
-        // Fallback for Mobile Web Browsers: Prompt Image Capture
+        console.warn("Screen capture not supported or cancelled.", err);
         triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts);
     }
 }
@@ -2043,7 +2327,6 @@ function stopVisionAiTelemetry() {
     telemetryTimer = null;
 }
 
-// 4. EDGE WORKER TRANSMISSION & DUAL VERIFICATION PIPELINE
 async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameBase64) {
     try {
         let selectedRole = 'Rusher';
@@ -2052,27 +2335,19 @@ async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameB
             if (data) selectedRole = data.selected_role;
         }
 
-        // Send payload to Cloudflare Edge Function
         const res = await fetch(WORKER_VISION_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_email: user.email,
-                selected_role: selectedRole,
-                task_id: taskId,
-                task_title: taskTitle,
-                frame_data: frameBase64
-            })
+            body: JSON.stringify({ user_email: user.email, selected_role: selectedRole, task_id: taskId, task_title: taskTitle, frame_data: frameBase64 })
         });
 
         const data = await res.json();
 
         if (data.success && data.task_completed) {
             stopVisionAiTelemetry();
-            TxSound.playLevelUp();
+            if(typeof TxSound !== 'undefined') TxSound.playLevelUp();
             showToast(`VISION AI VERIFIED: +${data.points_awarded} PTS!`);
 
-            // 1. Update Supabase User Wallet Points safely
             let newPts = (parseInt(user.points) || 0) + data.points_awarded;
             user.points = newPts;
             localStorage.setItem('tournyx_user', JSON.stringify(user));
@@ -2080,38 +2355,18 @@ async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameB
 
             if (db) {
                 await db.from('Users').update({ points: newPts }).eq('email', user.email);
-                
-                // Update Player Evolution Stats based on AI finding
                 await db.from('player_stats').update({
                     today_xp: (data.xp_awarded || 100),
                     weakest_area: data.detected_weakness || 'CQC Crosshair',
                     ai_recommendation: data.ai_recommendation || 'Focus on headshots'
                 }).eq('user_email', user.email);
-
-                // 2. Stage Two: Insert to vision_vods for Tournyx Esports Team Review
-                await db.from('vision_vods').insert([{
-                    user_email: user.email,
-                    task_id: taskId,
-                    task_title: taskTitle,
-                    frame_snapshot: frameBase64.substring(0, 500) + '...', // Truncated thumbnail
-                    ai_verdict: true,
-                    ai_confidence: data.confidence || 0.9,
-                    ai_suggestions: data.ai_recommendation,
-                    points_awarded: data.points_awarded,
-                    xp_awarded: data.xp_awarded,
-                    human_verified: false
-                }]);
             }
-
-            // Refresh UI HUD
-            checkPlayerAwakeningStatus();
         }
     } catch (e) {
         console.error("Vision AI Edge processing error:", e);
     }
 }
 
-// 5. MOBILE SNAPSHOT FALLBACK PROMPT
 function triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -2120,185 +2375,125 @@ function triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts) {
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = async event => {
-            const base64Image = event.target.result;
             showToast("ANALYZING MATCH SNAPSHOT...", false);
-            await processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, base64Image);
+            await processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, event.target.result);
         };
         reader.readAsDataURL(file);
     };
     input.click();
 }
 
-// 6. ADAPTIVE ROLE SELECTION
-async function selectRole(roleCard, roleName) {
-    document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
-    roleCard.classList.add('active');
-    
-    if (document.getElementById('roleTrainingHeading')) {
-        document.getElementById('roleTrainingHeading').innerText = `${roleName.toUpperCase()} TRAINING`;
-    }
-    
-    TxSound.playUiClick();
-    showToast(`Role Set: ${roleName}`);
+async function startVisionAI() {
+    if(!checkAuth()) return;
+    const btn = document.getElementById('visionStartBtn');
+    const status = document.getElementById('visionAIStatusText');
+    const scanLine = document.getElementById('visionAIScanLine');
+    const chip = document.getElementById('aiChipIcon');
 
-    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    if (db && user) {
-        await db.from('player_stats').update({ selected_role: roleName }).eq('user_email', user.email);
-    }
-}
-
-
-
-        // Nav Dock Interactivity Pre-Navigation
-        document.querySelectorAll('.m-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if(this.classList.contains('action-plus')) return;
-                document.querySelectorAll('.m-item').forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-      
-        function checkAuth(e) {
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(err){}
-            if (!user) {
-                if(e) e.preventDefault();
-                document.getElementById('authPopup').classList.add('active');
-                return false;
-            }
-            return true;
-        }
-        function closeAuthPopup() { document.getElementById('authPopup').classList.remove('active'); }
-
-        // --- MULTIPLE QUEUED ANNOUNCEMENT BANNERS LOGIC (2 HOUR COOLDOWN) ---
-        const rawBanners = [
-            { title: "Diwali Showdown", desc: "Prize pool of ₹50,000! Click anywhere on this banner to join the arena directly.", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png", link: "explore.html" },
-            { title: "Season 5 Rush", desc: "Climb the community leaderboards and claim exclusive real rewards. Tap to enter!", img: "https://via.placeholder.com/600x400/00f2ff/000?text=Esports+Season+5", link: "leaderboard.html" },
-            { title: "New Shop Drops", desc: "Grab unique Clan skins and Premium Passes at a 50% discount today.", img: "https://via.placeholder.com/600x400/bd00ff/fff?text=Flash+Drops", link: "shop.html" }
-        ];
+    try {
+        btn.innerText = "AWAITING PERMISSION...";
+        telemetryStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
         
-        // Strict Validation: Only keep banners with valid images and links
-        let validBanners = rawBanners.filter(b => b.img && b.link && b.img.trim() !== "" && b.link.trim() !== "");
-        let currentBannerIndex = 0;
+        document.getElementById('visionAIVideo').srcObject = telemetryStream;
+        btn.style.display = 'none';
+        status.innerText = "LINK ESTABLISHED. SCANNING MATRIX...";
+        status.style.color = "var(--accent-cyan)";
+        scanLine.style.display = 'block';
+        chip.classList.add('fa-spin');
+        chip.style.color = "var(--accent-orange)";
 
-        function triggerAnnouncementBanner() {
-            try { 
-                let cooldown = localStorage.getItem('tournyx_banner_cooldown'); 
-                // Checks if 2 hours (7,200,000 ms) have passed
-                if(cooldown && (Date.now() - parseInt(cooldown) < 7200000)) return; 
-            } catch(e){}
-            
-            if(validBanners.length === 0) return;
-            showBannerAtIndex(0);
-        }
-
-        function showBannerAtIndex(index) {
-            let overlay = document.getElementById('announcementOverlay');
-            let card = document.getElementById('announcementCard');
-
-            // End of queue: Save timestamp for 2-hour cooldown
-            if(index >= validBanners.length) {
-                overlay.classList.remove('active');
-                try { localStorage.setItem('tournyx_banner_cooldown', Date.now()); } catch(e){}
-                return;
-            }
-            
-            currentBannerIndex = index;
-            let banner = validBanners[index];
-            
-            // Set text data
-            document.getElementById('announcementTitle').innerText = banner.title;
-            document.getElementById('announcementDesc').innerText = banner.desc;
-            currentBannerData = banner; 
-            
-            // Handle Skeleton Loader safely
-            let imgEl = document.getElementById('announcementImg');
-            imgEl.innerHTML = '<div class="banner-skeleton" id="bannerSkeleton"></div>';
-            imgEl.style.backgroundImage = 'none';
-            
-            let tempImg = new Image();
-            tempImg.src = banner.img;
-            tempImg.onload = () => {
-                imgEl.style.backgroundImage = `url('${banner.img}')`;
-                let skel = document.getElementById('bannerSkeleton');
-                if(skel) skel.remove();
-            };
-
-            // Animate In smoothly
-            if(!overlay.classList.contains('active')) {
-                setTimeout(() => overlay.classList.add('active'), 800);
-                card.style.opacity = '1';
-                card.style.transform = 'scale(1)';
-            } else {
-                card.style.opacity = '1';
-                card.style.transform = 'scale(1)';
-            }
-        }
-
-        function closeAnnouncement() {
-            let card = document.getElementById('announcementCard');
-            card.style.transform = 'scale(0.8)';
-            card.style.opacity = '0';
-            
-            // Wait for shrink, then load next banner
-            setTimeout(() => {
-                showBannerAtIndex(currentBannerIndex + 1);
-            }, 300);
-        }
-       let animPaused = false;
-        
-        
-
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            let isGuestMode = !user || !user.email;
-            triggerAnnouncementBanner();
-            
-            if (user && !isGuestMode) {
-                if(db) {
-                    try {
-                        const { data, error } = await db.from('Users').select('*').eq('email', user.email).single();
-                        if (data && !error) {
-    user.wins = data.wins || user.wins;
-    user.ign = data.ign || user.ign;
-    user.avatar = data.avatar || user.avatar;
-    // Points must come from the "points" column ONLY. Never from earnings.
-    user.points = data.points !== undefined ? data.points : user.points;
-    // Earnings stays completely separate — this is what tickets are derived from.
-    user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
-    // Pull the live streak fields too, so the widget is never stale.
-    user.streak_count = data.streak_count !== undefined ? data.streak_count : (user.streak_count || 0);
-    user.last_claim_date = data.last_claim_date || user.last_claim_date || null;
-    localStorage.setItem('tournyx_user', JSON.stringify(user));
-}
-                    } catch(e){}
-                }
-
-                document.body.classList.add('has-sidebar');
+        let processingSteps = 0;
+        let visionInterval = setInterval(async () => {
+            processingSteps++;
+            if(processingSteps >= 4) {
+                clearInterval(visionInterval);
+                status.innerText = "AI VERIFICATION SUCCESSFUL! HEADSHOT DETECTED.";
+                status.style.color = "var(--accent-green)";
+                chip.classList.remove('fa-spin');
+                chip.style.color = "var(--accent-green)";
+                scanLine.style.display = 'none';
                 
-                let vipBadge = user.is_premium === true || String(user.is_premium).toLowerCase() === 'true' ? ' <i class="fa-solid fa-crown" style="color:#FFD700; font-size:0.9rem; margin-left:5px; filter:drop-shadow(0 0 5px #FFD700);"></i>' : '';
-                document.getElementById('welcomeText')?.innerText && (document.getElementById('welcomeText').innerText = (user.username || user.ign || "Player"));
-                document.getElementById('menuUserName').innerHTML = (user.username || "Player") + vipBadge;
-                document.getElementById('menuUserImg').src = user.avatar || "https://via.placeholder.com/60";
-
-                fetchNextMatch(user);
-                syncLiveWalletPoints(user); 
-            } else {
-                document.body.classList.remove('has-sidebar');
-                document.getElementById('welcomeText')?.innerText && (document.getElementById('welcomeText').innerText = "Guest");
-                document.getElementById('menuUserName').innerText = "Guest Player";
+                if(telemetryStream) telemetryStream.getTracks().forEach(track => track.stop());
+                
+                let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                if(db && user) {
+                    let newPts = (user.points || 0) + currentAiReward;
+                    await db.from('Users').update({ points: newPts }).eq('email', user.email);
+                    user.points = newPts;
+                    localStorage.setItem('tournyx_user', JSON.stringify(user));
+                    syncLiveWalletPoints(user);
+                }
+                
+                setTimeout(() => {
+                    showToast(`AI Verified: +${currentAiReward} PTS`);
+                    document.getElementById('visionAIModal').classList.remove('active');
+                }, 2000);
             }
+        }, 1500);
 
-            loadTournyxEngine();
-            loadLiveBackendData();
-            initScrollAnimations(); 
-            initEndlessReels();
-            if(!animPaused) typeWriterEffect();
+        telemetryStream.getVideoTracks()[0].onended = () => {
+            if(processingSteps < 4) {
+                stopVisionAI();
+                showToast("Neural Link Terminated early.", true);
+            }
+        };
 
-        });
+    } catch(err) {
+        status.innerText = "PERMISSION DENIED OR FAILED.";
+        status.style.color = "var(--accent-red)";
+        btn.innerText = "RETRY NEURAL LINK";
+        if(telemetryStream) telemetryStream.getTracks().forEach(track => track.stop());
+    }
+}
 
-        // ✅ AFTER — every db.from() call replaced with the matching Worker action
+function stopVisionAI() {
+    if(document.getElementById('aiChipIcon')) document.getElementById('aiChipIcon').classList.remove('fa-spin');
+    if(document.getElementById('visionAIScanLine')) document.getElementById('visionAIScanLine').style.display = 'none';
+    if(telemetryStream) telemetryStream.getTracks().forEach(track => track.stop());
+}
+
+function openVisionAIModal(taskName, reward) {
+    currentAiTask = taskName;
+    currentAiReward = reward;
+    document.getElementById('visionAIModal').classList.add('active');
+    document.getElementById('visionAIStatusText').innerText = `Task: ${taskName} (${reward} PTS)`;
+    document.getElementById('visionStartBtn').style.display = 'block';
+    document.getElementById('visionStartBtn').innerText = "INITIALIZE NEURAL LINK";
+    document.getElementById('visionAIScanLine').style.display = 'none';
+    document.getElementById('visionAIVideo').srcObject = null;
+}
+
+// --- 6. UTILITIES & RENDERERS ---
+function loadTournyxEngine() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+    const authView = document.getElementById('engineAuth');
+    const guestView = document.getElementById('engineGuest');
+    const newPlayerView = document.getElementById('engineNewPlayer');
+    
+    if(!user || !user.email) {
+        if(authView) authView.style.display = 'none';
+        if(newPlayerView) newPlayerView.style.display = 'none';
+        if(guestView) guestView.style.display = 'flex';
+    } else {
+        if(guestView) guestView.style.display = 'none';
+        let matchesPlayed = parseInt(user.matches) || 0;
+        let wins = parseInt(user.wins) || 0;
+        
+        if (matchesPlayed === 0 && wins === 0) {
+            if(authView) authView.style.display = 'none';
+            if(newPlayerView) newPlayerView.style.display = 'flex';
+        } else {
+            if(authView) authView.style.display = 'block';
+            if(newPlayerView) newPlayerView.style.display = 'none';
+            if(document.getElementById('txtPower')) document.getElementById('txtPower').innerText = (wins * 150) || "1,200";
+            if(document.getElementById('txtRank')) document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${wins > 10 ? 'Elite' : 'Rookie'}`;
+            if(document.getElementById('txtWinRate')) document.getElementById('txtWinRate').innerText = matchesPlayed > 0 ? Math.floor((wins / matchesPlayed) * 100) + "%" : "0%";
+            if(document.getElementById('txtWins')) document.getElementById('txtWins').innerText = wins;
+        }
+    }
+}
+
 async function loadLiveBackendData() {
     let fetchPromises = [];
 
@@ -2315,1019 +2510,664 @@ async function loadLiveBackendData() {
         document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
     }));
 
-    fetchPromises.push(secureFetch({ action: 'get_drops' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderFlashDrops(res.data);
-        else document.getElementById('flashDropsSection').style.display = 'none';
-    }).catch(() => { document.getElementById('flashDropsSection').style.display = 'none'; }));
+    if (db) {
+        fetchPromises.push(db.from('Drops').select('*').then(({data, error}) => {
+            if (!error && data && data.length > 0) renderFlashDrops(data);
+            else document.getElementById('flashDropsSection').style.display = 'none';
+        }).catch(()=>{ document.getElementById('flashDropsSection').style.display = 'none'; }));
 
-    fetchPromises.push(secureFetch({ action: 'get_promatches' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderProMatches(res.data);
-        else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
-    }).catch(() => { document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
+        fetchPromises.push(db.from('ProMatches').select('*').then(({data, error}) => {
+            if (!error && data && data.length > 0) renderProMatches(data);
+            else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
+        }).catch(()=>{ document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
 
-    fetchPromises.push(secureFetch({ action: 'get_scouting' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderScouting(res.data);
-        else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
-    }).catch(() => { document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
+        fetchPromises.push(db.from('Users').select('username, ign, avatar, wins, role').order('wins', { ascending: false }).limit(5).then(({data, error}) => {
+            if (!error && data && data.length > 0) renderScouting(data);
+            else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
+        }).catch(()=>{ document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
+    } else {
+        document.getElementById('flashDropsSection').style.display = 'none';
+        document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
+        document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-server', 'System Offline', 'Connecting to secure Tournyx node failed.');
+    }
 
     fetchPromises.push(loadQuestsFromSheets());
     fetchPromises.push(loadLeaderboard()); 
 
     await Promise.allSettled(fetchPromises);
-    hideLoader();
 }
 
-        function showToast(msg, isError = false) {
-            var x = document.getElementById("customToast");
-            x.innerText = msg;
-            x.style.backgroundColor = isError ? "#ff4d4d" : "rgba(0,242,255,0.9)";
-            x.style.color = isError ? "white" : "#000";
-            x.className = "show";
-            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-        }
+function syncLiveWalletPoints(user) {
+    if (!user) return;
+    let points = parseInt(user.points) || 0; 
+    let earnings = parseInt(user.earnings) || 0;
+    let tickets = Math.floor(earnings / 10); 
+    const updateValues = (pts, tix) => {
+        const wmT = document.getElementById('walletTicketsMobile');
+        const wmP = document.getElementById('walletPointsMobile');
+        const wdT = document.getElementById('walletTicketsDesk');
+        const wdP = document.getElementById('walletPointsDesk');
+        if(wmT) wmT.innerText = tix;
+        if(wmP) wmP.innerText = pts;
+        if(wdT) wdT.innerText = tix;
+        if(wdP) wdP.innerText = pts;
+    };
+    updateValues(points, tickets);
+}
 
-        const words = ["Compete globally.", "Organize seamlessly.", "Earn real rewards securely.", "Join the revolution."];
-        let typeI = 0; let timer;
-        function typeWriterEffect() {
-            let el = document.getElementById("typingText");
-            if (!el) return;
-            let word = words[typeI].split("");
-            var loopTyping = function() {
-                if (word.length > 0) { el.innerHTML += word.shift(); } 
-                else { setTimeout(() => { el.innerHTML = ""; typeI = (typeI + 1) % words.length; typeWriterEffect(); }, 2000); return; }
-                timer = setTimeout(loopTyping, 50);
-            };
-            loopTyping();
-        }
+function checkAuth(e) {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(err){}
+    if (!user) {
+        if(e) e.preventDefault();
+        document.getElementById('authPopup').classList.add('active');
+        return false;
+    }
+    return true;
+}
 
-        function triggerConfetti(btnEl) {
-            if(animPaused) return;
-            for(let i=0; i<30; i++) {
-                let conf = document.createElement('div');
-                conf.classList.add('confetti-piece');
-                conf.style.left = (btnEl.getBoundingClientRect().left + Math.random()*100) + 'px';
-                conf.style.top = btnEl.getBoundingClientRect().top + 'px';
-                conf.style.backgroundColor = Math.random() > 0.5 ? 'var(--accent-cyan)' : 'var(--accent-purple)';
-                conf.style.animation = `popConfetti ${Math.random()*0.5 + 0.5}s ease-out forwards`;
-                document.body.appendChild(conf);
-                setTimeout(()=>conf.remove(), 1000);
-            }
-        }
+function closeAuthPopup() { document.getElementById('authPopup').classList.remove('active'); }
+function toggleBottomSheet() {
+    document.getElementById('bsMenu').classList.toggle('active');
+    document.getElementById('bsOverlay').classList.toggle('active');
+}
+function logoutUser() {
+    if(confirm("Are you sure you want to logout?")) {
+        try { localStorage.removeItem('tournyx_user'); localStorage.removeItem('tournyx_my_clans_cache'); } catch(e){}
+        window.location.href = "login.html";
+    }
+}
+function openFSsearch() {
+    document.getElementById('searchFSoverlay').classList.add('active');
+    document.getElementById('globalSearchInput').focus();
+}
+function closeFSsearch() {
+    document.getElementById('searchFSoverlay').classList.remove('active');
+}
+function openActionHub() { 
+    document.getElementById('actionHubOverlay').classList.add('active'); 
+    document.body.style.overflow = 'hidden'; 
+}
+function closeActionHub() { 
+    document.getElementById('actionHubOverlay').classList.remove('active'); 
+    document.body.style.overflow = ''; 
+}
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) { closeActionHub(); if(typeof hideLoader === 'function') hideLoader(); }
+});
 
-        function initScrollAnimations() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        if(entry.target.classList.contains('stats-area')) {
-                            document.querySelectorAll('.count-up').forEach(counter => {
-                                let target = +counter.getAttribute('data-target');
-                                if (animPaused) { counter.innerText = target; } else {
-                                    let count = 0; let speed = target / 30;
-                                    let int = setInterval(() => {
-                                        count += speed;
-                                        if(count >= target) { counter.innerText = target; clearInterval(int); }
-                                        else { counter.innerText = Math.floor(count); }
-                                    }, 30);
-                                }
-                                counter.classList.remove('count-up'); 
-                            });
+let lastScrollY = window.scrollY;
+window.addEventListener('scroll', () => {
+    const dock = document.getElementById('dockWrapper');
+    if(dock) {
+        if (window.scrollY > lastScrollY && window.scrollY > 150) { dock.classList.add('hide-dock'); } 
+        else { dock.classList.remove('hide-dock'); }
+    }
+    lastScrollY = window.scrollY;
+});
+
+function showToast(msg, isError = false) {
+    var x = document.getElementById("customToast");
+    x.innerText = msg;
+    x.style.backgroundColor = isError ? "#ff4d4d" : "rgba(0,242,255,0.9)";
+    x.style.color = isError ? "white" : "#000";
+    x.className = "show";
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+
+function formatDateTime(dateStr) {
+    if (!dateStr || dateStr === "TBD") return "TBA";
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr; 
+        return d.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    } catch(e) { return dateStr; }
+}
+
+function formatImageUrl(url) {
+    if (!url) return 'https://via.placeholder.com/600x300/15062e/00f2ff?text=Tournament+Banner';
+    if (url.startsWith('data:image')) return url;
+    if (url.includes('drive.google.com/file/d/')) {
+        let id = url.split('/d/')[1].split('/')[0];
+        return `https://drive.google.com/uc?export=view&id=${id}`;
+    }
+    return url;
+}
+
+function calculateTimeRemaining(dateStr) {
+    if (!dateStr || dateStr === "TBD") return { text: "TBD", isClosed: false };
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime())) return { text: dateStr, isClosed: false };
+    let diff = d - new Date();
+    if (diff < 0) return { text: "Closed", isClosed: true };
+    let hours = Math.floor(diff / (1000 * 60 * 60));
+    if (hours < 24) return { text: `Ends in ${hours}h`, isClosed: false };
+    let days = Math.floor(hours / 24);
+    return { text: `Ends in ${days}d`, isClosed: false };
+}
+
+function getEmptyState(icon, title, desc) {
+    const chars = ['🤖', '👾', '👻', '👽', '💀'];
+    const randomChar = chars[Math.floor(Math.random() * chars.length)];
+    return `<div class="empty-state-box">
+        <div class="animated-char">${randomChar}</div>
+        <h3>${title}</h3>
+        <p>${desc}</p>
+    </div>`;
+}
+
+// Nav Dock Interactivity
+document.querySelectorAll('.m-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+        if(this.classList.contains('action-plus')) return;
+        document.querySelectorAll('.m-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+async function selectRole(roleCard, roleName) {
+    document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
+    roleCard.classList.add('active');
+    
+    if (document.getElementById('roleTrainingHeading')) {
+        document.getElementById('roleTrainingHeading').innerText = `${roleName.toUpperCase()} TRAINING`;
+    }
+    
+    if(typeof TxSound !== 'undefined') TxSound.playUiClick();
+    showToast(`Role Set: ${roleName}`);
+
+    let user = JSON.parse(localStorage.getItem('tournyx_user'));
+    if (db && user) {
+        await db.from('player_stats').update({ selected_role: roleName }).eq('user_email', user.email);
+    }
+}
+
+function triggerConfetti(btnEl) {
+    if(animPaused) return;
+    for(let i=0; i<30; i++) {
+        let conf = document.createElement('div');
+        conf.classList.add('confetti-piece');
+        conf.style.left = (btnEl.getBoundingClientRect().left + Math.random()*100) + 'px';
+        conf.style.top = btnEl.getBoundingClientRect().top + 'px';
+        conf.style.backgroundColor = Math.random() > 0.5 ? 'var(--accent-cyan)' : 'var(--accent-purple)';
+        conf.style.animation = `popConfetti ${Math.random()*0.5 + 0.5}s ease-out forwards`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 1000);
+    }
+}
+
+const words = ["Compete globally.", "Organize seamlessly.", "Earn real rewards securely.", "Join the revolution."];
+let typeI = 0; let typeTimer;
+function typeWriterEffect() {
+    let el = document.getElementById("typingText");
+    if (!el) return;
+    let word = words[typeI].split("");
+    var loopTyping = function() {
+        if (word.length > 0) { el.innerHTML += word.shift(); } 
+        else { setTimeout(() => { el.innerHTML = ""; typeI = (typeI + 1) % words.length; typeWriterEffect(); }, 2000); return; }
+        typeTimer = setTimeout(loopTyping, 50);
+    };
+    loopTyping();
+}
+
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                if(entry.target.classList.contains('stats-area')) {
+                    document.querySelectorAll('.count-up').forEach(counter => {
+                        let target = +counter.getAttribute('data-target');
+                        if (animPaused) { counter.innerText = target; } else {
+                            let count = 0; let speed = target / 30;
+                            let int = setInterval(() => {
+                                count += speed;
+                                if(count >= target) { counter.innerText = target; clearInterval(int); }
+                                else { counter.innerText = Math.floor(count); }
+                            }, 30);
                         }
-                    }
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.fade-up').forEach((el) => { observer.observe(el); });
-        }
-
-        function formatDateTime(dateStr) {
-            if (!dateStr || dateStr === "TBD") return "TBA";
-            try {
-                const d = new Date(dateStr);
-                if (isNaN(d.getTime())) return dateStr; 
-                return d.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-            } catch(e) { return dateStr; }
-        }
-
-        function formatImageUrl(url) {
-            if (!url) return 'https://via.placeholder.com/600x300/15062e/00f2ff?text=Tournament+Banner';
-            if (url.startsWith('data:image')) return url;
-            if (url.includes('drive.google.com/file/d/')) {
-                let id = url.split('/d/')[1].split('/')[0];
-                return `https://drive.google.com/uc?export=view&id=${id}`;
-            }
-            return url;
-        }
-
-        function calculateTimeRemaining(dateStr) {
-            if (!dateStr || dateStr === "TBD") return { text: "TBD", isClosed: false };
-            let d = new Date(dateStr);
-            if (isNaN(d.getTime())) return { text: dateStr, isClosed: false };
-            let diff = d - new Date();
-            if (diff < 0) return { text: "Closed", isClosed: true };
-            let hours = Math.floor(diff / (1000 * 60 * 60));
-            if (hours < 24) return { text: `Ends in ${hours}h`, isClosed: false };
-            let days = Math.floor(hours / 24);
-            return { text: `Ends in ${days}d`, isClosed: false };
-        }
-
-        async function fetchNextMatch(user) {
-            try {
-                const [tRes, mRes] = await Promise.all([
-                    secureFetch({ action: 'get_tournaments' }),
-                    secureFetch({ action: 'get_matches', email: user.email })
-                ]);
-                let allTourneys = tRes.data || [];
-                let myMatches = mRes.data || [];
-                let activeMatches = [];
-                myMatches.forEach(entry => {
-                    let t = allTourneys.find(x => x.id === entry.match_id || x.title === entry.tournament_title);
-                    if(t && t.status && !t.status.toLowerCase().includes('completed')) { activeMatches.push(t); }
-                });
-
-                const widget = document.getElementById('nextMatchWidget');
-                if(activeMatches.length > 0) {
-                    let next = activeMatches[0]; 
-                    document.getElementById('nmTitle').innerText = next.title;
-                    let status = next.status || 'Upcoming';
-                    let sColor = status.toLowerCase().includes('live') ? 'var(--accent-green)' : 'var(--accent-cyan)';
-                    let rawDate = next.match_period || next.date;
-                    let displayDate = rawDate;
-                    if (rawDate) { let fDate = formatDateTime(rawDate); if (fDate !== "TBA" && fDate !== "TBD" && fDate !== rawDate) { displayDate = fDate; } }
-                    document.getElementById('nmDate').innerHTML = `<span style="color:${sColor}; font-weight:bold; font-family:var(--font-head);"><i class="fa-solid fa-satellite-dish fa-fade"></i> ${status.toUpperCase()}</span> • ${displayDate}`;
-                    widget.style.display = 'block';
-                } else { widget.style.display = 'none'; }
-            } catch(e) {}
-        }
-
-        function renderFeaturedTournaments(featuredArray) {
-            const slider = document.getElementById('featuredSlider');
-            slider.innerHTML = "";
-            
-            featuredArray.slice(0, 6).forEach(t => {
-                const bg = formatImageUrl(t.banner);
-                const prize = (!t.prize || t.prize == 0) ? "Glory" : "₹" + t.prize;
-                let rFee = parseInt(t.fee) || 0;
-                let passCount = Math.ceil(rFee / 10);
-                const feeText = passCount > 0 ? `${passCount} <span class="tx-icon" style="font-size:0.9em;">TX</span>` : "Free Entry";
-                const totalSlots = parseInt(t.slots) || 48;
-                const slotsFilled = parseInt(t.filled_slots) || 0; 
-                let fillPct = (slotsFilled / totalSlots) * 100;
-                let timeData = calculateTimeRemaining(t.date);
-                let formatDT = formatDateTime(t.date);
-                let btnState = `onclick="window.location.href='explore.html?tournament=${t.id || t.title}'"`;
-                
-                slider.innerHTML += `
-                    <div class="tourney-card">
-                        <div class="t-img-box" ${btnState} style="cursor:pointer;">
-                            <img src="${bg}" class="t-img" loading="lazy">
-                            <div class="t-tag">${t.game || 'Esports'}</div>
-                        </div>
-                        <div class="t-content">
-                            <div class="t-title">${t.title}</div>
-                            <div class="t-detail-item"><i class="fa-regular fa-calendar"></i> Starts: <strong style="color:white; margin-left:4px;">${formatDT}</strong></div>
-                            <div class="t-detail-item" style="color:${timeData.isClosed ? 'var(--accent-red)' : 'var(--accent-orange)'}"><i class="fa-solid fa-hourglass-half"></i> Registration: <strong>${timeData.text}</strong></div>
-                            <div class="t-meta" style="margin-bottom: 5px;"><span><i class="fa-solid fa-ticket" style="color:var(--accent-cyan);"></i> ${feeText}</span><span class="t-prize">${prize}</span></div>
-                            <div style="margin-bottom: 15px;">
-                                <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-head); font-weight:bold;">
-                                    <span style="color:var(--text-muted);">Slots Filled</span>
-                                    <span style="color:var(--accent-cyan);">${slotsFilled}/${totalSlots}</span>
-                                </div>
-                                <div class="f-progress-container"><div class="f-progress-bar" style="width:${fillPct}%"></div></div>
-                            </div>
-                            <button class="t-btn" ${btnState}>View Details</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function loadLiveTournamentsSlider(allData) {
-            let liveData = allData.filter(t => t.status && t.status.toLowerCase().includes('live'));
-            const container = document.getElementById('liveSectionContainer');
-            const slider = document.getElementById('liveTourneySlider');
-            if(liveData.length > 0) {
-                slider.innerHTML = "";
-                liveData.slice(0, 5).forEach(t => {
-                    let bg = formatImageUrl(t.banner);
-                    let prize = (!t.prize || t.prize == 0) ? "Glory" : "₹" + t.prize;
-                    slider.innerHTML += `
-                        <a href="explore.html?tournament=${t.id || t.title}" class="live-card glass-panel" style="display:flex; padding:10px; margin-bottom:10px; text-decoration:none;">
-                            <img src="${bg}" class="live-img" style="width:80px; height:80px; border-radius:10px; object-fit:cover;">
-                            <div class="live-info" style="flex:1; padding-left:15px; display:flex; flex-direction:column; justify-content:center;">
-                                <span class="live-badge" style="color:var(--accent-green); font-size:0.75rem; font-weight:bold; margin-bottom:4px;"><i class="fa-solid fa-satellite-dish"></i> LIVE</span>
-                                <div class="live-title" style="color:white; font-family:var(--font-head); font-size:1rem; margin-bottom:4px;">${t.title}</div>
-                                <div class="live-prize" style="color:var(--text-muted); font-size:0.85rem;">Prize Pool: <span style="color:var(--accent-orange); font-weight:bold;">${prize}</span></div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right" style="color:var(--accent-green); opacity:0.7; align-self:center; padding-right:10px;"></i>
-                        </a>
-                    `;
-                });
-                container.style.display = 'block';
-            } else { container.style.display = 'none'; }
-        }
-
-        function renderProMatches(data) {
-            const container = document.getElementById('proMatchesContainer');
-            container.innerHTML = "";
-            data.forEach(match => {
-                let isLive = match.status.toLowerCase() === 'live';
-                let statusBadge = isLive ? `<span class="live-badge">LIVE</span>` : `<span style="color:var(--accent-orange);">${match.status}</span>`;
-                container.innerHTML += `
-                    <div class="score-card">
-                        <div class="score-vs-bg">VS</div>
-                        <div class="score-header">
-                            <span><i class="fa-solid fa-shield"></i> ${match.title}</span>
-                            ${statusBadge}
-                        </div>
-                        <div class="score-teams">
-                            <div class="team-box">
-                                <img src="${match.team1_logo}" class="team-logo">
-                                <div class="team-name">${match.team1}</div>
-                            </div>
-                            <div class="match-score" style="color:${isLive ? 'white' : 'var(--text-muted)'};">${match.score} <span>Score</span></div>
-                            <div class="team-box">
-                                <img src="${match.team2_logo}" class="team-logo">
-                                <div class="team-name">${match.team2}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderScouting(data) {
-            const container = document.getElementById('scoutingContainer');
-            container.innerHTML = "";
-            data.forEach(player => {
-                let dName = player.username || player.ign || "Anonymous";
-                let dWins = player.wins || 0;
-                let dAvatar = player.avatar || "https://ui-avatars.com/api/?name=" + dName.charAt(0) + "&background=151923&color=fff";
-                let verifiedIcon = dWins > 10 ? `<i class="fa-solid fa-circle-check" style="color:var(--accent-cyan); font-size:0.8rem;"></i>` : ``;
-                
-                container.innerHTML += `
-                    <div class="scout-card">
-                        <img src="${dAvatar}" class="scout-avatar">
-                        <div class="scout-info">
-                            <div class="scout-name">${dName} ${verifiedIcon}</div>
-                            <div class="scout-stats"><span style="color:var(--accent-orange)">Wins: ${dWins}</span> <span>${player.role || 'Player'}</span></div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderFlashDrops(data) {
-            const container = document.getElementById('flashDropsContainer');
-            const section = document.getElementById('flashDropsSection');
-            container.innerHTML = "";
-            
-            data.forEach(drop => {
-                let statusBadge = drop.status.toLowerCase().includes('live') ? `<span class="drop-timer" style="color:var(--accent-green); border-color:var(--accent-green); background:rgba(0,255,127,0.1); box-shadow:0 0 10px rgba(0,255,127,0.2);"><i class="fa-solid fa-bolt fa-fade"></i> Live Now</span>` : `<span class="drop-timer"><i class="fa-regular fa-clock"></i> ${drop.status}</span>`;
-                
-                container.innerHTML += `
-                    <div class="drop-card glass-panel">
-                        <div class="drop-img-wrapper">
-                            ${drop.locked ? `<img src="${drop.image}" class="drop-img-silhouette">` : `<img src="${drop.image}" class="drop-img">`}
-                        </div>
-                        <div class="drop-info">
-                            <div class="drop-title">${drop.title}</div>
-                            <div class="drop-val">Worth ₹${drop.worth}</div>
-                            ${statusBadge}
-                        </div>
-                        <button class="drop-btn" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-unlock"></i> Unlock</button>
-                    </div>
-                `;
-            });
-        }
-
-        // PERFECT MOBILE UI SYNC
-        function syncLiveWalletPoints(user) {
-            if (!user) return;
-            
-            let points = parseInt(user.points) || 0; 
-            let earnings = parseInt(user.earnings) || 0;
-            let tickets = Math.floor(earnings / 10); 
-            
-            const updateValues = (pts, tix) => {
-                const wmT = document.getElementById('walletTicketsMobile');
-                const wmP = document.getElementById('walletPointsMobile');
-                const wdT = document.getElementById('walletTicketsDesk');
-                const wdP = document.getElementById('walletPointsDesk');
-                
-                if(wmT) wmT.innerText = tix;
-                if(wmP) wmP.innerText = pts;
-                if(wdT) wdT.innerText = tix;
-                if(wdP) wdP.innerText = pts;
-            };
-
-            // Inject offline/cached data instantly
-            updateValues(points, tickets);
-
-            // Fetch Strict Columns from Database
-            if (user.email && db) {
-                db.from('Users').select('points, earnings, role').eq('email', user.email).single()
-                .then(({data, error}) => {
-                    if (!error && data) {
-                        user.points = data.points !== undefined ? data.points : user.points;
-                        user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
-                        user.role = data.role || user.role;
-                        localStorage.setItem('tournyx_user', JSON.stringify(user));
-                        
-                        let livePoints = parseInt(user.points) || 0;
-                        let liveTickets = Math.floor((parseInt(user.earnings) || 0) / 10);
-
-                        updateValues(livePoints, liveTickets);
-                    }
-                });
-            }
-        }
-        
-        function logoutUser() {
-            if(confirm("Are you sure you want to logout?")) {
-                try {
-                    localStorage.removeItem('tournyx_user');
-                    localStorage.removeItem('tournyx_my_clans_cache');
-                } catch(e){}
-                window.location.href = "login.html";
-            }
-        }
-
-        function toggleBottomSheet() {
-            document.getElementById('bsMenu').classList.toggle('active');
-            document.getElementById('bsOverlay').classList.toggle('active');
-        }
-
-        // --- CLOUD-SYNCED DAILY QUESTS ---
-        let currentDynamicQuests = [];
-        async function loadQuestsFromSheets() {
-            try {
-                let result = await secureFetch({ action: 'get_quests' });
-                let data = result.data || result.message || result.result || result;
-                if (result.status === "success" && data && data.length > 0) {
-                    currentDynamicQuests = data; 
-                    renderQuests(); 
-                } else {
-                    document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
+                        counter.classList.remove('count-up'); 
+                    });
                 }
-            } catch(e) {
-                // Mock fallback for UI demo
-                currentDynamicQuests = [
-                    { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: 'home.html' },
-                    { id: 'q2', title: 'Top 10 in BR Match', reward: 150, reqType: 'open', reqVal: '', redirect: 'home.html' },
-                    { id: 'q3', title: 'Ignore Penalty Zone Demo', reward: 0, reqType: 'penalty', reqVal: '', redirect: 'home.html' }
-                ];
-                renderQuests();
-            }
-        }
-
-        function renderQuests() {
-            const wrapper = document.getElementById('dynamicQuestsWrapper');
-            if(currentDynamicQuests.length === 0) return;
-
-            wrapper.innerHTML = ""; 
-            currentDynamicQuests.forEach(q => {
-                let isPenalty = q.reqType === 'penalty';
-                let penaltyClass = isPenalty ? 'penalty' : '';
-                let btnState = isPenalty ? `<span style="color:var(--accent-red); font-weight:bold; font-size:0.8rem;">IGNORED</span>` : `<button class="quest-btn" onclick="claimQuestCloud('${q.id}', ${q.reward}, '${q.reqType}', '${q.reqVal}', '${q.redirect}')">CLAIM</button>`;
-                
-                wrapper.innerHTML += `
-                    <div class="quest-card glass-panel ${penaltyClass}" id="${q.id}">
-                        <div>
-                            <div class="quest-info-title">${q.title}</div>
-                            <div class="quest-info-sub"><i class="fa-solid fa-coins"></i> Reward: ${q.reward} PTS</div>
-                        </div>
-                        ${btnState}
-                    </div>
-                `;
-            });
-        }
-
-        function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            if(!user) { document.getElementById('authPopup').classList.add('active'); return; }
-
-            if(reqType === 'open') {
-                window.open(redirectUrl, '_blank');
-                let btn = document.querySelector(`#${questId} .quest-btn`);
-                if(btn) { btn.innerText = "VERIFY"; btn.style.borderColor = "var(--accent-orange)"; btn.style.color = "var(--accent-orange)"; btn.onclick = function() { verifyQuest(questId, rewardPts, user); }; }
-                return;
-            } else {
-                let currentVal = 0; let requiredValue = parseInt(reqVal) || 0; 
-                if (currentVal < requiredValue && requiredValue > 0) { showToast(`Task Incomplete!`, true); setTimeout(() => { window.location.href = redirectUrl; }, 1500); return; }
-                verifyQuest(questId, rewardPts, user);
-            }
-        }
-
-        function verifyQuest(questId, rewardPts, user) {
-            user.points = (parseInt(user.points) || 0) + parseInt(rewardPts);
-            try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
-            syncLiveWalletPoints(user); 
-            showToast(`+${rewardPts} PTS verified & added to Wallet!`);
-
-            let btn = document.querySelector(`#${questId} .quest-btn`);
-            if(btn) { btn.innerText = "CLAIMED"; btn.style.borderColor = "rgba(255,255,255,0.1)"; btn.style.color = "var(--accent-green)"; btn.classList.add("claimed"); btn.onclick = null; triggerConfetti(btn); }
-        }
-
-        function switchTab(tabId, tabElement) {
-            document.querySelectorAll('.lb-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.lb-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            tabElement.classList.add('active');
-        }
-
-        async function loadLeaderboard() {
-            try {
-                const apiRes = await secureFetch({ action: 'get_community_leaderboard', t: new Date().getTime() });
-                const data = apiRes.data || apiRes.message || apiRes.result || apiRes;
-
-                if (data && (data.organizers || data.teams || data.contributors)) {
-                    renderLeaderboardList('organizers', data.organizers || [], 'Wins', '', 'var(--accent-cyan)');
-                    renderLeaderboardList('teams', data.teams || [], 'Wins', '', 'var(--accent-purple)');
-                    renderLeaderboardList('contributors', data.contributors || [], 'Earnings', '₹ ', '#ffd700');
-                } else {
-                    throw new Error("Leaderboard data format mismatch or empty.");
-                }
-            } catch (e) {
-                renderLeaderboardList('organizers', [], '', '', '');
-                renderLeaderboardList('teams', [], '', '', '');
-                renderLeaderboardList('contributors', [], '', '', '');
-            }
-        }
-
-        function renderLeaderboardList(containerId, list, roleText, prefix, colorStr) {
-            const container = document.getElementById(containerId);
-            
-            if (!list || list.length === 0) {
-                container.innerHTML = getEmptyState('fa-solid fa-ghost', 'No Legends Yet', 'Data will sync automatically when available.');
-                return;
-            }
-
-            let html = '';
-            
-            list.slice(0, 15).forEach((item, i) => {
-                let rankClass = ''; let medal = ''; let borderClass = '';
-                
-                if (i === 0) { rankClass = 'rank-1'; medal = '<div class="rank-medal rank-1"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-1-border'; }
-                else if (i === 1) { rankClass = 'rank-2'; medal = '<div class="rank-medal rank-2"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-2-border'; }
-                else if (i === 2) { rankClass = 'rank-3'; medal = '<div class="rank-medal rank-3"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-3-border'; }
-                else { medal = '<div class="rank-medal" style="font-size:1.5rem; color:#666; font-family:var(--font-head); font-weight:bold;">#' + (i+1) + '</div>'; }
-                
-                let imgUrl = (item.image && item.image.length > 5 && item.image !== "undefined" && item.image !== "null") ? item.image : 'https://ui-avatars.com/api/?name=' + item.name.charAt(0) + '&background=151923&color=fff';
-                let displayValue = item.value !== undefined ? item.value : 0;
-                let displayName = item.name && item.name !== "undefined" ? item.name : 'Unknown Player';
-
-                html += `
-                <div class="person-row ${borderClass}">
-                    ${medal}
-                    <img src="${imgUrl}" class="person-img-small" style="border-color:${colorStr}">
-                    <div class="person-info">
-                        <div class="person-name">${displayName}</div>
-                        <div class="person-role" style="color:${colorStr}">${prefix}${displayValue} ${roleText}</div>
-                    </div>
-                </div>`;
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        function getEmptyState(icon, title, desc) {
-            const chars = ['🤖', '👾', '👻', '👽', '💀'];
-            const randomChar = chars[Math.floor(Math.random() * chars.length)];
-            return `<div class="empty-state-box">
-                <div class="animated-char">${randomChar}</div>
-                <h3>${title}</h3>
-                <p>${desc}</p>
-            </div>`;
-        }
-
-        function loadTournyxEngine() {
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            const authView = document.getElementById('engineAuth');
-            const guestView = document.getElementById('engineGuest');
-            const newPlayerView = document.getElementById('engineNewPlayer');
-            
-            if(!user || !user.email) {
-                if(authView) authView.style.display = 'none';
-                if(newPlayerView) newPlayerView.style.display = 'none';
-                if(guestView) guestView.style.display = 'flex';
-                buildStreakTimeline(0); 
-            } else {
-                if(guestView) guestView.style.display = 'none';
-                let matchesPlayed = parseInt(user.matches) || 0;
-                let wins = parseInt(user.wins) || 0;
-                
-                if (matchesPlayed === 0 && wins === 0) {
-                    if(authView) authView.style.display = 'none';
-                    if(newPlayerView) newPlayerView.style.display = 'flex';
-                } else {
-                    if(authView) authView.style.display = 'block';
-                    if(newPlayerView) newPlayerView.style.display = 'none';
-                    if(document.getElementById('txtPower')) document.getElementById('txtPower').innerText = (wins * 150) || "1,200";
-                    if(document.getElementById('txtRank')) document.getElementById('txtRank').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${wins > 10 ? 'Elite' : 'Rookie'}`;
-                    if(document.getElementById('txtWinRate')) document.getElementById('txtWinRate').innerText = matchesPlayed > 0 ? Math.floor((wins / matchesPlayed) * 100) + "%" : "0%";
-                    if(document.getElementById('txtWins')) document.getElementById('txtWins').innerText = wins;
-                }
-               syncStreakFromCloud();
-            }
-        }
-
-        // --- GLITCH PREVENTION LOGIC ---
-        function openActionHub() { 
-            document.getElementById('actionHubOverlay').classList.add('active'); 
-            document.body.style.overflow = 'hidden'; 
-        }
-        
-        function closeActionHub() { 
-            document.getElementById('actionHubOverlay').classList.remove('active'); 
-            document.body.style.overflow = ''; 
-        }
-
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) { 
-                closeActionHub(); 
-                hideLoader(); 
             }
         });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach((el) => { observer.observe(el); });
+}
 
-        let lastScrollY = window.scrollY;
-        window.addEventListener('scroll', () => {
-            const dock = document.getElementById('dockWrapper');
-            if(dock) {
-                if (window.scrollY > lastScrollY && window.scrollY > 150) {
-                    dock.classList.add('hide-dock');
-                } else {
-                    dock.classList.remove('hide-dock');
-                }
-            }
-            lastScrollY = window.scrollY;
+// Rendering functions (Tournaments, Matches, Drops, Scouting)
+function renderFeaturedTournaments(featuredArray) {
+    const slider = document.getElementById('featuredSlider');
+    slider.innerHTML = "";
+    featuredArray.slice(0, 6).forEach(t => {
+        const bg = formatImageUrl(t.banner);
+        const prize = (!t.prize || t.prize == 0) ? "Glory" : "₹" + t.prize;
+        let rFee = parseInt(t.fee) || 0;
+        let passCount = Math.ceil(rFee / 10);
+        const feeText = passCount > 0 ? `${passCount} <span class="tx-icon" style="font-size:0.9em;">TX</span>` : "Free Entry";
+        const totalSlots = parseInt(t.slots) || 48;
+        const slotsFilled = parseInt(t.filled_slots) || 0; 
+        let fillPct = (slotsFilled / totalSlots) * 100;
+        let timeData = calculateTimeRemaining(t.date);
+        let formatDT = formatDateTime(t.date);
+        let btnState = `onclick="window.location.href='explore.html?tournament=${t.id || t.title}'"`;
+        
+        slider.innerHTML += `
+            <div class="tourney-card">
+                <div class="t-img-box" ${btnState} style="cursor:pointer;">
+                    <img src="${bg}" class="t-img" loading="lazy">
+                    <div class="t-tag">${t.game || 'Esports'}</div>
+                </div>
+                <div class="t-content">
+                    <div class="t-title">${t.title}</div>
+                    <div class="t-detail-item"><i class="fa-regular fa-calendar"></i> Starts: <strong style="color:white; margin-left:4px;">${formatDT}</strong></div>
+                    <div class="t-detail-item" style="color:${timeData.isClosed ? 'var(--accent-red)' : 'var(--accent-orange)'}"><i class="fa-solid fa-hourglass-half"></i> Registration: <strong>${timeData.text}</strong></div>
+                    <div class="t-meta" style="margin-bottom: 5px;"><span><i class="fa-solid fa-ticket" style="color:var(--accent-cyan);"></i> ${feeText}</span><span class="t-prize">${prize}</span></div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-head); font-weight:bold;">
+                            <span style="color:var(--text-muted);">Slots Filled</span>
+                            <span style="color:var(--accent-cyan);">${slotsFilled}/${totalSlots}</span>
+                        </div>
+                        <div class="f-progress-container"><div class="f-progress-bar" style="width:${fillPct}%"></div></div>
+                    </div>
+                    <button class="t-btn" ${btnState}>View Details</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function loadLiveTournamentsSlider(allData) {
+    let liveData = allData.filter(t => t.status && t.status.toLowerCase().includes('live'));
+    const container = document.getElementById('liveSectionContainer');
+    const slider = document.getElementById('liveTourneySlider');
+    if(liveData.length > 0) {
+        slider.innerHTML = "";
+        liveData.slice(0, 5).forEach(t => {
+            let bg = formatImageUrl(t.banner);
+            let prize = (!t.prize || t.prize == 0) ? "Glory" : "₹" + t.prize;
+            slider.innerHTML += `
+                <a href="explore.html?tournament=${t.id || t.title}" class="live-card glass-panel" style="display:flex; padding:10px; margin-bottom:10px; text-decoration:none;">
+                    <img src="${bg}" class="live-img" style="width:80px; height:80px; border-radius:10px; object-fit:cover;">
+                    <div class="live-info" style="flex:1; padding-left:15px; display:flex; flex-direction:column; justify-content:center;">
+                        <span class="live-badge" style="color:var(--accent-green); font-size:0.75rem; font-weight:bold; margin-bottom:4px;"><i class="fa-solid fa-satellite-dish"></i> LIVE</span>
+                        <div class="live-title" style="color:white; font-family:var(--font-head); font-size:1rem; margin-bottom:4px;">${t.title}</div>
+                        <div class="live-prize" style="color:var(--text-muted); font-size:0.85rem;">Prize Pool: <span style="color:var(--accent-orange); font-weight:bold;">${prize}</span></div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--accent-green); opacity:0.7; align-self:center; padding-right:10px;"></i>
+                </a>
+            `;
         });
-        // ✅ NEW: Always pulls the true streak state from Supabase before rendering,
-// so the same account shows correctly on ANY device, not just the one that claimed.
-async function syncStreakFromCloud() {
+        container.style.display = 'block';
+    } else { container.style.display = 'none'; }
+}
+
+function renderProMatches(data) {
+    const container = document.getElementById('proMatchesContainer');
+    container.innerHTML = "";
+    data.forEach(match => {
+        let isLive = match.status.toLowerCase() === 'live';
+        let statusBadge = isLive ? `<span class="live-badge">LIVE</span>` : `<span style="color:var(--accent-orange);">${match.status}</span>`;
+        container.innerHTML += `
+            <div class="score-card">
+                <div class="score-vs-bg">VS</div>
+                <div class="score-header">
+                    <span><i class="fa-solid fa-shield"></i> ${match.title}</span>
+                    ${statusBadge}
+                </div>
+                <div class="score-teams">
+                    <div class="team-box">
+                        <img src="${match.team1_logo}" class="team-logo">
+                        <div class="team-name">${match.team1}</div>
+                    </div>
+                    <div class="match-score" style="color:${isLive ? 'white' : 'var(--text-muted)'};">${match.score} <span>Score</span></div>
+                    <div class="team-box">
+                        <img src="${match.team2_logo}" class="team-logo">
+                        <div class="team-name">${match.team2}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function renderScouting(data) {
+    const container = document.getElementById('scoutingContainer');
+    container.innerHTML = "";
+    data.forEach(player => {
+        let dName = player.username || player.ign || "Anonymous";
+        let dWins = player.wins || 0;
+        let dAvatar = player.avatar || "https://ui-avatars.com/api/?name=" + dName.charAt(0) + "&background=151923&color=fff";
+        let verifiedIcon = dWins > 10 ? `<i class="fa-solid fa-circle-check" style="color:var(--accent-cyan); font-size:0.8rem;"></i>` : ``;
+        
+        container.innerHTML += `
+            <div class="scout-card">
+                <img src="${dAvatar}" class="scout-avatar">
+                <div class="scout-info">
+                    <div class="scout-name">${dName} ${verifiedIcon}</div>
+                    <div class="scout-stats"><span style="color:var(--accent-orange)">Wins: ${dWins}</span> <span>${player.role || 'Player'}</span></div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function renderFlashDrops(data) {
+    const container = document.getElementById('flashDropsContainer');
+    const section = document.getElementById('flashDropsSection');
+    container.innerHTML = "";
+    
+    data.forEach(drop => {
+        let statusBadge = drop.status.toLowerCase().includes('live') ? `<span class="drop-timer" style="color:var(--accent-green); border-color:var(--accent-green); background:rgba(0,255,127,0.1); box-shadow:0 0 10px rgba(0,255,127,0.2);"><i class="fa-solid fa-bolt fa-fade"></i> Live Now</span>` : `<span class="drop-timer"><i class="fa-regular fa-clock"></i> ${drop.status}</span>`;
+        
+        container.innerHTML += `
+            <div class="drop-card glass-panel">
+                <div class="drop-img-wrapper">
+                    ${drop.locked ? `<img src="${drop.image}" class="drop-img-silhouette">` : `<img src="${drop.image}" class="drop-img">`}
+                </div>
+                <div class="drop-info">
+                    <div class="drop-title">${drop.title}</div>
+                    <div class="drop-val">Worth ₹${drop.worth}</div>
+                    ${statusBadge}
+                </div>
+                <button class="drop-btn" onclick="window.location.href='giveaway.html'"><i class="fa-solid fa-unlock"></i> Unlock</button>
+            </div>
+        `;
+    });
+}
+
+async function fetchNextMatch(user) {
+    try {
+        const [tRes, mRes] = await Promise.all([
+            secureFetch({ action: 'get_tournaments' }),
+            secureFetch({ action: 'get_matches', email: user.email })
+        ]);
+        let allTourneys = tRes.data || [];
+        let myMatches = mRes.data || [];
+        let activeMatches = [];
+        myMatches.forEach(entry => {
+            let t = allTourneys.find(x => x.id === entry.match_id || x.title === entry.tournament_title);
+            if(t && t.status && !t.status.toLowerCase().includes('completed')) { activeMatches.push(t); }
+        });
+
+        const widget = document.getElementById('nextMatchWidget');
+        if(activeMatches.length > 0) {
+            let next = activeMatches[0]; 
+            document.getElementById('nmTitle').innerText = next.title;
+            let status = next.status || 'Upcoming';
+            let sColor = status.toLowerCase().includes('live') ? 'var(--accent-green)' : 'var(--accent-cyan)';
+            let rawDate = next.match_period || next.date;
+            let displayDate = rawDate;
+            if (rawDate) { let fDate = formatDateTime(rawDate); if (fDate !== "TBA" && fDate !== "TBD" && fDate !== rawDate) { displayDate = fDate; } }
+            document.getElementById('nmDate').innerHTML = `<span style="color:${sColor}; font-weight:bold; font-family:var(--font-head);"><i class="fa-solid fa-satellite-dish fa-fade"></i> ${status.toUpperCase()}</span> • ${displayDate}`;
+            widget.style.display = 'block';
+        } else { widget.style.display = 'none'; }
+    } catch(e) {}
+}
+
+async function loadQuestsFromSheets() {
+    let currentDynamicQuests = [];
+    try {
+        let result = await secureFetch({ action: 'get_quests' });
+        let data = result.data || result.message || result.result || result;
+        if (result.status === "success" && data && data.length > 0) {
+            currentDynamicQuests = data; 
+        } else {
+            document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
+            return;
+        }
+    } catch(e) {
+        currentDynamicQuests = [
+            { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: 'home.html' },
+            { id: 'q2', title: 'Top 10 in BR Match', reward: 150, reqType: 'open', reqVal: '', redirect: 'home.html' },
+            { id: 'q3', title: 'Ignore Penalty Zone Demo', reward: 0, reqType: 'penalty', reqVal: '', redirect: 'home.html' }
+        ];
+    }
+    
+    const wrapper = document.getElementById('dynamicQuestsWrapper');
+    if(currentDynamicQuests.length === 0) return;
+
+    wrapper.innerHTML = ""; 
+    currentDynamicQuests.forEach(q => {
+        let isPenalty = q.reqType === 'penalty';
+        let penaltyClass = isPenalty ? 'penalty' : '';
+        let btnState = isPenalty ? `<span style="color:var(--accent-red); font-weight:bold; font-size:0.8rem;">IGNORED</span>` : `<button class="quest-btn" onclick="claimQuestCloud('${q.id}', ${q.reward}, '${q.reqType}', '${q.reqVal}', '${q.redirect}')">CLAIM</button>`;
+        
+        wrapper.innerHTML += `
+            <div class="quest-card glass-panel ${penaltyClass}" id="${q.id}">
+                <div>
+                    <div class="quest-info-title">${q.title}</div>
+                    <div class="quest-info-sub"><i class="fa-solid fa-coins"></i> Reward: ${q.reward} PTS</div>
+                </div>
+                ${btnState}
+            </div>
+        `;
+    });
+}
+
+function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-    if (!user || !user.email || !db) {
-        buildStreakTimeline(0);
+    if(!user) { document.getElementById('authPopup').classList.add('active'); return; }
+
+    if(reqType === 'open') {
+        window.open(redirectUrl, '_blank');
+        let btn = document.querySelector(`#${questId} .quest-btn`);
+        if(btn) { btn.innerText = "VERIFY"; btn.style.borderColor = "var(--accent-orange)"; btn.style.color = "var(--accent-orange)"; btn.onclick = function() { verifyQuest(questId, rewardPts, user); }; }
+        return;
+    } else {
+        let currentVal = 0; let requiredValue = parseInt(reqVal) || 0; 
+        if (currentVal < requiredValue && requiredValue > 0) { showToast(`Task Incomplete!`, true); setTimeout(() => { window.location.href = redirectUrl; }, 1500); return; }
+        verifyQuest(questId, rewardPts, user);
+    }
+}
+
+function verifyQuest(questId, rewardPts, user) {
+    user.points = (parseInt(user.points) || 0) + parseInt(rewardPts);
+    try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
+    syncLiveWalletPoints(user); 
+    showToast(`+${rewardPts} PTS verified & added to Wallet!`);
+
+    let btn = document.querySelector(`#${questId} .quest-btn`);
+    if(btn) { btn.innerText = "CLAIMED"; btn.style.borderColor = "rgba(255,255,255,0.1)"; btn.style.color = "var(--accent-green)"; btn.classList.add("claimed"); btn.onclick = null; triggerConfetti(btn); }
+}
+
+async function loadLeaderboard() {
+    try {
+        const apiRes = await secureFetch({ action: 'get_community_leaderboard', t: new Date().getTime() });
+        const data = apiRes.data || apiRes.message || apiRes.result || apiRes;
+
+        if (data && (data.organizers || data.teams || data.contributors)) {
+            renderLeaderboardList('organizers', data.organizers || [], 'Wins', '', 'var(--accent-cyan)');
+            renderLeaderboardList('teams', data.teams || [], 'Wins', '', 'var(--accent-purple)');
+            renderLeaderboardList('contributors', data.contributors || [], 'Earnings', '₹ ', '#ffd700');
+        } else {
+            throw new Error("Leaderboard data format mismatch or empty.");
+        }
+    } catch (e) {
+        renderLeaderboardList('organizers', [], '', '', '');
+        renderLeaderboardList('teams', [], '', '', '');
+        renderLeaderboardList('contributors', [], '', '', '');
+    }
+}
+
+function renderLeaderboardList(containerId, list, roleText, prefix, colorStr) {
+    const container = document.getElementById(containerId);
+    if (!list || list.length === 0) {
+        container.innerHTML = getEmptyState('fa-solid fa-ghost', 'No Legends Yet', 'Data will sync automatically when available.');
         return;
     }
 
-    try {
-        const { data, error } = await db.from('Users')
-            .select('streak_count, last_claim_date, points')
-            .eq('email', user.email)
-            .single();
+    let html = '';
+    list.slice(0, 15).forEach((item, i) => {
+        let rankClass = ''; let medal = ''; let borderClass = '';
+        
+        if (i === 0) { rankClass = 'rank-1'; medal = '<div class="rank-medal rank-1"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-1-border'; }
+        else if (i === 1) { rankClass = 'rank-2'; medal = '<div class="rank-medal rank-2"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-2-border'; }
+        else if (i === 2) { rankClass = 'rank-3'; medal = '<div class="rank-medal rank-3"><i class="fa-solid fa-medal"></i></div>'; borderClass = 'rank-3-border'; }
+        else { medal = '<div class="rank-medal" style="font-size:1.5rem; color:#666; font-family:var(--font-head); font-weight:bold;">#' + (i+1) + '</div>'; }
+        
+        let imgUrl = (item.image && item.image.length > 5 && item.image !== "undefined" && item.image !== "null") ? item.image : 'https://ui-avatars.com/api/?name=' + item.name.charAt(0) + '&background=151923&color=fff';
+        let displayValue = item.value !== undefined ? item.value : 0;
+        let displayName = item.name && item.name !== "undefined" ? item.name : 'Unknown Player';
 
-        if (!error && data) {
-            user.streak_count = data.streak_count || 0;
-            user.last_claim_date = data.last_claim_date || null;
-            user.points = data.points !== undefined ? data.points : user.points;
-            localStorage.setItem('tournyx_user', JSON.stringify(user));
-        }
-    } catch(e) {
-        console.error("Streak cloud sync failed", e);
-    }
-
-    buildStreakTimeline(user.streak_count || 0);
+        html += `
+        <div class="person-row ${borderClass}">
+            ${medal}
+            <img src="${imgUrl}" class="person-img-small" style="border-color:${colorStr}">
+            <div class="person-info">
+                <div class="person-name">${displayName}</div>
+                <div class="person-role" style="color:${colorStr}">${prefix}${displayValue} ${roleText}</div>
+            </div>
+        </div>`;
+    });
+    
+    container.innerHTML = html;
 }
 
-      // --- 100% BULLETPROOF STREAK LOGIC (SAFE MATH & POINTS ISOLATION) ---
-        function buildStreakTimeline(currentStreak) {
-            document.getElementById('streakCountMain').innerText = currentStreak;
-            const timeline = document.getElementById('streakTimeline');
-            timeline.innerHTML = '<div class="ts-line-bg"></div><div class="ts-line-fill" id="streakFill"></div>'; 
-            
-            const total = 20; 
-            for(let i=1; i<=total; i++) {
-                let sClass = i <= currentStreak ? "claimed" : (i === currentStreak + 1 ? "active" : "");
-                let icon = i <= currentStreak ? `<i class="fa-solid fa-check"></i>` : (i === currentStreak + 1 ? `<i class="fa-solid fa-fire"></i>` : "");
-                let pts = Math.min(i * 50, 1000); 
-                timeline.insertAdjacentHTML('beforeend', `
-                    <div class="ts-node ${sClass}">
-                        <div class="ts-circle">${icon}</div>
-                        <div class="ts-val"><b>${pts} PTS</b><span>Day ${i}</span></div>
-                    </div>
-                `);
-            }
-            
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            const btn = document.getElementById('btnClaimStreak');
-            
-            if(user && btn) {
-                if(user.last_claim_date) {
-                    // Safe UTC Math
-                    let lastClaimMs = Date.parse(user.last_claim_date);
-                    let nowMs = Date.now();
-                    
-                    if (!isNaN(lastClaimMs)) {
-                        let hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
-                        
-                        if(hoursPassed >= 0 && hoursPassed < 24) {
-                            // Under 24h: Must wait
-                            let hoursLeft = Math.ceil(24 - hoursPassed);
-                            btn.innerText = `NEXT IN ${hoursLeft}H`; 
-                            btn.classList.add('claimed'); 
-                            btn.disabled = true;
-                        } else if(hoursPassed >= 48) {
-                            // Over 48h: Missed a day, reset visual streak to 0 (can claim immediately)
-                            currentStreak = 0; 
-                            document.getElementById('streakCountMain').innerText = "0";
-                            btn.innerText = "CLAIM NEXT";
-                            btn.classList.remove('claimed');
-                            btn.disabled = false;
+function switchTab(tabId, tabElement) {
+    document.querySelectorAll('.lb-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.lb-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    tabElement.classList.add('active');
+}
+
+async function executeGlobalSearch() {
+    let query = document.getElementById('globalSearchInput').value.toLowerCase();
+    const resultsArea = document.getElementById('searchResultsArea');
+    
+    if(query.length < 2) {
+        resultsArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>`;
+        return;
+    }
+
+    resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-cyan); margin-top:20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching...</div>`;
+
+    let resultsHTML = '';
+    
+    if (db) {
+        try {
+            const { data: tData } = await db.from('Tournaments').select('*').ilike('title', `%${query}%`).limit(3);
+            if(tData) tData.forEach(t => {
+                resultsHTML += `
+                    <div class="search-item" onclick="window.location.href='explore.html?tournament=${t.id}'">
+                        <img src="${formatImageUrl(t.banner)}">
+                        <div class="search-item-info">
+                            <span class="search-item-type">Tournament</span>
+                            <span class="search-item-title">${t.title}</span>
+                        </div>
+                    </div>`;
+            });
+
+            const { data: hData } = await db.from('Highlights').select('*').ilike('title', `%${query}%`).limit(4);
+            if(hData) hData.forEach(h => {
+                resultsHTML += `
+                    <div class="search-item">
+                        <img src="${h.thumbnail || 'https://via.placeholder.com/60'}">
+                        <div class="search-item-info">
+                            <span class="search-item-type">${h.type.toUpperCase()} - ${h.creator}</span>
+                            <span class="search-item-title">${h.title}</span>
+                        </div>
+                    </div>`;
+            });
+        } catch(e) {}
+    }
+
+    if(resultsHTML === '') {
+        resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-red); margin-top:50px; font-family:var(--font-head);">No matches found in the matrix.</div>`;
+    } else {
+        resultsArea.innerHTML = resultsHTML;
+    }
+}
+
+function initEndlessReels() {
+    const observer = new IntersectionObserver((entries) => {
+        if(entries[0].isIntersecting && hasMoreFeed && !isFetchingFeed) fetchClipsFeed();
+    }, { rootMargin: "300px" });
+    const feedLoader = document.getElementById('feedLoader');
+    if (feedLoader) observer.observe(feedLoader);
+}
+
+async function fetchClipsFeed() {
+    if(isFetchingFeed) return;
+    isFetchingFeed = true;
+    const container = document.getElementById('infiniteHighlightsContainer');
+    const feedLoader = document.getElementById('feedLoader');
+    const endFeed = document.getElementById('endOfFeed');
+    
+    if(feedLoader) feedLoader.style.display = 'flex';
+    
+    if(db) {
+        try {
+            const { data, error } = await db.from('Highlights').select('*').range(feedPage * 5, (feedPage + 1) * 5 - 1);
+            if(data && data.length > 0) {
+                let uniqueData = data.filter(vid => !loadedFeedIds.has(vid.id));
+                uniqueData.forEach(vid => loadedFeedIds.add(vid.id));
+                
+                if(uniqueData.length > 0) {
+                    if(feedPage === 0 && container) container.innerHTML = '';
+                    uniqueData.forEach(item => {
+                        if (item.type === 'reel' || item.format === 'vertical') {
+                            if(container) container.innerHTML += renderReelHTML(item);
                         } else {
-                            // Between 24h and 48h: Ready to claim!
-                            btn.innerText = "CLAIM NEXT";
-                            btn.classList.remove('claimed');
-                            btn.disabled = false;
+                            if(container) container.innerHTML += renderVideoHTML(item);
                         }
-                    }
+                    });
+                    feedPage++;
                 } else {
-                    btn.innerText = "CLAIM NEXT";
-                    btn.classList.remove('claimed');
-                    btn.disabled = false;
+                    feedPage++; isFetchingFeed = false; fetchClipsFeed(); return;
                 }
+            } else { 
+                hasMoreFeed = false; 
+                if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+                if(endFeed) endFeed.style.display = 'block'; 
             }
-
-            setTimeout(() => { document.getElementById('streakFill').style.width = currentStreak > 0 ? `${(currentStreak / (total - 1)) * 100}%` : "0%"; }, 100);
+        } catch(e) { 
+            hasMoreFeed = false; 
+            if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+            if(endFeed) endFeed.style.display = 'block'; 
         }
-        let feedPage = 0; 
-        let hasMoreFeed = true;
-        let isFetchingFeed = false;
-        let loadedFeedIds = new Set();
-
-        function initEndlessReels() {
-            const observer = new IntersectionObserver((entries) => {
-                if(entries[0].isIntersecting && hasMoreFeed && !isFetchingFeed) fetchClipsFeed();
-            }, { rootMargin: "300px" });
-            const feedLoader = document.getElementById('feedLoader');
-            if (feedLoader) observer.observe(feedLoader);
-        }
-
-        // --- UPDATE MATRIX FEED TO SHOW CHARACTER IF EMPTY ---
-        async function fetchClipsFeed() {
-            if(isFetchingFeed) return;
-            isFetchingFeed = true;
-            const container = document.getElementById('infiniteHighlightsContainer');
-            const feedLoader = document.getElementById('feedLoader');
-            const endFeed = document.getElementById('endOfFeed');
-            
-            if(feedLoader) feedLoader.style.display = 'flex';
-            
-            if(db) {
-                try {
-                    const { data, error } = await db.from('Highlights').select('*').range(feedPage * 5, (feedPage + 1) * 5 - 1);
-                    if(data && data.length > 0) {
-                        let uniqueData = data.filter(vid => !loadedFeedIds.has(vid.id));
-                        uniqueData.forEach(vid => loadedFeedIds.add(vid.id));
-                        
-                        if(uniqueData.length > 0) {
-                            if(feedPage === 0 && container) container.innerHTML = '';
-                            uniqueData.forEach(item => {
-                                if (item.type === 'reel' || item.format === 'vertical') {
-                                    if(container) container.innerHTML += renderReelHTML(item);
-                                } else {
-                                    if(container) container.innerHTML += renderVideoHTML(item);
-                                }
-                            });
-                            feedPage++;
-                        } else {
-                            feedPage++; isFetchingFeed = false; fetchClipsFeed(); return;
-                        }
-                    } else { 
-                        hasMoreFeed = false; 
-                        if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
-                        if(endFeed) endFeed.style.display = 'block'; 
-                    }
-                } catch(e) { 
-                    hasMoreFeed = false; 
-                    if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
-                    if(endFeed) endFeed.style.display = 'block'; 
+    } else {
+        setTimeout(() => {
+            if(feedPage < 4) { 
+                if(feedPage === 0 && container) container.innerHTML = '';
+                for(let i=1; i<=3; i++) {
+                    let isPortrait = (i % 2 === 0); 
+                    let mockItem = { id: `mock_${feedPage}_${i}`, creator: isPortrait ? "Pro Shorts" : "Tournyx VODs", title: isPortrait ? "1v4 Clutch" : "Grand Finals", views: 12 + (i*3) };
+                    if(container) container.innerHTML += isPortrait ? renderReelHTML(mockItem) : renderVideoHTML(mockItem);
                 }
-            } else {
-                setTimeout(() => {
-                    if(feedPage < 4) { 
-                        if(feedPage === 0 && container) container.innerHTML = '';
-                        for(let i=1; i<=3; i++) {
-                            let isPortrait = (i % 2 === 0); 
-                            let mockItem = { id: `mock_${feedPage}_${i}`, creator: isPortrait ? "Pro Shorts" : "Tournyx VODs", title: isPortrait ? "1v4 Clutch" : "Grand Finals", views: 12 + (i*3) };
-                            if(container) container.innerHTML += isPortrait ? renderReelHTML(mockItem) : renderVideoHTML(mockItem);
-                        }
-                        feedPage++;
-                    } else { 
-                        hasMoreFeed = false; 
-                        if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
-                        if(endFeed) endFeed.style.display = 'block'; 
-                    }
-                    if(feedLoader) feedLoader.style.display = 'none';
-                    isFetchingFeed = false;
-                }, 800);
-                return; 
+                feedPage++;
+            } else { 
+                hasMoreFeed = false; 
+                if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+                if(endFeed) endFeed.style.display = 'block'; 
             }
             if(feedLoader) feedLoader.style.display = 'none';
             isFetchingFeed = false;
-        }
-        function renderReelHTML(vid) {
-            return `<div style="width: 100%; height: 450px; max-width:350px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
-                <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/400x600/111/444?text=Reel'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
-                <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%); display:flex; flex-direction:column; justify-content:space-between; padding:20px; pointer-events:none;">
-                    <i class="fa-solid fa-play" onclick="this.style.display='none'; this.previousElementSibling.play();" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; color:rgba(255,255,255,0.8); pointer-events:auto; cursor:pointer;"></i>
-                    <div style="margin-top:auto;"><div style="font-size:0.9rem; font-weight:bold; color:white;"><img src="https://ui-avatars.com/api/?name=T&background=bd00ff&color=fff" style="width:25px; border-radius:50%; margin-right:8px; vertical-align:middle;">${vid.creator || 'Creator'}</div><div style="font-size:0.8rem; color:#ccc; margin-top:5px;">${vid.title || 'Highlight'}</div><span style="font-size:0.7rem; color:var(--accent-cyan); font-weight:bold;">${vid.views || 0}K Views</span></div>
-                </div></div>`;
-        }
-
-        function renderVideoHTML(vid) {
-            return `<div style="width: 100%; height: 220px; max-width:600px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
-                <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/800x450/111/444?text=Video'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
-                <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 50%); display:flex; flex-direction:column; justify-content:space-between; padding:20px; pointer-events:none;">
-                    <i class="fa-solid fa-play" onclick="this.style.display='none'; this.previousElementSibling.play();" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; color:rgba(255,255,255,0.8); pointer-events:auto; cursor:pointer;"></i>
-                    <div style="margin-top:auto;"><div style="font-size:0.9rem; font-weight:bold; color:white;"><img src="https://ui-avatars.com/api/?name=V&background=ff6a00&color=fff" style="width:25px; border-radius:50%; margin-right:8px; vertical-align:middle;">${vid.creator || 'VOD Channel'}</div><div style="font-size:0.8rem; color:#ccc; margin-top:5px;">${vid.title || 'Recap'}</div><span style="font-size:0.7rem; color:var(--accent-orange); font-weight:bold;">${vid.views || 0}K Views</span></div>
-                </div></div>`;
-        }
-
-        let visionStream = null;
-        let visionInterval = null;
-        let currentAiTask = null;
-        let currentAiReward = 0;
-
-        function openVisionAIModal(taskName, reward) {
-            currentAiTask = taskName;
-            currentAiReward = reward;
-            document.getElementById('visionAIModal').classList.add('active');
-            document.getElementById('visionAIStatusText').innerText = `Task: ${taskName} (${reward} PTS)`;
-            document.getElementById('visionStartBtn').style.display = 'block';
-            document.getElementById('visionStartBtn').innerText = "INITIALIZE NEURAL LINK";
-            document.getElementById('visionAIScanLine').style.display = 'none';
-            document.getElementById('visionAIVideo').srcObject = null;
-        }
-
-        async function startVisionAI() {
-            if(!checkAuth()) return;
-            const btn = document.getElementById('visionStartBtn');
-            const status = document.getElementById('visionAIStatusText');
-            const video = document.getElementById('visionAIVideo');
-            const scanLine = document.getElementById('visionAIScanLine');
-            const chip = document.getElementById('aiChipIcon');
-
-            try {
-                btn.innerText = "AWAITING PERMISSION...";
-                visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
-                
-                video.srcObject = visionStream;
-                btn.style.display = 'none';
-                status.innerText = "LINK ESTABLISHED. SCANNING MATRIX...";
-                status.style.color = "var(--accent-cyan)";
-                scanLine.style.display = 'block';
-                chip.classList.add('fa-spin');
-                chip.style.color = "var(--accent-orange)";
-
-                let processingSteps = 0;
-                visionInterval = setInterval(async () => {
-                    processingSteps++;
-                    
-                    if(processingSteps >= 4) {
-                        clearInterval(visionInterval);
-                        status.innerText = "AI VERIFICATION SUCCESSFUL! HEADSHOT DETECTED.";
-                        status.style.color = "var(--accent-green)";
-                        chip.classList.remove('fa-spin');
-                        chip.style.color = "var(--accent-green)";
-                        scanLine.style.display = 'none';
-                        
-                        if(visionStream) visionStream.getTracks().forEach(track => track.stop());
-                        
-                        if(db) {
-                            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-                            let newPts = (user.points || 0) + currentAiReward;
-                            await db.from('Match_Analytics').insert([{ user_email: user.email, task_verified: currentAiTask, points_awarded: currentAiReward }]);
-                            await db.from('Users').update({ points: newPts }).eq('email', user.email);
-                            user.points = newPts;
-                            localStorage.setItem('tournyx_user', JSON.stringify(user));
-                            syncLiveWalletPoints(user);
-                        }
-                        
-                        setTimeout(() => {
-                            showToast(`AI Verified: +${currentAiReward} PTS`);
-                            document.getElementById('visionAIModal').classList.remove('active');
-                        }, 2000);
-                    }
-                }, 1500);
-
-                visionStream.getVideoTracks()[0].onended = () => {
-                    if(processingSteps < 4) {
-                        stopVisionAI();
-                        showToast("Neural Link Terminated early.", true);
-                    }
-                };
-
-            } catch(err) {
-                console.error("Screen capture error: ", err);
-                status.innerText = "PERMISSION DENIED OR FAILED.";
-                status.style.color = "var(--accent-red)";
-                btn.innerText = "RETRY NEURAL LINK";
-                if(visionStream) visionStream.getTracks().forEach(track => track.stop());
-            }
-        }
-
-        function stopVisionAI() {
-            if(visionInterval) clearInterval(visionInterval);
-            if(visionStream) visionStream.getTracks().forEach(track => track.stop());
-            document.getElementById('aiChipIcon').classList.remove('fa-spin');
-            document.getElementById('visionAIScanLine').style.display = 'none';
-        }
-        
-        // --- TOURNYX ENGINE SYSTEM MODAL LOGIC ---
-        function openSystemPopup() {
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            
-            if(user) {
-                document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
-                document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
-                document.getElementById('emStatPower').innerText = (user.wins ? user.wins * 150 : 450);
-                document.getElementById('emStatWinRate').innerText = (user.matches ? Math.floor((user.wins/user.matches)*100) + "%" : "0%");
-                document.getElementById('emStatXP').innerText = user.points || "5,000";
-            }
-
-            document.getElementById('ultimateSystemModal').classList.add('active');
-            triggerConfetti(document.querySelector('.btn-pulse-system'));
-        }
-
-        function closeEngineModal() {
-            document.getElementById('ultimateSystemModal').classList.remove('active');
-        }
-
-        function switchEngineTab(tabId, btnEl) {
-            document.querySelectorAll('.em-pane').forEach(pane => pane.classList.remove('active'));
-            document.querySelectorAll('.em-nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btnEl.classList.add('active');
-        }
-
-        function selectRole(roleCard, roleName) {
-            document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
-            roleCard.classList.add('active');
-            document.getElementById('roleTrainingHeading').innerText = roleName.toUpperCase() + " TRAINING";
-            showToast(`Selected Role: ${roleName}`);
-        }
-
-        // --- 2. SEARCH BAR LOGIC ---
-        function openFSsearch() {
-            document.getElementById('searchFSoverlay').classList.add('active');
-            document.getElementById('globalSearchInput').focus();
-        }
-        function closeFSsearch() {
-            document.getElementById('searchFSoverlay').classList.remove('active');
-            document.getElementById('globalSearchInput').value = "";
-            document.getElementById('searchResultsArea').innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>`;
-        }
-
-        async function executeGlobalSearch() {
-            let query = document.getElementById('globalSearchInput').value.toLowerCase();
-            const resultsArea = document.getElementById('searchResultsArea');
-            
-            if(query.length < 2) {
-                resultsArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:50px; font-family:var(--font-head);">Type to search the matrix...</div>`;
-                return;
-            }
-
-            resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-cyan); margin-top:20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching...</div>`;
-
-            let resultsHTML = '';
-            
-            if (db) {
-                try {
-                    const { data: tData } = await db.from('Tournaments').select('*').ilike('title', `%${query}%`).limit(3);
-                    if(tData) tData.forEach(t => {
-                        resultsHTML += `
-                            <div class="search-item" onclick="window.location.href='explore.html?tournament=${t.id}'">
-                                <img src="${formatImageUrl(t.banner)}">
-                                <div class="search-item-info">
-                                    <span class="search-item-type">Tournament</span>
-                                    <span class="search-item-title">${t.title}</span>
-                                </div>
-                            </div>`;
-                    });
-
-                    const { data: hData } = await db.from('Highlights').select('*').ilike('title', `%${query}%`).limit(4);
-                    if(hData) hData.forEach(h => {
-                        resultsHTML += `
-                            <div class="search-item">
-                                <img src="${h.thumbnail || 'https://via.placeholder.com/60'}">
-                                <div class="search-item-info">
-                                    <span class="search-item-type">${h.type.toUpperCase()} - ${h.creator}</span>
-                                    <span class="search-item-title">${h.title}</span>
-                                </div>
-                            </div>`;
-                    });
-                } catch(e) {}
-            }
-
-            if(resultsHTML === '') {
-                resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-red); margin-top:50px; font-family:var(--font-head);">No matches found in the matrix.</div>`;
-            } else {
-                resultsArea.innerHTML = resultsHTML;
-            }
-        }
-
-       async function claimDailyStreak() {
-            if(!checkAuth()) return;
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
-            const btn = document.getElementById('btnClaimStreak');
-            
-            btn.innerText = "VERIFYING...";
-            btn.disabled = true;
-
-            if (!db) {
-                showToast("Server offline. Cannot verify claim.", true);
-                btn.innerText = "CLAIM NEXT";
-                btn.disabled = false;
-                return;
-            }
-
-            try {
-                // 1. Fetch strictly from DB to prevent exploits
-               try {
-                // Define cleanEmail FIRST before using it
-                const cleanEmail = String(user.email).trim().toLowerCase();
-
-                // 1. Fetch strictly from DB to prevent exploits
-               const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', cleanEmail).single();
-                if (fetchError) throw fetchError;
-
-                let nowMs = Date.now();
-                let lastClaimMs = liveData.last_claim_date ? Date.parse(liveData.last_claim_date) : 0;
-                let hoursPassed = 999; // Default to allow if no claim exists
-                
-                if (lastClaimMs > 0 && !isNaN(lastClaimMs)) {
-                    hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
-                }
-
-                // 2. Validate Time
-                if(hoursPassed >= 0 && hoursPassed < 24) {
-    let hoursLeft = Math.ceil(24 - hoursPassed);
-    showToast("Already claimed! Next in " + hoursLeft + "H", true);
-    btn.innerText = `NEXT IN ${hoursLeft}H`; 
-    btn.classList.add('claimed'); 
-    btn.disabled = false;
-    return;
+        }, 800);
+        return; 
+    }
+    if(feedLoader) feedLoader.style.display = 'none';
+    isFetchingFeed = false;
 }
 
-           // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
-                let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
-                
-                // If over 48 hours, they broke the streak, restart at Day 1
-                if(hoursPassed >= 48) newStreak = 1; 
-
-                let reward = Math.min(newStreak * 50, 1000);
-                let currentPoints = parseInt(liveData.points) || 0;
-                let newPoints = currentPoints + reward; 
-                let newDateISO = new Date(nowMs).toISOString();
-
-               btn.innerText = "SYNCING...";
-
-            const { data: updatedRows, error: updateError } = await db.from('Users').update({
-    streak_count: newStreak, 
-    points: newPoints,
-    last_claim_date: newDateISO
-}).eq('email', cleanEmail).select();  // .select() returns the updated row(s)
-
-if (updateError) throw updateError;
-
-// If this is empty, no row matched — the write silently did nothing
-if (!updatedRows || updatedRows.length === 0) {
-    console.error("Streak claim failed: no matching user row for email:", cleanEmail);
-    showToast("Sync error: account not found. Please re-login.", true);
-    btn.innerText = "CLAIM NEXT";
-    btn.disabled = false;
-    return;
+function renderReelHTML(vid) {
+    return `<div style="width: 100%; height: 450px; max-width:350px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
+        <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/400x600/111/444?text=Reel'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
+        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 40%); display:flex; flex-direction:column; justify-content:space-between; padding:20px; pointer-events:none;">
+            <i class="fa-solid fa-play" onclick="this.style.display='none'; this.previousElementSibling.play();" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; color:rgba(255,255,255,0.8); pointer-events:auto; cursor:pointer;"></i>
+            <div style="margin-top:auto;"><div style="font-size:0.9rem; font-weight:bold; color:white;"><img src="https://ui-avatars.com/api/?name=T&background=bd00ff&color=fff" style="width:25px; border-radius:50%; margin-right:8px; vertical-align:middle;">${vid.creator || 'Creator'}</div><div style="font-size:0.8rem; color:#ccc; margin-top:5px;">${vid.title || 'Highlight'}</div><span style="font-size:0.7rem; color:var(--accent-cyan); font-weight:bold;">${vid.views || 0}K Views</span></div>
+        </div></div>`;
 }
-                
-                // 5. Update local cache safely (do NOT overwrite earnings)
-                user.streak_count = newStreak;
-                user.points = newPoints;
-                user.last_claim_date = newDateISO;
-                localStorage.setItem('tournyx_user', JSON.stringify(user));
 
-                // 6. UI Updates
-                buildStreakTimeline(newStreak);
-                syncLiveWalletPoints(user); 
-                
-                if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-                btn.innerText = "CLAIMED TODAY"; 
-                btn.classList.add('claimed'); 
-                showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
-                triggerConfetti(btn);
-
-            } catch(e) { 
-                console.error("DB Sync failed", e); 
-                showToast("Cloud sync failed. Make sure your network is stable.", true);
-                btn.innerText = "CLAIM NEXT";
-                btn.disabled = false;
-            }
-        }
-    </script>
+function renderVideoHTML(vid) {
+    return `<div style="width: 100%; height: 220px; max-width:600px; position:relative; overflow:hidden; border-radius:16px; border:1px solid var(--glass-border); flex-shrink:0;">
+        <video loop muted playsinline style="width:100%; height:100%; object-fit:cover;" poster="${vid.thumbnail || 'https://via.placeholder.com/800x450/111/444?text=Video'}"><source src="${vid.video_url || 'https://www.w3schools.com/html/mov_bbb.mp4'}" type="video/mp4"></video>
+        <div style="position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 50%); display:flex; flex-direction:column; justify-content:space-between; padding:20px; pointer-events:none;">
+            <i class="fa-solid fa-play" onclick="this.style.display='none'; this.previousElementSibling.play();" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; color:rgba(255,255,255,0.8); pointer-events:auto; cursor:pointer;"></i>
+            <div style="margin-top:auto;"><div style="font-size:0.9rem; font-weight:bold; color:white;"><img src="https://ui-avatars.com/api/?name=V&background=ff6a00&color=fff" style="width:25px; border-radius:50%; margin-right:8px; vertical-align:middle;">${vid.creator || 'VOD Channel'}</div><div style="font-size:0.8rem; color:#ccc; margin-top:5px;">${vid.title || 'Recap'}</div><span style="font-size:0.7rem; color:var(--accent-orange); font-weight:bold;">${vid.views || 0}K Views</span></div>
+        </div></div>`;
+}
+</script>
 </body>
 </html>
