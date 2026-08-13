@@ -1848,13 +1848,23 @@ const TxSound = new TournyxAudioEngine();
     </div>
 
     <script>
-        // Supabase Initialization Placeholder
-        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
-        let db = null;
-        try {
-            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch (e) { console.error("Supabase not initialized"); }
+        // --- SECURE CLOUDFLARE API TUNNEL ---
+const API_ENDPOINT = 'https://tournyx-api.annadurailthilakjeevesh.workers.dev'; // Ensure this matches your worker URL
+
+async function secureFetch(params) {
+    try {
+        const response = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        });
+        if (!response.ok) throw new Error('Network Error');
+        return await response.json();
+    } catch (error) {
+        console.error("API Tunnel Error:", error);
+        return { status: 'error', message: 'Unable to connect to Engine.' };
+    }
+}
        
 
 // --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
@@ -2148,50 +2158,7 @@ async function selectRole(roleCard, roleName) {
             });
         });
 
-        // Supabase Fetch Integration
-        async function secureFetch(params) {
-            if (db) {
-                try {
-                    if (params.action === 'get_tournaments') {
-                        let { data, error } = await db.from('Tournaments').select('*');
-                        if (!error && data) return { status: 'success', data: data };
-                    }
-                    if (params.action === 'get_matches' && params.email) {
-                        let { data, error } = await db.from('Matches').select('*').eq('email', params.email);
-                        if (!error && data) return { status: 'success', data: data };
-                    }
-                    if (params.action === 'get_quests') {
-                        let { data, error } = await db.from('Quests').select('*');
-                        if (!error && data) return { status: 'success', data: data };
-                    }
-                    if (params.action === 'sync_user' && params.email) {
-                        let { data, error } = await db.from('Users').select('*').eq('email', params.email).single();
-                        if (!error && data) return { status: 'success', data: data };
-                    }
-                    if (params.action === 'get_community_leaderboard') {
-                        let { data: orgs } = await db.from('Users').select('username, wins, avatar').eq('role', 'Organizer').order('wins', { ascending: false }).limit(10);
-                        let { data: teams } = await db.from('Users').select('username, wins, avatar').eq('role', 'Team').order('wins', { ascending: false }).limit(10);
-                        let { data: players } = await db.from('Users').select('username, earnings, avatar').order('earnings', { ascending: false }).limit(10);
-                        
-                        let orgList = (orgs || []).map(o => ({ name: o.username, value: o.wins, image: o.avatar }));
-                        let teamList = (teams || []).map(t => ({ name: t.username, value: t.wins, image: t.avatar }));
-                        let conList = (players || []).map(p => ({ name: p.username, value: p.earnings, image: p.avatar }));
-
-                        return { status: 'success', data: { organizers: orgList, teams: teamList, contributors: conList } };
-                    }
-                } catch (e) {
-                    console.error("Supabase fetch error", e);
-                }
-            }
-            
-            // Fallback
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({ status: 'error', message: 'Not connected to real backend.' });
-                }, 500);
-            });
-        }
-
+      
         function checkAuth(e) {
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(err){}
