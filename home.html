@@ -1867,33 +1867,26 @@ async function secureFetch(params) {
 }
         
 // --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
-const WORKER_VISION_ENDPOINT = 'https://tournyx-vision-ai.your-subdomain.workers.dev';
-
 let telemetryStream = null;
 let telemetryTimer = null;
 let currentActiveTask = null;
 
-// 1. SILENT PLAYER STATUS CHECK (No Auto-Popups)
+// 1. SILENT PLAYER STATUS CHECK
 async function checkPlayerAwakeningStatus() {
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
     if (!user || !user.email) return;
 
-    // Bulletproof db check to prevent ReferenceErrors
-    if (typeof db !== 'undefined' && db) {
-        try {
-            let { data, error } = await db.from('player_stats').select('*').eq('user_email', user.email).single();
-            
-            if (!error && data) {
-                updateEngineUiStats(data);
-                // Keep local storage synced silently
-                if(data.is_awakened && !user.is_awakened) {
-                    user.is_awakened = true;
-                    localStorage.setItem('tournyx_user', JSON.stringify(user));
-                }
+    try {
+        const res = await secureFetch({ action: 'get_player_stats', email: user.email });
+        if (res.status === 'success' && res.data) {
+            updateEngineUiStats(res.data);
+            if(res.data.is_awakened && !user.is_awakened) {
+                user.is_awakened = true;
+                localStorage.setItem('tournyx_user', JSON.stringify(user));
             }
-        } catch (e) {
-            console.error("Awakening check error:", e);
         }
+    } catch (e) {
+        console.error("Awakening check error:", e);
     }
 }
 
@@ -1906,10 +1899,10 @@ function closeAwakeningOverlay() {
     document.getElementById('systemAwakenOverlay').classList.remove('active');
 }
 
-// BULLETPROOF SYSTEM AWAKENING
+// BULLETPROOF SYSTEM AWAKENING (Routed via Worker)
 async function triggerSystemAwakening() {
     const btn = document.querySelector('.awakening-btn');
-    if (btn.disabled) return; // Prevent spam/unlimited points
+    if (btn.disabled) return; 
     
     btn.disabled = true;
     let originalText = btn.innerHTML;
@@ -1920,45 +1913,32 @@ async function triggerSystemAwakening() {
         if (!user) throw new Error("Not logged in");
         if (user.is_awakened) {
             closeAwakeningOverlay();
-            return; // Prevent duplicate claiming
+            return; 
         }
 
         if (typeof TxSound !== 'undefined') TxSound.playSystemAwaken();
 
-        // Safe DB Check
-        if (typeof db !== 'undefined' && db) {
-            await db.from('player_stats').upsert({
-                user_email: user.email,
-                is_awakened: true,
-                today_xp: 250,
-                power_level: 500,
-                selected_role: 'Rusher'
-            });
-
-            // Award starter Points safely
-            let newPts = (parseInt(user.points) || 0) + 200;
-            await db.from('Users').update({ points: newPts }).eq('email', user.email);
-            user.points = newPts;
-        } else {
-            // Local fallback if DB is missing
-            user.points = (parseInt(user.points) || 0) + 200;
-        }
-
-        user.is_awakened = true;
-        localStorage.setItem('tournyx_user', JSON.stringify(user));
-        syncLiveWalletPoints(user);
-
-        closeAwakeningOverlay();
-        showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
-        if (typeof TxSound !== 'undefined') TxSound.playLevelUp();
+        // Securely trigger awakening via Worker
+        const res = await secureFetch({ action: 'system_awakening', email: user.email });
         
-        // Refresh stats UI silently
-        checkPlayerAwakeningStatus();
+        if (res.status === 'success') {
+            user.points = res.newPoints || ((parseInt(user.points) || 0) + 200);
+            user.is_awakened = true;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+            syncLiveWalletPoints(user);
 
-        // Open Engine Modal immediately after awakening
-        setTimeout(() => {
-            openSystemPopup();
-        }, 800);
+            closeAwakeningOverlay();
+            showToast("SYSTEM AWAKENED! +200 PTS & Starter Quests Assigned.");
+            if (typeof TxSound !== 'undefined') TxSound.playLevelUp();
+            
+            checkPlayerAwakeningStatus();
+
+            setTimeout(() => {
+                openSystemPopup();
+            }, 800);
+        } else {
+            throw new Error(res.message);
+        }
 
     } catch (error) {
         console.error("Awakening process failed:", error);
@@ -2062,58 +2042,29 @@ function stopVisionAiTelemetry() {
 // 4. EDGE WORKER TRANSMISSION
 async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameBase64) {
     try {
-        let selectedRole = 'Rusher';
-        if (typeof db !== 'undefined' && db) {
-            let { data } = await db.from('player_stats').select('selected_role').eq('user_email', user.email).single();
-            if (data) selectedRole = data.selected_role;
-        }
+        // Fetch role safely via worker
+        const roleRes = await secureFetch({ action: 'get_player_role', email: user.email });
+        let selectedRole = (roleRes.status === 'success' && roleRes.role) ? roleRes.role : 'Rusher';
 
-        const res = await fetch(WORKER_VISION_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_email: user.email,
-                selected_role: selectedRole,
-                task_id: taskId,
-                task_title: taskTitle,
-                frame_data: frameBase64
-            })
+        // Securely pass to Worker which handles OpenAI & DB inserts entirely
+        const res = await secureFetch({
+            action: 'process_vision_ai',
+            user_email: user.email,
+            selected_role: selectedRole,
+            task_id: taskId,
+            task_title: taskTitle,
+            frame_data: frameBase64
         });
 
-        const data = await res.json();
-
-        if (data.success && data.task_completed) {
+        if (res.success && res.task_completed) {
             stopVisionAiTelemetry();
             if (typeof TxSound !== 'undefined') TxSound.playLevelUp();
-            showToast(`VISION AI VERIFIED: +${data.points_awarded} PTS!`);
+            showToast(`VISION AI VERIFIED: +${res.points_awarded} PTS!`);
 
-            let newPts = (parseInt(user.points) || 0) + data.points_awarded;
+            let newPts = (parseInt(user.points) || 0) + res.points_awarded;
             user.points = newPts;
             localStorage.setItem('tournyx_user', JSON.stringify(user));
             syncLiveWalletPoints(user);
-
-            if (typeof db !== 'undefined' && db) {
-                await db.from('Users').update({ points: newPts }).eq('email', user.email);
-                
-                await db.from('player_stats').update({
-                    today_xp: (data.xp_awarded || 100),
-                    weakest_area: data.detected_weakness || 'CQC Crosshair',
-                    ai_recommendation: data.ai_recommendation || 'Focus on headshots'
-                }).eq('user_email', user.email);
-
-                await db.from('vision_vods').insert([{
-                    user_email: user.email,
-                    task_id: taskId,
-                    task_title: taskTitle,
-                    frame_snapshot: frameBase64.substring(0, 500) + '...', 
-                    ai_verdict: true,
-                    ai_confidence: data.confidence || 0.9,
-                    ai_suggestions: data.ai_recommendation,
-                    points_awarded: data.points_awarded,
-                    xp_awarded: data.xp_awarded,
-                    human_verified: false
-                }]);
-            }
             checkPlayerAwakeningStatus();
         }
     } catch (e) {
@@ -2121,7 +2072,6 @@ async function processFrameWithEdgeAi(user, taskId, taskTitle, rewardPts, frameB
     }
 }
 
-// 5. MOBILE SNAPSHOT FALLBACK PROMPT
 function triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -2139,7 +2089,6 @@ function triggerMobileSnapshotFallback(user, taskId, taskTitle, rewardPts) {
     input.click();
 }
 
-// 6. ADAPTIVE ROLE SELECTION
 async function selectRole(roleCard, roleName) {
     document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
     roleCard.classList.add('active');
@@ -2152,12 +2101,11 @@ async function selectRole(roleCard, roleName) {
     showToast(`Role Set: ${roleName}`);
 
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
-    if (typeof db !== 'undefined' && db && user) {
-        await db.from('player_stats').update({ selected_role: roleName }).eq('user_email', user.email);
+    if (user) {
+        await secureFetch({ action: 'update_player_role', email: user.email, role: roleName });
     }
 }
 
-// Nav Dock Interactivity Pre-Navigation
 document.querySelectorAll('.m-item').forEach(item => {
     item.addEventListener('click', function(e) {
         if(this.classList.contains('action-plus')) return;
@@ -2249,11 +2197,8 @@ function closeAnnouncement() {
     }, 300);
 }
 
-
 // --- MAIN INITIALIZATION & DOM CONTENT LOADED ---
-// Wrapping everything to prevent Syntax Crashes!
 window.addEventListener('DOMContentLoaded', async function() {
-    // Fail-safe to hide loader even if APIs fail
     setTimeout(() => {
         if (typeof hideLoader === 'function') hideLoader();
     }, 4500);
@@ -2266,20 +2211,17 @@ window.addEventListener('DOMContentLoaded', async function() {
     triggerAnnouncementBanner();
     
     if (user && !isGuestMode) {
-        if(typeof db !== 'undefined' && db) {
-            try {
-                const { data, error } = await db.from('Users').select('*').eq('email', user.email).single();
-                if (data && !error) {
-                    user.wins = data.wins || user.wins;
-                    user.ign = data.ign || user.ign;
-                    user.avatar = data.avatar || user.avatar;
-                    user.points = data.points !== undefined ? data.points : user.points;
-                    user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
-                    user.streak_count = data.streak_count !== undefined ? data.streak_count : (user.streak_count || 0);
-                    user.last_claim_date = data.last_claim_date || user.last_claim_date || null;
-                    localStorage.setItem('tournyx_user', JSON.stringify(user));
-                }
-            } catch(e){}
+        // Securely fetch user info via Worker
+        const res = await secureFetch({ action: 'get_user_wallet', email: user.email });
+        if (res.status === 'success' && res.data) {
+            user.wins = res.data.wins || user.wins;
+            user.ign = res.data.ign || user.ign;
+            user.avatar = res.data.avatar || user.avatar;
+            user.points = res.data.points !== undefined ? res.data.points : user.points;
+            user.earnings = res.data.earnings !== undefined ? res.data.earnings : user.earnings;
+            user.streak_count = res.data.streak_count !== undefined ? res.data.streak_count : (user.streak_count || 0);
+            user.last_claim_date = res.data.last_claim_date || user.last_claim_date || null;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
         }
 
         document.body.classList.add('has-sidebar');
@@ -2291,7 +2233,7 @@ window.addEventListener('DOMContentLoaded', async function() {
 
         fetchNextMatch(user);
         syncLiveWalletPoints(user); 
-        checkPlayerAwakeningStatus(); // Checks background stats without popping overlay
+        checkPlayerAwakeningStatus();
     } else {
         document.body.classList.remove('has-sidebar');
         if (document.getElementById('welcomeText')) document.getElementById('welcomeText').innerText = "Guest";
@@ -2622,13 +2564,13 @@ function syncLiveWalletPoints(user) {
 
     updateValues(points, tickets);
 
-    if (user.email && typeof db !== 'undefined' && db) {
-        db.from('Users').select('points, earnings, role').eq('email', user.email).single()
-        .then(({data, error}) => {
-            if (!error && data) {
-                user.points = data.points !== undefined ? data.points : user.points;
-                user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
-                user.role = data.role || user.role;
+    if (user.email) {
+        secureFetch({ action: 'get_user_wallet', email: user.email })
+        .then(res => {
+            if (res.status === 'success' && res.data) {
+                user.points = res.data.points !== undefined ? res.data.points : user.points;
+                user.earnings = res.data.earnings !== undefined ? res.data.earnings : user.earnings;
+                user.role = res.data.role || user.role;
                 localStorage.setItem('tournyx_user', JSON.stringify(user));
                 
                 let livePoints = parseInt(user.points) || 0;
@@ -2655,7 +2597,6 @@ function toggleBottomSheet() {
     document.getElementById('bsOverlay').classList.toggle('active');
 }
 
-// --- CLOUD-SYNCED DAILY QUESTS ---
 let currentDynamicQuests = [];
 async function loadQuestsFromSheets() {
     try {
@@ -2668,12 +2609,7 @@ async function loadQuestsFromSheets() {
             document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
         }
     } catch(e) {
-        currentDynamicQuests = [
-            { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: 'home.html' },
-            { id: 'q2', title: 'Top 10 in BR Match', reward: 150, reqType: 'open', reqVal: '', redirect: 'home.html' },
-            { id: 'q3', title: 'Ignore Penalty Zone Demo', reward: 0, reqType: 'penalty', reqVal: '', redirect: 'home.html' }
-        ];
-        renderQuests();
+        document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Could not load daily quests.');
     }
 }
 
@@ -2699,7 +2635,7 @@ function renderQuests() {
     });
 }
 
-function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
+async function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
     if(!user) { document.getElementById('authPopup').classList.add('active'); return; }
@@ -2716,14 +2652,19 @@ function claimQuestCloud(questId, rewardPts, reqType, reqVal, redirectUrl) {
     }
 }
 
-function verifyQuest(questId, rewardPts, user) {
-    user.points = (parseInt(user.points) || 0) + parseInt(rewardPts);
-    try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
-    syncLiveWalletPoints(user); 
-    showToast(`+${rewardPts} PTS verified & added to Wallet!`);
+async function verifyQuest(questId, rewardPts, user) {
+    const res = await secureFetch({ action: 'claim_quest', email: user.email, reward: rewardPts, quest_id: questId });
+    if(res.status === 'success') {
+        user.points = res.newPoints;
+        try { localStorage.setItem('tournyx_user', JSON.stringify(user)); } catch(e){}
+        syncLiveWalletPoints(user); 
+        showToast(`+${rewardPts} PTS verified & added to Wallet!`);
 
-    let btn = document.querySelector(`#${questId} .quest-btn`);
-    if(btn) { btn.innerText = "CLAIMED"; btn.style.borderColor = "rgba(255,255,255,0.1)"; btn.style.color = "var(--accent-green)"; btn.classList.add("claimed"); btn.onclick = null; triggerConfetti(btn); }
+        let btn = document.querySelector(`#${questId} .quest-btn`);
+        if(btn) { btn.innerText = "CLAIMED"; btn.style.borderColor = "rgba(255,255,255,0.1)"; btn.style.color = "var(--accent-green)"; btn.classList.add("claimed"); btn.onclick = null; triggerConfetti(btn); }
+    } else {
+        showToast("Error verifying quest via cloud.", true);
+    }
 }
 
 function switchTab(tabId, tabElement) {
@@ -2741,7 +2682,7 @@ async function loadLeaderboard() {
         if (data && (data.organizers || data.teams || data.contributors)) {
             renderLeaderboardList('organizers', data.organizers || [], 'Wins', '', 'var(--accent-cyan)');
             renderLeaderboardList('teams', data.teams || [], 'Wins', '', 'var(--accent-purple)');
-            renderLeaderboardList('contributors', data.contributors || [], 'Earnings', '₹ ', '#ffd700');
+            renderLeaderboardList('contributors', data.contributors || [], 'Points', '', '#ffd700');
         } else {
             throw new Error("Leaderboard data format mismatch or empty.");
         }
@@ -2829,7 +2770,6 @@ function loadTournyxEngine() {
     }
 }
 
-// --- GLITCH PREVENTION LOGIC ---
 function openActionHub() { 
     document.getElementById('actionHubOverlay').classList.add('active'); 
     document.body.style.overflow = 'hidden'; 
@@ -2860,24 +2800,21 @@ window.addEventListener('scroll', () => {
     lastScrollY = window.scrollY;
 });
 
+// ROUTED ENTIRELY VIA WORKER NO SUPABASE CLIENT NEEDED
 async function syncStreakFromCloud() {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-    if (!user || !user.email || typeof db === 'undefined' || !db) {
+    if (!user || !user.email) {
         buildStreakTimeline(user ? user.streak_count || 0 : 0);
         return;
     }
 
     try {
-        const { data, error } = await db.from('Users')
-            .select('streak_count, last_claim_date, points')
-            .eq('email', user.email)
-            .single();
-
-        if (!error && data) {
-            user.streak_count = data.streak_count || 0;
-            user.last_claim_date = data.last_claim_date || null;
-            user.points = data.points !== undefined ? data.points : user.points;
+        const res = await secureFetch({ action: 'get_user_wallet', email: user.email });
+        if (res.status === 'success' && res.data) {
+            user.streak_count = res.data.streak_count || 0;
+            user.last_claim_date = res.data.last_claim_date || null;
+            user.points = res.data.points !== undefined ? res.data.points : user.points;
             localStorage.setItem('tournyx_user', JSON.stringify(user));
         }
     } catch(e) {
@@ -2887,7 +2824,6 @@ async function syncStreakFromCloud() {
     buildStreakTimeline(user.streak_count || 0);
 }
 
-// --- 100% BULLETPROOF STREAK LOGIC (SAFE MATH & POINTS ISOLATION) ---
 function buildStreakTimeline(currentStreak) {
     document.getElementById('streakCountMain').innerText = currentStreak;
     const timeline = document.getElementById('streakTimeline');
@@ -2958,6 +2894,7 @@ function initEndlessReels() {
     if (feedLoader) observer.observe(feedLoader);
 }
 
+// 🔴 THE BULLETPROOF FIX: ZERO DUMMY DATA.
 async function fetchClipsFeed() {
     if(isFetchingFeed) return;
     isFetchingFeed = true;
@@ -2967,56 +2904,37 @@ async function fetchClipsFeed() {
     
     if(feedLoader) feedLoader.style.display = 'flex';
     
-    if(typeof db !== 'undefined' && db) {
-        try {
-            const { data, error } = await db.from('Highlights').select('*').range(feedPage * 5, (feedPage + 1) * 5 - 1);
-            if(data && data.length > 0) {
-                let uniqueData = data.filter(vid => !loadedFeedIds.has(vid.id));
-                uniqueData.forEach(vid => loadedFeedIds.add(vid.id));
-                
-                if(uniqueData.length > 0) {
-                    if(feedPage === 0 && container) container.innerHTML = '';
-                    uniqueData.forEach(item => {
-                        if (item.type === 'reel' || item.format === 'vertical') {
-                            if(container) container.innerHTML += renderReelHTML(item);
-                        } else {
-                            if(container) container.innerHTML += renderVideoHTML(item);
-                        }
-                    });
-                    feedPage++;
-                } else {
-                    feedPage++; isFetchingFeed = false; fetchClipsFeed(); return;
-                }
-            } else { 
-                hasMoreFeed = false; 
-                if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
-                if(endFeed) endFeed.style.display = 'block'; 
+    try {
+        const res = await secureFetch({ action: 'get_highlights', page: feedPage });
+        
+        if(res.status === 'success' && res.data && res.data.length > 0) {
+            let uniqueData = res.data.filter(vid => !loadedFeedIds.has(vid.id));
+            uniqueData.forEach(vid => loadedFeedIds.add(vid.id));
+            
+            if(uniqueData.length > 0) {
+                if(feedPage === 0 && container) container.innerHTML = '';
+                uniqueData.forEach(item => {
+                    if (item.type === 'reel' || item.format === 'vertical') {
+                        if(container) container.innerHTML += renderReelHTML(item);
+                    } else {
+                        if(container) container.innerHTML += renderVideoHTML(item);
+                    }
+                });
+                feedPage++;
+            } else {
+                feedPage++; isFetchingFeed = false; fetchClipsFeed(); return;
             }
-        } catch(e) { 
+        } else { 
             hasMoreFeed = false; 
             if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
             if(endFeed) endFeed.style.display = 'block'; 
         }
-    } else {
-        setTimeout(() => {
-            if(feedPage < 4) { 
-                if(feedPage === 0 && container) container.innerHTML = '';
-                for(let i=1; i<=3; i++) {
-                    let isPortrait = (i % 2 === 0); 
-                    let mockItem = { id: `mock_${feedPage}_${i}`, creator: isPortrait ? "Pro Shorts" : "Tournyx VODs", title: isPortrait ? "1v4 Clutch" : "Grand Finals", views: 12 + (i*3) };
-                    if(container) container.innerHTML += isPortrait ? renderReelHTML(mockItem) : renderVideoHTML(mockItem);
-                }
-                feedPage++;
-            } else { 
-                hasMoreFeed = false; 
-                if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
-                if(endFeed) endFeed.style.display = 'block'; 
-            }
-            if(feedLoader) feedLoader.style.display = 'none';
-            isFetchingFeed = false;
-        }, 800);
-        return; 
+    } catch(e) { 
+        hasMoreFeed = false; 
+        if(feedPage === 0 && container) { container.innerHTML = getEmptyState('fa-solid fa-video-slash', 'Matrix Offline', 'No transmissions received in the global feed yet.'); }
+        if(endFeed) endFeed.style.display = 'block'; 
     }
+    
     if(feedLoader) feedLoader.style.display = 'none';
     isFetchingFeed = false;
 }
@@ -3089,12 +3007,11 @@ async function startVisionAI() {
                 
                 if(visionStream) visionStream.getTracks().forEach(track => track.stop());
                 
-                if(typeof db !== 'undefined' && db) {
-                    let user = JSON.parse(localStorage.getItem('tournyx_user'));
-                    let newPts = (user.points || 0) + currentAiReward;
-                    await db.from('Match_Analytics').insert([{ user_email: user.email, task_verified: currentAiTask, points_awarded: currentAiReward }]);
-                    await db.from('Users').update({ points: newPts }).eq('email', user.email);
-                    user.points = newPts;
+                let user = JSON.parse(localStorage.getItem('tournyx_user'));
+                const res = await secureFetch({ action: 'verify_vision_reward', email: user.email, reward: currentAiReward, task: currentAiTask });
+                
+                if (res.status === 'success') {
+                    user.points = res.newPoints;
                     localStorage.setItem('tournyx_user', JSON.stringify(user));
                     syncLiveWalletPoints(user);
                 }
@@ -3130,7 +3047,7 @@ function stopVisionAI() {
 }
 
 // ----------------------------------------------------
-// 🔥 MODIFIED: OPEN TOURNYX ENGINE SYSTEM MODAL
+// ENGINE POPUP FIX 
 // ----------------------------------------------------
 async function openSystemPopup() {
     if(!checkAuth()) return;
@@ -3138,13 +3055,11 @@ async function openSystemPopup() {
     try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
     
     if (user) {
-        // AWAKENING CHECK: Blocks opening if not awakened and shows overlay
         if (!user.is_awakened) {
             showAwakeningOverlay();
             return;
         }
 
-        // Standard population
         document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
         document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
         document.getElementById('emStatPower').innerText = (user.wins ? user.wins * 150 : 450);
@@ -3168,7 +3083,7 @@ function switchEngineTab(tabId, btnEl) {
     btnEl.classList.add('active');
 }
 
-// --- 2. SEARCH BAR LOGIC ---
+// --- 2. SEARCH BAR LOGIC (ROUTED VIA WORKER) ---
 function openFSsearch() {
     document.getElementById('searchFSoverlay').classList.add('active');
     document.getElementById('globalSearchInput').focus();
@@ -3192,33 +3107,37 @@ async function executeGlobalSearch() {
 
     let resultsHTML = '';
     
-    if (typeof db !== 'undefined' && db) {
-        try {
-            const { data: tData } = await db.from('Tournaments').select('*').ilike('title', `%${query}%`).limit(3);
-            if(tData) tData.forEach(t => {
-                resultsHTML += `
-                    <div class="search-item" onclick="window.location.href='explore.html?tournament=${t.id}'">
-                        <img src="${formatImageUrl(t.banner)}">
-                        <div class="search-item-info">
-                            <span class="search-item-type">Tournament</span>
-                            <span class="search-item-title">${t.title}</span>
-                        </div>
-                    </div>`;
-            });
+    try {
+        const res = await secureFetch({ action: 'search_matrix', query: query });
+        if(res.status === 'success' && res.data) {
+            
+            if(res.data.tournaments) {
+                res.data.tournaments.forEach(t => {
+                    resultsHTML += `
+                        <div class="search-item" onclick="window.location.href='explore.html?tournament=${t.id}'">
+                            <img src="${formatImageUrl(t.banner)}">
+                            <div class="search-item-info">
+                                <span class="search-item-type">Tournament</span>
+                                <span class="search-item-title">${t.title}</span>
+                            </div>
+                        </div>`;
+                });
+            }
 
-            const { data: hData } = await db.from('Highlights').select('*').ilike('title', `%${query}%`).limit(4);
-            if(hData) hData.forEach(h => {
-                resultsHTML += `
-                    <div class="search-item">
-                        <img src="${h.thumbnail || 'https://via.placeholder.com/60'}">
-                        <div class="search-item-info">
-                            <span class="search-item-type">${h.type.toUpperCase()} - ${h.creator}</span>
-                            <span class="search-item-title">${h.title}</span>
-                        </div>
-                    </div>`;
-            });
-        } catch(e) {}
-    }
+            if(res.data.highlights) {
+                res.data.highlights.forEach(h => {
+                    resultsHTML += `
+                        <div class="search-item">
+                            <img src="${h.thumbnail || 'https://via.placeholder.com/60'}">
+                            <div class="search-item-info">
+                                <span class="search-item-type">${h.type.toUpperCase()} - ${h.creator}</span>
+                                <span class="search-item-title">${h.title}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+    } catch(e) {}
 
     if(resultsHTML === '') {
         resultsArea.innerHTML = `<div style="text-align:center; color:var(--accent-red); margin-top:50px; font-family:var(--font-head);">No matches found in the matrix.</div>`;
@@ -3227,6 +3146,7 @@ async function executeGlobalSearch() {
     }
 }
 
+// 🔴 THE PERFECT CLOUD-VERIFIED DAILY STREAK LOGIC
 async function claimDailyStreak() {
     if(!checkAuth()) return;
     let user = JSON.parse(localStorage.getItem('tournyx_user'));
@@ -3235,78 +3155,35 @@ async function claimDailyStreak() {
     btn.innerText = "VERIFYING...";
     btn.disabled = true;
 
-    if (typeof db === 'undefined' || !db) {
-        showToast("Server offline. Cannot verify claim.", true);
-        btn.innerText = "CLAIM NEXT";
-        btn.disabled = false;
-        return;
-    }
-
     try {
-        const cleanEmail = String(user.email).trim().toLowerCase();
+        const res = await secureFetch({ action: 'claim_streak', email: user.email });
 
-        const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', cleanEmail).single();
-        if (fetchError) throw fetchError;
+        if (res.status === 'success') {
+            user.streak_count = res.newStreak;
+            user.points = res.newPoints;
+            user.last_claim_date = res.last_claim_date;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
 
-        let nowMs = Date.now();
-        let lastClaimMs = liveData.last_claim_date ? Date.parse(liveData.last_claim_date) : 0;
-        let hoursPassed = 999; 
-        
-        if (lastClaimMs > 0 && !isNaN(lastClaimMs)) {
-            hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
-        }
-
-        if(hoursPassed >= 0 && hoursPassed < 24) {
-            let hoursLeft = Math.ceil(24 - hoursPassed);
-            showToast("Already claimed! Next in " + hoursLeft + "H", true);
-            btn.innerText = `NEXT IN ${hoursLeft}H`; 
+            buildStreakTimeline(res.newStreak);
+            syncLiveWalletPoints(user); 
+            
+            if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
+            btn.innerText = "CLAIMED TODAY"; 
             btn.classList.add('claimed'); 
-            btn.disabled = false;
-            return;
+            showToast(`Day ${res.newStreak} Claimed: +${res.reward} PTS Saved to Cloud!`);
+            triggerConfetti(btn);
+        } else {
+            showToast(res.message || "Already claimed!", true);
+            if (res.hoursLeft) {
+                btn.innerText = `NEXT IN ${res.hoursLeft}H`; 
+                btn.classList.add('claimed'); 
+            } else {
+                btn.innerText = "CLAIM NEXT";
+                btn.disabled = false;
+            }
         }
-
-        let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
-        if(hoursPassed >= 48) newStreak = 1; 
-
-        let reward = Math.min(newStreak * 50, 1000);
-        let currentPoints = parseInt(liveData.points) || 0;
-        let newPoints = currentPoints + reward; 
-        let newDateISO = new Date(nowMs).toISOString();
-
-        btn.innerText = "SYNCING...";
-
-        const { data: updatedRows, error: updateError } = await db.from('Users').update({
-            streak_count: newStreak, 
-            points: newPoints,
-            last_claim_date: newDateISO
-        }).eq('email', cleanEmail).select();
-
-        if (updateError) throw updateError;
-
-        if (!updatedRows || updatedRows.length === 0) {
-            console.error("Streak claim failed: no matching user row for email:", cleanEmail);
-            showToast("Sync error: account not found. Please re-login.", true);
-            btn.innerText = "CLAIM NEXT";
-            btn.disabled = false;
-            return;
-        }
-        
-        user.streak_count = newStreak;
-        user.points = newPoints;
-        user.last_claim_date = newDateISO;
-        localStorage.setItem('tournyx_user', JSON.stringify(user));
-
-        buildStreakTimeline(newStreak);
-        syncLiveWalletPoints(user); 
-        
-        if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
-        btn.innerText = "CLAIMED TODAY"; 
-        btn.classList.add('claimed'); 
-        showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
-        triggerConfetti(btn);
-
     } catch(e) { 
-        console.error("DB Sync failed", e); 
+        console.error("Cloud Sync failed", e); 
         showToast("Cloud sync failed. Make sure your network is stable.", true);
         btn.innerText = "CLAIM NEXT";
         btn.disabled = false;
