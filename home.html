@@ -2299,12 +2299,18 @@ async function selectRole(roleCard, roleName) {
                     try {
                         const { data, error } = await db.from('Users').select('*').eq('email', user.email).single();
                         if (data && !error) {
-                            user.wins = data.wins || user.wins;
-                            user.ign = data.ign || user.ign;
-                            user.avatar = data.avatar || user.avatar;
-                            user.points = data.earnings || user.points;
-                            localStorage.setItem('tournyx_user', JSON.stringify(user));
-                        }
+    user.wins = data.wins || user.wins;
+    user.ign = data.ign || user.ign;
+    user.avatar = data.avatar || user.avatar;
+    // Points must come from the "points" column ONLY. Never from earnings.
+    user.points = data.points !== undefined ? data.points : user.points;
+    // Earnings stays completely separate — this is what tickets are derived from.
+    user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
+    // Pull the live streak fields too, so the widget is never stale.
+    user.streak_count = data.streak_count !== undefined ? data.streak_count : (user.streak_count || 0);
+    user.last_claim_date = data.last_claim_date || user.last_claim_date || null;
+    localStorage.setItem('tournyx_user', JSON.stringify(user));
+}
                     } catch(e){}
                 }
 
@@ -2871,7 +2877,7 @@ async function selectRole(roleCard, roleName) {
                     if(document.getElementById('txtWinRate')) document.getElementById('txtWinRate').innerText = matchesPlayed > 0 ? Math.floor((wins / matchesPlayed) * 100) + "%" : "0%";
                     if(document.getElementById('txtWins')) document.getElementById('txtWins').innerText = wins;
                 }
-                buildStreakTimeline(user.streak_count || 0);
+               syncStreakFromCloud();
             }
         }
 
@@ -2905,6 +2911,34 @@ async function selectRole(roleCard, roleName) {
             }
             lastScrollY = window.scrollY;
         });
+        // ✅ NEW: Always pulls the true streak state from Supabase before rendering,
+// so the same account shows correctly on ANY device, not just the one that claimed.
+async function syncStreakFromCloud() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+    if (!user || !user.email || !db) {
+        buildStreakTimeline(0);
+        return;
+    }
+
+    try {
+        const { data, error } = await db.from('Users')
+            .select('streak_count, last_claim_date, points')
+            .eq('email', user.email)
+            .single();
+
+        if (!error && data) {
+            user.streak_count = data.streak_count || 0;
+            user.last_claim_date = data.last_claim_date || null;
+            user.points = data.points !== undefined ? data.points : user.points;
+            localStorage.setItem('tournyx_user', JSON.stringify(user));
+        }
+    } catch(e) {
+        console.error("Streak cloud sync failed", e);
+    }
+
+    buildStreakTimeline(user.streak_count || 0);
+}
 
       // --- 100% BULLETPROOF STREAK LOGIC (SAFE MATH & POINTS ISOLATION) ---
         function buildStreakTimeline(currentStreak) {
@@ -3263,7 +3297,7 @@ async function selectRole(roleCard, roleName) {
 
             try {
                 // 1. Fetch strictly from DB to prevent exploits
-                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', user.email).single();
+               const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', cleanEmail).single();
                 if (fetchError) throw fetchError;
 
                 let nowMs = Date.now();
@@ -3276,14 +3310,15 @@ async function selectRole(roleCard, roleName) {
 
                 // 2. Validate Time
                 if(hoursPassed >= 0 && hoursPassed < 24) {
-                    let hoursLeft = Math.ceil(24 - hoursPassed);
-                    showToast("Already claimed! Next in " + hoursLeft + "H", true);
-                    btn.innerText = `NEXT IN ${hoursLeft}H`; 
-                    btn.classList.add('claimed'); 
-                    return;
-                }
+    let hoursLeft = Math.ceil(24 - hoursPassed);
+    showToast("Already claimed! Next in " + hoursLeft + "H", true);
+    btn.innerText = `NEXT IN ${hoursLeft}H`; 
+    btn.classList.add('claimed'); 
+    btn.disabled = false;
+    return;
+}
 
-                // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
+           // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
                 let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
                 
                 // If over 48 hours, they broke the streak, restart at Day 1
@@ -3296,14 +3331,25 @@ async function selectRole(roleCard, roleName) {
 
                 btn.innerText = "SYNCING...";
 
-                // 4. Secure DB Push - ONLY pushing points and streak
-                const { error: updateError } = await db.from('Users').update({ 
-                    streak_count: newStreak, 
-                    points: newPoints,
-                    last_claim_date: newDateISO
-                }).eq('email', user.email);
-                
-                if (updateError) throw updateError;
+               // ✅ AFTER — normalizes email casing AND verifies a row actually changed
+const cleanEmail = String(user.email).trim().toLowerCase();
+
+const { data: updatedRows, error: updateError } = await db.from('Users').update({ 
+    streak_count: newStreak, 
+    points: newPoints,
+    last_claim_date: newDateISO
+}).eq('email', cleanEmail).select();  // .select() returns the updated row(s)
+
+if (updateError) throw updateError;
+
+// If this is empty, no row matched — the write silently did nothing
+if (!updatedRows || updatedRows.length === 0) {
+    console.error("Streak claim failed: no matching user row for email:", cleanEmail);
+    showToast("Sync error: account not found. Please re-login.", true);
+    btn.innerText = "CLAIM NEXT";
+    btn.disabled = false;
+    return;
+}
                 
                 // 5. Update local cache safely (do NOT overwrite earnings)
                 user.streak_count = newStreak;
