@@ -2248,13 +2248,7 @@ async function selectRole(roleCard, roleName) {
         }
        let animPaused = false;
         
-        // --- STARTUP & LOADER ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Audio & Awakening Checks safely AFTER the DOM is fully loaded
-            document.querySelectorAll('.em-nav-btn, .ew2-open-btn, .lb-tab, .m-item').forEach(el => {
-                el.addEventListener('click', () => TxSound.playUiClick());
-            });
-            checkPlayerAwakeningStatus();
+        
 
             let user = null;
             try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
@@ -3255,6 +3249,11 @@ async function syncStreakFromCloud() {
 
             try {
                 // 1. Fetch strictly from DB to prevent exploits
+               try {
+                // Define cleanEmail FIRST before using it
+                const cleanEmail = String(user.email).trim().toLowerCase();
+
+                // 1. Fetch strictly from DB to prevent exploits
                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', cleanEmail).single();
                 if (fetchError) throw fetchError;
 
@@ -3287,12 +3286,9 @@ async function syncStreakFromCloud() {
                 let newPoints = currentPoints + reward; 
                 let newDateISO = new Date(nowMs).toISOString();
 
-                btn.innerText = "SYNCING...";
+               btn.innerText = "SYNCING...";
 
-               // ✅ AFTER — normalizes email casing AND verifies a row actually changed
-const cleanEmail = String(user.email).trim().toLowerCase();
-
-const { data: updatedRows, error: updateError } = await db.from('Users').update({ 
+            const { data: updatedRows, error: updateError } = await db.from('Users').update({
     streak_count: newStreak, 
     points: newPoints,
     last_claim_date: newDateISO
