@@ -1855,16 +1855,7 @@ const TxSound = new TournyxAudioEngine();
         try {
             db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) { console.error("Supabase not initialized"); }
-        // --- SOLO LEVELING WEB AUDIO SYNTHESIZER ---
-class TournyxAudioEngine {
-    constructor() { this.ctx = null; }
-    init() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } }
-    playUiClick() { /* ... code from previous response ... */ }
-    playSystemAwaken() { /* ... code from previous response ... */ }
-    playLevelUp() { /* ... code from previous response ... */ }
-    playWarningAlert() { /* ... code from previous response ... */ }
-}
-const TxSound = new TournyxAudioEngine();
+       
 
 // --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
 // IMPORTANT: Replace this link with your actual Cloudflare Worker URL from Step 1
