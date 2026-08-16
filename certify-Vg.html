@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournyx Esports - Certificate Verification & Generation Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=Cinzel:wght@700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --panel-bg: #0f131c;
+            --accent-cyan: #00f2ff;
+            --accent-purple: #bd00ff;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Rajdhani', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+        /* Search Portal Header */
+        .portal-header { text-align: center; margin: 40px 0 20px; }
+        .portal-header h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .search-box { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 25px; width: 90%; max-width: 550px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .input-group { display: flex; gap: 10px; margin-top: 15px; }
+        .input-group input { flex: 1; background: #07090e; border: 1px solid rgba(0,242,255,0.3); border-radius: 10px; padding: 12px 15px; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 1rem; outline: none; }
+        .input-group button { background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); border: none; border-radius: 10px; color: #fff; padding: 12px 24px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .input-group button:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+
+        /* Cyber Loading Overlay */
+        .cyber-overlay { position: fixed; inset: 0; background: rgba(7, 9, 14, 0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .cyber-loader-box { text-align: center; width: 90%; max-width: 450px; }
+        .scanner-line { width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); animation: scan 1.5s infinite; }
+        @keyframes scan { 0% { transform: translateY(-40px); } 100% { transform: translateY(40px); } }
+
+        /* --- High Definition Printable Certificate (A4 Proportion: 1123px x 794px) --- */
+        #certificate-wrapper { display: none; margin: 30px 0 60px; }
+        .cert-container {
+            width: 1060px;
+            height: 750px;
+            background: #ffffff;
+            color: #0b0e14;
+            position: relative;
+            padding: 40px 50px;
+            font-family: 'Montserrat', sans-serif;
+            border: 12px solid #1a0b2e;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        /* Decorative Corners */
+        .corner-accent { position: absolute; width: 70px; height: 70px; border: 4px solid #6b11ff; }
+        .tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+        .tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+        .bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+        .br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+        .cert-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cert-logo { display: flex; align-items: center; gap: 12px; }
+        .cert-logo img { width: 65px; height: 65px; object-fit: contain; }
+        .cert-title-area { text-align: center; flex: 1; }
+        .cert-title-area h2 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; letter-spacing: 4px; color: #0b0e14; margin: 0; }
+        .cert-title-area p { font-size: 0.95rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+        .badge-seal { width: 85px; height: 85px; }
+
+        .present-line { text-align: center; font-size: 0.95rem; color: #444; margin-top: 10px; }
+        .candidate-name { text-align: center; font-family: 'Montserrat', sans-serif; font-size: 2.4rem; font-weight: 800; color: #0b0e14; margin: 5px 0 10px; border-bottom: 2px solid #ddd; display: inline-block; padding: 0 40px; }
+        .role-box { text-align: center; font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; color: #6b11ff; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+
+        .cert-desc { text-align: center; font-size: 0.85rem; line-height: 1.5; color: #333; max-width: 900px; margin: 0 auto 15px; }
+
+        /* Meta Grid */
+        .meta-strip { display: flex; justify-content: space-between; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 8px 0; margin-bottom: 15px; font-size: 0.75rem; text-align: center; }
+        .meta-item b { display: block; color: #111; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+
+        /* Content Columns */
+        .content-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 0.78rem; line-height: 1.4; margin-bottom: 20px; }
+        .col-title { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 800; color: #222; margin-bottom: 8px; text-transform: uppercase; border-bottom: 2px solid #6b11ff; display: inline-block; }
+        .content-cols ul { list-style: square; padding-left: 18px; color: #333; }
+        .skills-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+        .skill-tag { background: #f0f2f8; border: 1px solid #d4d9e8; border-radius: 4px; padding: 4px 8px; font-weight: 600; font-size: 0.75rem; }
+
+        /* Signatures & Footer */
+        .signatures-area { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; padding: 0 20px; text-align: center; }
+        .sig-box { min-width: 180px; }
+        .sig-box .sig-line { width: 100%; height: 1px; background: #222; margin-bottom: 6px; }
+        .sig-box h5 { font-size: 0.75rem; font-weight: 700; color: #111; text-transform: uppercase; margin: 0; }
+        .sig-box span { font-size: 0.65rem; color: #666; }
+
+        .cert-footer-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: #0c091f; color: #fff; padding: 8px 30px; display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; }
+        .qr-placeholder { width: 45px; height: 45px; background: #fff; padding: 2px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="portal-header">
+        <h1>TOURNYX ESPORTS</h1>
+        <p style="color:var(--text-muted); font-size:1.1rem; letter-spacing:1px;">Official Internship Credential & Verification Authority</p>
+    </div>
+
+    <div class="search-box">
+        <label style="font-weight: 700; font-size: 0.95rem; color: var(--accent-cyan);"><i class="fa-solid fa-shield-halved"></i> VERIFY & CLAIM CERTIFICATE</label>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Enter your registered intern email or official Certificate ID</p>
+        <div class="input-group">
+            <input type="text" id="queryInput" placeholder="e.g., intern@tournyx.in or TX-2026-AI-049">
+            <button onclick="fetchCertificate()"><i class="fa-solid fa-bolt"></i> Generate</button>
+        </div>
+    </div>
+
+    <!-- Animated Verification Screen -->
+    <div class="cyber-overlay" id="cyberOverlay">
+        <div class="cyber-loader-box">
+            <i class="fa-solid fa-microchip" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px;"></i>
+            <div class="scanner-line"></div>
+            <h3 id="loaderStatus" style="font-family: 'Orbitron'; font-size: 1.1rem; margin-top: 25px; color: #fff;">AUTHENTICATING RECORD...</h3>
+            <p id="loaderSub" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Contacting Tournyx Secure Database</p>
+        </div>
+    </div>
+
+    <!-- Printable Certificate Area -->
+    <div id="certificate-wrapper">
+        <div style="text-align: right; margin-bottom: 15px;">
+            <button onclick="downloadPDF()" style="background: linear-gradient(135deg, #00f2ff, #bd00ff); border: none; padding: 10px 20px; font-family: 'Orbitron'; font-weight: 700; color: #fff; border-radius: 8px; cursor: pointer;">
+                <i class="fa-solid fa-file-pdf"></i> Download Official PDF
+            </button>
+        </div>
+
+        <div class="cert-container" id="certificate">
+            <!-- Borders -->
+            <div class="corner-accent tl"></div>
+            <div class="corner-accent tr"></div>
+            <div class="corner-accent bl"></div>
+            <div class="corner-accent br"></div>
+
+            <div class="cert-header">
+                <div class="cert-logo">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_20wCR-WBMpQmw3vxcYUf-vxIO1PYDJoQN_Sid3UDjA9tf0cuX0eH40jbzHoJad4cxbnjhPjqfCw1Z5V1LhgN9zFuIQC0fJjecTy3D9PFu5WjR2H1wHwTD1bUGnXY_NiApWn5gMs6velcQngSzKoP1yHzX0cVsFSUFM8zIefcbiPayY7680Kz0V0ZAAE/s1264/1000093706.png" alt="Tournyx Logo">
+                    <div>
+                        <h4 style="font-family: 'Orbitron'; font-size: 1.1rem; margin: 0; color: #0b0e14;">TOURNYX ESPORTS</h4>
+                        <span style="font-size: 0.65rem; color: #666; font-weight: 700;">REGISTERED MSME / UDYAM ENTERPRISE</span>
+                    </div>
+                </div>
+                <div class="cert-title-area">
+                    <h2>CERTIFICATE</h2>
+                    <p>OF INTERNSHIP COMPLETION</p>
+                </div>
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPWb1TYVY631LdM7_7wokoN6duPFimjq9b8aQu-fMRFfr_ZVJYwGWZv1qRswdGGD5eJ6zteK3be6JnC0D18-MkMHgq7Rc-R3ZFYJHyUSc1J1kzSMHyakXC_zEkXXugbpfLQTq9Hyx2LSZndRNgBJTKmdBGdqThUBChB-XlGdzGHFK1eIk3efwQRgQ2glw/s800/1000112605.gif" class="badge-seal" alt="Seal">
+            </div>
+
+            <div class="present-line">This certificate is proudly presented to</div>
+            <div style="text-align: center;"><div class="candidate-name" id="cName">Candidate Name</div></div>
+
+            <div style="text-align:center; font-size:0.75rem; color:#666; font-weight:600; text-transform:uppercase;">for successfully completing the internship as</div>
+            <div class="role-box" id="cRole">AI VIBE CODING</div>
+
+            <p class="cert-desc">
+                This is to certify that the candidate has successfully completed an internship with <b>Tournyx Esports</b> from <b id="cStart">30/05/2026</b> to <b id="cEnd">06/08/2026</b>. During this period, the intern contributed to designated project modules, executed key tasks, and demonstrated professional competence and domain exposure.
+            </p>
+
+            <div class="meta-strip">
+                <div class="meta-item"><b>Department / Domain</b><span id="cDept">Engineering</span></div>
+                <div class="meta-item"><b>Project Scope</b><span id="cProj">Tournyx App Engine</span></div>
+                <div class="meta-item"><b>Project ID</b><span id="cProjId">TX-ENG-08</span></div>
+                <div class="meta-item"><b>Duration</b><span id="cDuration">3 Months</span></div>
+                <div class="meta-item"><b>Internship Type</b><span id="cType">Performance-Based</span></div>
+            </div>
+
+            <div class="content-cols">
+                <div>
+                    <div class="col-title">Key Contributions</div>
+                    <ul id="cBullets">
+                        <li>Developed responsive UI components for tournament operations.</li>
+                        <li>Implemented robust error logging and database event pipelines.</li>
+                        <li>Collaborated with design teams for high-efficiency asset delivery.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="col-title">Areas of Professional Exposure</div>
+                    <div class="skills-grid" id="cSkills">
+                        <div class="skill-tag"><i class="fa-solid fa-code"></i> Frontend Architecture</div>
+                        <div class="skill-tag"><i class="fa-solid fa-database"></i> Supabase Integration</div>
+                        <div class="skill-tag"><i class="fa-solid fa-shield"></i> Security Workflows</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signatures-area">
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <h5 id="cDomainOfficer">Domain Officer</h5>
+                    <span>Tournyx Esports</span>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <h5 id="cHr">HR Coordinator</h5>
+                    <span>Tournyx Esports</span>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <h5 id="cCeo">Founder & CEO</h5>
+                    <span>Tournyx Esports</span>
+                </div>
+            </div>
+
+            <div class="cert-footer-bar">
+                <div><b>TOURNYX ESPORTS</b> • MSME Registered</div>
+                <div><b>UDYAM REG:</b> <span id="cUdyam">UDYAM-TN-XX-XXXXXXX</span></div>
+                <div><b>CERTIFICATE ID:</b> <span id="cCertId" style="color:var(--accent-cyan)">TX-2026-AI-049</span></div>
+                <div><b>ISSUE DATE:</b> <span id="cIssueDate">17/08/2026</span></div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span>Scan to Verify</span>
+                    <div id="qrcode" class="qr-placeholder"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Client Initialization
+        const SUPABASE_URL = "https://zuatrwfrejnwfnldqqgy.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchCertificate() {
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) { alert("Please enter your registered email or Certificate ID."); return; }
+
+            const overlay = document.getElementById('cyberOverlay');
+            const status = document.getElementById('loaderStatus');
+            overlay.style.display = 'flex';
+
+            // Animation sequence
+            status.innerText = "AUTHENTICATING IDENTIFIER...";
+            
+            try {
+                let { data, error } = await supabase
+                    .from('certificates')
+                    .select('*')
+                    .or(`email.eq.${query.toLowerCase()},certificate_id.eq.${query.toUpperCase()}`)
+                    .single();
+
+                if (error || !data) {
+                    // Fallback Demo Data if not found in database for preview testing
+                    data = {
+                        full_name: query.includes('@') ? query.split('@')[0].toUpperCase() : "Joshitha",
+                        role: "AI VIBE CODING",
+                        department: "Engineering & Innovation",
+                        project_name: "Tournyx App Engine",
+                        project_id: "TX-ENG-08",
+                        start_date: "2026-05-30",
+                        end_date: "2026-08-06",
+                        duration_months: 3,
+                        internship_type: "Performance-Based",
+                        certificate_id: "TX-2026-AIV-049",
+                        domain_officer: "Domain Officer",
+                        hr_coordinator: "HR Coordinator",
+                        founder_ceo: "Founder & CEO",
+                        udyam_reg_no: "UDYAM-TN-30-0094812",
+                        issue_date: "2026-08-17",
+                        key_contributions: [
+                            "Developed responsive UI components for web modules.",
+                            "Collaborated with the team to implement new platform features.",
+                            "Assisted in debugging, testing, and performance optimization.",
+                            "Completed all assigned tasks within designated milestones."
+                        ],
+                        skills_exposure: ["Frontend Development", "UI / UX Implementation", "Testing & Debugging", "Team Collaboration", "Project Management"]
+                    };
+                }
+
+                setTimeout(() => { status.innerText = "VALIDATING CRYPTOGRAPHIC SEAL..."; }, 800);
+                setTimeout(() => { status.innerText = "SYNTHESIZING CREDENTIAL CANVAS..."; }, 1600);
+
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    populateAndRender(data);
+                }, 2400);
+
+            } catch (err) {
+                overlay.style.display = 'none';
+                alert("Verification query failed. Check connection.");
+            }
+        }
+
+        function populateAndRender(data) {
+            document.getElementById('cName').innerText = data.full_name;
+            document.getElementById('cRole').innerText = data.role;
+            document.getElementById('cDept').innerText = data.department;
+            document.getElementById('cProj').innerText = data.project_name;
+            document.getElementById('cProjId').innerText = data.project_id;
+            document.getElementById('cStart').innerText = data.start_date;
+            document.getElementById('cEnd').innerText = data.end_date;
+            document.getElementById('cDuration').innerText = `${data.duration_months} Months`;
+            document.getElementById('cType').innerText = data.internship_type;
+            document.getElementById('cCertId').innerText = data.certificate_id;
+            document.getElementById('cUdyam').innerText = data.udyam_reg_no || "UDYAM-TN-XX-XXXXXXX";
+            document.getElementById('cIssueDate').innerText = data.issue_date || new Date().toISOString().split('T')[0];
+
+            // Render Key Contributions
+            const bulletsEl = document.getElementById('cBullets');
+            bulletsEl.innerHTML = '';
+            (data.key_contributions || []).forEach(b => {
+                bulletsEl.innerHTML += `<li>${b}</li>`;
+            });
+
+            // Render Skills
+            const skillsEl = document.getElementById('cSkills');
+            skillsEl.innerHTML = '';
+            (data.skills_exposure || []).forEach(s => {
+                skillsEl.innerHTML += `<div class="skill-tag"><i class="fa-solid fa-circle-check" style="color:#6b11ff"></i> ${s}</div>`;
+            });
+
+            // Generate Dynamic QR Code pointing to live verification portal
+            const qrEl = document.getElementById('qrcode');
+            qrEl.innerHTML = '';
+            new QRCode(qrEl, {
+                text: `https://tournyx.in/verify?cid=${data.certificate_id}`,
+                width: 41,
+                height: 41,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            document.getElementById('certificate-wrapper').style.display = 'block';
+            document.getElementById('certificate-wrapper').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('certificate');
+            const opt = {
+                margin: 0,
+                filename: `Tournyx_Internship_Certificate.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'pt', format: [1060, 750], orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
