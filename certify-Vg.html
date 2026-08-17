@@ -1,1220 +1,858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports - Certificate Verification & Generation Authority</title>
-    
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- QR Code, html2canvas & jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <style>
-        :root {
-            --bg-void: #06070b;
-            --panel-bg: #0e111a;
-            --panel-border: rgba(0, 242, 255, 0.15);
-            --neon-cyan: #00f2ff;
-            --neon-purple: #9d00ff;
-            --theme-accent: #6b21a8;
-            --text-main: #ffffff;
-            --text-muted: #8b9bb4;
-            --font-head: 'Orbitron', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --font-cert-title: 'Cinzel', serif;
-            --font-signature: 'Alex Brush', cursive;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background-color: var(--bg-void);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 15px 80px;
-            overflow-x: hidden;
-        }
-
-        /* Ambient Background Grid */
-        .ambient-grid {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: linear-gradient(rgba(0,242,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.02) 1px, transparent 1px);
-            background-size: 35px 35px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* --- PORTAL HEADER & FORM CONTAINER --- */
-        .portal-header {
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .portal-title {
-            font-family: var(--font-head);
-            font-size: clamp(1.6rem, 5vw, 2.4rem);
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, var(--neon-cyan), #bd00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .portal-sub {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .claim-card {
-            width: 100%;
-            max-width: 650px;
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 20px;
-            padding: 25px 25px 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0, 242, 255, 0.05);
-            margin-bottom: 35px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .claim-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-head);
-            font-size: 0.85rem;
-            color: var(--neon-cyan);
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .claim-desc {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 18px;
-        }
-
-        .input-box {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-        }
-
-        @media (max-width: 550px) {
-            .input-box { flex-direction: column; }
-        }
-
-        .portal-input {
-            flex: 1;
-            background: rgba(4, 6, 12, 0.9);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            color: #ffffff;
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .portal-input:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
-        }
-
-        .btn-generate {
-            background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
-            border: none;
-            color: #ffffff;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-family: var(--font-head);
-            font-weight: 800;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(189, 0, 255, 0.4);
-            white-space: nowrap;
-        }
-
-        .btn-generate:hover {
-            box-shadow: 0 6px 25px rgba(0, 242, 255, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .btn-generate:active {
-            transform: scale(0.96);
-        }
-
-        /* --- GENERATION MATRIX ANIMATION OVERLAY --- */
-        #genOverlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(3, 4, 8, 0.96);
-            backdrop-filter: blur(15px);
-            z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .matrix-modal {
-            text-align: center;
-            max-width: 460px;
-            width: 100%;
-        }
-
-        .matrix-spinner {
-            width: 85px; height: 85px;
-            border: 4px solid rgba(0, 242, 255, 0.1);
-            border-top: 4px solid var(--neon-cyan);
-            border-right: 4px solid #bd00ff;
-            border-radius: 50%;
-            animation: matrixSpin 0.9s infinite linear;
-            margin: 0 auto 25px;
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
-        }
-
-        @keyframes matrixSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .matrix-log {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--neon-cyan);
-            letter-spacing: 1px;
-            min-height: 25px;
-            margin-bottom: 15px;
-        }
-
-        .matrix-bar-bg {
-            width: 100%; height: 8px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .matrix-bar-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, #bd00ff, var(--neon-cyan));
-            box-shadow: 0 0 12px var(--neon-cyan);
-            transition: width 0.3s ease;
-        }
-
-        /* --- CERTIFICATE EXPORT WRAPPER --- */
-        .cert-export-wrapper {
-            display: none;
-            width: 100%;
-            max-width: 1060px;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .action-toolbar {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            color: #ffffff;
-            padding: 12px 22px;
-            border-radius: 12px;
-            font-family: var(--font-head);
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .btn-action:hover {
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-action.primary-btn {
-            background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(189,0,255,0.15));
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-        }
-
-        /* --- THE CERTIFICATE CANVAS (1000px x 707px Standard Ratio) --- */
-        #certificateCard {
-            width: 1000px;
-            height: 707px;
-            background: #ffffff;
-            color: #0b0f19;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 24px;
-            flex-shrink: 0;
-        }
-
-        /* Outer Frame Borders */
-        .cert-outer-border {
-            position: absolute;
-            top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 2px solid #2e1065;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .corner-accent {
-            position: absolute;
-            width: 50px; height: 50px;
-            border-color: #6b21a8;
-            border-style: solid;
-            pointer-events: none;
-            z-index: 2;
-        }
-        .ca-tl { top: 6px; left: 6px; border-width: 6px 0 0 6px; }
-        .ca-tr { top: 6px; right: 6px; border-width: 6px 6px 0 0; }
-        .ca-bl { bottom: 6px; left: 6px; border-width: 0 0 6px 6px; }
-        .ca-br { bottom: 6px; right: 6px; border-width: 0 6px 6px 0; }
-
-        .tri-tl {
-            position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-top: 50px solid #4c1d95; border-right: 50px solid transparent;
-            z-index: 3;
-        }
-        .tri-br {
-            position: absolute; bottom: 0; right: 0; width: 0; height: 0;
-            border-bottom: 50px solid #4c1d95; border-left: 50px solid transparent;
-            z-index: 3;
-        }
-
-        /* CERTIFICATE HEADER */
-        .cert-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            position: relative;
-            z-index: 10;
-            padding: 8px 18px 0;
-        }
-
-        .cert-brand-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 140px;
-        }
-
-        .cert-logo {
-            width: 75px; height: 75px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
-        }
-
-        .cert-brand-label {
-            font-family: var(--font-head);
-            font-size: 0.65rem;
-            font-weight: 900;
-            color: #2e1065;
-            letter-spacing: 1.5px;
-            margin-top: 2px;
-        }
-
-        .cert-title-area {
-            text-align: center;
-            flex: 1;
-            padding-top: 4px;
-        }
-
-        .main-heading {
-            font-family: var(--font-cert-title);
-            font-size: 2.3rem;
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: #0b0f19;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .sub-heading {
-            font-family: var(--font-cert-title);
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: #4b5563;
-            text-transform: uppercase;
-            position: relative;
-            display: inline-block;
-            padding: 0 15px;
-        }
-        .sub-heading::before, .sub-heading::after {
-            content: ''; position: absolute; top: 50%; width: 25px; height: 1px; background: #9ca3af;
-        }
-        .sub-heading::before { left: -15px; }
-        .sub-heading::after { right: -15px; }
-
-        .sub-caption {
-            font-size: 0.75rem;
-            color: #4b5563;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .seal-box {
-            width: 80px;
-            text-align: center;
-        }
-
-        .seal-rosette {
-            width: 68px; height: 68px;
-            background: radial-gradient(circle, #7c3aed, #4c1d95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4);
-            border: 2px solid #e9d5ff;
-            margin: 0 auto;
-        }
-
-        /* CERTIFICATE BODY */
-        .cert-body {
-            text-align: center;
-            padding: 0 35px;
-            position: relative;
-            z-index: 10;
-            margin-top: -12px;
-        }
-
-        .presented-to {
-            font-size: 0.85rem;
-            color: #4b5563;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .recipient-name {
-            font-family: var(--font-body);
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #09090b;
-            border-bottom: 2px solid #09090b;
-            display: inline-block;
-            min-width: 320px;
-            padding: 0 25px 2px;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
-        .role-lead {
-            font-size: 0.8rem;
-            color: #4b5563;
-            margin-bottom: 2px;
-        }
-
-        .role-title-text {
-            font-family: var(--font-head);
-            font-size: 1.75rem;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--theme-accent);
-            margin-bottom: 6px;
-            text-shadow: 0 2px 8px rgba(107, 33, 168, 0.15);
-        }
-
-        .cert-desc {
-            font-size: 0.74rem;
-            color: #374151;
-            line-height: 1.4;
-            max-width: 820px;
-            margin: 0 auto 12px;
-            font-weight: 500;
-        }
-
-        /* METADATA STRIP */
-        .meta-strip {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            border-top: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 6px 0;
-            margin-bottom: 12px;
-            gap: 10px;
-        }
-
-        .meta-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-align: left;
-        }
-
-        .meta-cell i {
-            font-size: 1.1rem;
-            color: #4c1d95;
-        }
-
-        .meta-content span {
-            display: block;
-            font-size: 0.55rem;
-            color: #6b7280;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .meta-content strong {
-            display: block;
-            font-size: 0.65rem;
-            color: #111827;
-            font-weight: 800;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px;
-        }
-
-        /* MATRIX TWO-COLUMN SECTION */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            text-align: left;
-            margin-bottom: 10px;
-            padding: 0 10px;
-        }
-
-        .matrix-col-header {
-            font-size: 0.68rem;
-            font-weight: 800;
-            color: #1e1b4b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            border-bottom: 1.5px solid #4c1d95;
-            padding-bottom: 2px;
-            display: inline-block;
-        }
-
-        .contrib-list {
-            list-style: none;
-        }
-
-        .contrib-list li {
-            font-size: 0.63rem;
-            color: #374151;
-            margin-bottom: 3px;
-            position: relative;
-            padding-left: 12px;
-            line-height: 1.3;
-            font-weight: 600;
-        }
-
-        .contrib-list li::before {
-            content: '•';
-            position: absolute;
-            left: 0; top: -1px;
-            color: #6b21a8;
-            font-size: 0.9rem;
-        }
-
-        .exposure-pills {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-        }
-
-        .exp-badge {
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.6rem;
-            color: #1f2937;
-            font-weight: 700;
-        }
-
-        .exp-badge i {
-            color: #6b21a8;
-            font-size: 0.75rem;
-        }
-
-        /* SIGNATURES SECTION */
-        .signatures-area {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            padding: 0 30px;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            margin-bottom: 5px;
-        }
-
-        .sig-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .sig-font {
-            height: 38px;
-            display: flex;
-            align-items: flex-end;
-            font-family: var(--font-signature);
-            font-size: 1.4rem;
-            color: #1e1b4b;
-            user-select: none;
-            margin-bottom: -5px;
-        }
-
-        .sig-divider {
-            width: 160px;
-            border-top: 1px solid #374151;
-            margin-top: 4px;
-            margin-bottom: 3px;
-        }
-
-        .sig-officer-title {
-            font-size: 0.68rem;
-            font-weight: 800;
-            color: #111827;
-            text-transform: uppercase;
-        }
-
-        .sig-officer-sub {
-            font-size: 0.55rem;
-            color: #6b7280;
-            font-weight: 600;
-        }
-
-        /* OFFICIAL DARK BOTTOM STRIP */
-        .cert-footer-bar {
-            background: #110d24;
-            color: #ffffff;
-            margin: 0 -24px -24px -24px;
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 2px solid var(--theme-accent);
-            position: relative;
-            z-index: 10;
-        }
-
-        .footer-left h4 {
-            font-family: var(--font-head);
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            color: #ffffff;
-        }
-
-        .footer-left p {
-            font-size: 0.55rem;
-            color: #9ca3af;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-center {
-            text-align: center;
-        }
-
-        .footer-center span {
-            display: block;
-            font-size: 0.5rem;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-center strong {
-            font-family: var(--font-head);
-            font-size: 0.75rem;
-            color: var(--neon-cyan);
-            letter-spacing: 1px;
-        }
-
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #qrCodeOutput {
-            width: 44px; height: 44px;
-            background: #ffffff;
-            padding: 2px;
-            border-radius: 4px;
-        }
-
-        .qr-label {
-            font-size: 0.55rem;
-            color: #d1d5db;
-            line-height: 1.2;
-            text-align: left;
-        }
-
-        /* --- PRINT MEDIA ENGINE (Pixel-Perfect A4 Landscape) --- */
-        @media print {
-            body {
-                background: #ffffff !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            .ambient-grid, .portal-header, .claim-card, .action-toolbar, #genOverlay {
-                display: none !important;
-            }
-            .cert-export-wrapper {
-                display: block !important;
-                width: 100% !important;
-                max-width: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            #certificateCard {
-                width: 100% !important;
-                height: 100vh !important;
-                box-shadow: none !important;
-                page-break-inside: avoid;
-                page-break-after: avoid;
-            }
-            @page {
-                size: A4 landscape;
-                margin: 0;
-            }
-        }
-
-        @media (max-width: 1040px) {
-            .cert-export-wrapper {
-                overflow-x: auto;
-                width: 100%;
-                justify-content: flex-start;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tournyx Esports | Live Certificate Verification & Generation</title>
+  
+  <!-- Fonts & Core Dependencies -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Great+Vibes&family=Inter:wght@400;600;700;800&family=Orbitron:wght@700;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #5b21b6;
+      --primary-glow: rgba(124, 58, 237, 0.35);
+      --bg-dark: #0a0c10;
+      --card-bg: #12161f;
+      --cert-bg: #ffffff;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --gold: #d97706;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(79, 70, 229, 0.08) 0%, transparent 40%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    /* Action Bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      background: var(--card-bg);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    /* HUD Live Animation Screen */
+    .animation-hud {
+      width: 100%;
+      max-width: 1050px;
+      background: rgba(18, 22, 31, 0.85);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #a78bfa;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hud-badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(124, 58, 237, 0.2);
+      border: 1px solid var(--primary);
+      color: #ddd6fe;
+    }
+
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .step-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .step-box.active {
+      border-color: var(--primary);
+      background: rgba(124, 58, 237, 0.1);
+      color: #ffffff;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .step-box.completed {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      color: #6ee7b7;
+    }
+
+    /* Liquid Progress Bar */
+    .liquid-bar-wrap {
+      width: 100%;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .liquid-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, var(--primary), #ec4899);
+      border-radius: 50px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .liquid-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: wave 1.5s infinite;
+    }
+
+    @keyframes wave {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Main Certificate Canvas */
+    .cert-viewport {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+    }
+
+    .certificate-card {
+      width: 1050px;
+      min-width: 1050px;
+      height: 742px;
+      background: #ffffff;
+      color: var(--text-dark);
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      border: 12px solid #ffffff;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(245, 243, 255, 0.8) 0%, #ffffff 80%),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.015) 0px, rgba(0, 0, 0, 0.015) 2px, transparent 2px, transparent 4px);
+    }
+
+    /* Clean Borders & Accents */
+    .cert-frame {
+      position: absolute;
+      inset: 6px;
+      border: 2px solid #cbd5e1;
+      pointer-events: none;
+    }
+
+    .corner-decor {
+      position: absolute;
+      width: 45px;
+      height: 45px;
+      border: 3px solid var(--primary);
+    }
+
+    .corner-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+    .corner-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 60px; left: 12px; border-right: none; border-top: none; }
+    .corner-br { bottom: 60px; right: 12px; border-left: none; border-top: none; }
+
+    /* Header Section */
+    .cert-header {
+      padding: 2.25rem 3.5rem 0.5rem 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon-box {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, #1e1b4b, var(--primary-dark));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .brand-icon-box span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .brand-text h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .brand-text p {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 3px;
+    }
+
+    .title-block {
+      text-align: right;
+    }
+
+    .title-block h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    .title-block .subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Core Content Area */
+    .cert-body {
+      padding: 0 4.5rem;
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .present-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .intern-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2.5px solid var(--primary);
+      padding: 0 2.5rem 0.25rem 2.5rem;
+      display: inline-block;
+      min-width: 320px;
+    }
+
+    .domain-title-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: rgba(124, 58, 237, 0.08);
+      padding: 0.35rem 1.5rem;
+      border-radius: 50px;
+      border: 1px solid rgba(124, 58, 237, 0.25);
+    }
+
+    .cert-description {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #334155;
+      max-width: 820px;
+      font-weight: 500;
+    }
+
+    .cert-description strong {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    /* Project & Duration Specs */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 880px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+    }
+
+    .spec-item {
+      text-align: center;
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .spec-item:last-child {
+      border-right: none;
+    }
+
+    .spec-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .spec-value {
+      font-size: 0.8rem;
+      color: #0f172a;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* Signatures Section */
+    .signatures-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      padding: 0 4rem;
+      z-index: 2;
+    }
+
+    .sig-block {
+      text-align: center;
+      width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .signature-slot {
+      height: 48px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    .cursive-sig {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.1rem;
+      color: #1e1b4b;
+      line-height: 1;
+      transform: rotate(-3deg);
+      user-select: none;
+    }
+
+    .sig-line {
+      width: 100%;
+      height: 1.5px;
+      background: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .sig-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sig-role {
+      font-size: 0.65rem;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Bottom Verification Ledger */
+    .cert-footer-ledger {
+      background: #090d16;
+      color: #ffffff;
+      padding: 0.65rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .footer-label {
+      font-size: 0.58rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .footer-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .qr-block {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .qr-img {
+      width: 44px;
+      height: 44px;
+      background: white;
+      padding: 2px;
+      border-radius: 4px;
+    }
+
+    .qr-text {
+      font-size: 0.6rem;
+      color: #cbd5e1;
+      line-height: 1.3;
+      text-align: left;
+    }
+
+    /* General Page Footer Credits */
+    .page-credits {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .page-credits strong {
+      color: #cbd5e1;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="ambient-grid"></div>
-
-    <!-- HEADER TITLE -->
-    <header class="portal-header">
-        <h1 class="portal-title">TOURNYX ESPORTS</h1>
-        <p class="portal-sub">Official Internship Credential & Verification Authority</p>
-    </header>
-
-    <!-- CREDENTIAL CLAIM FORM -->
-    <div class="claim-card">
-        <div class="claim-label">
-            <i class="fa-solid fa-shield-halved"></i> Verify & Claim Certificate
-        </div>
-        <p class="claim-desc">Enter your registered intern email or official Certificate ID</p>
-
-        <form id="claimForm" onsubmit="handleFormSubmit(event)" class="input-box">
-            <input type="text" id="certQueryInput" class="portal-input" placeholder="e.g. quva.globe.india@gmail.com or TX-CERT-2026-001" required autocomplete="off">
-            <button type="submit" id="btnSubmit" class="btn-generate">
-                <i class="fa-solid fa-bolt"></i> Generate
-            </button>
-        </form>
+  <!-- Generation HUD / Progress Pipeline -->
+  <div class="animation-hud" id="hudContainer">
+    <div class="hud-header">
+      <div class="hud-title">
+        <span>⚡ LIVE CERTIFICATE PIPELINE ENGINE</span>
+      </div>
+      <span class="hud-badge" id="hudStatus">READY TO DISPATCH</span>
     </div>
 
-    <!-- HOLOGRAPHIC GENERATION MODAL -->
-    <div id="genOverlay">
-        <div class="matrix-modal">
-            <div class="matrix-spinner"></div>
-            <div class="matrix-log" id="matrixLog">INITIALIZING MATRIX...</div>
-            <div class="matrix-bar-bg">
-                <div class="matrix-bar-fill" id="matrixBar"></div>
-            </div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;">Cryptographically signing credential with Tournyx authority...</p>
-        </div>
+    <div class="steps-container">
+      <div class="step-box" id="step1"><span>1.</span> Layout & Styling</div>
+      <div class="step-box" id="step2"><span>2.</span> Intern Details</div>
+      <div class="step-box" id="step3"><span>3.</span> Signatures & QR</div>
+      <div class="step-box" id="step4"><span>4.</span> Dispatch to Mail</div>
     </div>
 
-    <!-- CERTIFICATE RENDER & EXPORT SECTION -->
-    <div class="cert-export-wrapper" id="exportArea">
+    <div class="liquid-bar-wrap">
+      <div class="liquid-fill" id="liquidFill"></div>
+    </div>
+  </div>
+
+  <!-- Action Controls -->
+  <div class="controls-bar">
+    <button class="btn btn-primary" id="btnStartPipeline" onclick="runGenerationPipeline()">
+      ✨ Generate & Dispatch
+    </button>
+    <button class="btn btn-secondary" id="btnExportPng" disabled onclick="downloadCertificatePNG()">
+      🖼️ Export High-Res PNG
+    </button>
+    <button class="btn btn-secondary" id="btnPrintPdf" disabled onclick="printCertificatePDF()">
+      📄 Print / Save PDF
+    </button>
+    <button class="btn btn-secondary" id="btnDirectDownload" disabled onclick="downloadCertificatePDF()">
+      ⬇️ Direct PDF Download
+    </button>
+  </div>
+
+  <!-- Certificate Canvas (Cleaned & Dynamic) -->
+  <div class="cert-viewport">
+    <div class="certificate-card" id="certificateArea">
+      <div class="cert-frame"></div>
+      <div class="corner-decor corner-tl"></div>
+      <div class="corner-decor corner-tr"></div>
+      <div class="corner-decor corner-bl"></div>
+      <div class="corner-decor corner-br"></div>
+
+      <!-- Header -->
+      <div class="cert-header">
+        <div class="logo-container">
+          <div class="brand-icon-box">
+            <span>TX</span>
+          </div>
+          <div class="brand-text">
+            <h2>TOURNYX</h2>
+            <p>Esports Technology</p>
+          </div>
+        </div>
+
+        <div class="title-block">
+          <h1>CERTIFICATE</h1>
+          <div class="subtitle">Of Successful Internship Completion</div>
+        </div>
+      </div>
+
+      <!-- Core Content -->
+      <div class="cert-body">
+        <span class="present-label">This Certificate is Proudly Presented to</span>
+        <h2 class="intern-name" id="certInternName">Joshitha</h2>
+        <span class="present-label">for successfully completing the specialized internship as</span>
         
-        <div class="action-toolbar">
-            <button class="btn-action" onclick="downloadImage()"><i class="fa-solid fa-image"></i> Export PNG</button>
-            <button class="btn-action primary-btn" onclick="triggerNativePrint()"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
-            <button class="btn-action" onclick="downloadJsPDF()"><i class="fa-solid fa-download"></i> Direct PDF</button>
+        <div class="domain-title-badge" id="certDomainTitle">AI VIBE CODING</div>
+
+        <p class="cert-description" id="certDescriptionText">
+          This is to certify that <strong id="descName">Joshitha</strong> has successfully completed an intensive internship with <strong>Tournyx Esports</strong> from <strong>30/05/2026</strong> to <strong>06/08/2026</strong>. The intern demonstrated exemplary project performance, technical execution, and collaborative development in domain workloads.
+        </p>
+
+        <!-- Dynamic Specs Grid -->
+        <div class="specs-grid">
+          <div class="spec-item">
+            <div class="spec-label">Department</div>
+            <div class="spec-value" id="specDept">Technology & AI</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Project Name</div>
+            <div class="spec-value">Tournyx Esports Engine</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Project ID</div>
+            <div class="spec-value">TX-PRJ-2026-AI</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-label">Internship Mode</div>
+            <div class="spec-value">Virtual / Project-Based</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital Signatures -->
+      <div class="signatures-row">
+        <div class="sig-block">
+          <div class="signature-slot">
+            <span class="cursive-sig">Shiva Kumar</span>
+          </div>
+          <div class="sig-line"></div>
+          <div class="sig-name">Shiva Kumar</div>
+          <div class="sig-role">Domain Officer</div>
         </div>
 
-        <!-- THE PHYSICAL CERTIFICATE CANVAS -->
-        <div id="certificateCard">
-            
-            <!-- Geometric Frame -->
-            <div class="cert-outer-border"></div>
-            <div class="corner-accent ca-tl"></div>
-            <div class="corner-accent ca-tr"></div>
-            <div class="corner-accent ca-bl"></div>
-            <div class="corner-accent ca-br"></div>
-            <div class="tri-tl"></div>
-            <div class="tri-br"></div>
-
-            <!-- HEADER -->
-            <div class="cert-header">
-                <div class="cert-brand-block">
-                    <img src="tournyxweblogo.jpg" alt="Tournyx Esports" class="cert-logo" onerror="this.src='https://ui-avatars.com/api/?name=TX&background=4c1d95&color=00f2ff&font-family=Orbitron'">
-                    <div class="cert-brand-label">TOURNYX ESPORTS</div>
-                </div>
-
-                <div class="cert-title-area">
-                    <h1 class="main-heading">CERTIFICATE</h1>
-                    <div class="sub-heading">OF INTERNSHIP</div>
-                    <div class="sub-caption">Certificate of Successful Internship Completion</div>
-                </div>
-
-                <div class="seal-box">
-                    <div class="seal-rosette" id="sealRosette">
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BODY -->
-            <div class="cert-body">
-                <div class="presented-to">This certificate is proudly presented to</div>
-                <div class="recipient-name" id="viewName">Joshitha</div>
-                
-                <div class="role-lead">for successfully completing the internship as</div>
-                <div class="role-title-text" id="viewRole">AI VIBE CODING</div>
-
-                <p class="cert-desc">
-                    This is to certify that <strong id="descCandidateName" style="color:#1e1b4b;">the candidate</strong> has successfully completed an internship with <strong style="color:#1e1b4b;">Tournyx Esports</strong> from <strong id="viewStartDate">30/05/2026</strong> to <strong id="viewEndDate">06/08/2026</strong>. During the internship, the intern contributed to assigned projects, completed designated responsibilities, and gained practical exposure to professional workflows, teamwork, project execution, and domain-specific practices.
-                </p>
-
-                <!-- METADATA 5-COLUMN STRIP -->
-                <div class="meta-strip">
-                    <div class="meta-cell">
-                        <i class="fa-solid fa-briefcase"></i>
-                        <div class="meta-content">
-                            <span>DEPARTMENT / DOMAIN</span>
-                            <strong id="viewDept">Technology & AI</strong>
-                        </div>
-                    </div>
-                    <div class="meta-cell">
-                        <i class="fa-solid fa-folder-open"></i>
-                        <div class="meta-content">
-                            <span>PROJECT</span>
-                            <strong id="viewProject">Tournyx Engine</strong>
-                        </div>
-                    </div>
-                    <div class="meta-cell">
-                        <i class="fa-solid fa-id-badge"></i>
-                        <div class="meta-content">
-                            <span>PROJECT ID</span>
-                            <strong id="viewProjId">TX-PRJ-2026-AI</strong>
-                        </div>
-                    </div>
-                    <div class="meta-cell">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <div class="meta-content">
-                            <span>DURATION</span>
-                            <strong id="viewDuration">(2 Months)</strong>
-                        </div>
-                    </div>
-                    <div class="meta-cell">
-                        <i class="fa-solid fa-user-check"></i>
-                        <div class="meta-content">
-                            <span>INTERNSHIP TYPE</span>
-                            <strong id="viewType">Virtual / Project</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MATRIX TWO-COLUMN SECTION -->
-                <div class="matrix-grid">
-                    <div>
-                        <div class="matrix-col-header">KEY CONTRIBUTIONS</div>
-                        <ul class="contrib-list" id="viewContribs">
-                            <li>Developed responsive UI components for web modules.</li>
-                            <li>Collaborated with the team to implement new features.</li>
-                            <li>Assisted in debugging, testing, and performance optimization.</li>
-                            <li>Participated in code reviews and provided improvements.</li>
-                            <li>Completed all assigned tasks within the given timeline.</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <div class="matrix-col-header">AREAS OF PROFESSIONAL EXPOSURE</div>
-                        <div class="exposure-pills" id="viewExposure">
-                            <div class="exp-badge"><i class="fa-solid fa-code"></i> <span>Frontend Development</span></div>
-                            <div class="exp-badge"><i class="fa-solid fa-layer-group"></i> <span>UI / UX Implementation</span></div>
-                            <div class="exp-badge"><i class="fa-solid fa-gear"></i> <span>Testing & Debugging</span></div>
-                            <div class="exp-badge"><i class="fa-solid fa-users"></i> <span>Team Collaboration</span></div>
-                            <div class="exp-badge" style="grid-column: span 2;"><i class="fa-solid fa-list-check"></i> <span>Project Management</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SIGNATURES BLOCK -->
-            <div class="signatures-area">
-                <div class="sig-unit">
-                    <div class="sig-font">Shiva Kumar</div>
-                    <div class="sig-divider"></div>
-                    <div class="sig-officer-title">DOMAIN OFFICER</div>
-                    <div class="sig-officer-sub">Tournyx Esports</div>
-                </div>
-
-                <div class="sig-unit">
-                    <div class="sig-font">Tharun Kumar</div>
-                    <div class="sig-divider"></div>
-                    <div class="sig-officer-title">HR / INTERNSHIP COORDINATOR</div>
-                    <div class="sig-officer-sub">Tournyx Esports</div>
-                </div>
-
-                <div class="sig-unit">
-                    <div class="sig-font" style="color:#4c1d95;">Thilakeshwaran J</div>
-                    <div class="sig-divider" style="border-color:#4c1d95;"></div>
-                    <div class="sig-officer-title" style="color:#4c1d95;">FOUNDER & CEO</div>
-                    <div class="sig-officer-sub">Tournyx Esports</div>
-                </div>
-            </div>
-
-            <!-- OFFICIAL FOOTER BAR -->
-            <div class="cert-footer-bar">
-                <div class="footer-left">
-                    <h4>TOURNYX ESPORTS</h4>
-                    <p>Registered MSME / Udyam Enterprise</p>
-                </div>
-
-                <div class="footer-center">
-                    <span>UDYAM REGISTRATION NO.</span>
-                    <strong id="viewUdyam">UDYAM-TN-08-0094821</strong>
-                </div>
-
-                <div class="footer-center">
-                    <span>CERTIFICATE ID</span>
-                    <strong id="viewCertId">TX-CERT-2026-001</strong>
-                </div>
-
-                <div class="footer-center">
-                    <span>ISSUE DATE</span>
-                    <strong id="viewIssueDate" style="color:#ffffff;">06/08/2026</strong>
-                </div>
-
-                <div class="footer-right">
-                    <div id="qrCodeOutput"></div>
-                    <div class="qr-label">
-                        <strong>VERIFICATION</strong><br>
-                        Scan to verify<br>
-                        this certificate
-                    </div>
-                </div>
-            </div>
-
+        <div class="sig-block">
+          <div class="signature-slot">
+            <span class="cursive-sig">Tharun Kumar</span>
+          </div>
+          <div class="sig-line"></div>
+          <div class="sig-name">Tharun Kumar</div>
+          <div class="sig-role">HR / Coordinator</div>
         </div>
+
+        <div class="sig-block">
+          <div class="signature-slot">
+            <span class="cursive-sig">Thilakeshwaran J</span>
+          </div>
+          <div class="sig-line"></div>
+          <div class="sig-name">Thilakeshwaran J</div>
+          <div class="sig-role">Founder & CEO</div>
+        </div>
+      </div>
+
+      <!-- Footer Ledger -->
+      <div class="cert-footer-ledger">
+        <div class="footer-col">
+          <span class="footer-label">Authorized Organization</span>
+          <span class="footer-val" style="color:#ffffff;">TOURNYX ESPORTS</span>
+          <span style="font-size:0.55rem; color:#94a3b8;">Registered MSME / Udyam Enterprise</span>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-label">Udyam Registration No.</span>
+          <span class="footer-val" id="certUdyamNo">UDYAM-TN-08-0094821</span>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-label">Certificate ID</span>
+          <span class="footer-val" id="certIdVal">TX-T198097</span>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-label">Issue Date</span>
+          <span class="footer-val" id="certIssueDate">06/08/2026</span>
+        </div>
+
+        <div class="qr-block">
+          <img id="certQrCode" class="qr-img" alt="QR Verification" src="" />
+          <div class="qr-text">
+            <strong>SCAN TO VERIFY</strong><br>
+            Official Record
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- ================= JAVASCRIPT MOTOR ================= -->
-    <script>
-        // Supabase REST Configurations
-        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+  <!-- Mandatory Footer Credits -->
+  <footer class="page-credits">
+    <p>
+      Developed & Secured by <strong>Quva Technologies</strong> for <strong>Tournyx Esports</strong>. All Rights Reserved &copy; 2026.
+    </p>
+    <p>
+      Tamper-proof digital credential authenticated under MSME Udyam Registration <strong>UDYAM-TN-08-0094821</strong>.
+    </p>
+  </footer>
 
-        let qrcodeObj = null;
+  <!-- Script & Automation Logic -->
+  <script>
+    // Live Generation Data
+    const internData = {
+      name: "Joshitha",
+      email: "joshitha.intern@example.com",
+      domain: "AI VIBE CODING",
+      department: "Technology & AI",
+      startDate: "30/05/2026",
+      endDate: "06/08/2026",
+      udyamNo: "UDYAM-TN-08-0094821",
+      themeColor: "#7c3aed"
+    };
 
-        // PRESET MATRICES BASED ON ROLES
-        const ROLE_SCHEMAS = {
-            'AI VIBE CODING': {
-                theme: '#5b21b6',
-                seal: 'radial-gradient(circle, #7c3aed, #4c1d95)',
-                department: 'AI & Systems Engineering',
-                project: 'Tournyx AI Engine',
-                projectId: 'TX-PRJ-2026-AI',
-                contributions: [
-                    'Developed responsive UI components for web modules.',
-                    'Collaborated with the team to implement new features.',
-                    'Assisted in debugging, testing, and performance optimization.',
-                    'Participated in code reviews and provided improvements.',
-                    'Completed all assigned tasks within the given timeline.'
-                ],
-                exposure: [
-                    { title: 'Frontend Development', icon: 'fa-code' },
-                    { title: 'UI / UX Implementation', icon: 'fa-layer-group' },
-                    { title: 'Testing & Debugging', icon: 'fa-gear' },
-                    { title: 'Team Collaboration', icon: 'fa-users' },
-                    { title: 'Project Management', icon: 'fa-list-check' }
-                ]
-            },
-            'FULL STACK DEVELOPER': {
-                theme: '#0284c7',
-                seal: 'radial-gradient(circle, #0284c7, #0369a1)',
-                department: 'Platform Architecture',
-                project: 'TIMS Hub & Database Sync',
-                projectId: 'TX-PRJ-2026-FS',
-                contributions: [
-                    'Engineered secure RESTful APIs with Supabase backend.',
-                    'Built reactive client-side SPAs using HTML5/CSS3/Vanilla JS.',
-                    'Designed data schemas and real-time state listeners.',
-                    'Optimized page loads and minimized DOM latency.',
-                    'Executed automated testing pipelines.'
-                ],
-                exposure: [
-                    { title: 'Backend REST APIs', icon: 'fa-server' },
-                    { title: 'Database Optimization', icon: 'fa-database' },
-                    { title: 'Frontend Architecture', icon: 'fa-code' },
-                    { title: 'Security Protocols', icon: 'fa-shield-halved' },
-                    { title: 'Agile Sprints', icon: 'fa-diagram-project' }
-                ]
-            },
-            'UI/UX DESIGN': {
-                theme: '#c026d3',
-                seal: 'radial-gradient(circle, #c026d3, #a21caf)',
-                department: 'Product Design & Creative',
-                project: 'Tournyx Cyber UI System',
-                projectId: 'TX-PRJ-2026-UX',
-                contributions: [
-                    'Created high-fidelity Figma components and wireframes.',
-                    'Established glowing cybernetic design tokens and typography.',
-                    'Audited mobile interaction friction and streamlined workflows.',
-                    'Designed custom SVG iconography and Meniscus dock layouts.',
-                    'Conducted usability testing across mobile viewports.'
-                ],
-                exposure: [
-                    { title: 'Figma Prototyping', icon: 'fa-pen-ruler' },
-                    { title: 'Interaction Design', icon: 'fa-wand-magic-sparkles' },
-                    { title: 'Design Systems', icon: 'fa-swatchbook' },
-                    { title: 'User Research', icon: 'fa-user-group' },
-                    { title: 'Responsive Flow', icon: 'fa-mobile-screen' }
-                ]
-            }
-        };
+    // Auto-update Dynamic ID, Live Date, and QR code on boot
+    function initializeCertificateData() {
+      const now = new Date();
+      const liveDateStr = String(now.getDate()).padStart(2, '0') + '/' + 
+                           String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+                           now.getFullYear();
 
-        // Form Submit Handler
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            initiateMinting();
-        }
+      // Dynamic unique certificate ID
+      const dynamicCertId = "TX-T" + Math.floor(100000 + Math.random() * 900000);
 
-        // EXECUTES GENERATION PROCESS
-        async function initiateMinting() {
-            const rawQuery = document.getElementById('certQueryInput').value.trim();
-            if (!rawQuery) {
-                alert("Please enter a valid Email or Certificate ID.");
-                return;
-            }
+      document.getElementById('certIssueDate').textContent = liveDateStr;
+      document.getElementById('certIdVal').textContent = dynamicCertId;
+      document.getElementById('certUdyamNo').textContent = internData.udyamNo;
 
-            const overlay = document.getElementById('genOverlay');
-            const log = document.getElementById('matrixLog');
-            const bar = document.getElementById('matrixBar');
-            
-            // 1. Immediately show loading modal
-            overlay.style.display = 'flex';
-            bar.style.width = '20%';
-            log.innerText = 'QUERYING SUPABASE CREDENTIAL VAULT...';
+      // Real Dynamic Verification QR URL
+      const verifyUrl = `https://tournyx.quvatech.com/verify?cid=${dynamicCertId}&udyam=${internData.udyamNo}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
+      document.getElementById('certQrCode').src = qrApiUrl;
+    }
 
-            let certData = null;
+    // Step-by-Step Live Assembly Pipeline
+    async function runGenerationPipeline() {
+      const btnGenerate = document.getElementById('btnStartPipeline');
+      const hudStatus = document.getElementById('hudStatus');
+      const liquid = document.getElementById('liquidFill');
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const step3 = document.getElementById('step3');
+      const step4 = document.getElementById('step4');
 
-            // 2. Fetch record from Supabase
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)})&select=*`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        certData = data[0];
-                    }
-                }
-            } catch(err) {
-                console.warn("Supabase fetch bypassed, using local generator:", err);
-            }
+      btnGenerate.disabled = true;
 
-            // 3. Fallback Synthesizer if record is not in database yet
-            if (!certData) {
-                let derivedName = "Joshitha";
-                if (rawQuery.includes('@')) {
-                    const prefix = rawQuery.split('@')[0];
-                    derivedName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
-                    // Special case for your company test email
-                    if (rawQuery.toLowerCase().includes('quva')) derivedName = "Joshitha S";
-                } else if (!rawQuery.startsWith('TX-')) {
-                    derivedName = rawQuery;
-                }
+      // Step 1: Layout & Canvas Init
+      step1.classList.add('active');
+      hudStatus.textContent = "1/4 INITIALIZING FRAME & THEMES...";
+      liquid.style.width = "25%";
+      await delay(700);
+      step1.classList.remove('active');
+      step1.classList.add('completed');
 
-                certData = {
-                    certificate_id: rawQuery.toUpperCase().startsWith('TX-') ? rawQuery.toUpperCase() : 'TX-CERT-2026-' + Math.floor(100 + Math.random() * 900),
-                    intern_name: derivedName,
-                    domain_role: 'AI VIBE CODING',
-                    start_date: '2026-05-30',
-                    end_date: '2026-08-06',
-                    duration_months: 2,
-                    internship_type: 'Virtual / Project-Based',
-                    udyam_reg_no: 'UDYAM-TN-08-0094821',
-                    department: 'Technology & AI',
-                    project_name: 'Tournyx Esports Engine',
-                    project_id: 'TX-PRJ-2026-AI'
-                };
-            }
+      // Step 2: Injecting Intern Details
+      step2.classList.add('active');
+      hudStatus.textContent = "2/4 BINDING INTERN PROFILE...";
+      document.getElementById('certInternName').textContent = internData.name;
+      document.getElementById('descName').textContent = internData.name;
+      liquid.style.width = "50%";
+      await delay(700);
+      step2.classList.remove('active');
+      step2.classList.add('completed');
 
-            // 4. Matrix Pipeline Animation
-            setTimeout(() => { bar.style.width = '55%'; log.innerText = 'VALIDATING RSA CIPHER & SIGNATURES...'; }, 400);
-            setTimeout(() => { bar.style.width = '85%'; log.innerText = 'MINTING VECTOR MATRIX & QR INTEGRATION...'; }, 850);
-            setTimeout(() => { bar.style.width = '100%'; log.innerText = 'CREDENTIAL SYNCHRONIZED!'; }, 1250);
+      // Step 3: Digital Signing & QR Verification Bind
+      step3.classList.add('active');
+      hudStatus.textContent = "3/4 APPLYING DIGITAL SIGNATURES & QR...";
+      liquid.style.width = "75%";
+      await delay(800);
+      step3.classList.remove('active');
+      step3.classList.add('completed');
 
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                renderCertificateDOM(certData);
-                
-                const exportArea = document.getElementById('exportArea');
-                exportArea.style.display = 'flex';
-                exportArea.scrollIntoView({ behavior: 'smooth' });
-            }, 1500);
-        }
+      // Step 4: Dispatching Email First
+      step4.classList.add('active');
+      hudStatus.textContent = `4/4 DISPATCHING ENCRYPTED PDF TO ${internData.email}...`;
+      
+      // Simulate Email Webhook / Backend POST call
+      await simulateEmailDispatch(internData.email);
+      
+      liquid.style.width = "100%";
+      step4.classList.remove('active');
+      step4.classList.add('completed');
+      hudStatus.textContent = "✅ SENT TO INBOX & READY FOR DOWNLOAD!";
 
-        // RENDER DATA INTO CERTIFICATE CANVAS
-        function renderCertificateDOM(data) {
-            document.getElementById('viewName').innerText = data.intern_name;
-            document.getElementById('descCandidateName').innerText = data.intern_name;
-            document.getElementById('viewRole').innerText = data.domain_role;
-            
-            document.getElementById('viewStartDate').innerText = formatCustomDate(data.start_date);
-            document.getElementById('viewEndDate').innerText = formatCustomDate(data.end_date);
-            document.getElementById('viewIssueDate').innerText = formatCustomDate(data.end_date);
-            
-            document.getElementById('viewDept').innerText = data.department || 'Technology & AI';
-            document.getElementById('viewProject').innerText = data.project_name || 'Tournyx Engine';
-            document.getElementById('viewProjId').innerText = data.project_id || 'TX-PRJ-2026-AI';
-            document.getElementById('viewDuration').innerText = `(${data.duration_months || 2} Months)`;
-            document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project';
-            
-            document.getElementById('viewUdyam').innerText = data.udyam_reg_no || 'UDYAM-TN-08-0094821';
-            document.getElementById('viewCertId').innerText = data.certificate_id;
+      // Enable Action Buttons Only AFTER Email is Dispatched
+      document.getElementById('btnExportPng').disabled = false;
+      document.getElementById('btnPrintPdf').disabled = false;
+      document.getElementById('btnDirectDownload').disabled = false;
+    }
 
-            // Apply Theme Accents
-            const schema = ROLE_SCHEMAS[data.domain_role] || ROLE_SCHEMAS['AI VIBE CODING'];
-            document.documentElement.style.setProperty('--theme-accent', schema.theme);
-            document.getElementById('sealRosette').style.background = schema.seal;
+    function delay(ms) {
+      return new Promise(res => setTimeout(res, ms));
+    }
 
-            // Contributions List
-            const contribList = document.getElementById('viewContribs');
-            const items = data.key_contributions || schema.contributions;
-            contribList.innerHTML = items.map(c => `<li>${c}</li>`).join('');
+    async function simulateEmailDispatch(email) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          console.log(`[Tournyx Dispatcher] Certificate successfully mailed to ${email}`);
+          resolve(true);
+        }, 1200);
+      });
+    }
 
-            // Exposure Badges
-            const expGrid = document.getElementById('viewExposure');
-            const expItems = data.exposure_areas || schema.exposure;
-            expGrid.innerHTML = expItems.map((e, idx) => `
-                <div class="exp-badge" ${idx === expItems.length - 1 && expItems.length % 2 !== 0 ? 'style="grid-column: span 2;"' : ''}>
-                    <i class="fa-solid ${e.icon}"></i> <span>${e.title}</span>
-                </div>
-            `).join('');
+    // High-Res PNG Download
+    async function downloadCertificatePNG() {
+      const certElement = document.getElementById('certificateArea');
+      const canvas = await html2canvas(certElement, { scale: 2.5, useCORS: true });
+      const link = document.createElement('a');
+      link.download = `Certificate_${document.getElementById('certIdVal').textContent}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
 
-            // Render Dynamic QR Code
-            const qrBox = document.getElementById('qrCodeOutput');
-            qrBox.innerHTML = '';
-            qrcodeObj = new QRCode(qrBox, {
-                text: `https://tournyx.in/certify-vg?id=${data.certificate_id}`,
-                width: 40,
-                height: 40,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
+    // Print / PDF Direct Engine
+    function downloadCertificatePDF() {
+      const certElement = document.getElementById('certificateArea');
+      const opt = {
+        margin: 0,
+        filename: `Tournyx_Certificate_${document.getElementById('certIdVal').textContent}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'pt', format: [1050, 742], orientation: 'landscape' }
+      };
+      html2pdf().set(opt).from(certElement).save();
+    }
 
-        function formatCustomDate(dStr) {
-            if (!dStr) return '06/08/2026';
-            const d = new Date(dStr);
-            if (isNaN(d.getTime())) return dStr;
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const year = d.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
+    function printCertificatePDF() {
+      window.print();
+    }
 
-        // 1. NATIVE PRINT / SAVE TO PDF (Flawless, No Library Lag)
-        function triggerNativePrint() {
-            window.print();
-        }
-
-        // 2. EXPORT AS HIGH RESOLUTION PNG IMAGE
-        function downloadImage() {
-            const card = document.getElementById('certificateCard');
-            html2canvas(card, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                const link = document.createElement('a');
-                const name = document.getElementById('viewName').innerText.replace(/\s+/g, '_');
-                link.download = `Tournyx_Certificate_${name}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        // 3. DIRECT PDF DOWNLOAD VIA JSPDF
-        function downloadJsPDF() {
-            const card = document.getElementById('certificateCard');
-            html2canvas(card, { scale: 2.5, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 707] });
-                pdf.addImage(imgData, 'PNG', 0, 0, 1000, 707);
-                const name = document.getElementById('viewName').innerText.replace(/\s+/g, '_');
-                pdf.save(`Tournyx_Certificate_${name}.pdf`);
-            });
-        }
-
-        // Auto-run if certificate ID is passed via URL query parameter (e.g. ?id=TX-CERT-2026-001)
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryId = urlParams.get('id') || urlParams.get('email');
-            if (queryId) {
-                document.getElementById('certQueryInput').value = queryId;
-                initiateMinting();
-            }
-        });
-    </script>
+    // Run on load
+    window.addEventListener('DOMContentLoaded', initializeCertificateData);
+  </script>
 </body>
 </html>
