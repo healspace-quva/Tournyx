@@ -21,7 +21,7 @@
             --danger-red: #ff3366;
             --success-green: #00ff7f;
 
-            /* Dynamic Role Accent Colors (Set by Engine) */
+            /* Dynamic Role Accent Colors */
             --theme-border: #6b21a8;
             --theme-badge-bg: rgba(107, 33, 168, 0.15);
             --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
@@ -376,7 +376,7 @@
             line-height: 1.5;
         }
 
-        /* PDF VIEWER CONTAINER */
+        /* EMBEDDED PDF VIEWER CONTAINER */
         .pdf-viewer-container {
             width: 100%;
             height: 520px;
@@ -394,12 +394,17 @@
             border: none;
         }
 
-        /* ACTION BUTTONS */
+        /* ACTION CONTROLS */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 12px;
             margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .action-grid { grid-template-columns: 1fr; }
+            .id-cluster { text-align: left; }
         }
 
         .btn-action-primary {
@@ -720,7 +725,7 @@
             <div class="workflow-block">
                 <h4><i class="fa-solid fa-timeline"></i> Lifecycle Audit Events</h4>
                 <div class="audit-list" id="modalAuditList">
-                    <!-- Injected dynamically -->
+                    <!-- Dynamic events injected here -->
                 </div>
             </div>
         </div>
@@ -801,37 +806,50 @@
             }
 
             try {
-                // PostgREST Query strictly matching live database columns
-                const queryUrl = `${API_BASE}/rest/v1/tims_intern_certificates?or=(certificate_id.ilike.${encodeURIComponent(queryId)},intern_email.ilike.${encodeURIComponent(queryId)})&select=*`;
-                
-                const res = await fetch(queryUrl, {
-                    headers: { 
-                        'apikey': API_KEY, 
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Accept': 'application/json'
-                    }
-                });
+                // Parallel Multi-Table Query: checks certificates and internship_records tables
+                const headers = { 
+                    'apikey': API_KEY, 
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Accept': 'application/json'
+                };
 
-                if (!res.ok) throw new Error("Database gateway query error");
+                const [certRes, internRes] = await Promise.all([
+                    fetch(`${API_BASE}/rest/v1/tims_intern_certificates?or=(certificate_id.ilike.${encodeURIComponent(queryId)},intern_email.ilike.${encodeURIComponent(queryId)})&select=*`, { headers }),
+                    fetch(`${API_BASE}/rest/v1/internship_records?or=(record_key.ilike.${encodeURIComponent(queryId)},id.eq.${isValidUUID(queryId) ? queryId : '00000000-0000-0000-0000-000000000000'})&select=*`, { headers })
+                ]);
 
-                const data = await res.json();
+                let matchedRecord = null;
 
-                if (data && data.length > 0) {
-                    renderDossierView(data[0]);
+                if (certRes.ok) {
+                    const certs = await certRes.json();
+                    if (Array.isArray(certs) && certs.length > 0) matchedRecord = certs[0];
+                }
+
+                if (!matchedRecord && internRes.ok) {
+                    const interns = await internRes.json();
+                    if (Array.isArray(interns) && interns.length > 0) matchedRecord = interns[0];
+                }
+
+                if (matchedRecord) {
+                    renderDossierView(matchedRecord);
                 } else {
                     renderErrorState("CREDENTIAL RECORD NOT FOUND", `No verified institutional credential matches "${queryId}". The document may have been revoked or the identifier is invalid.`);
                 }
             } catch (err) {
                 console.error("Verification query failure:", err);
-                renderErrorState("VERIFICATION LEDGER UNREACHABLE", "Could not establish a secure link with the institutional credential repository. Please verify your connection.");
+                renderErrorState("VERIFICATION LEDGER UNREACHABLE", "Could not establish a secure link with the institutional credential repository. Please verify your network connection.");
             }
         });
+
+        function isValidUUID(str) {
+            return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+        }
 
         function renderDossierView(record) {
             const skeleton = document.getElementById('skeletonLoaderArea');
             const liveArea = document.getElementById('liveDataArea');
 
-            // Apply Role Palette
+            // Dynamic Role Palette
             const roleConfig = ROLE_MATRIX[record.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
             document.documentElement.style.setProperty('--theme-border', roleConfig.border);
             document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
@@ -875,7 +893,7 @@
                 </div>
             `;
 
-            // Live PDF Asset Handling
+            // Live PDF Asset Handling & Direct Opening
             activePdfUrl = record.documentation_pdf_url || null;
             const pdfArea = document.getElementById('pdfViewerArea');
             const btnPdf = document.getElementById('btnOpenPdf');
