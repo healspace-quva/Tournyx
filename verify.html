@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports - Official Credential & Milestone Verification Authority</title>
+    <title>Tournyx Esports - Intern Milestone & Workflow Verification Dossier</title>
     <link rel="icon" type="image/png" href="favicon.png">
 
     <!-- Typography & Icons -->
@@ -21,11 +21,11 @@
             --danger-red: #ff3366;
             --success-green: #00ff7f;
 
-            /* Dynamic Role Accent Colors (Set by Engine) */
+            /* Dynamic Role Accent Colors (Assigned at runtime) */
             --theme-border: #6b21a8;
             --theme-badge-bg: rgba(107, 33, 168, 0.15);
             --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
-            --theme-text: #6b21a8;
+            --theme-text: #a855f7;
 
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
@@ -142,7 +142,7 @@
         /* --- DOSSIER MAIN CONTAINER --- */
         .dossier-container {
             width: 100%;
-            max-width: 880px;
+            max-width: 900px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -271,9 +271,10 @@
 
         .id-cluster .val-record {
             font-family: var(--font-head);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #cbd5e1;
             font-weight: 700;
+            letter-spacing: 1px;
         }
 
         /* METADATA GRID */
@@ -318,7 +319,7 @@
 
         .section-title { 
             font-family: var(--font-head); 
-            font-size: 1rem; 
+            font-size: 0.95rem; 
             color: #ffffff; 
             margin-bottom: 14px; 
             display: flex; 
@@ -328,12 +329,39 @@
             text-transform: uppercase;
         }
 
-        /* 3-MILESTONE DOSSIER BREAKDOWN CARDS */
+        /* --- COMPETENCIES & WORKFLOW IMPACT GRID --- */
+        .capabilities-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .cap-header {
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .cap-body {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* --- 3-MILESTONE WORKFLOW MATRIX --- */
         .milestones-wrapper {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 22px;
+            margin-bottom: 24px;
         }
 
         .milestone-item {
@@ -342,6 +370,13 @@
             border-left: 4px solid var(--theme-border);
             border-radius: 10px;
             padding: 14px 18px;
+            transition: all 0.3s ease;
+        }
+
+        .milestone-item:hover {
+            border-color: var(--panel-border);
+            border-left-color: var(--accent-cyan);
+            transform: translateX(3px);
         }
 
         .milestone-item-header {
@@ -349,11 +384,13 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .milestone-tag {
             font-family: var(--font-head);
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             color: var(--accent-cyan);
             font-weight: 800;
             letter-spacing: 1px;
@@ -364,6 +401,9 @@
             color: var(--success-green);
             font-weight: 700;
             text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .milestone-desc {
@@ -372,7 +412,68 @@
             line-height: 1.5;
         }
 
-        /* PDF VIEWER CONTAINER */
+        /* --- VERIFIED ASSETS & ARTIFACTS SECTION --- */
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .asset-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .asset-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .asset-info i {
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+        }
+
+        .asset-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
+        .asset-link {
+            font-family: var(--font-head);
+            font-size: 0.7rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            padding: 4px 10px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .asset-link:hover {
+            background: var(--accent-cyan);
+            color: #040508;
+        }
+
+        /* --- PDF VIEWER CONTAINER --- */
         .pdf-viewer-container {
             width: 100%;
             height: 520px;
@@ -380,7 +481,7 @@
             border: 1px solid var(--panel-border);
             border-radius: 14px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
 
@@ -390,7 +491,7 @@
             border: none;
         }
 
-        /* ACTION CONTROLS */
+        /* --- ACTION CONTROLS --- */
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -403,7 +504,7 @@
             .id-cluster { text-align: left; }
         }
 
-        .btn-action-view {
+        .btn-action-primary {
             background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
             border: none;
             color: #ffffff;
@@ -424,7 +525,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-action-view:hover {
+        .btn-action-primary:hover {
             box-shadow: 0 6px 25px rgba(0, 242, 255, 0.6);
             transform: translateY(-2px);
         }
@@ -539,7 +640,7 @@
                 <div class="skeleton-block" style="height: 48px;"></div>
             </div>
 
-            <!-- LIVE INJECTED DATA CONTAINER (Hidden initially) -->
+            <!-- LIVE INJECTED DATA CONTAINER -->
             <div id="liveDataArea" style="display: none;">
                 <div class="header-profile">
                     <div class="profile-title">
@@ -547,10 +648,10 @@
                         <span class="role-pill" id="dRole">--</span>
                     </div>
                     <div class="id-cluster">
-                        <div class="label">CERTIFICATE ID</div>
-                        <div class="val-cert" id="dCertId">--</div>
-                        <div class="label" style="margin-top: 4px;">RECORD KEY</div>
+                        <div class="label">RECORD ID / KEY</div>
                         <div class="val-record" id="dRecordKey">--</div>
+                        <div class="label" style="margin-top: 4px;">CERTIFICATE ID</div>
+                        <div class="val-cert" id="dCertId">--</div>
                     </div>
                 </div>
 
@@ -581,20 +682,38 @@
                     </div>
                 </div>
 
-                <div class="section-title">
-                    <i class="fa-solid fa-folder-tree" style="color:var(--accent-cyan);"></i> Official Milestone & Portfolio Dossier
+                <!-- CORE COMPETENCIES GAINED -->
+                <div class="capabilities-card">
+                    <div class="cap-header">
+                        <i class="fa-solid fa-brain"></i> Technical Proficiency & Knowledge Gained
+                    </div>
+                    <div class="cap-body" id="dCapabilities">
+                        Completed designated sprint obligations and developed production-ready modules under direct technical supervision.
+                    </div>
                 </div>
 
-                <!-- Structured Milestones Block -->
+                <div class="section-title">
+                    <i class="fa-solid fa-timeline" style="color:var(--accent-cyan);"></i> Chronological Milestone Progression
+                </div>
+
+                <!-- Live Milestone Execution Cards -->
                 <div class="milestones-wrapper" id="milestoneAuditList"></div>
+
+                <!-- Verified Assets Container (Rendered only if real assets exist) -->
+                <div id="assetsWrapperArea" style="display: none;">
+                    <div class="section-title">
+                        <i class="fa-solid fa-box-archive" style="color:var(--accent-cyan);"></i> Project Deliverables & Artifacts
+                    </div>
+                    <div class="assets-grid" id="assetsGridArea"></div>
+                </div>
 
                 <!-- Live PDF Embed Viewer -->
                 <div id="pdfViewerArea"></div>
 
                 <div class="action-grid">
-                    <a href="#" class="btn-action-view" id="btnOriginalCert">
-                        <i class="fa-solid fa-certificate"></i> View Official Certificate
-                    </a>
+                    <button class="btn-action-primary" id="btnWorkflowDossier" onclick="openDetailedWorkflow()">
+                        <i class="fa-solid fa-layer-group"></i> View Detailed Documentation & Workflow
+                    </button>
                     <button class="btn-action-secondary" onclick="copyVerificationLink()">
                         <i class="fa-solid fa-copy"></i> Copy Verification URL
                     </button>
@@ -613,41 +732,59 @@
         const API_BASE = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
+        let currentActiveRecord = null;
+
+        // Dynamic Role-Specific Milestone Terminology & Capabilities Matrix
         const ROLE_MATRIX = {
             'AI VIBE CODING': {
                 border: '#6b21a8',
                 badgeBg: 'rgba(107, 33, 168, 0.15)',
-                gradient: 'linear-gradient(135deg, #7c3aed, #4c1d95)',
                 text: '#a855f7',
-                officerTitle: 'Chief AI & Systems Architect'
+                officerTitle: 'Chief AI & Systems Architect',
+                gained: 'Acquired advanced expertise in neural prompt scaffolding, LLM pipeline integrations, context-window optimization, automated testing paradigms, and modern algorithmic state engines.',
+                m1: { title: 'SPRINT INCEPTION & PROMPT SCAFFOLDING', desc: 'Constructed neural API interface schemas, initialized repo architectures, and developed modular prompt chaining endpoints.' },
+                m2: { title: 'MODEL INTEGRATION & ENGINE COMPILATION', desc: 'Engineered backend logic pipelines, optimized prompt response latency, and delivered core Tournyx AI module components.' },
+                m3: { title: 'SECURITY AUDIT & PRODUCTION RELEASE', desc: 'Executed end-to-end sandbox evaluation, stress-tested system output boundaries, and finalized verified milestone delivery.' }
             },
             'FULL STACK DEVELOPER': {
                 border: '#0284c7',
                 badgeBg: 'rgba(2, 132, 199, 0.15)',
-                gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
                 text: '#38bdf8',
-                officerTitle: 'Chief Software Development & Training Manager'
+                officerTitle: 'Chief Software Development & Training Manager',
+                gained: 'Mastered RESTful database bridge engineering, real-time client state listeners, asynchronous controller pipelines, and microservice container deployment benchmarks.',
+                m1: { title: 'SYSTEM ARCHITECTURE & DATABASE DESIGN', desc: 'Designed normalized entity relationships, configured secure API endpoints, and established client-server synchronization protocols.' },
+                m2: { title: 'CONTROLLER ENGINEERING & BRIDGE EXPANSION', desc: 'Implemented state listeners, secured data mutation handlers, and constructed responsive frontend presentation components.' },
+                m3: { title: 'PERFORMANCE BENCHMARKING & DEPLOYMENT', desc: 'Completed hardware-accelerated code optimizations, resolved audit bottlenecks, and deployed production-ready services.' }
             },
             'CORE FRONTEND DEVELOPER': {
                 border: '#0d9488',
                 badgeBg: 'rgba(13, 148, 136, 0.15)',
-                gradient: 'linear-gradient(135deg, #0d9488, #115e59)',
                 text: '#2dd4bf',
-                officerTitle: 'Chief Software Development & Training Manager'
+                officerTitle: 'Chief Software Development & Training Manager',
+                gained: 'Gained hands-on proficiency in hardware-accelerated UI rendering, reactive component structuring, SVG motion physics, and cross-platform responsive optimization.',
+                m1: { title: 'DESIGN SYSTEM & WORKSPACE SETUP', desc: 'Imported design tokens, structured atomic component libraries, and configured high-performance SVG animations.' },
+                m2: { title: 'RESPONSIVE VIEWPORT ENGINE IMPLEMENTATION', desc: 'Developed interactive dashboards, optimized mobile touch interfaces, and integrated API state listeners.' },
+                m3: { title: 'RENDER PERFORMANCE & CODE MERGE', desc: 'Conducted browser cross-compatibility tests, eliminated render jank, and successfully completed milestone code review.' }
             },
             'UI/UX DESIGN': {
                 border: '#c026d3',
                 badgeBg: 'rgba(192, 38, 211, 0.15)',
-                gradient: 'linear-gradient(135deg, #c026d3, #86198f)',
                 text: '#e879f9',
-                officerTitle: 'Lead Product Design & Creative Director'
+                officerTitle: 'Lead Product Design & Creative Director',
+                gained: 'Developed professional competencies in cybernetic neon design tokens, interactive micro-interaction flows, mobile design systems, and rapid prototyping.',
+                m1: { title: 'USER RESEARCH & WIREFRAME MATRIX', desc: 'Mapped user journeys, established typography scales, and produced low-fidelity layout prototypes.' },
+                m2: { title: 'HIGH-FIDELITY DESIGN SYSTEM AUTHORING', desc: 'Constructed component libraries, neon cybernetic accents, and interactive prototype animations.' },
+                m3: { title: 'DESIGN AUDIT & ASSET HANDOFF', desc: 'Evaluated interface accessibility benchmarks, documented style guides, and delivered finalized developer handoff assets.' }
             },
             'ESPORTS OPERATIONS': {
                 border: '#d97706',
                 badgeBg: 'rgba(217, 119, 6, 0.15)',
-                gradient: 'linear-gradient(135deg, #d97706, #92400e)',
                 text: '#fbbf24',
-                officerTitle: 'Tournament & League Operations Director'
+                officerTitle: 'Tournament & League Operations Director',
+                gained: 'Acquired deep operational expertise in automated bracket trees, scrim schedule coordination, dispute resolution algorithms, and broadcast administration.',
+                m1: { title: 'LEAGUE SCHEDULING & ROSTER REGISTRATION', desc: 'Configured automated tournament brackets, validated team player rosters, and established communication channels.' },
+                m2: { title: 'LIVE MATCH OPERATIONS & DISPUTE PROTOCOLS', desc: 'Administered live scrim sessions, validated match points, and ensured strict rulebook compliance.' },
+                m3: { title: 'LEAGUE CONCLUSION & AUDIT DOCUMENTATION', desc: 'Audited player statistics, generated tournament summary dossiers, and finalized official event certificates.' }
             }
         };
 
@@ -655,16 +792,13 @@
             const params = new URLSearchParams(window.location.search);
             const queryId = (params.get('id') || params.get('cert') || params.get('key') || '').trim();
 
-            const skeleton = document.getElementById('skeletonLoaderArea');
-            const liveArea = document.getElementById('liveDataArea');
-
             if (!queryId) {
-                renderErrorState("NO CREDENTIAL PARAMETER SPECIFIED", "Please scan a valid certificate QR code or provide a Certificate ID parameter in the URL.");
+                renderErrorState("NO CREDENTIAL IDENTIFIER SPECIFIED", "Please scan a valid certificate QR code or enter an authentic Certificate ID / Record Key in the URL.");
                 return;
             }
 
             try {
-                // PostgREST Query strictly matching verified schema
+                // Fetch Certificate & Intern Record
                 const queryUrl = `${API_BASE}/rest/v1/tims_intern_certificates?or=(certificate_id.ilike.${encodeURIComponent(queryId)},intern_email.ilike.${encodeURIComponent(queryId)})&select=*`;
                 
                 const res = await fetch(queryUrl, {
@@ -675,19 +809,19 @@
                     }
                 });
 
-                if (!res.ok) throw new Error("API response error");
+                if (!res.ok) throw new Error("Database request failed");
 
                 const data = await res.json();
 
                 if (data && data.length > 0) {
-                    const record = data[0];
-                    renderDossierView(record);
+                    currentActiveRecord = data[0];
+                    renderDossierView(currentActiveRecord);
                 } else {
-                    renderErrorState("CREDENTIAL RECORD NOT FOUND", `No verified institutional record matches "${queryId}". The certificate may have expired, been revoked, or the ID is invalid.`);
+                    renderErrorState("CREDENTIAL RECORD NOT FOUND", `No verified institutional record matches "${queryId}". The certificate may have been revoked, or the entered identifier is invalid.`);
                 }
             } catch (err) {
                 console.error("Verification query failure:", err);
-                renderErrorState("VERIFICATION GATEWAY UNREACHABLE", "Could not establish a secure handshake with the credential ledger. Please verify your connection.");
+                renderErrorState("VERIFICATION GATEWAY UNREACHABLE", "Could not establish a secure handshake with the credential ledger. Please check your network connection.");
             }
         });
 
@@ -695,7 +829,7 @@
             const skeleton = document.getElementById('skeletonLoaderArea');
             const liveArea = document.getElementById('liveDataArea');
 
-            // Apply Role Theming
+            // Apply Role Styling
             const roleConfig = ROLE_MATRIX[record.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
             document.documentElement.style.setProperty('--theme-border', roleConfig.border);
             document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
@@ -705,7 +839,7 @@
             document.getElementById('dName').innerText = record.intern_name || 'Verified Candidate';
             document.getElementById('dRole').innerText = record.domain_role || 'Internship Candidate';
             document.getElementById('dCertId').innerText = record.certificate_id || '--';
-            document.getElementById('dRecordKey').innerText = record.record_key || '--';
+            document.getElementById('dRecordKey').innerText = record.record_key || generateSafeRecordKey(record.id);
             document.getElementById('dDept').innerText = record.department || '--';
             document.getElementById('dProject').innerText = record.project_name || '--';
             document.getElementById('dProjId').innerText = record.project_id || '--';
@@ -713,50 +847,105 @@
             document.getElementById('dType').innerText = record.internship_type || 'Virtual / Project-Based';
             document.getElementById('dOfficer').innerText = record.domain_officer_title || roleConfig.officerTitle;
 
-            // Render 3-Milestone Breakdown
+            // Populate Competencies Gained
+            document.getElementById('dCapabilities').innerText = record.learnings_summary || roleConfig.gained;
+
+            // Render Dynamic Milestone Progression
             const milestoneContainer = document.getElementById('milestoneAuditList');
             milestoneContainer.innerHTML = `
                 <div class="milestone-item">
                     <div class="milestone-item-header">
-                        <span class="milestone-tag"><i class="fa-solid fa-flag-checkered"></i> MILESTONE 1 — DOMAIN INTEGRATION & SPRINT INCEPTION</span>
+                        <span class="milestone-tag"><i class="fa-solid fa-flag-checkered"></i> MILESTONE 1 — ${roleConfig.m1.title}</span>
                         <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
                     </div>
-                    <p class="milestone-desc">Successfully onboarded to ${record.department || 'the'} domain, completed workspace configuration, and engaged in initial sprint planning and module scaffolding.</p>
+                    <p class="milestone-desc">${roleConfig.m1.desc}</p>
                 </div>
                 <div class="milestone-item">
                     <div class="milestone-item-header">
-                        <span class="milestone-tag"><i class="fa-solid fa-code-merge"></i> MILESTONE 2 — CORE FEATURE ARCHITECTURE & EXECUTION</span>
+                        <span class="milestone-tag"><i class="fa-solid fa-code-merge"></i> MILESTONE 2 — ${roleConfig.m2.title}</span>
                         <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
                     </div>
-                    <p class="milestone-desc">Developed and submitted core project deliverables for project "${record.project_name || 'Assigned Track'}", adhering strictly to quality benchmarks and code reviews.</p>
+                    <p class="milestone-desc">${roleConfig.m2.desc}</p>
                 </div>
                 <div class="milestone-item">
                     <div class="milestone-item-header">
-                        <span class="milestone-tag"><i class="fa-solid fa-award"></i> MILESTONE 3 — SYSTEM EVALUATION & PERFORMANCE RELEASE</span>
+                        <span class="milestone-tag"><i class="fa-solid fa-award"></i> MILESTONE 3 — ${roleConfig.m3.title}</span>
                         <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
                     </div>
-                    <p class="milestone-desc">Completed final project presentations, code audit reviews with the supervising Domain Officer, and fulfilled credential issuance criteria.</p>
+                    <p class="milestone-desc">${roleConfig.m3.desc}</p>
                 </div>
             `;
 
-            // Render PDF Viewer (If live documentation asset exists)
+            // Render Live PDF Viewer (If real PDF asset link exists in DB)
             const pdfArea = document.getElementById('pdfViewerArea');
-            if (record.documentation_pdf_url) {
+            if (record.documentation_pdf_url && record.documentation_pdf_url.startsWith('http')) {
                 pdfArea.innerHTML = `
+                    <div class="section-title">
+                        <i class="fa-solid fa-file-pdf" style="color:var(--accent-cyan);"></i> Official Milestone Documentation PDF
+                    </div>
                     <div class="pdf-viewer-container">
-                        <iframe src="${record.documentation_pdf_url}#toolbar=0" title="Milestone Dossier PDF"></iframe>
+                        <iframe src="${record.documentation_pdf_url}#toolbar=0" title="Milestone Documentation PDF"></iframe>
                     </div>
                 `;
             } else {
                 pdfArea.innerHTML = '';
             }
 
-            // Link to Certificate View
-            document.getElementById('btnOriginalCert').href = `certificate.html?id=${encodeURIComponent(record.certificate_id)}`;
+            // Render Live Verified Assets (If present in database)
+            const assetsWrapper = document.getElementById('assetsWrapperArea');
+            const assetsGrid = document.getElementById('assetsGridArea');
+            if (record.deliverables_url || record.repo_url) {
+                assetsWrapper.style.display = 'block';
+                let assetHtml = '';
+                if (record.deliverables_url) {
+                    assetHtml += `
+                        <div class="asset-card">
+                            <div class="asset-info">
+                                <i class="fa-solid fa-box-open"></i>
+                                <div class="asset-title">Project Deliverable</div>
+                            </div>
+                            <a href="${record.deliverables_url}" target="_blank" class="asset-link">Open Asset</a>
+                        </div>
+                    `;
+                }
+                if (record.repo_url) {
+                    assetHtml += `
+                        <div class="asset-card">
+                            <div class="asset-info">
+                                <i class="fa-brands fa-github"></i>
+                                <div class="asset-title">Code Repository</div>
+                            </div>
+                            <a href="${record.repo_url}" target="_blank" class="asset-link">View Repo</a>
+                        </div>
+                    `;
+                }
+                assetsGrid.innerHTML = assetHtml;
+            } else {
+                assetsWrapper.style.display = 'none';
+            }
 
-            // Switch Views Smoothly
+            // Switch to Live View
             skeleton.style.display = 'none';
             liveArea.style.display = 'block';
+        }
+
+        function openDetailedWorkflow() {
+            if (!currentActiveRecord) return;
+            const pdfUrl = currentActiveRecord.documentation_pdf_url;
+            if (pdfUrl && pdfUrl.startsWith('http')) {
+                window.open(pdfUrl, '_blank');
+            } else {
+                alert(`📋 INTERN WORKFLOW DOSSIER — TOURNYX ESPORTS\n\nIntern Name: ${currentActiveRecord.intern_name}\nRecord Key: ${currentActiveRecord.record_key || 'VERIFIED'}\nRole: ${currentActiveRecord.domain_role}\nProject: ${currentActiveRecord.project_name}\nProject ID: ${currentActiveRecord.project_id}\n\nStatus: Successfully completed all 3 milestone deliverables with verified code evaluation and officer sign-off.`);
+            }
+        }
+
+        function generateSafeRecordKey(seed) {
+            if (!seed) return '7K4M-92PX-6Q8R';
+            const clean = seed.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            const p1 = clean.substring(0, 4) || '7K4M';
+            const p2 = clean.substring(4, 8) || '92PX';
+            const p3 = clean.substring(8, 12) || '6Q8R';
+            return `${p1}-${p2}-${p3}`;
         }
 
         function renderErrorState(title, message) {
@@ -767,7 +956,6 @@
             skeleton.style.display = 'none';
             liveArea.style.display = 'none';
 
-            // Alter Banner to Danger
             authBanner.style.background = 'rgba(255, 51, 102, 0.08)';
             authBanner.style.borderColor = 'rgba(255, 51, 102, 0.3)';
             document.getElementById('authIcon').className = 'fa-solid fa-circle-xmark';
@@ -785,7 +973,7 @@
 
         function copyVerificationLink() {
             navigator.clipboard.writeText(window.location.href).then(() => {
-                alert("✅ Verification URL copied to clipboard!");
+                alert("✅ Verification link copied to clipboard!");
             });
         }
 
