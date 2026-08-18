@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Document Processing Engines -->
+    <!-- Core Engines -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -55,7 +55,6 @@
             position: relative;
         }
 
-        /* --- HARDWARE-ACCELERATED BACKGROUND GRID --- */
         .ambient-grid {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -73,7 +72,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- HEADER --- */
+        /* --- PORTAL HEADER --- */
         .portal-header {
             text-align: center;
             margin-bottom: 25px;
@@ -90,16 +89,18 @@
         }
 
         .header-brand-logo {
-            width: 46px;
-            height: 46px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
             animation: floatLogo 3s infinite ease-in-out alternate;
         }
 
         @keyframes floatLogo {
-            0% { transform: translateY(0); filter: drop-shadow(0 0 10px var(--accent-cyan)); }
-            100% { transform: translateY(-4px); filter: drop-shadow(0 0 20px var(--accent-purple)); }
+            0% { transform: translateY(0); box-shadow: 0 0 12px var(--accent-cyan); }
+            100% { transform: translateY(-4px); box-shadow: 0 0 22px var(--accent-purple); }
         }
 
         .brand-pill {
@@ -142,7 +143,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- QUERY INPUT CARD --- */
+        /* --- QUERY INPUT BOX --- */
         .claim-card {
             width: 100%;
             max-width: 650px;
@@ -210,7 +211,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- EXACT VIDEO ZOOM-IN ABSORB LOADER --- */
+        /* --- PURE FLOATING ABSORB LOADER (NO BACKGROUND CONTAINER) --- */
         #tournyx-loader {
             position: fixed; inset: 0; background: var(--primary-bg); z-index: 999999;
             display: none; align-items: center; justify-content: center; flex-direction: column; overflow: hidden;
@@ -221,19 +222,22 @@
 
         .loader-center-container {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 240px;
+            height: 240px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background: transparent !important;
         }
 
         .loader-logo-center {
             width: 90px; height: 90px; position: relative; z-index: 10;
+            border-radius: 50%;
+            object-fit: cover;
+            background: transparent !important;
             filter: drop-shadow(0 0 20px var(--accent-cyan));
             animation: heartbeatLogo 1.5s infinite alternate cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            object-fit: contain;
         }
 
         @keyframes heartbeatLogo {
@@ -255,14 +259,14 @@
 
         .loader-typography {
             text-align: center;
-            max-width: 480px;
+            max-width: 500px;
             width: 90%;
             z-index: 20;
         }
 
         .loader-main-status {
             font-family: var(--font-head);
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             letter-spacing: 2px;
             color: #ffffff;
             margin-bottom: 6px;
@@ -289,10 +293,10 @@
             height: 100%; width: 0%;
             background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
             box-shadow: 0 0 15px var(--accent-cyan);
-            transition: width 0.3s ease;
+            transition: width 0.35s ease;
         }
 
-        /* --- CERTIFICATE EXPORT WRAPPER --- */
+        /* --- CERTIFICATE EXPORT CONTAINER --- */
         .cert-export-wrapper {
             display: none;
             width: 100%;
@@ -362,7 +366,7 @@
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
 
-        /* --- CERTIFICATE CANVAS (1000px x 700px) --- */
+        /* --- CERTIFICATE CANVAS --- */
         #certificateCard {
             width: 1000px;
             height: 700px;
@@ -423,20 +427,23 @@
         .cert-brand-block {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             width: 170px;
         }
 
         .brand-logo-img {
-            width: 56px;
-            height: 56px;
-            object-fit: contain;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--theme-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             margin-bottom: 4px;
         }
 
         .cert-brand-label {
             font-family: var(--font-head);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 900;
             color: #0b0f19;
             letter-spacing: 1.5px;
@@ -482,7 +489,6 @@
             margin-top: 3px;
         }
 
-        /* RECORD KEY TOP-RIGHT BADGE */
         .record-key-box {
             width: 170px;
             text-align: right;
@@ -503,7 +509,7 @@
 
         .record-key-value {
             font-family: var(--font-head);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 900;
             color: #0b0f19;
             letter-spacing: 1.5px;
@@ -608,7 +614,7 @@
             max-width: 140px;
         }
 
-        /* SIGNATURES AREA */
+        /* DIGITAL SIGNATURES ROW */
         .signatures-area {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -672,7 +678,7 @@
             font-weight: 600;
         }
 
-        /* OFFICIAL FOOTER BAR */
+        /* OFFICIAL FOOTER */
         .cert-footer-bar {
             background: #0d0f18;
             color: #ffffff;
@@ -775,7 +781,7 @@
 
     <header class="portal-header">
         <div class="header-logo-wrap">
-            <img src="favicon.png" class="header-brand-logo" alt="Tournyx Mark" onerror="this.style.display='none'">
+            <img src="favicon.png" class="header-brand-logo" alt="Tournyx Mark" onerror="this.src='favicon.ico'">
             <div class="brand-pill"><i class="fa-solid fa-shield-halved"></i> CREDENTIAL MATRIX</div>
         </div>
         <h1 class="portal-title">TOURNYX ESPORTS</h1>
@@ -784,14 +790,14 @@
 
     <div class="claim-card">
         <form id="claimForm" onsubmit="handleVerification(event)" class="input-box">
-            <input type="text" id="certQueryInput" class="portal-input" placeholder="Enter Record Key, Certificate ID, or registered email..." required autocomplete="off">
+            <input type="text" id="certQueryInput" class="portal-input" placeholder="Enter registered intern email or Certificate ID..." required autocomplete="off">
             <button type="submit" id="btnSubmit" class="btn-generate">
                 <i class="fa-solid fa-bolt"></i> Generate
             </button>
         </form>
     </div>
 
-    <!-- ZOOM-IN ABSORB LOADER OVERLAY -->
+    <!-- PURE FLOATING ABSORB LOADER -->
     <div id="tournyx-loader">
         <div class="loader-center-container" id="particleStage">
             <img src="favicon.png" class="loader-logo-center" alt="Tournyx Core" onerror="this.src='favicon.ico'">
@@ -818,7 +824,7 @@
             <button class="btn-action" onclick="exportJsPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
         </div>
 
-        <!-- CERTIFICATE CANVAS (1000px x 700px Landscape) -->
+        <!-- CERTIFICATE CANVAS -->
         <div id="certificateCard">
             <div class="cert-outer-border"></div>
             <div class="corner-accent ca-tl"></div>
@@ -830,7 +836,7 @@
 
             <div class="cert-header">
                 <div class="cert-brand-block">
-                    <img src="favicon.png" class="brand-logo-img" alt="Tournyx Logo" onerror="this.style.display='none'">
+                    <img src="favicon.png" class="brand-logo-img" alt="Tournyx Logo" onerror="this.src='favicon.ico'">
                     <div class="cert-brand-label">TOURNYX ESPORTS</div>
                 </div>
 
@@ -938,7 +944,7 @@
 
                 <div class="footer-center">
                     <span>CERTIFICATE ID</span>
-                    <strong id="viewCertId" style="color: #00f2ff;">C8P4-N7K2-V6XM</strong>
+                    <strong id="viewCertId" style="color: #00f2ff;">TX-CERT-2026-001</strong>
                 </div>
 
                 <div class="footer-center">
@@ -963,14 +969,13 @@
         <p style="margin-top: 4px;">Powered by <span class="quva-badge">QUVA TECHNOLOGIES</span></p>
     </footer>
 
-    <!-- ENGINE LOGIC -->
+    <!-- ENGINE SCRIPT -->
     <script>
         const API_BASE = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
         let qrcodeInstance = null;
 
-        // Dynamic Role Palette & Designation Hierarchy
         const ROLE_MATRIX = {
             'AI VIBE CODING': {
                 border: '#6b21a8',
@@ -1014,15 +1019,15 @@
             }
         };
 
-        // Initialize Absorb Particle Physics
+        // Kinetic Absorb Particle Generator
         function buildAbsorbParticles() {
             const stage = document.getElementById('particleStage');
-            const particleCount = 18;
+            const particleCount = 20;
             for (let i = 0; i < particleCount; i++) {
                 const bullet = document.createElement('div');
                 bullet.className = 'particle-bullet';
                 const angle = (i / particleCount) * 360;
-                const distance = 95 + Math.random() * 25;
+                const distance = 100 + Math.random() * 25;
                 const rad = angle * (Math.PI / 180);
                 const startX = Math.cos(rad) * distance;
                 const startY = Math.sin(rad) * distance;
@@ -1030,7 +1035,7 @@
                 bullet.style.setProperty('--startX', `${startX}px`);
                 bullet.style.setProperty('--startY', `${startY}px`);
                 bullet.style.setProperty('--rot', `${angle + 90}deg`);
-                bullet.style.animationDelay = `${(i * 0.08).toFixed(2)}s`;
+                bullet.style.animationDelay = `${(i * 0.06).toFixed(2)}s`;
                 stage.appendChild(bullet);
             }
         }
@@ -1061,18 +1066,30 @@
             let officerSigs = [];
 
             try {
+                // Strictly querying verified existing database columns (intern_email & certificate_id)
+                const queryUrl = `${API_BASE}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)})&select=*`;
+                const sigUrl = `${API_BASE}/rest/v1/tims_officer_signatures?is_active=eq.true&select=*`;
+
                 const [certRes, sigRes] = await Promise.all([
-                    fetch(`${API_BASE}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)},record_key.ilike.${encodeURIComponent(rawQuery)})&select=*`, {
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+                    fetch(queryUrl, {
+                        headers: { 
+                            'apikey': API_KEY, 
+                            'Authorization': `Bearer ${API_KEY}`,
+                            'Accept': 'application/json'
+                        }
                     }),
-                    fetch(`${API_BASE}/rest/v1/tims_officer_signatures?is_active=eq.true&select=*`, {
-                        headers: { 'apikey': API_KEY, 'Authorization': `Bearer ${API_KEY}` }
+                    fetch(sigUrl, {
+                        headers: { 
+                            'apikey': API_KEY, 
+                            'Authorization': `Bearer ${API_KEY}`,
+                            'Accept': 'application/json'
+                        }
                     })
                 ]);
 
                 if (certRes.ok) {
                     const data = await certRes.json();
-                    if (data && data.length > 0) certData = data[0];
+                    if (Array.isArray(data) && data.length > 0) certData = data[0];
                 }
                 if (sigRes.ok) {
                     officerSigs = await sigRes.json();
@@ -1083,7 +1100,7 @@
 
             if (!certData) {
                 loader.style.display = 'none';
-                alert(`❌ RECORD NOT FOUND IN OFFICIAL REGISTRY.\n\nNo verified credential matches "${rawQuery}".\nPlease enter your official Record Key, Certificate ID, or registered email.`);
+                alert(`❌ RECORD NOT FOUND IN OFFICIAL REGISTRY.\n\nNo verified credential matches "${rawQuery}".\nPlease enter your official Certificate ID or registered email.`);
                 return;
             }
 
@@ -1092,25 +1109,25 @@
                 bar.style.width = '45%';
                 mainStatus.innerText = 'BINDING RECORD KEY...';
                 subStatus.innerText = `Connecting profile: ${certData.intern_name}...`;
-            }, 400);
+            }, 350);
 
             setTimeout(() => {
                 bar.style.width = '75%';
                 mainStatus.innerText = 'VALIDATING SIGNATURES...';
                 subStatus.innerText = 'Verifying cryptographic executive keys...';
-            }, 800);
+            }, 750);
 
             setTimeout(() => {
                 bar.style.width = '95%';
                 mainStatus.innerText = 'GENERATING QR MATRIX...';
                 subStatus.innerText = 'Compiling verification endpoint...';
-            }, 1200);
+            }, 1100);
 
             setTimeout(() => {
                 bar.style.width = '100%';
                 mainStatus.innerText = 'MINTING COMPLETE!';
                 subStatus.innerText = 'Rendering official document...';
-            }, 1500);
+            }, 1400);
 
             setTimeout(() => {
                 try {
@@ -1123,7 +1140,7 @@
                     loader.classList.add('fade-zoom');
                     setTimeout(() => { loader.style.display = 'none'; }, 600);
                 }
-            }, 1800);
+            }, 1700);
         }
 
         function renderCertificateToCanvas(data, sigs) {
@@ -1136,7 +1153,7 @@
 
             document.getElementById('viewRecordKey').innerText = data.record_key || generateSafeRecordKey();
             document.getElementById('viewIssueDate').innerText = issueD;
-            document.getElementById('viewCertId').innerText = data.certificate_id || 'C8P4-N7K2-V6XM';
+            document.getElementById('viewCertId').innerText = data.certificate_id || 'TX-CERT-2026-001';
             document.getElementById('viewUdyam').innerText = data.udyam_reg_no || 'UDYAM-TN-08-0094821';
 
             document.getElementById('viewDept').innerText = data.department || 'Engineering';
@@ -1145,7 +1162,7 @@
             document.getElementById('viewDuration').innerText = `(${data.duration_months || 2} Months)`;
             document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
 
-            // Role Accent System
+            // Dynamic Role Styling
             const roleConfig = ROLE_MATRIX[data.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
             document.documentElement.style.setProperty('--theme-border', roleConfig.border);
             document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
@@ -1175,11 +1192,11 @@
                 }
             }
 
-            // QR Code Matrix
+            // QR Matrix
             const qrContainer = document.getElementById('qrCodeOutput');
             qrContainer.innerHTML = '';
             qrcodeInstance = new QRCode(qrContainer, {
-                text: `https://tournyx.in/verify.html?id=${encodeURIComponent(data.certificate_id || 'C8P4-N7K2-V6XM')}`,
+                text: `https://tournyx.in/verify.html?id=${encodeURIComponent(data.certificate_id || 'TX-CERT-2026-001')}`,
                 width: 40,
                 height: 40,
                 colorDark: "#000000",
@@ -1222,10 +1239,10 @@
             });
         }
 
-        // Direct URL Parameter Resolution (?id=... or ?email=...)
+        // Auto-Trigger from Query Params (?id=... or ?email=...)
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const cid = params.get('id') || params.get('email') || params.get('key');
+            const cid = params.get('id') || params.get('email');
             if (cid) {
                 document.getElementById('certQueryInput').value = cid;
                 startGenerationSequence();
