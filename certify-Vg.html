@@ -29,7 +29,7 @@
             --danger-red: #ff3366;
             --success-green: #00ff7f;
             
-            /* Dynamic Role Accent Theme */
+            /* Dynamic Role Accent Colors */
             --theme-border: #6b21a8;
             --theme-badge-bg: #581c87;
             --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
@@ -53,7 +53,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 15px 60px;
+            padding: 25px 15px 60px;
             overflow-x: hidden;
             position: relative;
         }
@@ -67,7 +67,7 @@
             pointer-events: none;
         }
 
-        /* --- SHIMMERING HEADER --- */
+        /* --- HEADER --- */
         .portal-header {
             text-align: center;
             margin-bottom: 25px;
@@ -231,7 +231,7 @@
         }
 
         .particle-bullet {
-            position: absolute; width: 3px; height: 20px; border-radius: 2px;
+            position: absolute; width: 3px; height: 18px; border-radius: 2px;
             background: var(--accent-cyan); box-shadow: 0 0 12px var(--accent-cyan);
             animation: absorbParticle 1s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
         }
@@ -313,17 +313,24 @@
             justify-content: space-between;
             font-size: 0.85rem;
             font-weight: 600;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .btn-reset-search {
             background: transparent;
             border: 1px solid var(--success-green);
             color: var(--success-green);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 6px;
             font-size: 0.75rem;
             font-family: var(--font-head);
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-reset-search:hover {
+            background: rgba(0, 255, 127, 0.15);
         }
 
         .action-toolbar {
@@ -363,13 +370,20 @@
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
         }
 
-        /* Responsive Mobile Scaling Viewport */
+        /* Mobile Scroll & Scaler Wrapper */
         .cert-scaler-box {
             width: 100%;
-            display: flex;
-            justify-content: center;
             overflow-x: auto;
-            padding-bottom: 10px;
+            display: flex;
+            justify-content: flex-start;
+            padding-bottom: 15px;
+        }
+
+        @media (min-width: 1040px) {
+            .cert-scaler-box {
+                justify-content: center;
+                overflow-x: visible;
+            }
         }
 
         /* --- CERTIFICATE CANVAS (1000px x 700px Landscape) --- */
@@ -758,6 +772,7 @@
             body { background: #ffffff !important; padding: 0 !important; }
             .ambient-grid, .portal-header, .claim-card, .action-toolbar, .notification-toast, #tournyx-loader, .page-footer { display: none !important; }
             .cert-export-wrapper { display: block !important; width: 100% !important; max-width: none !important; opacity: 1 !important; }
+            .cert-scaler-box { display: block !important; overflow: visible !important; }
             #certificateCard { width: 100% !important; height: 100vh !important; box-shadow: none !important; }
             @page { size: A4 landscape; margin: 0; }
         }
@@ -769,18 +784,18 @@
 
     <header class="portal-header">
         <div class="header-logo-wrap">
-            <!-- Official Vector Cyber Dragon TX Logo -->
+            <!-- Vector Cyber Dragon TX Logo -->
             <svg class="header-dragon-svg" viewBox="0 0 100 100">
                 <defs>
-                    <linearGradient id="dragonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="hdrDragonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#00f2ff" />
                         <stop offset="50%" stop-color="#bd00ff" />
                         <stop offset="100%" stop-color="#00f2ff" />
                     </linearGradient>
                 </defs>
-                <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#0c0f18" stroke="url(#dragonGlow)" stroke-width="3.5" />
-                <path d="M 28 42 Q 38 25 55 35 Q 45 48 68 45 Q 75 58 60 70 Q 42 75 32 60 Z" fill="url(#dragonGlow)" opacity="0.35"/>
-                <text x="52%" y="58%" font-family="Orbitron" font-weight="900" font-size="32" fill="url(#dragonGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
+                <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#0c0f18" stroke="url(#hdrDragonGlow)" stroke-width="3.5" />
+                <path d="M 28 42 Q 38 25 55 35 Q 45 48 68 45 Q 75 58 60 70 Q 42 75 32 60 Z" fill="url(#hdrDragonGlow)" opacity="0.35"/>
+                <text x="52%" y="58%" font-family="Orbitron" font-weight="900" font-size="32" fill="url(#hdrDragonGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
             </svg>
             <div class="brand-pill"><i class="fa-solid fa-shield-halved"></i> CREDENTIAL MATRIX</div>
         </div>
@@ -803,14 +818,14 @@
             <!-- Center Vector Dragon TX Logo -->
             <svg class="loader-logo-center" viewBox="0 0 100 100">
                 <defs>
-                    <linearGradient id="ldrGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="ldrDragonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#00f2ff" />
                         <stop offset="100%" stop-color="#bd00ff" />
                     </linearGradient>
                 </defs>
-                <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#080b12" stroke="url(#ldrGlow)" stroke-width="4" />
-                <path d="M 28 42 Q 38 25 55 35 Q 45 48 68 45 Q 75 58 60 70 Q 42 75 32 60 Z" fill="url(#ldrGlow)" opacity="0.4"/>
-                <text x="50%" y="58%" font-family="Orbitron" font-weight="900" font-size="34" fill="url(#ldrGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
+                <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#080b12" stroke="url(#ldrDragonGlow)" stroke-width="4" />
+                <path d="M 28 42 Q 38 25 55 35 Q 45 48 68 45 Q 75 58 60 70 Q 42 75 32 60 Z" fill="url(#ldrDragonGlow)" opacity="0.4"/>
+                <text x="50%" y="58%" font-family="Orbitron" font-weight="900" font-size="34" fill="url(#ldrDragonGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
             </svg>
         </div>
         
@@ -1044,6 +1059,7 @@
 
         function buildAbsorbParticles() {
             const container = document.getElementById('particleContainer');
+            if (!container) return;
             container.querySelectorAll('.particle-bullet').forEach(el => el.remove());
 
             const particleCount = 16;
@@ -1067,7 +1083,7 @@
         }
 
         function handleVerification(e) {
-            e.preventDefault();
+            if (e) e.preventDefault();
             startGenerationSequence();
         }
 
