@@ -6,7 +6,7 @@
     <title>Tournyx Esports - Certificate Verification & Generation Authority</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Reenie+Beanie&family=Caveat:wght@600;700&family=Alex+Brush&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- QR Code, html2canvas & jsPDF -->
@@ -16,14 +16,21 @@
 
     <style>
         :root {
-            --bg-void: #050608;
-            --panel-bg: #0d1017;
-            --panel-border: rgba(0, 242, 255, 0.12);
+            --bg-void: #040508;
+            --panel-bg: #0c0f17;
+            --panel-border: rgba(0, 242, 255, 0.14);
             --neon-cyan: #00f2ff;
             --neon-purple: #9d00ff;
             --accent-gold: #FFD700;
-            --theme-accent: #6b21a8;
+            --danger-red: #ff3366;
+            --success-green: #00ff7f;
+            
+            /* Dynamic Role Accent Vars (Overridden by JS per Domain) */
+            --theme-border: #6b21a8;
+            --theme-badge-bg: #581c87;
             --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
+            --theme-text: #6b21a8;
+            
             --text-main: #ffffff;
             --text-muted: #7e8ba3;
             --font-head: 'Orbitron', sans-serif;
@@ -44,6 +51,7 @@
             align-items: center;
             padding: 30px 15px 60px;
             overflow-x: hidden;
+            position: relative;
         }
 
         .ambient-grid {
@@ -80,7 +88,7 @@
 
         .portal-title {
             font-family: var(--font-head);
-            font-size: clamp(1.6rem, 5vw, 2.3rem);
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
             font-weight: 900;
             letter-spacing: 2px;
             background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
@@ -259,7 +267,7 @@
             background: rgba(0, 255, 127, 0.08);
             border: 1px solid rgba(0, 255, 127, 0.3);
             color: #00ff7f;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -321,11 +329,11 @@
             flex-shrink: 0;
         }
 
-        /* Geometry Frames */
+        /* Dynamic Geometry Frames (Controlled by Domain Theme) */
         .cert-outer-border {
             position: absolute;
             top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 2px solid #1e1338;
+            border: 2px solid var(--theme-border);
             pointer-events: none;
             z-index: 1;
         }
@@ -333,7 +341,7 @@
         .corner-accent {
             position: absolute;
             width: 50px; height: 50px;
-            border-color: var(--theme-accent);
+            border-color: var(--theme-border);
             border-style: solid;
             pointer-events: none;
             z-index: 2;
@@ -345,12 +353,12 @@
 
         .tri-tl {
             position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-top: 50px solid var(--theme-accent); border-right: 50px solid transparent;
+            border-top: 50px solid var(--theme-border); border-right: 50px solid transparent;
             z-index: 3;
         }
         .tri-br {
             position: absolute; bottom: 0; right: 0; width: 0; height: 0;
-            border-bottom: 50px solid var(--theme-accent); border-left: 50px solid transparent;
+            border-bottom: 50px solid var(--theme-border); border-left: 50px solid transparent;
             z-index: 3;
         }
 
@@ -444,10 +452,9 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
             border: 2px solid #ffffff;
             margin: 0 auto;
-            position: relative;
         }
 
-        /* CERTIFICATE BODY (Refined and Spacious) */
+        /* CERTIFICATE BODY */
         .cert-body {
             text-align: center;
             padding: 0 40px;
@@ -487,7 +494,7 @@
             font-weight: 900;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: var(--theme-accent);
+            color: var(--theme-text);
             margin-bottom: 12px;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
@@ -521,7 +528,7 @@
 
         .meta-cell i {
             font-size: 1.2rem;
-            color: var(--theme-accent);
+            color: var(--theme-border);
         }
 
         .meta-content span {
@@ -544,7 +551,7 @@
             max-width: 140px;
         }
 
-        /* DIGITAL SIGNATURES ROW (Realistic Vector Inks) */
+        /* DIGITAL SIGNATURES ROW (Dynamic Database Images) */
         .signatures-area {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -561,13 +568,27 @@
             align-items: center;
         }
 
-        .sig-svg-wrap {
+        .sig-img-wrap {
             height: 48px;
+            width: 160px;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            user-select: none;
             margin-bottom: 2px;
+        }
+
+        .real-sig-img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            filter: contrast(1.2);
+        }
+
+        .pending-sig-text {
+            font-family: var(--font-head);
+            font-size: 0.65rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
         }
 
         .sig-divider {
@@ -598,7 +619,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 2px solid var(--theme-accent);
+            border-top: 2px solid var(--theme-border);
             position: relative;
             z-index: 10;
         }
@@ -729,7 +750,7 @@
         
         <div class="notification-toast">
             <i class="fa-solid fa-circle-check"></i>
-            <span>Official Credential Verified. Encrypted certificate dispatch confirmed to registered email.</span>
+            <span id="toastBannerText">Official Credential Verified. Encrypted certificate dispatch confirmed to registered email.</span>
         </div>
 
         <div class="action-toolbar">
@@ -741,7 +762,7 @@
         <!-- THE PHYSICAL CERTIFICATE CANVAS -->
         <div id="certificateCard">
             
-            <!-- Geometric Frame -->
+            <!-- Dynamic Geometric Frame -->
             <div class="cert-outer-border"></div>
             <div class="corner-accent ca-tl"></div>
             <div class="corner-accent ca-tr"></div>
@@ -754,16 +775,16 @@
             <div class="cert-header">
                 <div class="cert-brand-block">
                     <div class="logo-svg-wrap">
-                        <!-- High-Definition Tournyx Vector Logo -->
+                        <!-- Official Tournyx Esports Vector Hexagon Logo -->
                         <svg viewBox="0 0 100 100" width="75" height="75">
                             <defs>
-                                <linearGradient id="txGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="txBrandGlow" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#00f2ff" />
                                     <stop offset="100%" stop-color="#9d00ff" />
                                 </linearGradient>
                             </defs>
-                            <polygon points="50,5 92,27 92,73 50,95 8,73 8,27" fill="#140f2b" stroke="url(#txGlow)" stroke-width="3" />
-                            <text x="50%" y="58%" font-family="Orbitron" font-weight="900" font-size="34" fill="url(#txGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
+                            <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#0c0f18" stroke="url(#txBrandGlow)" stroke-width="3.5" />
+                            <text x="50%" y="58%" font-family="Orbitron" font-weight="900" font-size="34" fill="url(#txBrandGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
                         </svg>
                     </div>
                     <div class="cert-brand-label">TOURNYX ESPORTS</div>
@@ -791,7 +812,7 @@
                 <div class="role-title-text" id="viewRole">AI VIBE CODING</div>
 
                 <p class="cert-desc" id="viewCommendation">
-                    This is to certify that candidate has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong id="viewStartDate">30/05/2026</strong> to <strong id="viewEndDate">06/08/2026</strong>. During the tenure, the intern demonstrated commendable technical competence, domain diligence, and adherence to professional corporate engineering standards.
+                    This is to certify that the candidate has successfully completed an internship with <strong>Tournyx Esports</strong>. During the tenure, the intern demonstrated commendable technical competence, domain diligence, and adherence to professional corporate engineering standards.
                 </p>
 
                 <!-- METADATA 5-COLUMN STRIP -->
@@ -834,41 +855,32 @@
                 </div>
             </div>
 
-            <!-- DIGITAL SIGNATURES ROW -->
+            <!-- DIGITAL SIGNATURES ROW (Live DB Fetched Images) -->
             <div class="signatures-area">
                 <div class="sig-unit">
-                    <div class="sig-svg-wrap">
-                        <svg viewBox="0 0 160 45" width="140" height="40">
-                            <path d="M 15 32 Q 35 10 55 28 T 85 20 T 115 30 T 145 15" fill="none" stroke="#1e1338" stroke-width="2" stroke-linecap="round" />
-                            <text x="25" y="32" font-family="'Caveat', cursive" font-size="22" font-weight="700" fill="#1e1338">Shiva Kumar</text>
-                        </svg>
+                    <div class="sig-img-wrap" id="sigSlotDomain">
+                        <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider"></div>
-                    <div class="sig-officer-title">DOMAIN OFFICER</div>
+                    <div class="sig-officer-title" id="nameDomainOfficer">DOMAIN OFFICER</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
 
                 <div class="sig-unit">
-                    <div class="sig-svg-wrap">
-                        <svg viewBox="0 0 160 45" width="140" height="40">
-                            <path d="M 10 30 Q 40 8 65 26 T 100 18 T 130 25 T 150 12" fill="none" stroke="#1e1338" stroke-width="2" stroke-linecap="round" />
-                            <text x="20" y="30" font-family="'Reenie Beanie', cursive" font-size="28" font-weight="700" fill="#1e1338">Tharun Kumar</text>
-                        </svg>
+                    <div class="sig-img-wrap" id="sigSlotHR">
+                        <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider"></div>
-                    <div class="sig-officer-title">HR / COORDINATOR</div>
+                    <div class="sig-officer-title" id="nameHROfficer">HR / COORDINATOR</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
 
                 <div class="sig-unit">
-                    <div class="sig-svg-wrap">
-                        <svg viewBox="0 0 160 45" width="140" height="40">
-                            <path d="M 15 28 Q 45 6 75 22 T 110 14 T 140 22 T 155 8" fill="none" stroke="#4c1d95" stroke-width="2.5" stroke-linecap="round" />
-                            <text x="15" y="30" font-family="'Alex Brush', cursive" font-size="24" font-weight="700" fill="#4c1d95">Thilakeshwaran J</text>
-                        </svg>
+                    <div class="sig-img-wrap" id="sigSlotCEO">
+                        <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider" style="border-color: #4c1d95;"></div>
-                    <div class="sig-officer-title" style="color: #4c1d95;">FOUNDER & CEO</div>
+                    <div class="sig-officer-title" id="nameCEO" style="color: #4c1d95;">FOUNDER & CEO</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
             </div>
@@ -882,7 +894,7 @@
 
                 <div class="footer-center">
                     <span>UDYAM REGISTRATION NO.</span>
-                    <strong style="color: #00f2ff;">UDYAM-TN-08-0094821</strong>
+                    <strong style="color: #00f2ff;" id="viewUdyam">UDYAM-TN-08-0094821</strong>
                 </div>
 
                 <div class="footer-center">
@@ -910,7 +922,7 @@
 
     <!-- MANDATORY LEGAL & POWERED BY CREDITS -->
     <footer class="page-footer">
-        <p>© 2026 <strong>Tournyx Esports</strong>. All rights reserved. | Official Credential & Verification Node</p>
+        <p>© 2026 <strong>Tournyx Esports</strong>. All rights reserved. | Official Credential & Verification Authority</p>
         <p style="margin-top: 4px;">Powered by <span class="quva-badge">QUVA TECHNOLOGIES</span></p>
     </footer>
 
@@ -921,46 +933,36 @@
 
         let qrcodeObj = null;
 
-        // MULTI-ROLE DOMAIN THEMES & CUSTOM COMMENDATIONS
+        // MULTI-ROLE DOMAIN THEMES (Borders, Rosette Gradient & Description Only)
         const DOMAIN_THEMES = {
             'AI VIBE CODING': {
-                color: '#6b21a8',
+                border: '#6b21a8',
                 gradient: 'radial-gradient(circle, #7c3aed, #4c1d95)',
-                dept: 'Artificial Intelligence & Systems',
-                project: 'Tournyx AI Vision Engine',
-                projectId: 'TX-PRJ-2026-AI',
+                text: '#6b21a8',
                 desc: 'demonstrated exceptional aptitude in prompt scaffolding, neural API integrations, and modern AI development frameworks, delivering robust components within scheduled engineering sprints.'
             },
             'FULL STACK DEVELOPER': {
-                color: '#0284c7',
+                border: '#0284c7',
                 gradient: 'radial-gradient(circle, #0284c7, #0369a1)',
-                dept: 'Platform Architecture',
-                project: 'TIMS Hub & Database Matrix',
-                projectId: 'TX-PRJ-2026-FS',
+                text: '#0284c7',
                 desc: 'engineered resilient RESTful database bridges, real-time client state listeners, and performant backend controllers adhering strictly to modern security and architecture benchmarks.'
             },
             'CORE FRONTEND DEVELOPER': {
-                color: '#0d9488',
+                border: '#0d9488',
                 gradient: 'radial-gradient(circle, #0d9488, #115e59)',
-                dept: 'Frontend Engineering',
-                project: 'Meniscus Client UI Suite',
-                projectId: 'TX-PRJ-2026-FE',
+                text: '#0d9488',
                 desc: 'developed responsive, hardware-accelerated user interfaces, custom SVG animation workflows, and seamless cross-platform single page layouts.'
             },
             'UI/UX DESIGN': {
-                color: '#c026d3',
+                border: '#c026d3',
                 gradient: 'radial-gradient(circle, #c026d3, #86198f)',
-                dept: 'Product Design & Creative',
-                project: 'Tournyx Cyber Design System',
-                projectId: 'TX-PRJ-2026-UX',
+                text: '#c026d3',
                 desc: 'crafted high-fidelity wireframes, interactive mobile prototypes, and cybernetic neon design tokens to deliver an intuitive user experience.'
             },
             'ESPORTS OPERATIONS': {
-                color: '#d97706',
+                border: '#d97706',
                 gradient: 'radial-gradient(circle, #d97706, #92400e)',
-                dept: 'League Operations & Events',
-                project: 'Warhero Tournament Matrix',
-                projectId: 'TX-PRJ-2026-OPS',
+                text: '#d97706',
                 desc: 'demonstrated exemplary leadership in tournament scheduling, competitive bracket management, and automated room administration with high operational efficiency.'
             }
         };
@@ -987,107 +989,101 @@
 
             let certData = null;
 
-            // 1. Fetch live Supabase record
+            // 1. Query Supabase for real record
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)})&select=*`, {
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
+                
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data.length > 0) certData = data[0];
+                    if (data && data.length > 0) {
+                        certData = data[0];
+                    }
                 }
-            } catch(e) {}
-
-            // 2. Synthesize Fallback if record is yet to be seeded
-            if (!certData) {
-                let name = "Joshitha S";
-                if (rawQuery.includes('@')) {
-                    const prefix = rawQuery.split('@')[0];
-                    name = prefix.charAt(0).toUpperCase() + prefix.slice(1);
-                    if (rawQuery.toLowerCase().includes('quva')) name = "Joshitha S";
-                } else if (!rawQuery.startsWith('TX-')) {
-                    name = rawQuery;
-                }
-
-                certData = {
-                    certificate_id: rawQuery.toUpperCase().startsWith('TX-') ? rawQuery.toUpperCase() : 'TX-CERT-2026-' + Math.floor(1000 + Math.random() * 9000),
-                    intern_name: name,
-                    domain_role: 'AI VIBE CODING',
-                    start_date: '2026-05-30',
-                    end_date: '2026-08-06',
-                    duration_months: 2,
-                    internship_type: 'Virtual / Project-Based'
-                };
+            } catch(err) {
+                console.error("Database connection failure:", err);
             }
 
-            // Staged Visual Printing Sequence
+            // 2. Strict Check: If no real record in database, refuse generation
+            if (!certData) {
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    alert(`❌ RECORD NOT FOUND IN OFFICIAL REGISTRY.\n\nNo verified internship record exists matching "${rawQuery}".\nPlease verify your registered email or official Certificate ID.`);
+                }, 700);
+                return;
+            }
+
+            // 3. Staged Live Printing Sequence
             setTimeout(() => {
                 bar.style.width = '40%';
                 mainTitle.innerText = 'INSCRIBING METADATA...';
                 subTitle.innerText = `Binding candidate profile: ${certData.intern_name}...`;
-            }, 500);
+            }, 400);
 
             setTimeout(() => {
                 bar.style.width = '70%';
-                mainTitle.innerText = 'VERIFYING DIGITAL SIGNATURES...';
-                subTitle.innerText = 'Inking Founder & Domain Officer RSA keys...';
-            }, 1000);
+                mainTitle.innerText = 'FETCHING VERIFIED SIGNATURES...';
+                subTitle.innerText = 'Retrieving transparent officer RSA keys from Supabase...';
+            }, 900);
 
             setTimeout(() => {
                 bar.style.width = '90%';
                 mainTitle.innerText = 'STAMPING MSME SEAL...';
-                subTitle.innerText = 'Generating cryptographic QR endpoint...';
-            }, 1500);
+                subTitle.innerText = 'Generating unique cryptographic QR verification link...';
+            }, 1400);
 
             setTimeout(() => {
                 bar.style.width = '100%';
                 mainTitle.innerText = 'MINTING COMPLETE!';
                 subTitle.innerText = 'Displaying verified document...';
-            }, 1900);
+            }, 1800);
 
-            setTimeout(() => {
+            // 4. Render Certificate & Load Real Database Signatures
+            setTimeout(async () => {
+                await renderCertificateToCanvas(certData);
                 overlay.style.display = 'none';
-                renderCertificateToCanvas(certData);
                 
                 const exportArea = document.getElementById('exportArea');
                 exportArea.style.display = 'flex';
                 exportArea.scrollIntoView({ behavior: 'smooth' });
-            }, 2200);
+            }, 2100);
         }
 
-        function renderCertificateToCanvas(data) {
+        async function renderCertificateToCanvas(data) {
             document.getElementById('viewName').innerText = data.intern_name;
             document.getElementById('viewRole').innerText = data.domain_role;
             
-            // Format Dates
-            const sDate = formatD(data.start_date || '2026-05-30');
-            const eDate = formatD(data.end_date || '2026-08-06');
-            
-            // Real-Time Live Issue Date
-            const now = new Date();
-            const liveIssue = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const sDate = formatD(data.start_date);
+            const eDate = formatD(data.end_date);
+            const issueD = formatD(data.issue_date || data.end_date);
             
             document.getElementById('viewStartDate').innerText = sDate;
             document.getElementById('viewEndDate').innerText = eDate;
-            document.getElementById('viewIssueDate').innerText = liveIssue;
+            document.getElementById('viewIssueDate').innerText = issueD;
             document.getElementById('viewCertId').innerText = data.certificate_id;
+            document.getElementById('viewUdyam').innerText = data.udyam_reg_no || 'UDYAM-TN-08-0094821';
             
-            // Apply Dynamic Role Colors & Commendation
-            const theme = DOMAIN_THEMES[data.domain_role] || DOMAIN_THEMES['AI VIBE CODING'];
-            document.documentElement.style.setProperty('--theme-accent', theme.color);
-            document.documentElement.style.setProperty('--theme-gradient', theme.gradient);
-            
-            document.getElementById('viewDept').innerText = data.department || theme.dept;
-            document.getElementById('viewProject').innerText = data.project_name || theme.project;
-            document.getElementById('viewProjId').innerText = data.project_id || theme.projectId;
+            document.getElementById('viewDept').innerText = data.department;
+            document.getElementById('viewProject').innerText = data.project_name;
+            document.getElementById('viewProjId').innerText = data.project_id;
             document.getElementById('viewDuration').innerText = `(${data.duration_months || 2} Months)`;
             document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
+
+            // Apply Role-Specific Color Theme
+            const theme = DOMAIN_THEMES[data.domain_role] || DOMAIN_THEMES['AI VIBE CODING'];
+            document.documentElement.style.setProperty('--theme-border', theme.border);
+            document.documentElement.style.setProperty('--theme-gradient', theme.gradient);
+            document.documentElement.style.setProperty('--theme-text', theme.text);
             
             document.getElementById('viewCommendation').innerHTML = `
                 This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${theme.desc}
             `;
 
-            // Render Dynamic Verification QR Code
+            // 5. Fetch Real Officer Signatures from tims_officer_signatures
+            await loadOfficerSignatures(data);
+
+            // 6. Generate Unique Verification QR Code
             const qrContainer = document.getElementById('qrCodeOutput');
             qrContainer.innerHTML = '';
             qrcodeObj = new QRCode(qrContainer, {
@@ -1100,7 +1096,45 @@
             });
         }
 
+        async function loadOfficerSignatures(certData) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/tims_officer_signatures?is_active=eq.true&select=*`, {
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+
+                if (response.ok) {
+                    const sigs = await response.json();
+                    
+                    // Match Signatures by Key
+                    const ceoSig = sigs.find(s => s.officer_key === certData.ceo_key || s.officer_key === 'ceo');
+                    const hrSig = sigs.find(s => s.officer_key === certData.hr_coordinator_key || s.officer_key === 'hr');
+                    const domainSig = sigs.find(s => s.officer_key === certData.domain_officer_key || s.officer_key === 'domain_officer' || s.officer_key.startsWith('custom_'));
+
+                    // Inject CEO Signature Image
+                    if (ceoSig && ceoSig.signature_url) {
+                        document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
+                        document.getElementById('nameCEO').innerText = ceoSig.officer_name.toUpperCase();
+                    }
+
+                    // Inject HR Signature Image
+                    if (hrSig && hrSig.signature_url) {
+                        document.getElementById('sigSlotHR').innerHTML = `<img src="${hrSig.signature_url}" class="real-sig-img" alt="HR Signature">`;
+                        document.getElementById('nameHROfficer').innerText = hrSig.officer_name.toUpperCase();
+                    }
+
+                    // Inject Domain Officer Signature Image
+                    if (domainSig && domainSig.signature_url) {
+                        document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
+                        document.getElementById('nameDomainOfficer').innerText = domainSig.officer_name.toUpperCase();
+                    }
+                }
+            } catch(e) {
+                console.warn("Could not load officer signature assets from database:", e);
+            }
+        }
+
         function formatD(str) {
+            if (!str) return '06/08/2026';
             const d = new Date(str);
             return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
         }
@@ -1126,7 +1160,7 @@
             });
         }
 
-        // Auto verify on ?id= query param
+        // Auto verify if ID or email query param is passed
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const cid = params.get('id') || params.get('email');
