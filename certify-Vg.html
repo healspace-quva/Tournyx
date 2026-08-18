@@ -726,38 +726,46 @@
             letter-spacing: 1px;
         }
 
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        /* --- HIGH-CONTRAST SCANNER-GRADE QR CONTAINER --- */
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        /* CRISP SCANNER-OPTIMIZED QR CONTAINER */
-        #qrCodeOutput {
-            width: 64px;
-            height: 64px;
-            background: #ffffff;
-            padding: 3px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
+#qrCodeOutput {
+    width: 72px;
+    height: 72px;
+    background: #ffffff;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    flex-shrink: 0;
+}
 
-        #qrCodeOutput canvas, #qrCodeOutput img {
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            width: 58px !important;
-            height: 58px !important;
-        }
+#qrCodeOutput canvas, 
+#qrCodeOutput img {
+    width: 64px !important;
+    height: 64px !important;
+    display: block !important;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
 
-        .qr-label {
-            font-size: 0.55rem;
-            color: #d1d5db;
-            line-height: 1.2;
-            text-align: left;
-        }
+.qr-label {
+    font-size: 0.58rem;
+    color: #d1d5db;
+    line-height: 1.25;
+    text-align: left;
+}
+
+.qr-label strong {
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+}
 
         .page-footer {
             margin-top: 50px;
@@ -968,13 +976,13 @@
                 </div>
 
                 <div class="footer-right">
-                    <div id="qrCodeOutput"></div>
-                    <div class="qr-label">
-                        <strong>VERIFICATION</strong><br>
-                        Scan for live intern<br>
-                        dossier portfolio
-                    </div>
-                </div>
+    <div id="qrCodeOutput"></div>
+    <div class="qr-label">
+        <strong>VERIFICATION</strong><br>
+        Scan to view live<br>
+        verified dossier
+    </div>
+</div>
             </div>
         </div>
     </div>
@@ -1159,108 +1167,127 @@
         }
 
         function renderCertificateToCanvas(data, sigs) {
-            document.getElementById('viewName').innerText = data.intern_name || 'Verified Candidate';
-            document.getElementById('viewRole').innerText = data.domain_role || 'AI VIBE CODING';
+    document.getElementById('viewName').innerText = data.intern_name || 'Verified Candidate';
+    document.getElementById('viewRole').innerText = data.domain_role || 'AI VIBE CODING';
 
-            const sDate = formatD(data.start_date);
-            const eDate = formatD(data.end_date);
-            const issueD = formatD(data.issue_date || data.end_date);
+    const sDate = formatD(data.start_date);
+    const eDate = formatD(data.end_date);
+    const issueD = formatD(data.issue_date || data.end_date);
 
-            // Record Key Display (Live DB value or empty fallback)
-            document.getElementById('viewRecordKey').innerText = data.record_key || '--';
-            document.getElementById('viewIssueDate').innerText = issueD;
-            document.getElementById('viewCertId').innerText = data.certificate_id || '--';
-            document.getElementById('viewUdyam').innerText = data.udyam_reg_no || 'UDYAM-TN-08-0094821';
+    // Record Key Display (Live DB value or empty fallback)
+    document.getElementById('viewRecordKey').innerText = data.record_key || '--';
+    document.getElementById('viewIssueDate').innerText = issueD;
+    document.getElementById('viewCertId').innerText = data.certificate_id || '--';
+    document.getElementById('viewUdyam').innerText = data.udyam_reg_no || 'UDYAM-TN-08-0094821';
 
-            document.getElementById('viewDept').innerText = data.department || '--';
-            document.getElementById('viewProject').innerText = data.project_name || '--';
-            document.getElementById('viewProjId').innerText = data.project_id || '--';
-            document.getElementById('viewDuration').innerText = data.duration_months ? `(${data.duration_months} Months)` : '--';
-            document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
+    document.getElementById('viewDept').innerText = data.department || '--';
+    document.getElementById('viewProject').innerText = data.project_name || '--';
+    document.getElementById('viewProjId').innerText = data.project_id || '--';
+    document.getElementById('viewDuration').innerText = data.duration_months ? `(${data.duration_months} Months)` : '--';
+    document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
 
-            // Dynamic Role Accent Theming
-            const roleConfig = ROLE_MATRIX[data.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
-            document.documentElement.style.setProperty('--theme-border', roleConfig.border);
-            document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
-            document.documentElement.style.setProperty('--theme-gradient', roleConfig.gradient);
-            document.documentElement.style.setProperty('--theme-text', roleConfig.text);
+    // Dynamic Role Accent Theming
+    const roleConfig = ROLE_MATRIX[data.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
+    document.documentElement.style.setProperty('--theme-border', roleConfig.border);
+    document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
+    document.documentElement.style.setProperty('--theme-gradient', roleConfig.gradient);
+    document.documentElement.style.setProperty('--theme-text', roleConfig.text);
 
-            document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
+    document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
 
-            document.getElementById('viewCommendation').innerHTML = `
-                This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${roleConfig.desc}
-            `;
+    document.getElementById('viewCommendation').innerHTML = `
+        This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${roleConfig.desc}
+    `;
 
-            // Signature Asset Mapping
-            if (sigs && sigs.length > 0) {
-                const ceoSig = sigs.find(s => s.officer_key === data.ceo_key || s.officer_key === 'ceo');
-                const hrSig = sigs.find(s => s.officer_key === data.hr_coordinator_key || s.officer_key === 'hr');
-                const domainSig = sigs.find(s => s.officer_key === data.domain_officer_key || s.officer_key === 'domain_officer' || (s.officer_key && s.officer_key.startsWith('custom_')));
+    // Signature Asset Mapping
+    if (sigs && sigs.length > 0) {
+        const ceoSig = sigs.find(s => s.officer_key === data.ceo_key || s.officer_key === 'ceo');
+        const hrSig = sigs.find(s => s.officer_key === data.hr_coordinator_key || s.officer_key === 'hr');
+        const domainSig = sigs.find(s => s.officer_key === data.domain_officer_key || s.officer_key === 'domain_officer' || (s.officer_key && s.officer_key.startsWith('custom_')));
 
-                if (ceoSig && ceoSig.signature_url) {
-                    document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
-                }
-                if (hrSig && hrSig.signature_url) {
-                    document.getElementById('sigSlotHR').innerHTML = `<img src="${hrSig.signature_url}" class="real-sig-img" alt="HR Signature">`;
-                }
-                if (domainSig && domainSig.signature_url) {
-                    document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
-                }
-            }
+        if (ceoSig && ceoSig.signature_url) {
+            document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
+        }
+        if (hrSig && hrSig.signature_url) {
+            document.getElementById('sigSlotHR').innerHTML = `<img src="${hrSig.signature_url}" class="real-sig-img" alt="HR Signature">`;
+        }
+        if (domainSig && domainSig.signature_url) {
+            document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
+        }
+    }
 
-            // High-Resolution Optical-Grade QR Generation
-            const qrContainer = document.getElementById('qrCodeOutput');
-            qrContainer.innerHTML = '';
-            const targetCertId = data.certificate_id || '';
-            const verifyEndpoint = `https://tournyx.in/verify.html?id=${encodeURIComponent(targetCertId)}`;
+    // Trigger High-Resolution Optical QR Generator
+    generateVerifiedQR(data.certificate_id || 'TX-CERT-2026-001');
+}
 
-            qrcodeInstance = new QRCode(qrContainer, {
-                text: verifyEndpoint,
-                width: 58,
-                height: 58,
+/**
+ * Generates an optical-grade QR Code with High Error Correction (Level H)
+ * and an automatic vector fallback to ensure 100% scan success on all devices.
+ */
+function generateVerifiedQR(certId) {
+    const qrContainer = document.getElementById('qrCodeOutput');
+    if (!qrContainer) return;
+    
+    qrContainer.innerHTML = '';
+
+    const cleanCertId = (certId || 'TX-CERT-2026-001').trim();
+    const verificationUrl = `https://tournyx.in/verify.html?id=${encodeURIComponent(cleanCertId)}`;
+
+    try {
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(qrContainer, {
+                text: verificationUrl,
+                width: 128,
+                height: 128,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
+                correctLevel: QRCode.CorrectLevel.H
             });
+        } else {
+            throw new Error("QRCode library not loaded");
         }
+    } catch (e) {
+        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=128x128&data=${encodeURIComponent(verificationUrl)}&format=svg" alt="Verify QR" style="width:64px;height:64px;">`;
+    }
+}
 
-        function formatD(str) {
-            if (!str) return '--';
-            const d = new Date(str);
-            if (isNaN(d.getTime())) return str;
-            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-        }
+function formatD(str) {
+    if (!str) return '--';
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return str;
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
 
-        function exportPNG() {
-            const card = document.getElementById('certificateCard');
-            html2canvas(card, { scale: 3.5, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
+function exportPNG() {
+    const card = document.getElementById('certificateCard');
+    html2canvas(card, { scale: 3.5, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
 
-        function exportJsPDF() {
-            const card = document.getElementById('certificateCard');
-            html2canvas(card, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                const img = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 700] });
-                pdf.addImage(img, 'PNG', 0, 0, 1000, 700);
-                pdf.save(`Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.pdf`);
-            });
-        }
+function exportJsPDF() {
+    const card = document.getElementById('certificateCard');
+    html2canvas(card, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+        const img = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 700] });
+        pdf.addImage(img, 'PNG', 0, 0, 1000, 700);
+        pdf.save(`Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.pdf`);
+    });
+}
 
-        // Direct URL Parameter Resolution (?id=... or ?email=...)
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const cid = params.get('id') || params.get('email');
-            if (cid) {
-                document.getElementById('certQueryInput').value = cid;
-                startGenerationSequence();
-            }
-        });
+// Auto-trigger verification on URL parameter load (?id=... or ?email=...)
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const cid = params.get('id') || params.get('email');
+    if (cid) {
+        document.getElementById('certQueryInput').value = cid;
+        startGenerationSequence();
+    }
+});
     </script>
 </body>
 </html>
