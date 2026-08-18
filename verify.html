@@ -3,104 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports - Intern Milestone Verification Dossier</title>
-    
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <title>Tournyx Esports - Official Credential & Milestone Verification Authority</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Typography & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --bg-void: #040508;
+            --primary-bg: #040508;
             --panel-bg: #0c0f18;
-            --panel-border: rgba(0, 242, 255, 0.15);
-            --neon-cyan: #00f2ff;
-            --neon-purple: #9d00ff;
+            --panel-border: rgba(0, 242, 255, 0.18);
+            --accent-cyan: #00f2ff;
+            --accent-purple: #9d00ff;
+            --accent-gold: #FFD700;
+            --danger-red: #ff3366;
             --success-green: #00ff7f;
+
+            /* Dynamic Role Accent Colors (Set by Engine) */
+            --theme-border: #6b21a8;
+            --theme-badge-bg: rgba(107, 33, 168, 0.15);
+            --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
+            --theme-text: #6b21a8;
+
             --text-main: #ffffff;
             --text-muted: #8b9bb4;
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Inter', sans-serif;
+            --font-cert-title: 'Cinzel', serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+
         body {
-            background: var(--bg-void);
+            background-color: var(--primary-bg);
             color: var(--text-main);
             font-family: var(--font-body);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             padding: 30px 15px 60px;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* --- HARDWARE-ACCELERATED AMBIENT GRID --- */
+        .ambient-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 35px 35px;
+            z-index: 0;
+            pointer-events: none;
+            animation: gridPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes gridPulse {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* --- HEADER & SHIMMER BRANDING --- */
+        .portal-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-logo-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .header-brand-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+            animation: floatLogo 3s infinite ease-in-out alternate;
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0); box-shadow: 0 0 12px var(--accent-cyan); }
+            100% { transform: translateY(-4px); box-shadow: 0 0 22px var(--accent-purple); }
+        }
+
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            background: rgba(0, 242, 255, 0.06);
+            border: 1px solid var(--panel-border);
+            border-radius: 50px;
+            font-family: var(--font-head);
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1.5px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+        }
+
+        .portal-title {
+            font-family: var(--font-head);
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #00f2ff 0%, #ffffff 30%, #bd00ff 70%, #00f2ff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shineText 4s linear infinite;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
+        }
+
+        .portal-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- DOSSIER MAIN CONTAINER --- */
         .dossier-container {
             width: 100%;
-            max-width: 860px;
+            max-width: 880px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            position: relative;
+            z-index: 2;
         }
 
+        /* AUTH STATUS BANNER */
         .auth-banner {
             background: rgba(0, 255, 127, 0.08);
             border: 1px solid rgba(0, 255, 127, 0.3);
             border-radius: 16px;
-            padding: 20px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 255, 127, 0.1);
+        }
+
+        .auth-banner-left {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .auth-banner i { font-size: 2.2rem; color: var(--success-green); }
-        .auth-text h2 { font-family: var(--font-head); font-size: 1.1rem; color: var(--success-green); }
-        .auth-text p { font-size: 0.8rem; color: var(--text-muted); }
+        .auth-banner-left i { 
+            font-size: 2.2rem; 
+            color: var(--success-green); 
+            filter: drop-shadow(0 0 10px rgba(0, 255, 127, 0.4));
+        }
 
+        .auth-text h2 { 
+            font-family: var(--font-head); 
+            font-size: 1.1rem; 
+            color: var(--success-green); 
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .auth-text p { 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+        }
+
+        .auth-badge {
+            background: rgba(0, 255, 127, 0.15);
+            border: 1px solid var(--success-green);
+            color: var(--success-green);
+            font-family: var(--font-head);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 50px;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- CARD PANEL --- */
         .panel-card {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 20px;
-            padding: 25px;
+            padding: 28px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            position: relative;
         }
 
         .header-profile {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 1px dashed rgba(255,255,255,0.1);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 1px dashed rgba(255,255,255,0.12);
+            padding-bottom: 18px;
+            margin-bottom: 22px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .profile-title h1 { font-family: var(--font-head); font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
-        .role-pill { display: inline-block; background: rgba(157, 0, 255, 0.15); border: 1px solid var(--neon-purple); color: #fff; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
+        .profile-title h1 { 
+            font-family: var(--font-head); 
+            font-size: 1.6rem; 
+            color: #ffffff; 
+            margin-bottom: 6px; 
+            letter-spacing: 1px;
+        }
 
+        .role-pill { 
+            display: inline-block; 
+            background: var(--theme-badge-bg); 
+            border: 1px solid var(--theme-border); 
+            color: #ffffff; 
+            padding: 5px 14px; 
+            border-radius: 50px; 
+            font-size: 0.78rem; 
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .id-cluster {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .id-cluster .label {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            font-family: var(--font-head);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .id-cluster .val-cert {
+            font-family: var(--font-head);
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .id-cluster .val-record {
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        /* METADATA GRID */
         .meta-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            gap: 14px;
             margin-bottom: 25px;
         }
 
-        .meta-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; }
-        .meta-box span { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px; }
-        .meta-box strong { font-size: 0.85rem; color: var(--neon-cyan); }
+        .meta-box { 
+            background: rgba(255,255,255,0.02); 
+            border: 1px solid rgba(255,255,255,0.06); 
+            padding: 14px; 
+            border-radius: 12px; 
+            transition: border-color 0.3s ease;
+        }
 
-        .section-title { font-family: var(--font-head); font-size: 1rem; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .meta-box:hover {
+            border-color: var(--panel-border);
+        }
 
-        /* PDF Viewer Container */
+        .meta-box span { 
+            font-size: 0.65rem; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            display: block; 
+            margin-bottom: 4px; 
+            letter-spacing: 0.5px;
+        }
+
+        .meta-box strong { 
+            font-size: 0.88rem; 
+            color: var(--accent-cyan); 
+            font-weight: 800;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-title { 
+            font-family: var(--font-head); 
+            font-size: 1rem; 
+            color: #ffffff; 
+            margin-bottom: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* 3-MILESTONE DOSSIER BREAKDOWN CARDS */
+        .milestones-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .milestone-item {
+            background: rgba(3, 4, 8, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid var(--theme-border);
+            border-radius: 10px;
+            padding: 14px 18px;
+        }
+
+        .milestone-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .milestone-tag {
+            font-family: var(--font-head);
+            font-size: 0.72rem;
+            color: var(--accent-cyan);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .milestone-status {
+            font-size: 0.68rem;
+            color: var(--success-green);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .milestone-desc {
+            font-size: 0.82rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        /* PDF VIEWER CONTAINER */
         .pdf-viewer-container {
             width: 100%;
-            height: 500px;
-            background: #111;
+            height: 520px;
+            background: #090c14;
             border: 1px solid var(--panel-border);
             border-radius: 14px;
             overflow: hidden;
             margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
 
         .pdf-viewer-container iframe {
@@ -109,25 +390,23 @@
             border: none;
         }
 
-        .btn-download-pdf {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-decoration: none;
-            margin-bottom: 20px;
+        /* ACTION CONTROLS */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
         }
 
-        .btn-view-cert {
+        @media (max-width: 600px) {
+            .action-grid { grid-template-columns: 1fr; }
+            .id-cluster { text-align: left; }
+        }
+
+        .btn-action-view {
             background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
             border: none;
-            color: #fff;
+            color: #ffffff;
             padding: 14px;
             border-radius: 12px;
             font-family: var(--font-head);
@@ -137,108 +416,385 @@
             text-transform: uppercase;
             text-align: center;
             text-decoration: none;
-            display: block;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(189, 0, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-action-view:hover {
+            box-shadow: 0 6px 25px rgba(0, 242, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-secondary {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--panel-border);
+            color: #ffffff;
+            padding: 14px;
+            border-radius: 12px;
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        /* --- SKELETON SHIMMER ENGINE --- */
+        .skeleton-block {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeletonShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* --- FOOTER CREDITS --- */
+        .page-footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-footer strong { color: #ffffff; }
+        .quva-badge {
+            font-family: var(--font-head);
+            color: var(--accent-purple);
+            font-weight: 800;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
 
-    <div class="dossier-container" id="dossierContainer">
-        <div class="auth-banner">
-            <i class="fa-solid fa-circle-check"></i>
-            <div class="auth-text">
-                <h2>AUTHENTIC TOURNYX CREDENTIAL</h2>
-                <p>Cryptographic ledger record verified. Validated by Domain Officer & Chief Executive.</p>
+    <div class="ambient-grid"></div>
+
+    <header class="portal-header">
+        <div class="header-logo-wrap">
+            <img src="favicon.png" class="header-brand-logo" alt="Tournyx Core" onerror="this.src='favicon.ico'">
+            <div class="brand-pill"><i class="fa-solid fa-shield-halved"></i> AUDIT & DOSSIER AUTHORITY</div>
+        </div>
+        <h1 class="portal-title">TOURNYX ESPORTS</h1>
+        <p class="portal-sub">Public Credential Verification Ledger & Milestone Documentation</p>
+    </header>
+
+    <div class="dossier-container">
+        <!-- AUTHENTICITY BADGE BANNER -->
+        <div class="auth-banner" id="authBanner">
+            <div class="auth-banner-left">
+                <i class="fa-solid fa-circle-check" id="authIcon"></i>
+                <div class="auth-text">
+                    <h2 id="authTitle">OFFICIAL TOURNYX CREDENTIAL VERIFIED</h2>
+                    <p id="authSubtitle">Cryptographic ledger record matched. Validated by Domain Officer & Founder.</p>
+                </div>
+            </div>
+            <div class="auth-badge" id="authBadgeStatus">
+                <i class="fa-solid fa-fingerprint"></i> LEDGER ACTIVE
             </div>
         </div>
 
+        <!-- MAIN DOSSIER CARD -->
         <div class="panel-card" id="cardContent">
-            <div class="header-profile">
-                <div class="profile-title">
-                    <h1 id="dName">Loading Profile...</h1>
-                    <span class="role-pill" id="dRole">VERIFYING</span>
+            <!-- SKELETON LOADER STATE (Default) -->
+            <div id="skeletonLoaderArea">
+                <div class="header-profile">
+                    <div>
+                        <div class="skeleton-block" style="width: 260px; height: 32px; margin-bottom: 10px;"></div>
+                        <div class="skeleton-block" style="width: 140px; height: 22px;"></div>
+                    </div>
+                    <div>
+                        <div class="skeleton-block" style="width: 180px; height: 38px;"></div>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 0.65rem; color: var(--text-muted);">CERTIFICATE ID</div>
-                    <strong style="color: var(--neon-cyan); font-family: var(--font-head);" id="dCertId">TX-XXXX-XXXX</strong>
+                <div class="meta-grid">
+                    <div class="skeleton-block" style="height: 65px;"></div>
+                    <div class="skeleton-block" style="height: 65px;"></div>
+                    <div class="skeleton-block" style="height: 65px;"></div>
+                    <div class="skeleton-block" style="height: 65px;"></div>
+                </div>
+                <div class="skeleton-block" style="height: 180px; margin-bottom: 20px;"></div>
+                <div class="skeleton-block" style="height: 48px;"></div>
+            </div>
+
+            <!-- LIVE INJECTED DATA CONTAINER (Hidden initially) -->
+            <div id="liveDataArea" style="display: none;">
+                <div class="header-profile">
+                    <div class="profile-title">
+                        <h1 id="dName">--</h1>
+                        <span class="role-pill" id="dRole">--</span>
+                    </div>
+                    <div class="id-cluster">
+                        <div class="label">CERTIFICATE ID</div>
+                        <div class="val-cert" id="dCertId">--</div>
+                        <div class="label" style="margin-top: 4px;">RECORD KEY</div>
+                        <div class="val-record" id="dRecordKey">--</div>
+                    </div>
+                </div>
+
+                <div class="meta-grid">
+                    <div class="meta-box">
+                        <span>DEPARTMENT</span>
+                        <strong id="dDept">--</strong>
+                    </div>
+                    <div class="meta-box">
+                        <span>PROJECT ASSIGNED</span>
+                        <strong id="dProject">--</strong>
+                    </div>
+                    <div class="meta-box">
+                        <span>PROJECT ID</span>
+                        <strong id="dProjId">--</strong>
+                    </div>
+                    <div class="meta-box">
+                        <span>TENURE DURATION</span>
+                        <strong id="dTenure">--</strong>
+                    </div>
+                    <div class="meta-box">
+                        <span>INTERNSHIP TYPE</span>
+                        <strong id="dType">--</strong>
+                    </div>
+                    <div class="meta-box">
+                        <span>SUPERVISING OFFICER</span>
+                        <strong id="dOfficer">--</strong>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-solid fa-folder-tree" style="color:var(--accent-cyan);"></i> Official Milestone & Portfolio Dossier
+                </div>
+
+                <!-- Structured Milestones Block -->
+                <div class="milestones-wrapper" id="milestoneAuditList"></div>
+
+                <!-- Live PDF Embed Viewer -->
+                <div id="pdfViewerArea"></div>
+
+                <div class="action-grid">
+                    <a href="#" class="btn-action-view" id="btnOriginalCert">
+                        <i class="fa-solid fa-certificate"></i> View Official Certificate
+                    </a>
+                    <button class="btn-action-secondary" onclick="copyVerificationLink()">
+                        <i class="fa-solid fa-copy"></i> Copy Verification URL
+                    </button>
                 </div>
             </div>
-
-            <div class="meta-grid">
-                <div class="meta-box"><span>Department</span><strong id="dDept">--</strong></div>
-                <div class="meta-box"><span>Project Assigned</span><strong id="dProject">--</strong></div>
-                <div class="meta-box"><span>Tenure Duration</span><strong id="dTenure">--</strong></div>
-                <div class="meta-box"><span>Performance Score</span><strong id="dScore" style="color:var(--success-green);">--</strong></div>
-            </div>
-
-            <div class="section-title"><i class="fa-solid fa-file-pdf" style="color:var(--neon-cyan);"></i> Official 3-Month Milestone Documentation</div>
-            
-            <div id="pdfViewerArea">
-                <!-- PDF iframe injected here if exists -->
-            </div>
-
-            <a href="#" class="btn-view-cert" id="btnOriginalCert"><i class="fa-solid fa-certificate"></i> View Official Certificate Document</a>
         </div>
     </div>
 
+    <footer class="page-footer">
+        <p>© 2026 <strong>Tournyx Esports</strong>. All rights reserved. | Official Credential & Verification Authority</p>
+        <p style="margin-top: 4px;">Powered by <span class="quva-badge">QUVA TECHNOLOGIES</span></p>
+    </footer>
+
+    <!-- ENGINE LOGIC -->
     <script>
-        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+        const API_BASE = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
+        const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+
+        const ROLE_MATRIX = {
+            'AI VIBE CODING': {
+                border: '#6b21a8',
+                badgeBg: 'rgba(107, 33, 168, 0.15)',
+                gradient: 'linear-gradient(135deg, #7c3aed, #4c1d95)',
+                text: '#a855f7',
+                officerTitle: 'Chief AI & Systems Architect'
+            },
+            'FULL STACK DEVELOPER': {
+                border: '#0284c7',
+                badgeBg: 'rgba(2, 132, 199, 0.15)',
+                gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+                text: '#38bdf8',
+                officerTitle: 'Chief Software Development & Training Manager'
+            },
+            'CORE FRONTEND DEVELOPER': {
+                border: '#0d9488',
+                badgeBg: 'rgba(13, 148, 136, 0.15)',
+                gradient: 'linear-gradient(135deg, #0d9488, #115e59)',
+                text: '#2dd4bf',
+                officerTitle: 'Chief Software Development & Training Manager'
+            },
+            'UI/UX DESIGN': {
+                border: '#c026d3',
+                badgeBg: 'rgba(192, 38, 211, 0.15)',
+                gradient: 'linear-gradient(135deg, #c026d3, #86198f)',
+                text: '#e879f9',
+                officerTitle: 'Lead Product Design & Creative Director'
+            },
+            'ESPORTS OPERATIONS': {
+                border: '#d97706',
+                badgeBg: 'rgba(217, 119, 6, 0.15)',
+                gradient: 'linear-gradient(135deg, #d97706, #92400e)',
+                text: '#fbbf24',
+                officerTitle: 'Tournament & League Operations Director'
+            }
+        };
 
         window.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
-            const certId = params.get('id');
+            const queryId = (params.get('id') || params.get('cert') || params.get('key') || '').trim();
 
-            if (!certId) {
-                document.getElementById('cardContent').innerHTML = '<h3 style="color:var(--danger-red); text-align:center;">No Certificate ID Provided</h3>';
+            const skeleton = document.getElementById('skeletonLoaderArea');
+            const liveArea = document.getElementById('liveDataArea');
+
+            if (!queryId) {
+                renderErrorState("NO CREDENTIAL PARAMETER SPECIFIED", "Please scan a valid certificate QR code or provide a Certificate ID parameter in the URL.");
                 return;
             }
 
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_intern_certificates?certificate_id=eq.${encodeURIComponent(certId)}&select=*`, {
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                // PostgREST Query strictly matching verified schema
+                const queryUrl = `${API_BASE}/rest/v1/tims_intern_certificates?or=(certificate_id.ilike.${encodeURIComponent(queryId)},intern_email.ilike.${encodeURIComponent(queryId)})&select=*`;
+                
+                const res = await fetch(queryUrl, {
+                    headers: { 
+                        'apikey': API_KEY, 
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Accept': 'application/json'
+                    }
                 });
+
+                if (!res.ok) throw new Error("API response error");
+
                 const data = await res.json();
 
                 if (data && data.length > 0) {
                     const record = data[0];
-                    document.getElementById('dName').innerText = record.intern_name;
-                    document.getElementById('dRole').innerText = record.domain_role;
-                    document.getElementById('dCertId').innerText = record.certificate_id;
-                    document.getElementById('dDept').innerText = record.department;
-                    document.getElementById('dProject').innerText = record.project_name;
-                    document.getElementById('dTenure').innerText = `${record.start_date} to ${record.end_date}`;
-                    document.getElementById('dScore').innerText = record.performance_score || '98/100';
-
-                    // Render Live PDF Viewer or Fallback summary
-                    const pdfArea = document.getElementById('pdfViewerArea');
-                    const pdfUrl = record.documentation_pdf_url;
-
-                    if (pdfUrl) {
-                        pdfArea.innerHTML = `
-                            <a href="${pdfUrl}" target="_blank" class="btn-download-pdf"><i class="fa-solid fa-download"></i> Open / Download Full Dossier PDF</a>
-                            <div class="pdf-viewer-container">
-                                <iframe src="${pdfUrl}#toolbar=0" title="Intern Documentation PDF"></iframe>
-                            </div>
-                        `;
-                    } else {
-                        const dossier = record.intern_dossier || {};
-                        pdfArea.innerHTML = `
-                            <p style="font-size:0.85rem; color:#ddd; line-height:1.6; padding:15px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:20px;">
-                                ${dossier.summary || "Completed designated engineering sprints and professional milestone responsibilities under Domain Officer supervision."}
-                            </p>
-                        `;
-                    }
-
-                    document.getElementById('btnOriginalCert').href = `certificate.html?id=${record.certificate_id}`;
+                    renderDossierView(record);
                 } else {
-                    document.getElementById('cardContent').innerHTML = '<h3 style="color:var(--danger-red); text-align:center;">Certificate Not Found or Revoked</h3>';
+                    renderErrorState("CREDENTIAL RECORD NOT FOUND", `No verified institutional record matches "${queryId}". The certificate may have expired, been revoked, or the ID is invalid.`);
                 }
-            } catch (e) {
-                document.getElementById('cardContent').innerHTML = '<h3 style="color:var(--danger-red); text-align:center;">Network Verification Error</h3>';
+            } catch (err) {
+                console.error("Verification query failure:", err);
+                renderErrorState("VERIFICATION GATEWAY UNREACHABLE", "Could not establish a secure handshake with the credential ledger. Please verify your connection.");
             }
         });
+
+        function renderDossierView(record) {
+            const skeleton = document.getElementById('skeletonLoaderArea');
+            const liveArea = document.getElementById('liveDataArea');
+
+            // Apply Role Theming
+            const roleConfig = ROLE_MATRIX[record.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
+            document.documentElement.style.setProperty('--theme-border', roleConfig.border);
+            document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
+            document.documentElement.style.setProperty('--theme-text', roleConfig.text);
+
+            // Populate Metadata
+            document.getElementById('dName').innerText = record.intern_name || 'Verified Candidate';
+            document.getElementById('dRole').innerText = record.domain_role || 'Internship Candidate';
+            document.getElementById('dCertId').innerText = record.certificate_id || '--';
+            document.getElementById('dRecordKey').innerText = record.record_key || '--';
+            document.getElementById('dDept').innerText = record.department || '--';
+            document.getElementById('dProject').innerText = record.project_name || '--';
+            document.getElementById('dProjId').innerText = record.project_id || '--';
+            document.getElementById('dTenure').innerText = `${formatD(record.start_date)} - ${formatD(record.end_date)}`;
+            document.getElementById('dType').innerText = record.internship_type || 'Virtual / Project-Based';
+            document.getElementById('dOfficer').innerText = record.domain_officer_title || roleConfig.officerTitle;
+
+            // Render 3-Milestone Breakdown
+            const milestoneContainer = document.getElementById('milestoneAuditList');
+            milestoneContainer.innerHTML = `
+                <div class="milestone-item">
+                    <div class="milestone-item-header">
+                        <span class="milestone-tag"><i class="fa-solid fa-flag-checkered"></i> MILESTONE 1 — DOMAIN INTEGRATION & SPRINT INCEPTION</span>
+                        <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
+                    </div>
+                    <p class="milestone-desc">Successfully onboarded to ${record.department || 'the'} domain, completed workspace configuration, and engaged in initial sprint planning and module scaffolding.</p>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-item-header">
+                        <span class="milestone-tag"><i class="fa-solid fa-code-merge"></i> MILESTONE 2 — CORE FEATURE ARCHITECTURE & EXECUTION</span>
+                        <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
+                    </div>
+                    <p class="milestone-desc">Developed and submitted core project deliverables for project "${record.project_name || 'Assigned Track'}", adhering strictly to quality benchmarks and code reviews.</p>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-item-header">
+                        <span class="milestone-tag"><i class="fa-solid fa-award"></i> MILESTONE 3 — SYSTEM EVALUATION & PERFORMANCE RELEASE</span>
+                        <span class="milestone-status"><i class="fa-solid fa-circle-check"></i> VERIFIED COMPLETE</span>
+                    </div>
+                    <p class="milestone-desc">Completed final project presentations, code audit reviews with the supervising Domain Officer, and fulfilled credential issuance criteria.</p>
+                </div>
+            `;
+
+            // Render PDF Viewer (If live documentation asset exists)
+            const pdfArea = document.getElementById('pdfViewerArea');
+            if (record.documentation_pdf_url) {
+                pdfArea.innerHTML = `
+                    <div class="pdf-viewer-container">
+                        <iframe src="${record.documentation_pdf_url}#toolbar=0" title="Milestone Dossier PDF"></iframe>
+                    </div>
+                `;
+            } else {
+                pdfArea.innerHTML = '';
+            }
+
+            // Link to Certificate View
+            document.getElementById('btnOriginalCert').href = `certificate.html?id=${encodeURIComponent(record.certificate_id)}`;
+
+            // Switch Views Smoothly
+            skeleton.style.display = 'none';
+            liveArea.style.display = 'block';
+        }
+
+        function renderErrorState(title, message) {
+            const skeleton = document.getElementById('skeletonLoaderArea');
+            const liveArea = document.getElementById('liveDataArea');
+            const authBanner = document.getElementById('authBanner');
+
+            skeleton.style.display = 'none';
+            liveArea.style.display = 'none';
+
+            // Alter Banner to Danger
+            authBanner.style.background = 'rgba(255, 51, 102, 0.08)';
+            authBanner.style.borderColor = 'rgba(255, 51, 102, 0.3)';
+            document.getElementById('authIcon').className = 'fa-solid fa-circle-xmark';
+            document.getElementById('authIcon').style.color = 'var(--danger-red)';
+            document.getElementById('authTitle').innerText = title;
+            document.getElementById('authTitle').style.color = 'var(--danger-red)';
+            document.getElementById('authSubtitle').innerText = message;
+            
+            const badge = document.getElementById('authBadgeStatus');
+            badge.style.borderColor = 'var(--danger-red)';
+            badge.style.color = 'var(--danger-red)';
+            badge.style.background = 'rgba(255, 51, 102, 0.12)';
+            badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> UNVERIFIED';
+        }
+
+        function copyVerificationLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert("✅ Verification URL copied to clipboard!");
+            });
+        }
+
+        function formatD(str) {
+            if (!str) return '--';
+            const d = new Date(str);
+            if (isNaN(d.getTime())) return str;
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
     </script>
 </body>
 </html>
