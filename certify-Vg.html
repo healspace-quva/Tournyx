@@ -9,10 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- QR Code, html2canvas & jsPDF -->
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -25,7 +26,7 @@
             --danger-red: #ff3366;
             --success-green: #00ff7f;
             
-            /* Dynamic Role Accent Vars (Overridden by JS per Domain) */
+            /* Dynamic Role Accent Colors (Set by JS) */
             --theme-border: #6b21a8;
             --theme-badge-bg: #581c87;
             --theme-gradient: linear-gradient(135deg, #7c3aed, #4c1d95);
@@ -63,7 +64,7 @@
             pointer-events: none;
         }
 
-        /* --- PORTAL HEADER & SEARCH --- */
+        /* --- SHIMMERING HEADER --- */
         .portal-header {
             text-align: center;
             margin-bottom: 25px;
@@ -75,7 +76,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 16px;
+            padding: 6px 18px;
             background: rgba(0, 242, 255, 0.06);
             border: 1px solid var(--panel-border);
             border-radius: 50px;
@@ -83,25 +84,38 @@
             font-size: 0.75rem;
             color: var(--neon-cyan);
             margin-bottom: 12px;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            animation: badgeGlow 3s infinite alternate;
+        }
+
+        @keyframes badgeGlow {
+            0% { box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(157, 0, 255, 0.4); }
         }
 
         .portal-title {
             font-family: var(--font-head);
-            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #00f2ff, #ffffff, #bd00ff, #00f2ff);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: shineText 4s linear infinite;
             margin-bottom: 6px;
             text-transform: uppercase;
+        }
+
+        @keyframes shineText {
+            to { background-position: 200% center; }
         }
 
         .portal-sub {
             font-size: 0.9rem;
             color: var(--text-muted);
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .claim-card {
@@ -171,12 +185,12 @@
             transform: translateY(-2px);
         }
 
-        /* --- STAGED LIVE PRINTING OVERLAY --- */
+        /* --- VIDEO-STYLE KINETIC LOADER --- */
         #printStageOverlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(3, 4, 8, 0.96);
-            backdrop-filter: blur(20px);
+            background: rgba(3, 4, 8, 0.97);
+            backdrop-filter: blur(25px);
             z-index: 10000;
             display: none;
             align-items: center;
@@ -185,46 +199,63 @@
             padding: 20px;
         }
 
+        .kinetic-stage {
+            position: relative;
+            width: 140px; height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .kinetic-core-logo {
+            width: 80px; height: 80px;
+            animation: pulseLogo 1.2s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 20px var(--neon-cyan));
+            z-index: 5;
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(0.9); filter: drop-shadow(0 0 10px var(--neon-cyan)); }
+            100% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--neon-purple)); }
+        }
+
+        .particle-ray {
+            position: absolute;
+            width: 4px; height: 25px;
+            background: linear-gradient(0deg, var(--neon-cyan), transparent);
+            border-radius: 4px;
+            opacity: 0.8;
+            animation: rayBurst 1.5s infinite ease-out;
+        }
+
+        .ray-1 { top: -10px; transform: rotate(0deg); animation-delay: 0s; }
+        .ray-2 { right: -10px; transform: rotate(90deg); animation-delay: 0.2s; }
+        .ray-3 { bottom: -10px; transform: rotate(180deg); animation-delay: 0.4s; }
+        .ray-4 { left: -10px; transform: rotate(270deg); animation-delay: 0.6s; }
+        .ray-5 { top: 0; right: 0; transform: rotate(45deg); animation-delay: 0.3s; }
+        .ray-6 { bottom: 0; right: 0; transform: rotate(135deg); animation-delay: 0.5s; }
+        .ray-7 { bottom: 0; left: 0; transform: rotate(225deg); animation-delay: 0.7s; }
+        .ray-8 { top: 0; left: 0; transform: rotate(315deg); animation-delay: 0.1s; }
+
+        @keyframes rayBurst {
+            0% { transform: scaleY(0.5); opacity: 0.2; }
+            50% { transform: scaleY(1.6); opacity: 1; filter: drop-shadow(0 0 10px var(--neon-cyan)); }
+            100% { transform: scaleY(0.5); opacity: 0.2; }
+        }
+
         .stage-box {
             text-align: center;
             max-width: 480px;
             width: 100%;
         }
 
-        .laser-scanner {
-            width: 120px; height: 120px;
-            margin: 0 auto 25px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .laser-ring {
-            position: absolute;
-            width: 100%; height: 100%;
-            border: 3px solid rgba(0, 242, 255, 0.1);
-            border-top: 3px solid var(--neon-cyan);
-            border-radius: 50%;
-            animation: laserRotate 1s infinite linear;
-        }
-
-        .laser-core {
-            font-size: 2.2rem;
-            color: var(--neon-cyan);
-            filter: drop-shadow(0 0 15px var(--neon-cyan));
-            animation: laserPulse 1.2s infinite alternate;
-        }
-
-        @keyframes laserRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes laserPulse { from { transform: scale(0.9); opacity: 0.7; } to { transform: scale(1.1); opacity: 1; } }
-
         .stage-log-title {
             font-family: var(--font-head);
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             color: #ffffff;
             margin-bottom: 6px;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .stage-log-sub {
@@ -233,6 +264,7 @@
             margin-bottom: 20px;
             font-weight: 600;
             min-height: 20px;
+            font-family: var(--font-sub);
         }
 
         .stage-progress-bg {
@@ -247,7 +279,7 @@
             height: 100%; width: 0%;
             background: linear-gradient(90deg, #bd00ff, var(--neon-cyan));
             box-shadow: 0 0 15px var(--neon-cyan);
-            transition: width 0.4s ease;
+            transition: width 0.3s ease;
         }
 
         /* --- CERTIFICATE EXPORT WRAPPER --- */
@@ -329,7 +361,6 @@
             flex-shrink: 0;
         }
 
-        /* Dynamic Geometry Frames (Controlled by Domain Theme) */
         .cert-outer-border {
             position: absolute;
             top: 10px; left: 10px; right: 10px; bottom: 10px;
@@ -362,7 +393,7 @@
             z-index: 3;
         }
 
-        /* CERTIFICATE HEADER */
+        /* HEADER */
         .cert-header {
             display: flex;
             justify-content: space-between;
@@ -454,7 +485,7 @@
             margin: 0 auto;
         }
 
-        /* CERTIFICATE BODY */
+        /* BODY */
         .cert-body {
             text-align: center;
             padding: 0 40px;
@@ -551,7 +582,7 @@
             max-width: 140px;
         }
 
-        /* DIGITAL SIGNATURES ROW (Dynamic Database Images) */
+        /* DIGITAL SIGNATURES ROW */
         .signatures-area {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -581,7 +612,6 @@
             max-height: 100%;
             max-width: 100%;
             object-fit: contain;
-            filter: contrast(1.2);
         }
 
         .pending-sig-text {
@@ -598,10 +628,15 @@
         }
 
         .sig-officer-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
             color: #111827;
             text-transform: uppercase;
+            line-height: 1.2;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .sig-officer-sub {
@@ -610,7 +645,7 @@
             font-weight: 600;
         }
 
-        /* OFFICIAL DARK BOTTOM FOOTER */
+        /* OFFICIAL FOOTER */
         .cert-footer-bar {
             background: #0d0f18;
             color: #ffffff;
@@ -637,10 +672,7 @@
             letter-spacing: 0.5px;
         }
 
-        .footer-center {
-            text-align: center;
-        }
-
+        .footer-center { text-align: center; }
         .footer-center span {
             display: block;
             font-size: 0.52rem;
@@ -676,7 +708,6 @@
             text-align: left;
         }
 
-        /* PAGE FOOTER CREDITS */
         .page-footer {
             margin-top: 50px;
             text-align: center;
@@ -695,7 +726,6 @@
             letter-spacing: 1px;
         }
 
-        /* PRINT STYLING */
         @media print {
             body { background: #ffffff !important; padding: 0 !important; }
             .ambient-grid, .portal-header, .claim-card, .action-toolbar, .notification-toast, #printStageOverlay, .page-footer { display: none !important; }
@@ -713,14 +743,12 @@
 
     <div class="ambient-grid"></div>
 
-    <!-- PORTAL HEADER -->
     <header class="portal-header">
         <div class="brand-pill"><i class="fa-solid fa-microchip"></i> TOURNYX CREDENTIAL MATRIX</div>
         <h1 class="portal-title">TOURNYX ESPORTS</h1>
         <p class="portal-sub">Official Internship Credential & Verification Authority</p>
     </header>
 
-    <!-- VERIFICATION INPUT FORM -->
     <div class="claim-card">
         <form id="claimForm" onsubmit="handleVerification(event)" class="input-box">
             <input type="text" id="certQueryInput" class="portal-input" placeholder="Enter registered intern email or Certificate ID..." required autocomplete="off">
@@ -730,27 +758,43 @@
         </form>
     </div>
 
-    <!-- STAGED LASER PRINTING ANIMATION OVERLAY -->
+    <!-- KINETIC RADIATING PARTICLE LOADER OVERLAY -->
     <div id="printStageOverlay">
+        <div class="kinetic-stage">
+            <div class="particle-ray ray-1"></div>
+            <div class="particle-ray ray-2"></div>
+            <div class="particle-ray ray-3"></div>
+            <div class="particle-ray ray-4"></div>
+            <div class="particle-ray ray-5"></div>
+            <div class="particle-ray ray-6"></div>
+            <div class="particle-ray ray-7"></div>
+            <div class="particle-ray ray-8"></div>
+            
+            <svg class="kinetic-core-logo" viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="coreGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f2ff" />
+                        <stop offset="100%" stop-color="#9d00ff" />
+                    </linearGradient>
+                </defs>
+                <polygon points="50,4 93,26 93,74 50,96 7,74 7,26" fill="#0d111a" stroke="url(#coreGlow)" stroke-width="4" />
+                <text x="50%" y="58%" font-family="Orbitron" font-weight="900" font-size="34" fill="url(#coreGlow)" text-anchor="middle" dominant-baseline="middle">TX</text>
+            </svg>
+        </div>
+        
         <div class="stage-box">
-            <div class="laser-scanner">
-                <div class="laser-ring"></div>
-                <i class="fa-solid fa-certificate laser-core"></i>
-            </div>
-            <div class="stage-log-title" id="stageMainTitle">PRINTING CREDENTIAL...</div>
-            <div class="stage-log-sub" id="stageSubTitle">Authenticating cryptographic key...</div>
+            <div class="stage-log-title" id="stageMainTitle">INITIALIZING CIPHER MATRIX...</div>
+            <div class="stage-log-sub" id="stageSubTitle">Authenticating Tournyx credential repository...</div>
             <div class="stage-progress-bg">
                 <div class="stage-progress-fill" id="stageProgressBar"></div>
             </div>
         </div>
     </div>
 
-    <!-- CERTIFICATE EXPORT CONTAINER -->
     <div class="cert-export-wrapper" id="exportArea">
-        
         <div class="notification-toast">
             <i class="fa-solid fa-circle-check"></i>
-            <span id="toastBannerText">Official Credential Verified. Encrypted certificate dispatch confirmed to registered email.</span>
+            <span id="toastBannerText">Official Credential Verified. Milestone portfolio and signatures linked.</span>
         </div>
 
         <div class="action-toolbar">
@@ -759,10 +803,8 @@
             <button class="btn-action" onclick="exportJsPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
         </div>
 
-        <!-- THE PHYSICAL CERTIFICATE CANVAS -->
+        <!-- CERTIFICATE CANVAS -->
         <div id="certificateCard">
-            
-            <!-- Dynamic Geometric Frame -->
             <div class="cert-outer-border"></div>
             <div class="corner-accent ca-tl"></div>
             <div class="corner-accent ca-tr"></div>
@@ -771,11 +813,9 @@
             <div class="tri-tl"></div>
             <div class="tri-br"></div>
 
-            <!-- HEADER -->
             <div class="cert-header">
                 <div class="cert-brand-block">
                     <div class="logo-svg-wrap">
-                        <!-- Official Tournyx Esports Vector Hexagon Logo -->
                         <svg viewBox="0 0 100 100" width="75" height="75">
                             <defs>
                                 <linearGradient id="txBrandGlow" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -803,7 +843,6 @@
                 </div>
             </div>
 
-            <!-- BODY -->
             <div class="cert-body">
                 <div class="presented-to">This certificate is proudly presented to</div>
                 <div class="recipient-name" id="viewName">Candidate Name</div>
@@ -812,10 +851,9 @@
                 <div class="role-title-text" id="viewRole">AI VIBE CODING</div>
 
                 <p class="cert-desc" id="viewCommendation">
-                    This is to certify that the candidate has successfully completed an internship with <strong>Tournyx Esports</strong>. During the tenure, the intern demonstrated commendable technical competence, domain diligence, and adherence to professional corporate engineering standards.
+                    This is to certify that candidate has successfully completed an internship with <strong>Tournyx Esports</strong>.
                 </p>
 
-                <!-- METADATA 5-COLUMN STRIP -->
                 <div class="meta-strip">
                     <div class="meta-cell">
                         <i class="fa-solid fa-briefcase"></i>
@@ -855,14 +893,13 @@
                 </div>
             </div>
 
-            <!-- DIGITAL SIGNATURES ROW (Live DB Fetched Images) -->
             <div class="signatures-area">
                 <div class="sig-unit">
                     <div class="sig-img-wrap" id="sigSlotDomain">
                         <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider"></div>
-                    <div class="sig-officer-title" id="nameDomainOfficer">DOMAIN OFFICER</div>
+                    <div class="sig-officer-title" id="titleDomainOfficer">CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
 
@@ -871,7 +908,7 @@
                         <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider"></div>
-                    <div class="sig-officer-title" id="nameHROfficer">HR / COORDINATOR</div>
+                    <div class="sig-officer-title">HR & INTERNSHIP OPERATIONS COORDINATOR</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
 
@@ -880,12 +917,11 @@
                         <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider" style="border-color: #4c1d95;"></div>
-                    <div class="sig-officer-title" id="nameCEO" style="color: #4c1d95;">FOUNDER & CEO</div>
+                    <div class="sig-officer-title" style="color: #4c1d95;">FOUNDER & CHIEF EXECUTIVE OFFICER</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
             </div>
 
-            <!-- OFFICIAL FOOTER BAR -->
             <div class="cert-footer-bar">
                 <div class="footer-left">
                     <h4>TOURNYX ESPORTS</h4>
@@ -911,58 +947,61 @@
                     <div id="qrCodeOutput"></div>
                     <div class="qr-label">
                         <strong>VERIFICATION</strong><br>
-                        Scan to verify<br>
-                        this certificate
+                        Scan for live intern<br>
+                        dossier portfolio
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- MANDATORY LEGAL & POWERED BY CREDITS -->
     <footer class="page-footer">
         <p>© 2026 <strong>Tournyx Esports</strong>. All rights reserved. | Official Credential & Verification Authority</p>
         <p style="margin-top: 4px;">Powered by <span class="quva-badge">QUVA TECHNOLOGIES</span></p>
     </footer>
 
-    <!-- ================= JAVASCRIPT MOTOR ================= -->
+    <!-- JAVASCRIPT ENGINE -->
     <script>
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
         let qrcodeObj = null;
 
-        // MULTI-ROLE DOMAIN THEMES (Borders, Rosette Gradient & Description Only)
-        const DOMAIN_THEMES = {
+        // Role-Specific Accent Themes & Executive Designations
+        const ROLE_MATRIX = {
             'AI VIBE CODING': {
                 border: '#6b21a8',
                 gradient: 'radial-gradient(circle, #7c3aed, #4c1d95)',
                 text: '#6b21a8',
+                officerTitle: 'CHIEF AI & SYSTEMS ARCHITECT',
                 desc: 'demonstrated exceptional aptitude in prompt scaffolding, neural API integrations, and modern AI development frameworks, delivering robust components within scheduled engineering sprints.'
             },
             'FULL STACK DEVELOPER': {
                 border: '#0284c7',
                 gradient: 'radial-gradient(circle, #0284c7, #0369a1)',
                 text: '#0284c7',
+                officerTitle: 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER',
                 desc: 'engineered resilient RESTful database bridges, real-time client state listeners, and performant backend controllers adhering strictly to modern security and architecture benchmarks.'
             },
             'CORE FRONTEND DEVELOPER': {
                 border: '#0d9488',
                 gradient: 'radial-gradient(circle, #0d9488, #115e59)',
                 text: '#0d9488',
+                officerTitle: 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER',
                 desc: 'developed responsive, hardware-accelerated user interfaces, custom SVG animation workflows, and seamless cross-platform single page layouts.'
             },
             'UI/UX DESIGN': {
                 border: '#c026d3',
                 gradient: 'radial-gradient(circle, #c026d3, #86198f)',
                 text: '#c026d3',
+                officerTitle: 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR',
                 desc: 'crafted high-fidelity wireframes, interactive mobile prototypes, and cybernetic neon design tokens to deliver an intuitive user experience.'
             },
             'ESPORTS OPERATIONS': {
                 border: '#d97706',
                 gradient: 'radial-gradient(circle, #d97706, #92400e)',
                 text: '#d97706',
+                officerTitle: 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR',
                 desc: 'demonstrated exemplary leadership in tournament scheduling, competitive bracket management, and automated room administration with high operational efficiency.'
             }
         };
@@ -981,76 +1020,83 @@
             const subTitle = document.getElementById('stageSubTitle');
             const bar = document.getElementById('stageProgressBar');
             
-            // Open Laser Printing Modal
             overlay.style.display = 'flex';
-            bar.style.width = '15%';
+            bar.style.width = '20%';
             mainTitle.innerText = 'LOCATING CREDENTIAL VAULT...';
-            subTitle.innerText = 'Querying Supabase cryptographic ledger...';
+            subTitle.innerText = 'Querying encrypted registry...';
 
             let certData = null;
+            let officerSigs = [];
 
-            // 1. Query Supabase for real record
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)})&select=*`, {
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        certData = data[0];
-                    }
+                // Fetch Certificate and Signatures in parallel
+                const [certRes, sigRes] = await Promise.all([
+                    fetch(`${SUPABASE_URL}/rest/v1/tims_intern_certificates?or=(intern_email.ilike.${encodeURIComponent(rawQuery)},certificate_id.ilike.${encodeURIComponent(rawQuery)})&select=*`, {
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    }),
+                    fetch(`${SUPABASE_URL}/rest/v1/tims_officer_signatures?is_active=eq.true&select=*`, {
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    })
+                ]);
+
+                if (certRes.ok) {
+                    const data = await certRes.json();
+                    if (data && data.length > 0) certData = data[0];
                 }
-            } catch(err) {
-                console.error("Database connection failure:", err);
+                if (sigRes.ok) {
+                    officerSigs = await sigRes.json();
+                }
+            } catch (err) {
+                console.error("Network check failed:", err);
             }
 
-            // 2. Strict Check: If no real record in database, refuse generation
+            // Strict Validation Refusal
             if (!certData) {
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    alert(`❌ RECORD NOT FOUND IN OFFICIAL REGISTRY.\n\nNo verified internship record exists matching "${rawQuery}".\nPlease verify your registered email or official Certificate ID.`);
-                }, 700);
+                overlay.style.display = 'none';
+                alert(`❌ RECORD NOT FOUND IN REGISTRY.\n\nNo verified certificate matches "${rawQuery}".\nPlease enter your registered intern email or official Certificate ID.`);
                 return;
             }
 
-            // 3. Staged Live Printing Sequence
+            // Staged Kinetic Loading Steps
             setTimeout(() => {
-                bar.style.width = '40%';
+                bar.style.width = '50%';
                 mainTitle.innerText = 'INSCRIBING METADATA...';
                 subTitle.innerText = `Binding candidate profile: ${certData.intern_name}...`;
-            }, 400);
+            }, 300);
 
             setTimeout(() => {
-                bar.style.width = '70%';
-                mainTitle.innerText = 'FETCHING VERIFIED SIGNATURES...';
-                subTitle.innerText = 'Retrieving transparent officer RSA keys from Supabase...';
-            }, 900);
+                bar.style.width = '75%';
+                mainTitle.innerText = 'VERIFYING DIGITAL SIGNATURES...';
+                subTitle.innerText = 'Inking Founder & Domain Officer RSA keys...';
+            }, 650);
 
             setTimeout(() => {
                 bar.style.width = '90%';
-                mainTitle.innerText = 'STAMPING MSME SEAL...';
-                subTitle.innerText = 'Generating unique cryptographic QR verification link...';
-            }, 1400);
+                mainTitle.innerText = 'COMPILING DOSSIER QR...';
+                subTitle.innerText = 'Generating cryptographic verification endpoint...';
+            }, 1000);
 
             setTimeout(() => {
                 bar.style.width = '100%';
                 mainTitle.innerText = 'MINTING COMPLETE!';
                 subTitle.innerText = 'Displaying verified document...';
-            }, 1800);
+            }, 1300);
 
-            // 4. Render Certificate & Load Real Database Signatures
-            setTimeout(async () => {
-                await renderCertificateToCanvas(certData);
-                overlay.style.display = 'none';
-                
-                const exportArea = document.getElementById('exportArea');
-                exportArea.style.display = 'flex';
-                exportArea.scrollIntoView({ behavior: 'smooth' });
-            }, 2100);
+            // Fail-Safe Render Callback
+            setTimeout(() => {
+                try {
+                    renderCertificateToCanvas(certData, officerSigs);
+                    document.getElementById('exportArea').style.display = 'flex';
+                    document.getElementById('exportArea').scrollIntoView({ behavior: 'smooth' });
+                } catch (renderError) {
+                    console.error("Render error:", renderError);
+                } finally {
+                    overlay.style.display = 'none'; // Never stays stuck
+                }
+            }, 1500);
         }
 
-        async function renderCertificateToCanvas(data) {
+        function renderCertificateToCanvas(data, sigs) {
             document.getElementById('viewName').innerText = data.intern_name;
             document.getElementById('viewRole').innerText = data.domain_role;
             
@@ -1070,67 +1116,46 @@
             document.getElementById('viewDuration').innerText = `(${data.duration_months || 2} Months)`;
             document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
 
-            // Apply Role-Specific Color Theme
-            const theme = DOMAIN_THEMES[data.domain_role] || DOMAIN_THEMES['AI VIBE CODING'];
-            document.documentElement.style.setProperty('--theme-border', theme.border);
-            document.documentElement.style.setProperty('--theme-gradient', theme.gradient);
-            document.documentElement.style.setProperty('--theme-text', theme.text);
+            // Role Theming & Title Resolution
+            const roleConfig = ROLE_MATRIX[data.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
+            document.documentElement.style.setProperty('--theme-border', roleConfig.border);
+            document.documentElement.style.setProperty('--theme-gradient', roleConfig.gradient);
+            document.documentElement.style.setProperty('--theme-text', roleConfig.text);
             
+            document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
+
             document.getElementById('viewCommendation').innerHTML = `
-                This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${theme.desc}
+                This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${roleConfig.desc}
             `;
 
-            // 5. Fetch Real Officer Signatures from tims_officer_signatures
-            await loadOfficerSignatures(data);
+            // Inject Real Signatures
+            if (sigs && sigs.length > 0) {
+                const ceoSig = sigs.find(s => s.officer_key === data.ceo_key || s.officer_key === 'ceo');
+                const hrSig = sigs.find(s => s.officer_key === data.hr_coordinator_key || s.officer_key === 'hr');
+                const domainSig = sigs.find(s => s.officer_key === data.domain_officer_key || s.officer_key === 'domain_officer' || s.officer_key.startsWith('custom_'));
 
-            // 6. Generate Unique Verification QR Code
+                if (ceoSig && ceoSig.signature_url) {
+                    document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
+                }
+                if (hrSig && hrSig.signature_url) {
+                    document.getElementById('sigSlotHR').innerHTML = `<img src="${hrSig.signature_url}" class="real-sig-img" alt="HR Signature">`;
+                }
+                if (domainSig && domainSig.signature_url) {
+                    document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
+                }
+            }
+
+            // Unique QR Code -> Points directly to verify.html Dossier
             const qrContainer = document.getElementById('qrCodeOutput');
             qrContainer.innerHTML = '';
             qrcodeObj = new QRCode(qrContainer, {
-                text: `https://tournyx.in/certify-vg?id=${data.certificate_id}`,
+                text: `https://tournyx.in/verify.html?id=${data.certificate_id}`,
                 width: 40,
                 height: 40,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
             });
-        }
-
-        async function loadOfficerSignatures(certData) {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/tims_officer_signatures?is_active=eq.true&select=*`, {
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-
-                if (response.ok) {
-                    const sigs = await response.json();
-                    
-                    // Match Signatures by Key
-                    const ceoSig = sigs.find(s => s.officer_key === certData.ceo_key || s.officer_key === 'ceo');
-                    const hrSig = sigs.find(s => s.officer_key === certData.hr_coordinator_key || s.officer_key === 'hr');
-                    const domainSig = sigs.find(s => s.officer_key === certData.domain_officer_key || s.officer_key === 'domain_officer' || s.officer_key.startsWith('custom_'));
-
-                    // Inject CEO Signature Image
-                    if (ceoSig && ceoSig.signature_url) {
-                        document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
-                        document.getElementById('nameCEO').innerText = ceoSig.officer_name.toUpperCase();
-                    }
-
-                    // Inject HR Signature Image
-                    if (hrSig && hrSig.signature_url) {
-                        document.getElementById('sigSlotHR').innerHTML = `<img src="${hrSig.signature_url}" class="real-sig-img" alt="HR Signature">`;
-                        document.getElementById('nameHROfficer').innerText = hrSig.officer_name.toUpperCase();
-                    }
-
-                    // Inject Domain Officer Signature Image
-                    if (domainSig && domainSig.signature_url) {
-                        document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
-                        document.getElementById('nameDomainOfficer').innerText = domainSig.officer_name.toUpperCase();
-                    }
-                }
-            } catch(e) {
-                console.warn("Could not load officer signature assets from database:", e);
-            }
         }
 
         function formatD(str) {
@@ -1160,7 +1185,6 @@
             });
         }
 
-        // Auto verify if ID or email query param is passed
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const cid = params.get('id') || params.get('email');
