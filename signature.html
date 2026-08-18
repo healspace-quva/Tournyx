@@ -58,9 +58,9 @@
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 24px;
-            padding: 30px 25px;
+            padding: 28px 20px;
             width: 100%;
-            max-width: 720px; /* Full-width spacious UI on desktop */
+            max-width: 680px;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 255, 0.05);
             position: relative;
             z-index: 2;
@@ -104,7 +104,7 @@
 
         .card-heading h2 {
             font-family: var(--font-head);
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             margin-bottom: 4px;
             color: #fff;
         }
@@ -115,7 +115,6 @@
             margin-bottom: 22px;
         }
 
-        /* --- INPUT MATRIX --- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -124,9 +123,7 @@
         }
 
         @media (min-width: 600px) {
-            .form-grid.two-col {
-                grid-template-columns: 1fr 1fr;
-            }
+            .form-grid.two-col { grid-template-columns: 1fr 1fr; }
         }
 
         .input-group {
@@ -167,10 +164,7 @@
             -webkit-appearance: none;
         }
 
-        .select-wrapper {
-            position: relative;
-        }
-
+        .select-wrapper { position: relative; }
         .select-wrapper::after {
             content: '\f078';
             font-family: 'Font Awesome 6 Free';
@@ -196,11 +190,9 @@
             background: #080b12;
         }
 
-        .hidden-field {
-            display: none;
-        }
+        .hidden-field { display: none; }
 
-        /* --- FULL-WIDTH CANVAS WRAPPER --- */
+        /* --- SIGNATURE CANVAS AREA --- */
         .pad-wrapper {
             position: relative;
             margin-top: 10px;
@@ -210,40 +202,54 @@
 
         .pad-status-bar {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 0.75rem;
             font-weight: 700;
             font-family: var(--font-sub);
             color: var(--text-muted);
             text-transform: uppercase;
+            gap: 8px;
         }
 
         .pad-tools {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .pad-tool-btn {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.12);
             color: var(--neon-cyan);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.72rem;
             font-family: var(--font-head);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             transition: 0.2s;
         }
 
         .pad-tool-btn:hover {
             background: rgba(0, 242, 255, 0.15);
             border-color: var(--neon-cyan);
+        }
+
+        .pad-tool-btn.upload-active {
+            background: rgba(189, 0, 255, 0.15);
+            border-color: var(--neon-purple);
+            color: #ffffff;
+        }
+
+        .pad-tool-btn.upload-active:hover {
+            background: rgba(189, 0, 255, 0.25);
+            box-shadow: 0 0 10px rgba(189, 0, 255, 0.4);
         }
 
         .pad-status-badge {
@@ -253,9 +259,7 @@
             color: var(--danger-red);
         }
 
-        .pad-status-badge.unlocked {
-            color: var(--success-green);
-        }
+        .pad-status-badge.unlocked { color: var(--success-green); }
 
         .canvas-container {
             position: relative;
@@ -284,13 +288,13 @@
         canvas {
             display: block;
             width: 100%;
-            height: 220px; /* Full-height expansive canvas for accurate mobile/desktop signing */
+            height: 220px;
             cursor: crosshair;
         }
 
         .baseline-guide {
             position: absolute;
-            bottom: 40px;
+            bottom: 35px;
             left: 20px;
             right: 20px;
             border-bottom: 1px dashed #94a3b8;
@@ -303,7 +307,7 @@
             padding-bottom: 4px;
         }
 
-        /* --- FULLSCREEN PAD EXPANDER (Modal) --- */
+        /* --- FULLSCREEN LANDSCAPE EXPANDER --- */
         .fs-pad-modal {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -311,28 +315,40 @@
             z-index: 99999;
             display: none;
             flex-direction: column;
-            padding: 20px;
+            padding: 15px;
         }
 
-        .fs-pad-modal.active {
-            display: flex;
-        }
+        .fs-pad-modal.active { display: flex; }
 
         .fs-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .fs-actions {
+            display: flex;
+            gap: 10px;
         }
 
         .fs-canvas-container {
             flex: 1;
+            width: 100%;
+            height: 100%;
             background: #ffffff;
             border-radius: 18px;
             position: relative;
             overflow: hidden;
             touch-action: none;
             border: 2px solid var(--neon-cyan);
+        }
+
+        #fsSignatureCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         /* --- CONTROLS --- */
@@ -389,7 +405,7 @@
             box-shadow: none;
         }
 
-        /* --- PREVIEW & CONFIRMATION MODAL --- */
+        /* --- PREVIEW MODAL --- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -423,9 +439,7 @@
             position: relative;
         }
 
-        .modal-overlay.active .modal-box {
-            transform: translateY(0) scale(1);
-        }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
 
         .modal-header h3 {
             font-family: var(--font-head);
@@ -452,7 +466,7 @@
         }
 
         .preview-img-box {
-            height: 100px;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -504,10 +518,7 @@
             word-break: break-all;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-        }
+        .modal-actions { display: flex; gap: 12px; }
 
         .btn-confirm {
             flex: 2;
@@ -516,9 +527,7 @@
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
-        .btn-confirm:hover {
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.7);
-        }
+        .btn-confirm:hover { box-shadow: 0 0 25px rgba(0, 242, 255, 0.7); }
 
         .btn-back {
             flex: 1;
@@ -527,7 +536,6 @@
             color: #fff;
         }
 
-        /* --- TOAST NOTIFICATIONS --- */
         #toast {
             position: fixed;
             bottom: 30px;
@@ -555,22 +563,6 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-        /* --- UPLOAD & PROCESSOR TOOLING --- */
-.upload-btn-wrap {
-    display: inline-flex;
-    align-items: center;
-}
-
-.pad-tool-btn.upload-active {
-    background: rgba(189, 0, 255, 0.15);
-    border-color: var(--neon-purple);
-    color: #ffffff;
-}
-
-.pad-tool-btn.upload-active:hover {
-    background: rgba(189, 0, 255, 0.25);
-    box-shadow: 0 0 10px rgba(189, 0, 255, 0.4);
-}
     </style>
 </head>
 <body>
@@ -623,10 +615,8 @@
             <div class="pad-status-bar">
                 <span><span>STEP 3</span> Inscribe or Upload Signature</span>
                 <div class="pad-tools">
-                    <!-- HIDDEN FILE INPUT -->
                     <input type="file" id="sigFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" onchange="processUploadedSignature(event)">
                     
-                    <!-- UPLOAD TRIGGER BUTTON -->
                     <button type="button" class="pad-tool-btn upload-active" onclick="triggerFileUpload()">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
                     </button>
@@ -648,6 +638,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Action Controls -->
         <div class="controls">
             <button type="button" class="btn-clear" id="btnClear" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
@@ -655,16 +646,19 @@
         </div>
     </div>
 
-    <!-- FULLSCREEN MODAL FOR ACCURATE MOBILE/DESKTOP SIGNING -->
+    <!-- FULLSCREEN MODAL FOR PRECISE LANDSCAPE SIGNING -->
     <div class="fs-pad-modal" id="fsPadModal">
         <div class="fs-header">
             <div>
-                <h3 style="font-family:var(--font-head); color:var(--neon-cyan); font-size:1.1rem;"><i class="fa-solid fa-pen-nib"></i> Precision Signature Mode</h3>
-                <p style="font-size:0.75rem; color:var(--text-muted);">Use stylus or touch gestures across the full viewport.</p>
+                <h3 style="font-family:var(--font-head); color:var(--neon-cyan); font-size:1.1rem;"><i class="fa-solid fa-pen-nib"></i> Full Viewport Signature Pad</h3>
+                <p style="font-size:0.75rem; color:var(--text-muted);">Sign across the entire screen. Landscape orientation supported.</p>
             </div>
-            <button type="button" class="pad-tool-btn" onclick="closeFullscreenPad()"><i class="fa-solid fa-check"></i> Apply & Minimize</button>
+            <div class="fs-actions">
+                <button type="button" class="pad-tool-btn" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+                <button type="button" class="pad-tool-btn" style="background:var(--neon-cyan); color:#000;" onclick="closeFullscreenPad()"><i class="fa-solid fa-check"></i> Apply & Minimize</button>
+            </div>
         </div>
-        <div class="fs-canvas-container">
+        <div class="fs-canvas-container" id="fsContainer">
             <canvas id="fsSignatureCanvas"></canvas>
         </div>
     </div>
@@ -687,7 +681,7 @@
             </div>
 
             <div class="meta-summary">
-                <div>Format: <b>PNG (Auto-Cropped Transparent Vector)</b></div>
+                <div>Format: <b>PNG (Clean Transparent Vector Ink)</b></div>
                 <div>SHA-256 Digest: <b id="modalShaDigest">Calculating...</b></div>
             </div>
 
@@ -702,7 +696,7 @@
 
     <!-- SCRIPT ENGINE -->
     <script>
-        // --- 1. SUPABASE INITIALIZATION ---
+        // --- 1. SUPABASE CLIENT INITIALIZATION ---
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         
@@ -711,9 +705,8 @@
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             }
-        } catch(e) { console.warn("Supabase local fallback initialized."); }
+        } catch(e) { console.warn("Supabase init error:", e); }
 
-        // Core Default Roles
         const ALL_OFFICER_ROLES = [
             { key: 'ceo', title: 'Founder & Chief Executive Officer (CEO)' },
             { key: 'cto', title: 'Chief Technology Officer (CTO)' },
@@ -726,7 +719,7 @@
             { key: 'domain_officer', title: 'Domain Inspection Officer' }
         ];
 
-        // --- 2. CANVAS & DRAWING ENGINE ---
+        // --- 2. CANVASES SETUP & COORDINATE CALCULATION ---
         const canvas = document.getElementById('signatureCanvas');
         const ctx = canvas.getContext('2d');
         const fsCanvas = document.getElementById('fsSignatureCanvas');
@@ -747,42 +740,38 @@
         let generatedSignatureBlob = null;
         let generatedChecksum = "";
 
-        // High-DPI Canvas Scaling with Bezier Smoothing
-        function resizeCanvas() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        function resizeSingleCanvas(c, cCtx) {
+            const dpr = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = c.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
             
-            // Standard Card Canvas
-            canvas.width = canvas.offsetWidth * ratio;
-            canvas.height = canvas.offsetHeight * ratio;
-            ctx.scale(ratio, ratio);
-            ctx.strokeStyle = '#07090e';
-            ctx.lineWidth = 3.0;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            c.width = rect.width * dpr;
+            c.height = rect.height * dpr;
+            cCtx.setTransform(1, 0, 0, 1, 0, 0);
+            cCtx.scale(dpr, dpr);
+            cCtx.strokeStyle = '#07090e';
+            cCtx.lineWidth = 3.0;
+            cCtx.lineCap = 'round';
+            cCtx.lineJoin = 'round';
+        }
 
-            // Fullscreen Canvas
-            if (fsCanvas.offsetWidth > 0) {
-                fsCanvas.width = fsCanvas.offsetWidth * ratio;
-                fsCanvas.height = fsCanvas.offsetHeight * ratio;
-                fsCtx.scale(ratio, ratio);
-                fsCtx.strokeStyle = '#07090e';
-                fsCtx.lineWidth = 3.5;
-                fsCtx.lineCap = 'round';
-                fsCtx.lineJoin = 'round';
+        function resizeAllCanvases() {
+            resizeSingleCanvas(canvas, ctx);
+            if (document.getElementById('fsPadModal').classList.contains('active')) {
+                resizeSingleCanvas(fsCanvas, fsCtx);
             }
         }
 
         window.addEventListener('resize', () => {
-            if (!hasDrawn) resizeCanvas();
+            if (!hasDrawn) resizeAllCanvases();
         });
 
-        // Initialize and dynamically fetch registered roles from Supabase
         window.addEventListener('DOMContentLoaded', async () => {
-            resizeCanvas();
+            resizeAllCanvases();
             await populateAvailableRoles();
         });
 
-        // Fetch DB to filter out already registered roles
+        // --- 3. DYNAMIC ROLE DROPDOWN & DEDUPLICATION ---
         async function populateAvailableRoles() {
             let registeredKeys = [];
 
@@ -793,17 +782,16 @@
                         .select('officer_key, is_active')
                         .eq('is_active', true);
                     
-                    if (data) {
+                    if (data && data.length > 0) {
                         registeredKeys = data.map(d => d.officer_key);
                     }
                 } catch(e) {
-                    console.warn("Could not load registered signatures list.");
+                    console.warn("Could not query existing signatures list:", e);
                 }
             }
 
             officerSelect.innerHTML = '<option value="" disabled selected>-- Choose Officer Designation --</option>';
 
-            // Filter out existing slots
             const remainingRoles = ALL_OFFICER_ROLES.filter(r => !registeredKeys.includes(r.key));
 
             remainingRoles.forEach(role => {
@@ -813,15 +801,10 @@
                 officerSelect.appendChild(opt);
             });
 
-            // Always add the "Other Officer" option at the bottom
             const customOpt = document.createElement('option');
             customOpt.value = 'other_custom';
             customOpt.textContent = '★ Other Officer (Enter Custom Designation)';
             officerSelect.appendChild(customOpt);
-
-            if (remainingRoles.length === 0) {
-                showToast("All standard officer slots already filled! Custom slots open.");
-            }
         }
 
         function handleRoleChange() {
@@ -835,34 +818,43 @@
             validateFormState();
         }
 
-        // Pointer Stroke Tracking
-        function getPos(e, targetCanvas) {
+        // --- 4. ACCURATE TOUCH & POINTER TRACKING (100% Surface Coverage) ---
+        function getCanvasCoordinates(e, targetCanvas) {
             const rect = targetCanvas.getBoundingClientRect();
             let clientX, clientY;
+            
             if (e.touches && e.touches.length > 0) {
                 clientX = e.touches[0].clientX;
                 clientY = e.touches[0].clientY;
+            } else if (e.changedTouches && e.changedTouches.length > 0) {
+                clientX = e.changedTouches[0].clientX;
+                clientY = e.changedTouches[0].clientY;
             } else {
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
-            return { x: clientX - rect.left, y: clientY - rect.top };
+
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
         }
 
-        function attachDrawingListeners(targetCanvas, targetCtx) {
-            function startStroke(e) {
+        function setupCanvasDrawing(targetCanvas, targetCtx) {
+            function start(e) {
+                if (canvasContainer.classList.contains('locked') && targetCanvas === canvas) return;
                 isDrawing = true;
                 canvasContainer.classList.add('active-drawing');
-                const pos = getPos(e, targetCanvas);
+                const pos = getCanvasCoordinates(e, targetCanvas);
                 points = [pos];
                 targetCtx.beginPath();
                 targetCtx.moveTo(pos.x, pos.y);
-                e.preventDefault();
+                if (e.cancelable) e.preventDefault();
             }
 
-            function moveStroke(e) {
+            function move(e) {
                 if (!isDrawing) return;
-                const pos = getPos(e, targetCanvas);
+                const pos = getCanvasCoordinates(e, targetCanvas);
                 points.push(pos);
 
                 if (points.length > 2) {
@@ -877,10 +869,10 @@
 
                 hasDrawn = true;
                 validateFormState();
-                e.preventDefault();
+                if (e.cancelable) e.preventDefault();
             }
 
-            function endStroke() {
+            function end(e) {
                 if (!isDrawing) return;
                 isDrawing = false;
                 canvasContainer.classList.remove('active-drawing');
@@ -888,133 +880,68 @@
                 points = [];
             }
 
-            targetCanvas.addEventListener('mousedown', startStroke);
-            targetCanvas.addEventListener('mousemove', moveStroke);
-            window.addEventListener('mouseup', endStroke);
+            targetCanvas.addEventListener('mousedown', start);
+            targetCanvas.addEventListener('mousemove', move);
+            window.addEventListener('mouseup', end);
 
-            targetCanvas.addEventListener('touchstart', startStroke, { passive: false });
-            targetCanvas.addEventListener('touchmove', moveStroke, { passive: false });
-            window.addEventListener('touchend', endStroke);
+            targetCanvas.addEventListener('touchstart', start, { passive: false });
+            targetCanvas.addEventListener('touchmove', move, { passive: false });
+            window.addEventListener('touchend', end);
         }
 
-        attachDrawingListeners(canvas, ctx);
-        attachDrawingListeners(fsCanvas, fsCtx);
+        setupCanvasDrawing(canvas, ctx);
+        setupCanvasDrawing(fsCanvas, fsCtx);
 
         function clearSignature() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
-            fsCtx.clearRect(0, 0, fsCanvas.width / ratio, fsCanvas.height / ratio);
+            const dpr = Math.max(window.devicePixelRatio || 1, 1);
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+            fsCtx.clearRect(0, 0, fsCanvas.width / dpr, fsCanvas.height / dpr);
             hasDrawn = false;
+            generatedSignatureBlob = null;
             validateFormState();
         }
-        // Trigger file picker with validation gatekeeper
-        function triggerFileUpload() {
-            if (canvasContainer.classList.contains('locked')) {
-                alert("Please complete Step 1 (Role) and Step 2 (Name) before uploading a signature.");
-                return;
-            }
-            document.getElementById('sigFileInput').click();
-        }
 
-        // Automatic Background Removal & Vector Darkening Engine
-        function processUploadedSignature(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            showToast("Processing image & removing background...");
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = new Image();
-                img.onload = function() {
-                    // 1. Offscreen canvas for raw image pixel analysis
-                    const offCanvas = document.createElement('canvas');
-                    const offCtx = offCanvas.getContext('2d');
-                    offCanvas.width = img.width;
-                    offCanvas.height = img.height;
-                    offCtx.drawImage(img, 0, 0);
-
-                    const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
-                    const data = imgData.data;
-
-                    // 2. High-Precision Background Extraction
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-
-                        // Perceived Luminance Calculation
-                        const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
-
-                        // If pixel is lighter than threshold (paper/background), make transparent
-                        if (luminance > 185) {
-                            data[i + 3] = 0; // Alpha = 0
-                        } else {
-                            // Darken stroke to crisp obsidian ink (#07090e)
-                            data[i] = 7;
-                            data[i + 1] = 9;
-                            data[i + 2] = 14;
-                            // Smooth alpha falloff for antialiased pen strokes
-                            data[i + 3] = Math.min(255, (255 - luminance) * 1.8);
-                        }
-                    }
-
-                    offCtx.putImageData(imgData, 0, 0);
-
-                    // 3. Auto-crop empty whitespace around strokes
-                    const croppedCanvas = cropSignatureCanvas(offCanvas);
-
-                    // 4. Render cleanly centered onto the main active signature canvas
-                    clearSignature();
-                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                    const targetWidth = canvas.width / ratio;
-                    const targetHeight = canvas.height / ratio;
-
-                    // Maintain aspect ratio within canvas margins
-                    const margin = 30;
-                    const scale = Math.min((targetWidth - margin) / croppedCanvas.width, (targetHeight - margin) / croppedCanvas.height, 1);
-                    const renderW = croppedCanvas.width * scale;
-                    const renderH = croppedCanvas.height * scale;
-                    const renderX = (targetWidth - renderW) / 2;
-                    const renderY = (targetHeight - renderH) / 2;
-
-                    ctx.drawImage(croppedCanvas, renderX, renderY, renderW, renderH);
-
-                    hasDrawn = true;
-                    validateFormState();
-                    showToast("Signature loaded with transparent background!");
-                };
-                img.src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
-            event.target.value = ''; // Reset input to allow re-uploading same file if desired
-        }
-
-        // --- 3. FULLSCREEN / EXPANDED PAD MODE ---
+        // --- 5. FULLSCREEN ACCURATE EXPANDER ---
         function openFullscreenPad() {
             if (canvasContainer.classList.contains('locked')) {
-                alert("Please complete Step 1 & Step 2 before unlocking the signature pad.");
+                alert("Complete Steps 1 & 2 to unlock the signature pad.");
                 return;
             }
-            document.getElementById('fsPadModal').classList.add('active');
-            setTimeout(resizeCanvas, 50);
+            const modal = document.getElementById('fsPadModal');
+            modal.classList.add('active');
+            
+            // Re-render and resize inside full layout
+            requestAnimationFrame(() => {
+                resizeSingleCanvas(fsCanvas, fsCtx);
+                if (hasDrawn) {
+                    const dpr = Math.max(window.devicePixelRatio || 1, 1);
+                    fsCtx.drawImage(canvas, 0, 0, canvas.width / dpr, canvas.height / dpr);
+                }
+            });
         }
 
         function closeFullscreenPad() {
-            // Transfer Fullscreen Drawing to Standard Canvas
             if (hasDrawn) {
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
-                ctx.drawImage(fsCanvas, 0, 0, canvas.width / ratio, canvas.height / ratio);
+                const dpr = Math.max(window.devicePixelRatio || 1, 1);
+                ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+                
+                // Copy centered to standard canvas
+                const sW = canvas.width / dpr;
+                const sH = canvas.height / dpr;
+                const fW = fsCanvas.width / dpr;
+                const fH = fsCanvas.height / dpr;
+                const scale = Math.min(sW / fW, sH / fH, 1);
+                
+                ctx.drawImage(fsCanvas, (sW - fW * scale) / 2, (sH - fH * scale) / 2, fW * scale, fH * scale);
             }
             document.getElementById('fsPadModal').classList.remove('active');
             validateFormState();
         }
 
-        // --- 4. STEP-BY-STEP UNLOCK GATEKEEPER ---
+        // --- 6. GATEKEEPER VALIDATION ---
         function validateFormState() {
             const roleSelected = officerSelect.value !== '';
-            const customRoleValid = officerSelect.value !== 'other_custom' || customRoleInput.value.trim().length >= 3;
+            const customRoleValid = officerSelect.value !== 'other_custom' || customRoleInput.value.trim().length >= 2;
             const nameEntered = officerNameInput.value.trim().length >= 2;
 
             if (roleSelected && customRoleValid && nameEntered) {
@@ -1033,9 +960,96 @@
             btnPreview.disabled = !(roleSelected && customRoleValid && nameEntered && hasDrawn);
         }
 
-        // --- 5. TRANSPARENT AUTO-CROPPER (Trims unnecessary whitespace) ---
-        function cropSignatureCanvas(sourceCanvas) {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        // --- 7. ADAPTIVE BACKGROUND EXTRACTION ENGINE (Zero Shadows / Pure Vector Ink) ---
+        function triggerFileUpload() {
+            if (canvasContainer.classList.contains('locked')) {
+                alert("Complete Steps 1 & 2 before uploading a photo.");
+                return;
+            }
+            document.getElementById('sigFileInput').click();
+        }
+
+        function processUploadedSignature(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showToast("Extracting ink & removing paper background...");
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const offCanvas = document.createElement('canvas');
+                    const offCtx = offCanvas.getContext('2d');
+                    offCanvas.width = img.width;
+                    offCanvas.height = img.height;
+                    offCtx.drawImage(img, 0, 0);
+
+                    const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+                    const data = imgData.data;
+
+                    // Pass 1: Compute Dynamic Range (Min/Max Luminance)
+                    let minLum = 255;
+                    let maxLum = 0;
+
+                    for (let i = 0; i < data.length; i += 4) {
+                        const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                        if (lum < minLum) minLum = lum;
+                        if (lum > maxLum) maxLum = lum;
+                    }
+
+                    // Adaptive Threshold: Paper is top ~60% range, ink is bottom range
+                    const threshold = minLum + (maxLum - minLum) * 0.62;
+
+                    // Pass 2: Transparent Extraction & Obsidian Dark Ink Conversion
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+                        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                        if (lum > threshold) {
+                            // Paper or background shadow -> 100% Transparent
+                            data[i + 3] = 0;
+                        } else {
+                            // Pen Stroke -> Deep Obsidian Ink (#07090e)
+                            data[i] = 7;
+                            data[i + 1] = 9;
+                            data[i + 2] = 14;
+                            // Smooth alpha falloff
+                            const alphaFactor = Math.pow((threshold - lum) / (threshold - minLum + 0.001), 0.7);
+                            data[i + 3] = Math.min(255, Math.floor(alphaFactor * 255));
+                        }
+                    }
+
+                    offCtx.putImageData(imgData, 0, 0);
+
+                    // Auto-crop empty padding
+                    const cropped = autoCropCanvas(offCanvas);
+
+                    // Render cleanly on active canvas
+                    clearSignature();
+                    const dpr = Math.max(window.devicePixelRatio || 1, 1);
+                    const tW = canvas.width / dpr;
+                    const tH = canvas.height / dpr;
+                    const scale = Math.min((tW - 40) / cropped.width, (tH - 40) / cropped.height, 1);
+                    const rW = cropped.width * scale;
+                    const rH = cropped.height * scale;
+
+                    ctx.drawImage(cropped, (tW - rW) / 2, (tH - rH) / 2, rW, rH);
+
+                    hasDrawn = true;
+                    validateFormState();
+                    showToast("Signature extracted cleanly!");
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        // --- 8. AUTO-CROPPER ---
+        function autoCropCanvas(sourceCanvas) {
             const w = sourceCanvas.width;
             const h = sourceCanvas.height;
             const context = sourceCanvas.getContext('2d');
@@ -1048,7 +1062,7 @@
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const alpha = data[(y * w + x) * 4 + 3];
-                    if (alpha > 20) { // Non-transparent pixel
+                    if (alpha > 25) {
                         if (x < minX) minX = x;
                         if (x > maxX) maxX = x;
                         if (y < minY) minY = y;
@@ -1060,8 +1074,7 @@
 
             if (!found) return sourceCanvas;
 
-            // Add safe padding
-            const pad = 20 * ratio;
+            const pad = 15;
             minX = Math.max(0, minX - pad);
             minY = Math.max(0, minY - pad);
             maxX = Math.min(w, maxX + pad);
@@ -1074,25 +1087,24 @@
             croppedCanvas.width = cropW;
             croppedCanvas.height = cropH;
             const croppedCtx = croppedCanvas.getContext('2d');
-
             croppedCtx.drawImage(sourceCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
             return croppedCanvas;
         }
 
-        // --- 6. PREVIEW & SHA-256 INTEGRITY CALCULATOR ---
+        // --- 9. PREVIEW MODAL & SHA-256 INTEGRITY ---
         async function openPreviewModal() {
             if (!hasDrawn || btnPreview.disabled) return;
 
-            const croppedCanvas = cropSignatureCanvas(canvas);
-            const dataUrl = croppedCanvas.toDataURL('image/png');
+            const cropped = autoCropCanvas(canvas);
+            const dataUrl = cropped.toDataURL('image/png');
 
             document.getElementById('modalSigImage').src = dataUrl;
             document.getElementById('modalOfficerName').innerText = officerNameInput.value.trim();
 
-            const finalRoleTitle = officerSelect.value === 'other_custom' ? customRoleInput.value.trim() : officerSelect.options[officerSelect.selectedIndex].text;
-            document.getElementById('modalOfficerRole').innerText = finalRoleTitle;
+            const roleText = officerSelect.value === 'other_custom' ? customRoleInput.value.trim() : officerSelect.options[officerSelect.selectedIndex].text;
+            document.getElementById('modalOfficerRole').innerText = roleText;
 
-            // Convert to blob and compute SHA-256 for cryptographic verification
+            // Generate Blob and Checksum
             const blob = await (await fetch(dataUrl)).blob();
             generatedSignatureBlob = blob;
 
@@ -1111,11 +1123,11 @@
             document.getElementById('previewModal').classList.remove('active');
         }
 
-        // --- 7. SECURE SUPABASE UPLOAD ---
+        // --- 10. BULLETPROOF DATABASE STORAGE ENGINE ---
         async function uploadSignatureToSupabase() {
             const btnConfirm = document.getElementById('btnFinalUpload');
             btnConfirm.disabled = true;
-            btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encrypting & Storing...';
+            btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering Key...';
 
             let officerKey = officerSelect.value;
             const officerName = officerNameInput.value.trim();
@@ -1126,37 +1138,51 @@
             }
 
             const fileName = `${officerKey}_${Date.now()}.png`;
+            const base64DataUrl = document.getElementById('modalSigImage').src;
 
             try {
-                let publicSignatureUrl = document.getElementById('modalSigImage').src; // Fallback
+                if (!supabaseClient) throw new Error("Supabase client not initialized.");
 
-                if (supabaseClient && generatedSignatureBlob) {
-                    // Upload to private/public storage bucket
-                    const { data: storageData, error: storageErr } = await supabaseClient.storage
-                        .from('signatures')
-                        .upload(`officers/${fileName}`, generatedSignatureBlob, { contentType: 'image/png', upsert: true });
-
-                    if (!storageErr && storageData) {
-                        const { data: publicUrlData } = supabaseClient.storage.from('signatures').getPublicUrl(`officers/${fileName}`);
-                        publicSignatureUrl = publicUrlData.publicUrl;
-                    }
-
-                    // Upsert metadata record
-                    await supabaseClient.from('tims_officer_signatures').upsert({
+                // Step 1: Direct Table Upsert (Guarantees data is saved immediately)
+                const { error: dbError } = await supabaseClient
+                    .from('tims_officer_signatures')
+                    .upsert({
                         officer_key: officerKey,
                         officer_name: officerName,
                         designation: officerRoleText,
-                        signature_url: publicSignatureUrl,
+                        signature_url: base64DataUrl,
                         sha256_checksum: generatedChecksum,
                         is_active: true,
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'officer_key' });
+
+                if (dbError) throw dbError;
+
+                // Step 2: Parallel Storage Bucket Upload (Optional file CDN link)
+                try {
+                    if (generatedSignatureBlob) {
+                        const { data: storageData, error: storageErr } = await supabaseClient.storage
+                            .from('signatures')
+                            .upload(`officers/${fileName}`, generatedSignatureBlob, { contentType: 'image/png', upsert: true });
+
+                        if (!storageErr && storageData) {
+                            const { data: publicUrlData } = supabaseClient.storage.from('signatures').getPublicUrl(`officers/${fileName}`);
+                            if (publicUrlData && publicUrlData.publicUrl) {
+                                await supabaseClient
+                                    .from('tims_officer_signatures')
+                                    .update({ signature_url: publicUrlData.publicUrl })
+                                    .eq('officer_key', officerKey);
+                            }
+                        }
+                    }
+                } catch(storageEx) {
+                    console.warn("Storage CDN skipped, verified directly in database.");
                 }
 
                 closePreviewModal();
                 showToast(`Signature for ${officerName} successfully registered!`);
 
-                // Reset and refresh dropdown list
+                // Reset and refresh options
                 setTimeout(async () => {
                     clearSignature();
                     officerNameInput.value = '';
@@ -1169,9 +1195,8 @@
                 }, 1000);
 
             } catch (err) {
-                console.error("Signature registration error:", err);
-                closePreviewModal();
-                showToast("Signature saved locally (Database offline).");
+                console.error("Database upload failed:", err);
+                alert("Upload Error: " + (err.message || "Could not write to Supabase."));
                 btnConfirm.disabled = false;
                 btnConfirm.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Confirm & Save';
             }
