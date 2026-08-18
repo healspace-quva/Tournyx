@@ -555,6 +555,22 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+        /* --- UPLOAD & PROCESSOR TOOLING --- */
+.upload-btn-wrap {
+    display: inline-flex;
+    align-items: center;
+}
+
+.pad-tool-btn.upload-active {
+    background: rgba(189, 0, 255, 0.15);
+    border-color: var(--neon-purple);
+    color: #ffffff;
+}
+
+.pad-tool-btn.upload-active:hover {
+    background: rgba(189, 0, 255, 0.25);
+    box-shadow: 0 0 10px rgba(189, 0, 255, 0.4);
+}
     </style>
 </head>
 <body>
@@ -605,9 +621,19 @@
         <!-- 3. Dynamic Full-Width Signature Canvas -->
         <div class="pad-wrapper">
             <div class="pad-status-bar">
-                <span><span>STEP 3</span> Inscribe Signature</span>
+                <span><span>STEP 3</span> Inscribe or Upload Signature</span>
                 <div class="pad-tools">
-                    <button type="button" class="pad-tool-btn" onclick="openFullscreenPad()"><i class="fa-solid fa-expand"></i> Maximize Pad</button>
+                    <!-- HIDDEN FILE INPUT -->
+                    <input type="file" id="sigFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" onchange="processUploadedSignature(event)">
+                    
+                    <!-- UPLOAD TRIGGER BUTTON -->
+                    <button type="button" class="pad-tool-btn upload-active" onclick="triggerFileUpload()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+                    </button>
+                    
+                    <button type="button" class="pad-tool-btn" onclick="openFullscreenPad()">
+                        <i class="fa-solid fa-expand"></i> Maximize Pad
+                    </button>
                     <div class="pad-status-badge" id="padStatus">
                         <i class="fa-solid fa-lock"></i> <span>Locked: Complete Steps 1 & 2</span>
                     </div>
@@ -622,7 +648,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Action Controls -->
         <div class="controls">
             <button type="button" class="btn-clear" id="btnClear" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
@@ -881,6 +906,88 @@
             fsCtx.clearRect(0, 0, fsCanvas.width / ratio, fsCanvas.height / ratio);
             hasDrawn = false;
             validateFormState();
+        }
+        // Trigger file picker with validation gatekeeper
+        function triggerFileUpload() {
+            if (canvasContainer.classList.contains('locked')) {
+                alert("Please complete Step 1 (Role) and Step 2 (Name) before uploading a signature.");
+                return;
+            }
+            document.getElementById('sigFileInput').click();
+        }
+
+        // Automatic Background Removal & Vector Darkening Engine
+        function processUploadedSignature(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showToast("Processing image & removing background...");
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    // 1. Offscreen canvas for raw image pixel analysis
+                    const offCanvas = document.createElement('canvas');
+                    const offCtx = offCanvas.getContext('2d');
+                    offCanvas.width = img.width;
+                    offCanvas.height = img.height;
+                    offCtx.drawImage(img, 0, 0);
+
+                    const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+                    const data = imgData.data;
+
+                    // 2. High-Precision Background Extraction
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+
+                        // Perceived Luminance Calculation
+                        const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+
+                        // If pixel is lighter than threshold (paper/background), make transparent
+                        if (luminance > 185) {
+                            data[i + 3] = 0; // Alpha = 0
+                        } else {
+                            // Darken stroke to crisp obsidian ink (#07090e)
+                            data[i] = 7;
+                            data[i + 1] = 9;
+                            data[i + 2] = 14;
+                            // Smooth alpha falloff for antialiased pen strokes
+                            data[i + 3] = Math.min(255, (255 - luminance) * 1.8);
+                        }
+                    }
+
+                    offCtx.putImageData(imgData, 0, 0);
+
+                    // 3. Auto-crop empty whitespace around strokes
+                    const croppedCanvas = cropSignatureCanvas(offCanvas);
+
+                    // 4. Render cleanly centered onto the main active signature canvas
+                    clearSignature();
+                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                    const targetWidth = canvas.width / ratio;
+                    const targetHeight = canvas.height / ratio;
+
+                    // Maintain aspect ratio within canvas margins
+                    const margin = 30;
+                    const scale = Math.min((targetWidth - margin) / croppedCanvas.width, (targetHeight - margin) / croppedCanvas.height, 1);
+                    const renderW = croppedCanvas.width * scale;
+                    const renderH = croppedCanvas.height * scale;
+                    const renderX = (targetWidth - renderW) / 2;
+                    const renderY = (targetHeight - renderH) / 2;
+
+                    ctx.drawImage(croppedCanvas, renderX, renderY, renderW, renderH);
+
+                    hasDrawn = true;
+                    validateFormState();
+                    showToast("Signature loaded with transparent background!");
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ''; // Reset input to allow re-uploading same file if desired
         }
 
         // --- 3. FULLSCREEN / EXPANDED PAD MODE ---
