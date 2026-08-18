@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports - Digital Signature Capture Vault</title>
+    <title>Tournyx Esports - Cryptographic Signature Vault</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
 
     <style>
         :root {
-            --bg-void: #05060a;
-            --panel-bg: #0d111a;
+            --bg-void: #040508;
+            --panel-bg: #0c0f17;
             --panel-border: rgba(0, 242, 255, 0.15);
             --neon-cyan: #00f2ff;
             --neon-purple: #9d00ff;
@@ -45,7 +45,6 @@
             position: relative;
         }
 
-        /* Ambient Cyber Grid */
         .ambient-grid {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -61,11 +60,11 @@
             border-radius: 24px;
             padding: 30px 25px;
             width: 100%;
-            max-width: 580px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 242, 255, 0.05);
+            max-width: 720px; /* Full-width spacious UI on desktop */
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 255, 0.05);
             position: relative;
             z-index: 2;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
 
         .brand-header {
@@ -79,7 +78,7 @@
 
         .brand-logo {
             font-family: var(--font-head);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 900;
             letter-spacing: 1.5px;
             background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
@@ -96,7 +95,7 @@
             color: var(--neon-cyan);
             background: rgba(0, 242, 255, 0.08);
             border: 1px solid rgba(0, 242, 255, 0.3);
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 50px;
             font-weight: 700;
             letter-spacing: 1px;
@@ -105,7 +104,7 @@
 
         .card-heading h2 {
             font-family: var(--font-head);
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             margin-bottom: 4px;
             color: #fff;
         }
@@ -116,9 +115,23 @@
             margin-bottom: 22px;
         }
 
-        .input-group {
+        /* --- INPUT MATRIX --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
             margin-bottom: 18px;
+        }
+
+        @media (min-width: 600px) {
+            .form-grid.two-col {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-group {
             text-align: left;
+            position: relative;
         }
 
         .input-group label {
@@ -141,8 +154,8 @@
 
         .custom-select, .custom-input {
             width: 100%;
-            padding: 13px 16px;
-            background: #06080F;
+            padding: 14px 16px;
+            background: #05070c;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             color: #fff;
@@ -180,26 +193,57 @@
         .custom-select:focus, .custom-input:focus {
             border-color: var(--neon-cyan);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
-            background: #090c14;
+            background: #080b12;
         }
 
-        /* --- SIGNATURE CANVAS WRAPPER --- */
+        .hidden-field {
+            display: none;
+        }
+
+        /* --- FULL-WIDTH CANVAS WRAPPER --- */
         .pad-wrapper {
             position: relative;
             margin-top: 10px;
             margin-bottom: 20px;
+            width: 100%;
         }
 
         .pad-status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 0.75rem;
             font-weight: 700;
             font-family: var(--font-sub);
             color: var(--text-muted);
             text-transform: uppercase;
+        }
+
+        .pad-tools {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .pad-tool-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--neon-cyan);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-family: var(--font-head);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .pad-tool-btn:hover {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: var(--neon-cyan);
         }
 
         .pad-status-badge {
@@ -216,12 +260,13 @@
         .canvas-container {
             position: relative;
             background: #ffffff;
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
             touch-action: none;
             border: 2px solid rgba(255, 255, 255, 0.15);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.06);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.08);
             transition: all 0.4s ease;
+            width: 100%;
         }
 
         .canvas-container.locked {
@@ -233,29 +278,61 @@
 
         .canvas-container.active-drawing {
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.35);
         }
 
         canvas {
             display: block;
             width: 100%;
-            height: 190px;
+            height: 220px; /* Full-height expansive canvas for accurate mobile/desktop signing */
             cursor: crosshair;
         }
 
         .baseline-guide {
             position: absolute;
-            bottom: 35px;
+            bottom: 40px;
             left: 20px;
             right: 20px;
-            border-bottom: 1px dashed #cbd5e1;
+            border-bottom: 1px dashed #94a3b8;
             pointer-events: none;
             display: flex;
             justify-content: space-between;
-            color: #94a3b8;
+            color: #64748b;
             font-size: 0.65rem;
             font-family: var(--font-head);
-            padding-bottom: 2px;
+            padding-bottom: 4px;
+        }
+
+        /* --- FULLSCREEN PAD EXPANDER (Modal) --- */
+        .fs-pad-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #020305;
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .fs-pad-modal.active {
+            display: flex;
+        }
+
+        .fs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .fs-canvas-container {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+            border: 2px solid var(--neon-cyan);
         }
 
         /* --- CONTROLS --- */
@@ -316,8 +393,8 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(3, 4, 8, 0.92);
-            backdrop-filter: blur(12px);
+            background: rgba(3, 4, 8, 0.94);
+            backdrop-filter: blur(15px);
             z-index: 10000;
             display: none;
             align-items: center;
@@ -338,9 +415,9 @@
             border-radius: 20px;
             padding: 25px;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(0, 242, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.95), 0 0 35px rgba(0, 242, 255, 0.2);
             transform: translateY(30px) scale(0.95);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -365,9 +442,9 @@
 
         .cert-preview-card {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 20px 15px 15px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             border: 1px solid #e2e8f0;
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             position: relative;
@@ -375,7 +452,7 @@
         }
 
         .preview-img-box {
-            height: 90px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -395,14 +472,14 @@
         }
 
         .preview-officer-name {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #0f172a;
             text-transform: uppercase;
         }
 
         .preview-officer-role {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: #64748b;
             font-weight: 700;
             text-transform: uppercase;
@@ -415,13 +492,16 @@
             padding: 10px 14px;
             margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 6px;
             font-size: 0.75rem;
             color: var(--text-muted);
+            text-align: left;
         }
 
         .meta-summary b {
             color: #fff;
+            word-break: break-all;
         }
 
         .modal-actions {
@@ -492,24 +572,25 @@
             <p>Register official vector signature assets for cryptographic credential generation.</p>
         </div>
 
-        <!-- 1. Executive Role Selection -->
-        <div class="input-group">
-            <label for="officerSelect">
-                <span>STEP 1</span> Select Executive Role / Domain
-            </label>
-            <div class="select-wrapper">
-                <select id="officerSelect" class="custom-select" onchange="validateFormState()">
-                    <option value="" disabled selected>-- Choose Officer Designation --</option>
-                    <option value="ceo">Founder & Chief Executive Officer (CEO)</option>
-                    <option value="cto">Chief Technology Officer (CTO)</option>
-                    <option value="hr">HR & Internship Operations Coordinator</option>
-                    <option value="software_manager">Chief Software Development Manager</option>
-                    <option value="cybersecurity_manager">Chief Cybersecurity Manager</option>
-                    <option value="ai_lead">AI & Systems Engineering Lead</option>
-                    <option value="design_lead">Lead Product & UI/UX Designer</option>
-                    <option value="esports_director">Tournament & League Operations Director</option>
-                    <option value="domain_officer">Domain Inspection Officer</option>
-                </select>
+        <!-- 1. Executive Role Selection (Dynamic Filtered) -->
+        <div class="form-grid" id="rolesGrid">
+            <div class="input-group">
+                <label for="officerSelect">
+                    <span>STEP 1</span> Select Executive Role / Domain
+                </label>
+                <div class="select-wrapper">
+                    <select id="officerSelect" class="custom-select" onchange="handleRoleChange()">
+                        <option value="" disabled selected>Loading available officer slots...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Custom Position Field (Appears only when 'Other Officer' is chosen) -->
+            <div class="input-group hidden-field" id="customRoleWrapper">
+                <label for="customRoleInput">
+                    <span>CUSTOM TITLE</span> Enter Exact Designation
+                </label>
+                <input type="text" id="customRoleInput" class="custom-input" placeholder="e.g. Chief Marketing Officer" autocomplete="off" oninput="validateFormState()">
             </div>
         </div>
 
@@ -518,15 +599,18 @@
             <label for="officerName">
                 <span>STEP 2</span> Officer Full Legal Name
             </label>
-            <input type="text" id="officerName" class="custom-input" placeholder="e.g. Thilakeshwaran J / Shiva Kumar" autocomplete="off" oninput="validateFormState()">
+            <input type="text" id="officerName" class="custom-input" placeholder="e.g. Thilakeshwaran A" autocomplete="off" oninput="validateFormState()">
         </div>
 
-        <!-- 3. Dynamic Signature Canvas -->
+        <!-- 3. Dynamic Full-Width Signature Canvas -->
         <div class="pad-wrapper">
             <div class="pad-status-bar">
                 <span><span>STEP 3</span> Inscribe Signature</span>
-                <div class="pad-status-badge" id="padStatus">
-                    <i class="fa-solid fa-lock"></i> <span>Locked: Complete Steps 1 & 2</span>
+                <div class="pad-tools">
+                    <button type="button" class="pad-tool-btn" onclick="openFullscreenPad()"><i class="fa-solid fa-expand"></i> Maximize Pad</button>
+                    <div class="pad-status-badge" id="padStatus">
+                        <i class="fa-solid fa-lock"></i> <span>Locked: Complete Steps 1 & 2</span>
+                    </div>
                 </div>
             </div>
 
@@ -541,8 +625,22 @@
 
         <!-- Action Controls -->
         <div class="controls">
-            <button type="button" class="btn-clear" id="btnClear" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear Pad</button>
+            <button type="button" class="btn-clear" id="btnClear" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
             <button type="button" class="btn-preview" id="btnPreview" onclick="openPreviewModal()" disabled><i class="fa-solid fa-signature"></i> Review & Save</button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN MODAL FOR ACCURATE MOBILE/DESKTOP SIGNING -->
+    <div class="fs-pad-modal" id="fsPadModal">
+        <div class="fs-header">
+            <div>
+                <h3 style="font-family:var(--font-head); color:var(--neon-cyan); font-size:1.1rem;"><i class="fa-solid fa-pen-nib"></i> Precision Signature Mode</h3>
+                <p style="font-size:0.75rem; color:var(--text-muted);">Use stylus or touch gestures across the full viewport.</p>
+            </div>
+            <button type="button" class="pad-tool-btn" onclick="closeFullscreenPad()"><i class="fa-solid fa-check"></i> Apply & Minimize</button>
+        </div>
+        <div class="fs-canvas-container">
+            <canvas id="fsSignatureCanvas"></canvas>
         </div>
     </div>
 
@@ -564,8 +662,8 @@
             </div>
 
             <div class="meta-summary">
-                <span>Format: <b>PNG (Transparent)</b></span>
-                <span>Cipher: <b>SHA-256 Validated</b></span>
+                <div>Format: <b>PNG (Auto-Cropped Transparent Vector)</b></div>
+                <div>SHA-256 Digest: <b id="modalShaDigest">Calculating...</b></div>
             </div>
 
             <div class="modal-actions">
@@ -590,41 +688,132 @@
             }
         } catch(e) { console.warn("Supabase local fallback initialized."); }
 
+        // Core Default Roles
+        const ALL_OFFICER_ROLES = [
+            { key: 'ceo', title: 'Founder & Chief Executive Officer (CEO)' },
+            { key: 'cto', title: 'Chief Technology Officer (CTO)' },
+            { key: 'hr', title: 'HR & Internship Operations Coordinator' },
+            { key: 'software_manager', title: 'Chief Software Development Manager' },
+            { key: 'cybersecurity_manager', title: 'Chief Cybersecurity Manager' },
+            { key: 'ai_lead', title: 'AI & Systems Engineering Lead' },
+            { key: 'design_lead', title: 'Lead Product & UI/UX Designer' },
+            { key: 'esports_director', title: 'Tournament & League Operations Director' },
+            { key: 'domain_officer', title: 'Domain Inspection Officer' }
+        ];
+
         // --- 2. CANVAS & DRAWING ENGINE ---
         const canvas = document.getElementById('signatureCanvas');
         const ctx = canvas.getContext('2d');
+        const fsCanvas = document.getElementById('fsSignatureCanvas');
+        const fsCtx = fsCanvas.getContext('2d');
+
         const canvasContainer = document.getElementById('canvasContainer');
         const padStatus = document.getElementById('padStatus');
         const btnPreview = document.getElementById('btnPreview');
         const officerSelect = document.getElementById('officerSelect');
         const officerNameInput = document.getElementById('officerName');
+        const customRoleWrapper = document.getElementById('customRoleWrapper');
+        const customRoleInput = document.getElementById('customRoleInput');
+        const rolesGrid = document.getElementById('rolesGrid');
 
         let isDrawing = false;
         let hasDrawn = false;
         let points = [];
+        let generatedSignatureBlob = null;
+        let generatedChecksum = "";
 
         // High-DPI Canvas Scaling with Bezier Smoothing
         function resizeCanvas() {
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            
+            // Standard Card Canvas
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             ctx.scale(ratio, ratio);
-
-            ctx.strokeStyle = '#0a0d14'; // Dark crisp vector ink
-            ctx.lineWidth = 2.8;
+            ctx.strokeStyle = '#07090e';
+            ctx.lineWidth = 3.0;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+
+            // Fullscreen Canvas
+            if (fsCanvas.offsetWidth > 0) {
+                fsCanvas.width = fsCanvas.offsetWidth * ratio;
+                fsCanvas.height = fsCanvas.offsetHeight * ratio;
+                fsCtx.scale(ratio, ratio);
+                fsCtx.strokeStyle = '#07090e';
+                fsCtx.lineWidth = 3.5;
+                fsCtx.lineCap = 'round';
+                fsCtx.lineJoin = 'round';
+            }
         }
 
         window.addEventListener('resize', () => {
             if (!hasDrawn) resizeCanvas();
         });
-        resizeCanvas();
 
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
+        // Initialize and dynamically fetch registered roles from Supabase
+        window.addEventListener('DOMContentLoaded', async () => {
+            resizeCanvas();
+            await populateAvailableRoles();
+        });
+
+        // Fetch DB to filter out already registered roles
+        async function populateAvailableRoles() {
+            let registeredKeys = [];
+
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('tims_officer_signatures')
+                        .select('officer_key, is_active')
+                        .eq('is_active', true);
+                    
+                    if (data) {
+                        registeredKeys = data.map(d => d.officer_key);
+                    }
+                } catch(e) {
+                    console.warn("Could not load registered signatures list.");
+                }
+            }
+
+            officerSelect.innerHTML = '<option value="" disabled selected>-- Choose Officer Designation --</option>';
+
+            // Filter out existing slots
+            const remainingRoles = ALL_OFFICER_ROLES.filter(r => !registeredKeys.includes(r.key));
+
+            remainingRoles.forEach(role => {
+                const opt = document.createElement('option');
+                opt.value = role.key;
+                opt.textContent = role.title;
+                officerSelect.appendChild(opt);
+            });
+
+            // Always add the "Other Officer" option at the bottom
+            const customOpt = document.createElement('option');
+            customOpt.value = 'other_custom';
+            customOpt.textContent = '★ Other Officer (Enter Custom Designation)';
+            officerSelect.appendChild(customOpt);
+
+            if (remainingRoles.length === 0) {
+                showToast("All standard officer slots already filled! Custom slots open.");
+            }
+        }
+
+        function handleRoleChange() {
+            if (officerSelect.value === 'other_custom') {
+                customRoleWrapper.classList.remove('hidden-field');
+                rolesGrid.classList.add('two-col');
+            } else {
+                customRoleWrapper.classList.add('hidden-field');
+                rolesGrid.classList.remove('two-col');
+            }
+            validateFormState();
+        }
+
+        // Pointer Stroke Tracking
+        function getPos(e, targetCanvas) {
+            const rect = targetCanvas.getBoundingClientRect();
             let clientX, clientY;
-            
             if (e.touches && e.touches.length > 0) {
                 clientX = e.touches[0].clientX;
                 clientY = e.touches[0].clientY;
@@ -632,101 +821,182 @@
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
-
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
-        function startStroke(e) {
-            isDrawing = true;
-            canvasContainer.classList.add('active-drawing');
-            const pos = getPos(e);
-            points = [pos];
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            e.preventDefault();
-        }
-
-        function moveStroke(e) {
-            if (!isDrawing) return;
-            const pos = getPos(e);
-            points.push(pos);
-
-            // Curve smoothing via Midpoint Quadratic Bezier
-            if (points.length > 2) {
-                const xc = (points[points.length - 1].x + points[points.length - 2].x) / 2;
-                const yc = (points[points.length - 1].y + points[points.length - 2].y) / 2;
-                ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, xc, yc);
-                ctx.stroke();
-            } else {
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
+        function attachDrawingListeners(targetCanvas, targetCtx) {
+            function startStroke(e) {
+                isDrawing = true;
+                canvasContainer.classList.add('active-drawing');
+                const pos = getPos(e, targetCanvas);
+                points = [pos];
+                targetCtx.beginPath();
+                targetCtx.moveTo(pos.x, pos.y);
+                e.preventDefault();
             }
 
-            hasDrawn = true;
-            validateFormState();
-            e.preventDefault();
+            function moveStroke(e) {
+                if (!isDrawing) return;
+                const pos = getPos(e, targetCanvas);
+                points.push(pos);
+
+                if (points.length > 2) {
+                    const xc = (points[points.length - 1].x + points[points.length - 2].x) / 2;
+                    const yc = (points[points.length - 1].y + points[points.length - 2].y) / 2;
+                    targetCtx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, xc, yc);
+                    targetCtx.stroke();
+                } else {
+                    targetCtx.lineTo(pos.x, pos.y);
+                    targetCtx.stroke();
+                }
+
+                hasDrawn = true;
+                validateFormState();
+                e.preventDefault();
+            }
+
+            function endStroke() {
+                if (!isDrawing) return;
+                isDrawing = false;
+                canvasContainer.classList.remove('active-drawing');
+                targetCtx.closePath();
+                points = [];
+            }
+
+            targetCanvas.addEventListener('mousedown', startStroke);
+            targetCanvas.addEventListener('mousemove', moveStroke);
+            window.addEventListener('mouseup', endStroke);
+
+            targetCanvas.addEventListener('touchstart', startStroke, { passive: false });
+            targetCanvas.addEventListener('touchmove', moveStroke, { passive: false });
+            window.addEventListener('touchend', endStroke);
         }
 
-        function endStroke() {
-            if (!isDrawing) return;
-            isDrawing = false;
-            canvasContainer.classList.remove('active-drawing');
-            ctx.closePath();
-            points = [];
-        }
+        attachDrawingListeners(canvas, ctx);
+        attachDrawingListeners(fsCanvas, fsCtx);
 
-        // Pointer Events (Touch, Mouse, Apple Pencil Support)
-        canvas.addEventListener('mousedown', startStroke);
-        canvas.addEventListener('mousemove', moveStroke);
-        window.addEventListener('mouseup', endStroke);
-
-        canvas.addEventListener('touchstart', startStroke, { passive: false });
-        canvas.addEventListener('touchmove', moveStroke, { passive: false });
-        window.addEventListener('touchend', endStroke);
-
-        // Clear Canvas
         function clearSignature() {
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
+            fsCtx.clearRect(0, 0, fsCanvas.width / ratio, fsCanvas.height / ratio);
             hasDrawn = false;
             validateFormState();
         }
 
-        // --- 3. WORKFLOW VALIDATION (Unlock Gatekeeper) ---
+        // --- 3. FULLSCREEN / EXPANDED PAD MODE ---
+        function openFullscreenPad() {
+            if (canvasContainer.classList.contains('locked')) {
+                alert("Please complete Step 1 & Step 2 before unlocking the signature pad.");
+                return;
+            }
+            document.getElementById('fsPadModal').classList.add('active');
+            setTimeout(resizeCanvas, 50);
+        }
+
+        function closeFullscreenPad() {
+            // Transfer Fullscreen Drawing to Standard Canvas
+            if (hasDrawn) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
+                ctx.drawImage(fsCanvas, 0, 0, canvas.width / ratio, canvas.height / ratio);
+            }
+            document.getElementById('fsPadModal').classList.remove('active');
+            validateFormState();
+        }
+
+        // --- 4. STEP-BY-STEP UNLOCK GATEKEEPER ---
         function validateFormState() {
             const roleSelected = officerSelect.value !== '';
+            const customRoleValid = officerSelect.value !== 'other_custom' || customRoleInput.value.trim().length >= 3;
             const nameEntered = officerNameInput.value.trim().length >= 2;
 
-            if (roleSelected && nameEntered) {
+            if (roleSelected && customRoleValid && nameEntered) {
                 canvasContainer.classList.remove('locked');
                 padStatus.className = 'pad-status-badge unlocked';
-                padStatus.innerHTML = '<i class="fa-solid fa-lock-open"></i> Ready for Signature';
-                document.getElementById('canvasRoleBadge').innerText = officerSelect.options[officerSelect.selectedIndex].text.toUpperCase();
+                padStatus.innerHTML = '<i class="fa-solid fa-lock-open"></i> Pad Ready for Signing';
+
+                const displayTitle = officerSelect.value === 'other_custom' ? customRoleInput.value.trim() : officerSelect.options[officerSelect.selectedIndex].text;
+                document.getElementById('canvasRoleBadge').innerText = displayTitle.toUpperCase();
             } else {
                 canvasContainer.classList.add('locked');
                 padStatus.className = 'pad-status-badge';
-                padStatus.innerHTML = '<i class="fa-solid fa-lock"></i> Locked: Complete Steps 1 & 2';
+                padStatus.innerHTML = '<i class="fa-solid fa-lock"></i> Complete Steps 1 & 2 to Unlock';
             }
 
-            // Enable review button only if drawn + valid inputs
-            btnPreview.disabled = !(roleSelected && nameEntered && hasDrawn);
+            btnPreview.disabled = !(roleSelected && customRoleValid && nameEntered && hasDrawn);
         }
 
-        // --- 4. PREVIEW MODAL LOGIC ---
-        function openPreviewModal() {
+        // --- 5. TRANSPARENT AUTO-CROPPER (Trims unnecessary whitespace) ---
+        function cropSignatureCanvas(sourceCanvas) {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const w = sourceCanvas.width;
+            const h = sourceCanvas.height;
+            const context = sourceCanvas.getContext('2d');
+            const imgData = context.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            let minX = w, minY = h, maxX = 0, maxY = 0;
+            let found = false;
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const alpha = data[(y * w + x) * 4 + 3];
+                    if (alpha > 20) { // Non-transparent pixel
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) return sourceCanvas;
+
+            // Add safe padding
+            const pad = 20 * ratio;
+            minX = Math.max(0, minX - pad);
+            minY = Math.max(0, minY - pad);
+            maxX = Math.min(w, maxX + pad);
+            maxY = Math.min(h, maxY + pad);
+
+            const cropW = maxX - minX;
+            const cropH = maxY - minY;
+
+            const croppedCanvas = document.createElement('canvas');
+            croppedCanvas.width = cropW;
+            croppedCanvas.height = cropH;
+            const croppedCtx = croppedCanvas.getContext('2d');
+
+            croppedCtx.drawImage(sourceCanvas, minX, minY, cropW, cropH, 0, 0, cropW, cropH);
+            return croppedCanvas;
+        }
+
+        // --- 6. PREVIEW & SHA-256 INTEGRITY CALCULATOR ---
+        async function openPreviewModal() {
             if (!hasDrawn || btnPreview.disabled) return;
 
-            // Generate Transparent PNG Data
-            const dataUrl = canvas.toDataURL('image/png');
+            const croppedCanvas = cropSignatureCanvas(canvas);
+            const dataUrl = croppedCanvas.toDataURL('image/png');
+
             document.getElementById('modalSigImage').src = dataUrl;
             document.getElementById('modalOfficerName').innerText = officerNameInput.value.trim();
-            document.getElementById('modalOfficerRole').innerText = officerSelect.options[officerSelect.selectedIndex].text;
 
-            const modal = document.getElementById('previewModal');
-            modal.classList.add('active');
+            const finalRoleTitle = officerSelect.value === 'other_custom' ? customRoleInput.value.trim() : officerSelect.options[officerSelect.selectedIndex].text;
+            document.getElementById('modalOfficerRole').innerText = finalRoleTitle;
+
+            // Convert to blob and compute SHA-256 for cryptographic verification
+            const blob = await (await fetch(dataUrl)).blob();
+            generatedSignatureBlob = blob;
+
+            const arrayBuffer = await blob.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            generatedChecksum = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            document.getElementById('modalShaDigest').innerText = `${generatedChecksum.substring(0, 24)}...`;
+
+            document.getElementById('previewModal').classList.add('active');
             if (navigator.vibrate) navigator.vibrate(20);
         }
 
@@ -734,55 +1004,59 @@
             document.getElementById('previewModal').classList.remove('active');
         }
 
-        // --- 5. SUPABASE STORAGE & DATABASE UPLOAD ---
+        // --- 7. SECURE SUPABASE UPLOAD ---
         async function uploadSignatureToSupabase() {
             const btnConfirm = document.getElementById('btnFinalUpload');
             btnConfirm.disabled = true;
-            btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering Key...';
+            btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encrypting & Storing...';
 
-            const officerId = officerSelect.value;
+            let officerKey = officerSelect.value;
             const officerName = officerNameInput.value.trim();
-            const officerRoleText = officerSelect.options[officerSelect.selectedIndex].text;
-            const fileName = `${officerId}_${Date.now()}.png`;
-            const dataUrl = canvas.toDataURL('image/png');
+            const officerRoleText = officerSelect.value === 'other_custom' ? customRoleInput.value.trim() : officerSelect.options[officerSelect.selectedIndex].text;
+            
+            if (officerKey === 'other_custom') {
+                officerKey = `custom_${officerRoleText.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+            }
+
+            const fileName = `${officerKey}_${Date.now()}.png`;
 
             try {
-                // Convert DataURL to Blob
-                const blob = await (await fetch(dataUrl)).blob();
+                let publicSignatureUrl = document.getElementById('modalSigImage').src; // Fallback
 
-                let publicSignatureUrl = dataUrl; // Fallback to base64 if storage bucket not configured
-
-                // Attempt Supabase Storage Upload
-                if (supabaseClient) {
+                if (supabaseClient && generatedSignatureBlob) {
+                    // Upload to private/public storage bucket
                     const { data: storageData, error: storageErr } = await supabaseClient.storage
                         .from('signatures')
-                        .upload(`officers/${fileName}`, blob, { contentType: 'image/png', upsert: true });
+                        .upload(`officers/${fileName}`, generatedSignatureBlob, { contentType: 'image/png', upsert: true });
 
                     if (!storageErr && storageData) {
                         const { data: publicUrlData } = supabaseClient.storage.from('signatures').getPublicUrl(`officers/${fileName}`);
                         publicSignatureUrl = publicUrlData.publicUrl;
                     }
 
-                    // Save Record to PostgreSQL Database Table
+                    // Upsert metadata record
                     await supabaseClient.from('tims_officer_signatures').upsert({
-                        officer_key: officerId,
+                        officer_key: officerKey,
                         officer_name: officerName,
                         designation: officerRoleText,
                         signature_url: publicSignatureUrl,
+                        sha256_checksum: generatedChecksum,
+                        is_active: true,
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'officer_key' });
                 }
 
-                // Close Modal & Show Success Toast
                 closePreviewModal();
                 showToast(`Signature for ${officerName} successfully registered!`);
 
-                // Reset for next officer
-                setTimeout(() => {
+                // Reset and refresh dropdown list
+                setTimeout(async () => {
                     clearSignature();
                     officerNameInput.value = '';
+                    customRoleInput.value = '';
                     officerSelect.selectedIndex = 0;
-                    validateFormState();
+                    handleRoleChange();
+                    await populateAvailableRoles();
                     btnConfirm.disabled = false;
                     btnConfirm.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Confirm & Save';
                 }, 1000);
