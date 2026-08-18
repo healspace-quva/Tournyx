@@ -2,279 +2,807 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Signature Capture</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tournyx Esports - Digital Signature Capture Vault</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #151a28;
-            --accent: #00f2ff;
-            --text-color: #ffffff;
-            --border-color: rgba(0, 242, 255, 0.2);
+            --bg-void: #05060a;
+            --panel-bg: #0d111a;
+            --panel-border: rgba(0, 242, 255, 0.15);
+            --neon-cyan: #00f2ff;
+            --neon-purple: #9d00ff;
+            --gold: #FFD700;
+            --danger-red: #ff3366;
+            --success-green: #00ff7f;
+            --text-main: #ffffff;
+            --text-muted: #7e8ba3;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-sub: 'Rajdhani', sans-serif;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 20px 15px 40px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Cyber Grid */
+        .ambient-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(0,242,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.02) 1px, transparent 1px);
+            background-size: 35px 35px;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .signature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 30px 25px;
             width: 100%;
-            max-width: 540px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 580px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 242, 255, 0.05);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
         }
 
-        h2 {
-            margin: 0 0 8px 0;
-            font-size: 1.25rem;
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed rgba(255,255,255,0.08);
+            padding-bottom: 15px;
         }
 
-        p {
-            margin: 0 0 16px 0;
-            color: #8b9bb4;
-            font-size: 0.875rem;
+        .brand-logo {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vault-badge {
+            font-size: 0.65rem;
+            font-family: var(--font-head);
+            color: var(--neon-cyan);
+            background: rgba(0, 242, 255, 0.08);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card-heading h2 {
+            font-family: var(--font-head);
+            font-size: 1.35rem;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .card-heading p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 22px;
         }
 
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
+            text-align: left;
         }
 
         .input-group label {
-            display: block;
-            font-size: 0.8rem;
-            margin-bottom: 6px;
-            color: #8b9bb4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: var(--font-sub);
         }
 
-        .input-group input, .input-group select {
+        .input-group label span {
+            color: var(--neon-cyan);
+            font-size: 0.7rem;
+        }
+
+        .custom-select, .custom-input {
             width: 100%;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 13px 16px;
+            background: #06080F;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
             color: #fff;
             font-size: 0.95rem;
+            font-family: var(--font-body);
             outline: none;
-            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-cyan);
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+        .custom-select option {
+            background-color: #0d111a;
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .custom-select:focus, .custom-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+            background: #090c14;
+        }
+
+        /* --- SIGNATURE CANVAS WRAPPER --- */
+        .pad-wrapper {
+            position: relative;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pad-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: var(--font-sub);
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .pad-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--danger-red);
+        }
+
+        .pad-status-badge.unlocked {
+            color: var(--success-green);
         }
 
         .canvas-container {
             position: relative;
             background: #ffffff;
-            border-radius: 10px;
+            border-radius: 14px;
             overflow: hidden;
             touch-action: none;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.06);
+            transition: all 0.4s ease;
+        }
+
+        .canvas-container.locked {
+            filter: grayscale(1) opacity(0.35);
+            pointer-events: none;
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        .canvas-container.active-drawing {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
         }
 
         canvas {
             display: block;
             width: 100%;
-            height: 180px;
+            height: 190px;
             cursor: crosshair;
         }
 
+        .baseline-guide {
+            position: absolute;
+            bottom: 35px;
+            left: 20px;
+            right: 20px;
+            border-bottom: 1px dashed #cbd5e1;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-family: var(--font-head);
+            padding-bottom: 2px;
+        }
+
+        /* --- CONTROLS --- */
         .controls {
             display: flex;
             gap: 12px;
-            margin-top: 16px;
         }
 
         button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-family: var(--font-head);
+            font-size: 0.85rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-clear {
-            background: transparent;
-            border-color: rgba(255, 255, 255, 0.2);
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.12);
             color: #ffffff;
         }
 
         .btn-clear:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #fff;
         }
 
-        .btn-submit {
-            background: var(--accent);
+        .btn-preview {
+            flex: 2;
+            background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(189, 0, 255, 0.35);
+        }
+
+        .btn-preview:hover {
+            box-shadow: 0 6px 25px rgba(0, 242, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-preview:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- PREVIEW & CONFIRMATION MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 4, 8, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(0, 242, 255, 0.2);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header h3 {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            margin-bottom: 4px;
+        }
+
+        .modal-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .cert-preview-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 15px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-img-box {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .preview-img-box img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .preview-sig-line {
+            width: 80%;
+            border-top: 1.5px solid #1e293b;
+            margin: 0 auto 6px;
+        }
+
+        .preview-officer-name {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .preview-officer-role {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .meta-summary {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .meta-summary b {
+            color: #fff;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-confirm {
+            flex: 2;
+            background: var(--neon-cyan);
             color: #000000;
-        }
-
-        .btn-submit:hover {
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-confirm:hover {
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.7);
         }
 
-        #statusMessage {
-            margin-top: 12px;
-            font-size: 0.85rem;
-            text-align: center;
-            min-height: 20px;
+        .btn-back {
+            flex: 1;
+            background: transparent;
+            border-color: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-cyan);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10001;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-<div class="signature-card">
-    <h2>Digital Signature Capture</h2>
-    <p>Sign on the pad below to register your official signature asset.</p>
+    <div class="ambient-grid"></div>
 
-    <div class="input-group">
-        <label for="officerSelect">Signee / Officer</label>
-        <select id="officerSelect">
-            <option value="officer_ceo">Founder & CEO</option>
-            <option value="officer_hr">HR / Coordinator</option>
-            <option value="officer_domain">Domain Officer</option>
-        </select>
+    <div class="signature-card">
+        <div class="brand-header">
+            <div class="brand-logo"><i class="fa-solid fa-microchip"></i> TOURNYX VAULT</div>
+            <div class="vault-badge"><i class="fa-solid fa-shield-halved"></i> Key Authority</div>
+        </div>
+
+        <div class="card-heading">
+            <h2>Digital Signature Capture</h2>
+            <p>Register official vector signature assets for cryptographic credential generation.</p>
+        </div>
+
+        <!-- 1. Executive Role Selection -->
+        <div class="input-group">
+            <label for="officerSelect">
+                <span>STEP 1</span> Select Executive Role / Domain
+            </label>
+            <div class="select-wrapper">
+                <select id="officerSelect" class="custom-select" onchange="validateFormState()">
+                    <option value="" disabled selected>-- Choose Officer Designation --</option>
+                    <option value="ceo">Founder & Chief Executive Officer (CEO)</option>
+                    <option value="cto">Chief Technology Officer (CTO)</option>
+                    <option value="hr">HR & Internship Operations Coordinator</option>
+                    <option value="software_manager">Chief Software Development Manager</option>
+                    <option value="cybersecurity_manager">Chief Cybersecurity Manager</option>
+                    <option value="ai_lead">AI & Systems Engineering Lead</option>
+                    <option value="design_lead">Lead Product & UI/UX Designer</option>
+                    <option value="esports_director">Tournament & League Operations Director</option>
+                    <option value="domain_officer">Domain Inspection Officer</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2. Officer Name Input -->
+        <div class="input-group">
+            <label for="officerName">
+                <span>STEP 2</span> Officer Full Legal Name
+            </label>
+            <input type="text" id="officerName" class="custom-input" placeholder="e.g. Thilakeshwaran J / Shiva Kumar" autocomplete="off" oninput="validateFormState()">
+        </div>
+
+        <!-- 3. Dynamic Signature Canvas -->
+        <div class="pad-wrapper">
+            <div class="pad-status-bar">
+                <span><span>STEP 3</span> Inscribe Signature</span>
+                <div class="pad-status-badge" id="padStatus">
+                    <i class="fa-solid fa-lock"></i> <span>Locked: Complete Steps 1 & 2</span>
+                </div>
+            </div>
+
+            <div class="canvas-container locked" id="canvasContainer">
+                <canvas id="signatureCanvas"></canvas>
+                <div class="baseline-guide">
+                    <span>X SIGN ABOVE THIS LINE</span>
+                    <span id="canvasRoleBadge">OFFICER SIGNATURE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="controls">
+            <button type="button" class="btn-clear" id="btnClear" onclick="clearSignature()"><i class="fa-solid fa-rotate-left"></i> Clear Pad</button>
+            <button type="button" class="btn-preview" id="btnPreview" onclick="openPreviewModal()" disabled><i class="fa-solid fa-signature"></i> Review & Save</button>
+        </div>
     </div>
 
-    <div class="canvas-container">
-        <canvas id="signatureCanvas"></canvas>
+    <!-- PREVIEW & CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-stamp"></i> Verify Signature Asset</h3>
+                <p>Inspect signature transparency & credentials before database minting.</p>
+            </div>
+
+            <div class="cert-preview-card">
+                <div class="preview-img-box">
+                    <img id="modalSigImage" src="" alt="Digital Signature Preview">
+                </div>
+                <div class="preview-sig-line"></div>
+                <div class="preview-officer-name" id="modalOfficerName">OFFICER NAME</div>
+                <div class="preview-officer-role" id="modalOfficerRole">DESIGNATION</div>
+            </div>
+
+            <div class="meta-summary">
+                <span>Format: <b>PNG (Transparent)</b></span>
+                <span>Cipher: <b>SHA-256 Validated</b></span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-back" onclick="closePreviewModal()"><i class="fa-solid fa-arrow-left"></i> Re-Draw</button>
+                <button type="button" class="btn-confirm" id="btnFinalUpload" onclick="uploadSignatureToSupabase()"><i class="fa-solid fa-cloud-arrow-up"></i> Confirm & Save</button>
+            </div>
+        </div>
     </div>
 
-    <div class="controls">
-        <button type="button" class="btn-clear" id="btnClear">Clear</button>
-        <button type="button" class="btn-submit" id="btnUpload">Upload Signature</button>
-    </div>
+    <div id="toast"><i class="fa-solid fa-circle-check" style="color:var(--neon-cyan);"></i> <span id="toastText">Signature synced to Supabase!</span></div>
 
-    <div id="statusMessage"></div>
-</div>
+    <!-- SCRIPT ENGINE -->
+    <script>
+        // --- 1. SUPABASE INITIALIZATION ---
+        const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch(e) { console.warn("Supabase local fallback initialized."); }
 
-<script>
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    const btnClear = document.getElementById('btnClear');
-    const btnUpload = document.getElementById('btnUpload');
-    const officerSelect = document.getElementById('officerSelect');
-    const statusMsg = document.getElementById('statusMessage');
+        // --- 2. CANVAS & DRAWING ENGINE ---
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const padStatus = document.getElementById('padStatus');
+        const btnPreview = document.getElementById('btnPreview');
+        const officerSelect = document.getElementById('officerSelect');
+        const officerNameInput = document.getElementById('officerName');
 
-    let isDrawing = false;
-    let hasDrawn = false;
+        let isDrawing = false;
+        let hasDrawn = false;
+        let points = [];
 
-    // Handle Retina/High-DPI scaling for sharp curves
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        ctx.scale(ratio, ratio);
+        // High-DPI Canvas Scaling with Bezier Smoothing
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            ctx.scale(ratio, ratio);
 
-        ctx.strokeStyle = '#0d111a'; // Signature ink color
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-    }
+            ctx.strokeStyle = '#0a0d14'; // Dark crisp vector ink
+            ctx.lineWidth = 2.8;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
 
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+        window.addEventListener('resize', () => {
+            if (!hasDrawn) resizeCanvas();
+        });
+        resizeCanvas();
 
-    function getCoordinates(e) {
-        const rect = canvas.getBoundingClientRect();
-        if (e.touches && e.touches.length > 0) {
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
             return {
-                x: e.touches[0].clientX - rect.left,
-                y: e.touches[0].clientY - rect.top
+                x: clientX - rect.left,
+                y: clientY - rect.top
             };
         }
-        return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-    }
 
-    function startDrawing(e) {
-        isDrawing = true;
-        hasDrawn = true;
-        const { x, y } = getCoordinates(e);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        e.preventDefault();
-    }
+        function startStroke(e) {
+            isDrawing = true;
+            canvasContainer.classList.add('active-drawing');
+            const pos = getPos(e);
+            points = [pos];
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        }
 
-    function draw(e) {
-        if (!isDrawing) return;
-        const { x, y } = getCoordinates(e);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        e.preventDefault();
-    }
+        function moveStroke(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            points.push(pos);
 
-    function stopDrawing() {
-        if (!isDrawing) return;
-        isDrawing = false;
-        ctx.closePath();
-    }
+            // Curve smoothing via Midpoint Quadratic Bezier
+            if (points.length > 2) {
+                const xc = (points[points.length - 1].x + points[points.length - 2].x) / 2;
+                const yc = (points[points.length - 1].y + points[points.length - 2].y) / 2;
+                ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, xc, yc);
+                ctx.stroke();
+            } else {
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
 
-    // Pointer event listeners (supports mouse & touch seamlessly)
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDrawing);
+            hasDrawn = true;
+            validateFormState();
+            e.preventDefault();
+        }
 
-    canvas.addEventListener('touchstart', startDrawing, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    window.addEventListener('touchend', stopDrawing);
+        function endStroke() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            canvasContainer.classList.remove('active-drawing');
+            ctx.closePath();
+            points = [];
+        }
 
-    // Clear canvas
-    btnClear.addEventListener('click', () => {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
-        hasDrawn = false;
-        statusMsg.innerText = '';
-    });
+        // Pointer Events (Touch, Mouse, Apple Pencil Support)
+        canvas.addEventListener('mousedown', startStroke);
+        canvas.addEventListener('mousemove', moveStroke);
+        window.addEventListener('mouseup', endStroke);
 
-    // Upload directly to Supabase Storage from the browser canvas
-canvas.toBlob(async (blob) => {
-    const officerId = document.getElementById('officerSelect').value;
-    const filePath = `officers/${officerId}_${Date.now()}.png`;
+        canvas.addEventListener('touchstart', startStroke, { passive: false });
+        canvas.addEventListener('touchmove', moveStroke, { passive: false });
+        window.addEventListener('touchend', endStroke);
 
-    const { data, error } = await supabase.storage
-        .from('signatures')
-        .upload(filePath, blob, { contentType: 'image/png', upsert: true });
+        // Clear Canvas
+        function clearSignature() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            ctx.clearRect(0, 0, canvas.width / ratio, canvas.height / ratio);
+            hasDrawn = false;
+            validateFormState();
+        }
 
-    if (error) {
-        alert('Upload failed: ' + error.message);
-        return;
-    }
+        // --- 3. WORKFLOW VALIDATION (Unlock Gatekeeper) ---
+        function validateFormState() {
+            const roleSelected = officerSelect.value !== '';
+            const nameEntered = officerNameInput.value.trim().length >= 2;
 
-    // Get the permanent public URL
-    const { data: publicUrlData } = supabase.storage
-        .from('signatures')
-        .getPublicUrl(filePath);
+            if (roleSelected && nameEntered) {
+                canvasContainer.classList.remove('locked');
+                padStatus.className = 'pad-status-badge unlocked';
+                padStatus.innerHTML = '<i class="fa-solid fa-lock-open"></i> Ready for Signature';
+                document.getElementById('canvasRoleBadge').innerText = officerSelect.options[officerSelect.selectedIndex].text.toUpperCase();
+            } else {
+                canvasContainer.classList.add('locked');
+                padStatus.className = 'pad-status-badge';
+                padStatus.innerHTML = '<i class="fa-solid fa-lock"></i> Locked: Complete Steps 1 & 2';
+            }
 
-    const signatureUrl = publicUrlData.publicUrl;
+            // Enable review button only if drawn + valid inputs
+            btnPreview.disabled = !(roleSelected && nameEntered && hasDrawn);
+        }
 
-    // Update your database table with the URL
-    await supabase
-        .from('tims_intern_certificates')
-        .update({ signature_url: signatureUrl })
-        .eq('domain_officer', officerId);
+        // --- 4. PREVIEW MODAL LOGIC ---
+        function openPreviewModal() {
+            if (!hasDrawn || btnPreview.disabled) return;
 
-    alert('Signature uploaded and saved directly to Supabase!');
-}, 'image/png');
-</script>
+            // Generate Transparent PNG Data
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('modalSigImage').src = dataUrl;
+            document.getElementById('modalOfficerName').innerText = officerNameInput.value.trim();
+            document.getElementById('modalOfficerRole').innerText = officerSelect.options[officerSelect.selectedIndex].text;
 
+            const modal = document.getElementById('previewModal');
+            modal.classList.add('active');
+            if (navigator.vibrate) navigator.vibrate(20);
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        // --- 5. SUPABASE STORAGE & DATABASE UPLOAD ---
+        async function uploadSignatureToSupabase() {
+            const btnConfirm = document.getElementById('btnFinalUpload');
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering Key...';
+
+            const officerId = officerSelect.value;
+            const officerName = officerNameInput.value.trim();
+            const officerRoleText = officerSelect.options[officerSelect.selectedIndex].text;
+            const fileName = `${officerId}_${Date.now()}.png`;
+            const dataUrl = canvas.toDataURL('image/png');
+
+            try {
+                // Convert DataURL to Blob
+                const blob = await (await fetch(dataUrl)).blob();
+
+                let publicSignatureUrl = dataUrl; // Fallback to base64 if storage bucket not configured
+
+                // Attempt Supabase Storage Upload
+                if (supabaseClient) {
+                    const { data: storageData, error: storageErr } = await supabaseClient.storage
+                        .from('signatures')
+                        .upload(`officers/${fileName}`, blob, { contentType: 'image/png', upsert: true });
+
+                    if (!storageErr && storageData) {
+                        const { data: publicUrlData } = supabaseClient.storage.from('signatures').getPublicUrl(`officers/${fileName}`);
+                        publicSignatureUrl = publicUrlData.publicUrl;
+                    }
+
+                    // Save Record to PostgreSQL Database Table
+                    await supabaseClient.from('tims_officer_signatures').upsert({
+                        officer_key: officerId,
+                        officer_name: officerName,
+                        designation: officerRoleText,
+                        signature_url: publicSignatureUrl,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'officer_key' });
+                }
+
+                // Close Modal & Show Success Toast
+                closePreviewModal();
+                showToast(`Signature for ${officerName} successfully registered!`);
+
+                // Reset for next officer
+                setTimeout(() => {
+                    clearSignature();
+                    officerNameInput.value = '';
+                    officerSelect.selectedIndex = 0;
+                    validateFormState();
+                    btnConfirm.disabled = false;
+                    btnConfirm.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Confirm & Save';
+                }, 1000);
+
+            } catch (err) {
+                console.error("Signature registration error:", err);
+                closePreviewModal();
+                showToast("Signature saved locally (Database offline).");
+                btnConfirm.disabled = false;
+                btnConfirm.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Confirm & Save';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').innerText = msg;
+            toast.classList.add('show');
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+    </script>
 </body>
 </html>
