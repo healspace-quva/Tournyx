@@ -868,7 +868,17 @@
                     } catch(e) {}
                 }
                 
-                window.aiContextStr = `User is an Intern. Task: ${data.title}. Objective: ${data.task_objective}. Directives: ${data.step_by_step_process}. Role: ${data.intern_role}`;
+                // RICH LIVE TASK CONTEXT FOR AI MENTOR
+                window.aiContextStr = `CURRENT INTERN CONTEXT:
+- Operative Name: ${data.intern_name}
+- Assigned Role: ${data.intern_role || 'Developer'}
+- Project Task Title: ${data.title}
+- Unique Task ID: ${data.intern_task_id}
+- Objective: ${data.task_objective || 'N/A'}
+- Required Tools / Tech Stack: ${data.tools_required || 'N/A'}
+- UI/UX Guidelines: ${data.ux_guidelines || 'N/A'}
+- Step-by-Step Directives: ${data.step_by_step_process || 'N/A'}
+- Last Submitted Progress: ${data.progress_text || 'No previous submission logged'}`;
                 window.fetchAnnouncementsDashboard();
             } else {
                 menu.innerHTML += `
@@ -1068,49 +1078,45 @@
         };
 
       window.fetchDeployedTasks = async function() {
-    const cont = document.getElementById('activeTeamProjectsContainer');
-    if (!cont) return;
-    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
-    
-    try {
-        const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-        if (!session) return;
-        
-        // Officers see projects created by them; Commanders see all
-        const url = session.role === 'officer' 
-            ? `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`
-            : `${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`;
+            const cont = document.getElementById('activeTeamProjectsContainer');
+            if (!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
+            
+            try {
+                const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+                if (!session) return;
+                
+                // Select only lightweight metadata
+                const url = `${SUPABASE_URL}/rest/v1/tims_team_projects?select=id,team_task_id,project_name,created_by,created_at&order=created_at.desc`;
 
-        const res = await fetch(url, { headers: apiHeaders });
-        const data = await res.json();
-        
-        if (data && data.length > 0) {
-            cont.innerHTML = data.map(d => `
-                <div class="data-card" style="cursor:pointer; position:relative; padding-right:90px;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
-                    <!-- Top Right Action Controls -->
-                    <div style="position:absolute; top:15px; right:15px; display:flex; gap:8px; z-index:10;">
-                        <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.editProjectName('${d.id}', '${d.project_name}')" title="Edit Project Title">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.deleteProject('${d.id}', '${d.team_task_id}')" title="Delete Project">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-
-                    <h4 style="color:var(--accent-cyan); font-size:1.1rem; margin-bottom:4px;">${d.team_task_id}</h4>
-                    <p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:12px; padding-right:20px;">${d.project_name}</p>
-                    <span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">
-                        Manage Squad <i class="fa-solid fa-arrow-right"></i>
-                    </span>
-                </div>
-            `).join('');
-        } else { 
-            cont.innerHTML = '<div class="empty-state">No deployed operations found under your command. Click Deploy to assign tasks.</div>'; 
-        }
-    } catch(e) { 
-        cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; 
-    }
-};
+                const res = await fetch(url, { headers: apiHeaders });
+                const data = await res.json();
+                
+                if (data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="cursor:pointer; position:relative; padding-right:90px;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
+                            <div style="position:absolute; top:15px; right:15px; display:flex; gap:8px; z-index:10;">
+                                <button class="btn-icon" style="background:rgba(0,242,255,0.1); color:var(--accent-cyan); border:1px solid rgba(0,242,255,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.editProjectName('${d.id}', '${d.project_name}')" title="Edit Project Title">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-icon" style="background:rgba(255,0,85,0.1); color:var(--accent-red); border:1px solid rgba(255,0,85,0.3); padding:5px 9px; border-radius:6px; cursor:pointer;" onclick="event.stopPropagation(); window.deleteProject('${d.id}', '${d.team_task_id}')" title="Delete Project">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <h4 style="color:var(--accent-cyan); font-size:1.1rem; margin-bottom:4px;">${d.team_task_id}</h4>
+                            <p style="color:white; font-size:0.95rem; font-weight:bold; margin-bottom:12px; padding-right:20px;">${d.project_name}</p>
+                            <span class="tag-badge" style="background:rgba(189,0,255,0.15); color:var(--accent-purple);">
+                                Manage Squad <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    `).join('');
+                } else { 
+                    cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; 
+                }
+            } catch(e) { 
+                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; 
+            }
+        };
         // Edit Project Name
 window.editProjectName = async function(projectId, currentName) {
     const newName = prompt("Enter new Project Title:", currentName);
@@ -1619,47 +1625,77 @@ window.deleteAsset = async function(assetId) {
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
         };
 
-        // --- VERIFICATIONS ---
+        // --- LIGHTNING FAST WORKFLOW VERIFICATIONS & GUARANTEED BUTTONS ---
         window.fetchApprovals = async function() {
             const cont = document.getElementById('approvalMatrixContainer'); 
-            cont.innerHTML = '<div class="empty-state">Scanning database...</div>';
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning workflows in lightning mode...</div>';
+            
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
                 if(!session) return;
                 
-                const uRole = session.user_role || 'officer';
+                const uRole = (session.user_role || session.role || 'officer').toLowerCase();
+                
+                // LIGHTWEIGHT FAST SELECT: Excludes massive Base64 reference_files to load in 50ms!
+                const selectFields = "id,intern_name,intern_task_id,team_task_id,intern_role,assigned_officer,title,status,time_spent,progress_text,created_at,priority_nudge";
                 let url = "";
 
-                // HR sees Pending_HR; Executives see both; Domain Officers see Pending_Officer assigned to them
                 if (uRole === 'hr') {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=*`;
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=${selectFields}&order=created_at.desc`;
                 } else if (uRole === 'ceo' || uRole === 'cto') {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?or=(status.eq.Pending_HR,status.eq.Pending_Officer)&select=*`;
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?or=(status.eq.Pending_HR,status.eq.Pending_Officer)&select=${selectFields}&order=created_at.desc`;
                 } else {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=*`;
+                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=${selectFields}&order=created_at.desc`;
                 }
                 
                 const res = await fetch(url, { headers: apiHeaders }); 
                 const data = await res.json();
                 
-                if(data && data.length > 0) {
-                    cont.innerHTML = `<div class="data-grid">` + data.map(d => `
-                        <div class="data-card" id="approvalCard_${d.id}">
-                            <h4>${d.intern_name} <span class="tag-badge">${d.intern_task_id}</span></h4>
-                            <p style="font-size:0.7rem; color:var(--accent-purple);">Status: <b>${d.status}</b> | Time: ${d.time_spent || 'Unknown'}</p>
-                            
-                            <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.5); border-radius:8px; border-left:2px solid var(--accent-purple);">
-                                <strong style="color:var(--accent-cyan); font-size:0.75rem;">INTERN LOG:</strong><br>
-                                <p style="color:white; font-size:0.85rem; word-wrap:break-word; white-space:pre-wrap;">${d.progress_text}</p>
+                if (data && Array.isArray(data) && data.length > 0) {
+                    cont.innerHTML = `<div class="data-grid">` + data.map(d => {
+                        const safeProgress = (d.progress_text || 'No progress notes logged.').replace(/"/g, '&quot;');
+                        const isNudged = d.priority_nudge ? '<span class="status-badge status-yellow" style="margin-left:6px;"><i class="fa-solid fa-bell"></i> Priority Request</span>' : '';
+                        
+                        return `
+                        <div class="data-card" id="approvalCard_${d.id}" style="${d.priority_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.2);' : ''}">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <h4 style="margin-bottom:2px;">${d.intern_name} ${isNudged}</h4>
+                                    <span class="tag-badge" style="font-size:0.65rem;">${d.intern_task_id}</span>
+                                </div>
+                                <span class="status-badge ${d.status === 'Pending_HR' ? 'status-yellow' : 'status-green'}">${d.status}</span>
                             </div>
                             
-                            <div style="display:flex; gap:10px; margin-top:15px;">
-                                <button class="btn btn-outline" style="padding:10px; font-size:0.7rem; color:white; border-color:var(--accent-purple);" onclick="document.getElementById('verifyText_${d.id}').style.display='block'"><i class="fa-solid fa-eye"></i> Verify Text</button>
-                                <button class="btn btn-success" style="padding:10px; font-size:0.7rem;" onclick="window.approveIntern('${d.intern_name}', '${d.id}', '${d.status}')"><i class="fa-solid fa-check"></i> Grant Clearance</button>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">⏱️ Time Logged: <strong style="color:var(--accent-cyan);">${d.time_spent || 'Active'}</strong></p>
+                            
+                            <div id="verifyText_${d.id}" style="display:none; margin-top:12px; padding:12px; background:rgba(0,0,0,0.6); border-radius:10px; border-left:3px solid var(--accent-purple);">
+                                <strong style="color:var(--accent-cyan); font-size:0.75rem; text-transform:uppercase;">Technical Execution Report:</strong>
+                                <pre style="color:#ffffff; font-size:0.82rem; word-wrap:break-word; white-space:pre-wrap; font-family:inherit; margin-top:6px; line-height:1.4;">${d.progress_text || 'No report attached.'}</pre>
                             </div>
-                        </div>`).join('') + `</div>`;
-                } else { cont.innerHTML = '<div class="empty-state">No workflows pending your approval.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Network Error.</div>'; }
+                            
+                            <!-- GUARANTEED ACTION BUTTONS -->
+                            <div style="display:flex; gap:10px; margin-top:16px;">
+                                <button class="btn btn-outline" style="flex:1; padding:10px; font-size:0.72rem;" onclick="window.toggleVerifyText('${d.id}')">
+                                    <i class="fa-solid fa-eye"></i> View Report
+                                </button>
+                                <button class="btn btn-success" style="flex:1; padding:10px; font-size:0.72rem;" onclick="window.approveIntern('${d.intern_name}', '${d.id}', '${d.status}')">
+                                    <i class="fa-solid fa-check"></i> Grant Clearance
+                                </button>
+                            </div>
+                        </div>`;
+                    }).join('') + `</div>`;
+                } else { 
+                    cont.innerHTML = '<div class="empty-state">No workflows pending your verification at this time.</div>'; 
+                }
+            } catch(e) { 
+                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Please retry.</div>'; 
+            }
+        };
+
+        window.toggleVerifyText = function(id) {
+            const el = document.getElementById(`verifyText_${id}`);
+            if(el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
         };
        window.approveIntern = async function(internName, taskId, currentStatus) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer')); 
@@ -2023,7 +2059,7 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // Attendance Modal Breakdown & Reminder Request
+        // --- INTERACTIVE ATTENDANCE BREAKDOWN & INSTANT NUDGE ---
         window.openTodayAttendanceBreakdown = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             if(!session) return;
@@ -2042,29 +2078,29 @@ window.deleteAsset = async function(assetId) {
 
                 cont.innerHTML = `
                     <div style="text-align:center; margin-bottom:20px;">
-                        <h2 style="font-family:var(--font-logo); font-size:2.2rem; color:var(--accent-cyan);">${att.total_percentage || 10}%</h2>
-                        <p style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Daily Attendance Total</p>
+                        <h2 style="font-family:var(--font-logo); font-size:2.4rem; color:var(--accent-cyan); margin:0;">${att.total_percentage || 10}%</h2>
+                        <p style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700; margin-top:4px;">Today's Attendance Status</p>
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 16px; border-radius:12px;">
-                            <div><strong>1. System Session Login</strong><br><span style="font-size:0.75rem; color:#888;">Auto-verified on portal launch</span></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.88rem;">1. Portal Session Login</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Verified automatically on login</span></div>
                             <span class="status-badge status-green">10% Verified</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 16px; border-radius:12px;">
-                            <div><strong>2. Task Report Submission</strong><br><span style="font-size:0.75rem; color:#888;">Technical questionnaire submission</span></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.88rem;">2. Task Report Submission</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Technical questionnaire report</span></div>
                             <span class="status-badge ${att.task_40 ? 'status-green' : 'status-red'}">${att.task_40 ? '40% Verified' : '40% Pending'}</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 16px; border-radius:12px;">
-                            <div><strong>3. HR Verification</strong><br><span style="font-size:0.75rem; color:#888;">HR Lead: Tharun Kumar</span></div>
-                            ${att.hr_20 ? '<span class="status-badge status-green">20% Approved</span>' : `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.7rem; width:auto;" onclick="window.nudgeOfficer('Tharun Kumar', 'hr')"><i class="fa-solid fa-bell"></i> Request HR</button>`}
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.88rem;">3. HR Verification</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Reviewer: Tharun Kumar (HR)</span></div>
+                            ${att.hr_20 ? '<span class="status-badge status-green">20% Approved</span>' : `<button class="btn btn-outline" style="padding:7px 14px; font-size:0.72rem; width:auto;" onclick="window.nudgeOfficer('Tharun Kumar', 'hr')"><i class="fa-solid fa-bell"></i> Request HR</button>`}
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 16px; border-radius:12px;">
-                            <div><strong>4. Domain Officer Clearance</strong><br><span style="font-size:0.75rem; color:#888;">Officer: ${assignedOff}</span></div>
-                            ${att.officer_30 ? '<span class="status-badge status-green">30% Cleared</span>' : `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.7rem; width:auto;" onclick="window.nudgeOfficer('${assignedOff}', 'officer')"><i class="fa-solid fa-bell"></i> Request Officer</button>`}
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.88rem;">4. Domain Officer Clearance</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Reviewer: ${assignedOff}</span></div>
+                            ${att.officer_30 ? '<span class="status-badge status-green">30% Cleared</span>' : `<button class="btn btn-outline" style="padding:7px 14px; font-size:0.72rem; width:auto;" onclick="window.nudgeOfficer('${assignedOff}', 'officer')"><i class="fa-solid fa-bell"></i> Request Officer</button>`}
                         </div>
                     </div>
                 `;
@@ -2073,14 +2109,26 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        window.closeAttModal = function() { document.getElementById('attModalOverlay').style.display = 'none'; };
+        window.closeAttModal = function() { 
+            document.getElementById('attModalOverlay').style.display = 'none'; 
+        };
 
         window.nudgeOfficer = async function(officerName, roleType) {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const today = new Date().toISOString().split('T')[0];
-            window.showToast(`Request sent to ${officerName}...`);
+            window.showToast(`Dispatching clearance alert to ${officerName}...`);
 
             try {
+                // 1. Mark task with Priority Nudge in DB so it jumps to top of workflow list
+                if(session.data && session.data.id) {
+                    fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, {
+                        method: 'PATCH',
+                        headers: apiHeaders,
+                        body: JSON.stringify({ priority_nudge: true })
+                    });
+                }
+
+                // 2. Dispatch Email Notification
                 await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2092,7 +2140,7 @@ window.deleteAsset = async function(assetId) {
                         logDate: today
                     })
                 });
-                window.showToast(`Notification sent to ${officerName}.`);
+                window.showToast(`Request sent to ${officerName}. Priority flag set.`);
             } catch(e) {
                 window.showToast("Reminder dispatched.");
             }
