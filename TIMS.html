@@ -868,17 +868,23 @@
                     } catch(e) {}
                 }
                 
-               // RICH LIVE TASK CONTEXT
-                window.aiContextStr = `CURRENT INTERN CONTEXT:
-- Operative Name: ${data.intern_name}
-- Assigned Role: ${data.intern_role || 'Developer'}
-- Project Task Title: ${data.title}
-- Unique Task ID: ${data.intern_task_id}
+               if (role === 'intern') {
+                window.aiContextStr = `OPERATIVE CONTEXT:
+- Name: ${data.intern_name}
+- Role: ${data.intern_role || 'Developer'}
+- Active Task: ${data.title} (${data.intern_task_id})
 - Objective: ${data.task_objective || 'N/A'}
-- Required Tools / Tech Stack: ${data.tools_required || 'N/A'}
-- UI/UX Guidelines: ${data.ux_guidelines || 'N/A'}
-- Step-by-Step Directives: ${data.step_by_step_process || 'N/A'}
-- Last Submitted Progress: ${data.progress_text || 'No previous submission logged'}`;
+- Tools: ${data.tools_required || 'N/A'}
+- Guidelines: ${data.ux_guidelines || 'N/A'}
+- Directives: ${data.step_by_step_process || 'N/A'}
+- Last Logged Progress: ${data.progress_text || 'None'}`;
+            } else {
+                window.aiContextStr = `COMMANDER CONTEXT:
+- Officer Name: ${data.name}
+- Authority Role: ${(data.role || 'Officer').toUpperCase()}
+- Division: Operations & Engineering Command
+- Focus: Task generation, team project deployments, code reviews, and workflow approvals.`;
+            }
                 window.fetchAnnouncementsDashboard();
             } else {
                 menu.innerHTML += `
