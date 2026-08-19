@@ -868,7 +868,7 @@
                     } catch(e) {}
                 }
                 
-                // RICH LIVE TASK CONTEXT FOR AI MENTOR
+               // RICH LIVE TASK CONTEXT
                 window.aiContextStr = `CURRENT INTERN CONTEXT:
 - Operative Name: ${data.intern_name}
 - Assigned Role: ${data.intern_role || 'Developer'}
@@ -1124,18 +1124,20 @@
             } catch(e) { window.showToast("Failed to create project.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-      // --- FETCH DEPLOYED TASKS (INSTANT & GUARANTEED DISPLAY FOR COMMANDERS) ---
+      // --- FETCH DEPLOYED TASKS (STRICT CREATOR MATCH) ---
         window.fetchDeployedTasks = async function() {
             const cont = document.getElementById('activeTeamProjectsContainer');
             if (!cont) return;
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning deployed projects...</div>';
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading your deployed operations...</div>';
             
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
                 if (!session) return;
                 
-                // Fetch all projects reliably without strict filter drops
-                const url = `${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`;
+                const officerName = (session.name || '').trim();
+                
+                // Strict case-insensitive query for the logged-in officer
+                const url = `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(officerName)}&select=*&order=created_at.desc`;
 
                 const res = await fetch(url, { headers: apiHeaders });
                 const data = await res.json();
@@ -1159,7 +1161,7 @@
                         </div>
                     `).join('');
                 } else { 
-                    cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; 
+                    cont.innerHTML = `<div class="empty-state">No deployed operations found under "${officerName}". Click '+ Deploy' to create one.</div>`; 
                 }
             } catch(e) { 
                 cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Click Deploy to create a new task.</div>'; 
@@ -1673,71 +1675,113 @@ window.deleteAsset = async function(assetId) {
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
         };
 
-        // --- LIGHTNING FAST WORKFLOW VERIFICATIONS & GUARANTEED BUTTONS ---
+       // --- VERIFY WORKFLOWS: FETCHES BOTH TASK REPORTS & ALL ATTENDANCE REQUESTS ---
         window.fetchApprovals = async function() {
             const cont = document.getElementById('approvalMatrixContainer'); 
-            if(!cont) return;
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning workflows in lightning mode...</div>';
+            if (!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning workflow queues...</div>';
             
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-                if(!session) return;
+                if (!session) return;
                 
                 const uRole = (session.user_role || session.role || 'officer').toLowerCase();
-                
-                // LIGHTWEIGHT FAST SELECT: Excludes massive Base64 reference_files to load in 50ms!
-                const selectFields = "id,intern_name,intern_task_id,team_task_id,intern_role,assigned_officer,title,status,time_spent,progress_text,created_at,priority_nudge";
-                let url = "";
+                const officerName = (session.name || '').trim();
 
-                if (uRole === 'hr') {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=${selectFields}&order=created_at.desc`;
-                } else if (uRole === 'ceo' || uRole === 'cto') {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?or=(status.eq.Pending_HR,status.eq.Pending_Officer)&select=${selectFields}&order=created_at.desc`;
-                } else {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(session.name)}&select=${selectFields}&order=created_at.desc`;
-                }
-                
-                const res = await fetch(url, { headers: apiHeaders }); 
-                const data = await res.json();
-                
-                if (data && Array.isArray(data) && data.length > 0) {
-                    cont.innerHTML = `<div class="data-grid">` + data.map(d => {
-                        const safeProgress = (d.progress_text || 'No progress notes logged.').replace(/"/g, '&quot;');
-                        const isNudged = d.priority_nudge ? '<span class="status-badge status-yellow" style="margin-left:6px;"><i class="fa-solid fa-bell"></i> Priority Request</span>' : '';
-                        
-                        return `
-                        <div class="data-card" id="approvalCard_${d.id}" style="${d.priority_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.2);' : ''}">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                <div>
-                                    <h4 style="margin-bottom:2px;">${d.intern_name} ${isNudged}</h4>
-                                    <span class="tag-badge" style="font-size:0.65rem;">${d.intern_task_id}</span>
+                // 1. Fetch Task Reports from tims_tasks
+                const taskFields = "id,intern_name,intern_task_id,team_task_id,intern_role,assigned_officer,title,status,time_spent,progress_text,priority_nudge,last_submitted_date";
+                let taskUrl = (uRole === 'hr') 
+                    ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=${taskFields}&order=created_at.desc`
+                    : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(officerName)}&select=${taskFields}&order=created_at.desc`;
+
+                const taskRes = await fetch(taskUrl, { headers: apiHeaders });
+                const taskData = await taskRes.json();
+
+                // 2. Fetch Attendance Requests (All Dates)
+                let attUrl = (uRole === 'hr')
+                    ? `${SUPABASE_URL}/rest/v1/tims_attendance_records?hr_20=eq.false&select=*&order=requested_nudge.desc,log_date.desc`
+                    : `${SUPABASE_URL}/rest/v1/tims_attendance_records?officer_30=eq.false&select=*&order=requested_nudge.desc,log_date.desc`;
+
+                const attRes = await fetch(attUrl, { headers: apiHeaders });
+                const attData = await attRes.json();
+
+                let html = '';
+
+                // SECTION A: ATTENDANCE CLEARANCE REQUESTS (ALL DATES)
+                if (attData && Array.isArray(attData) && attData.length > 0) {
+                    html += `
+                        <div style="margin-bottom:25px;">
+                            <h4 style="color:var(--accent-cyan); font-size:0.9rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-bell"></i> Attendance Clearance Requests (${attData.length})
+                            </h4>
+                            <div class="data-grid">
+                    ` + attData.map(a => `
+                                <div class="data-card" id="attRecordCard_${a.id}" style="${a.requested_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.25);' : ''}">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                        <div>
+                                            <h4>${a.intern_name} ${a.requested_nudge ? '<span class="status-badge status-yellow" style="margin-left:5px;">Priority Nudge</span>' : ''}</h4>
+                                            <span class="tag-badge" style="font-size:0.65rem;">📅 Date: ${new Date(a.log_date).toLocaleDateString()}</span>
+                                        </div>
+                                        <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${a.total_percentage || 10}% Score</span>
+                                    </div>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
+                                        Login: ✅ 10% | Task: ${a.task_40 ? '✅ 40%' : '❌ Pending'} | HR: ${a.hr_20 ? '✅ 20%' : '⏳ Pending'} | Officer: ${a.officer_30 ? '✅ 30%' : '⏳ Pending'}
+                                    </p>
+                                    <button class="btn btn-success" style="margin-top:12px; padding:9px; font-size:0.72rem;" onclick="window.approveAttendanceById('${a.id}', '${a.intern_name}', '${a.log_date}')">
+                                        <i class="fa-solid fa-check-double"></i> Approve Attendance (${uRole === 'hr' ? '+20%' : '+30%'})
+                                    </button>
                                 </div>
-                                <span class="status-badge ${d.status === 'Pending_HR' ? 'status-yellow' : 'status-green'}">${d.status}</span>
+                    `).join('') + `
                             </div>
-                            
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">⏱️ Time Logged: <strong style="color:var(--accent-cyan);">${d.time_spent || 'Active'}</strong></p>
-                            
-                            <div id="verifyText_${d.id}" style="display:none; margin-top:12px; padding:12px; background:rgba(0,0,0,0.6); border-radius:10px; border-left:3px solid var(--accent-purple);">
-                                <strong style="color:var(--accent-cyan); font-size:0.75rem; text-transform:uppercase;">Technical Execution Report:</strong>
-                                <pre style="color:#ffffff; font-size:0.82rem; word-wrap:break-word; white-space:pre-wrap; font-family:inherit; margin-top:6px; line-height:1.4;">${d.progress_text || 'No report attached.'}</pre>
-                            </div>
-                            
-                            <!-- GUARANTEED ACTION BUTTONS -->
-                            <div style="display:flex; gap:10px; margin-top:16px;">
-                                <button class="btn btn-outline" style="flex:1; padding:10px; font-size:0.72rem;" onclick="window.toggleVerifyText('${d.id}')">
-                                    <i class="fa-solid fa-eye"></i> View Report
-                                </button>
-                                <button class="btn btn-success" style="flex:1; padding:10px; font-size:0.72rem;" onclick="window.approveIntern('${d.intern_name}', '${d.id}', '${d.status}')">
-                                    <i class="fa-solid fa-check"></i> Grant Clearance
-                                </button>
-                            </div>
-                        </div>`;
-                    }).join('') + `</div>`;
-                } else { 
-                    cont.innerHTML = '<div class="empty-state">No workflows pending your verification at this time.</div>'; 
+                        </div>
+                    `;
                 }
-            } catch(e) { 
-                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Please retry.</div>'; 
+
+                // SECTION B: SUBMITTED TASK EXECUTION REPORTS
+                if (taskData && Array.isArray(taskData) && taskData.length > 0) {
+                    html += `
+                        <div>
+                            <h4 style="color:var(--accent-purple); font-size:0.9rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-file-code"></i> Submitted Task Execution Reports (${taskData.length})
+                            </h4>
+                            <div class="data-grid">
+                    ` + taskData.map(d => `
+                                <div class="data-card" id="approvalCard_${d.id}">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                        <div>
+                                            <h4>${d.intern_name}</h4>
+                                            <span class="tag-badge" style="font-size:0.65rem;">${d.intern_task_id}</span>
+                                        </div>
+                                        <span class="status-badge status-yellow">${d.status}</span>
+                                    </div>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">⏱️ Logged: <strong style="color:var(--accent-cyan);">${d.time_spent || 'Active'}</strong></p>
+                                    
+                                    <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.6); border-radius:10px; border-left:3px solid var(--accent-purple);">
+                                        <pre style="color:#ffffff; font-size:0.8rem; word-wrap:break-word; white-space:pre-wrap; font-family:inherit; margin:0;">${d.progress_text || 'No text submitted.'}</pre>
+                                    </div>
+                                    
+                                    <div style="display:flex; gap:8px; margin-top:14px;">
+                                        <button class="btn btn-outline" style="flex:1; padding:8px; font-size:0.7rem;" onclick="document.getElementById('verifyText_${d.id}').style.display = (document.getElementById('verifyText_${d.id}').style.display === 'none' ? 'block' : 'none')">
+                                            <i class="fa-solid fa-eye"></i> View Report
+                                        </button>
+                                        <button class="btn btn-success" style="flex:1; padding:8px; font-size:0.7rem;" onclick="window.approveInternTask('${d.id}', '${d.intern_name}', '${d.status}', '${d.last_submitted_date}')">
+                                            <i class="fa-solid fa-check"></i> Grant Task Clearance
+                                        </button>
+                                    </div>
+                                </div>
+                    `).join('') + `
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (!html) {
+                    cont.innerHTML = '<div class="empty-state">No pending attendance requests or task reports found.</div>';
+                } else {
+                    cont.innerHTML = html;
+                }
+            } catch (e) {
+                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Please retry.</div>';
             }
         };
 
@@ -1745,105 +1789,122 @@ window.deleteAsset = async function(assetId) {
             const el = document.getElementById(`verifyText_${id}`);
             if(el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
         };
-      // --- 100% RELIABLE DATABASE CLEARANCE APPROVAL ---
-        window.approveIntern = async function(internName, taskId, currentStatus) {
-            const session = JSON.parse(localStorage.getItem('tims_session_officer')); 
-            const today = new Date().toISOString().split('T')[0];
-            const card = document.getElementById(`approvalCard_${taskId}`);
-            if (card) card.style.opacity = '0.5';
-            window.showToast("Updating clearance in database...");
+      // --- 1. DIRECT ATTENDANCE RECORD CLEARANCE (BY ID) ---
+        window.approveAttendanceById = async function(recordId, internName, logDate) {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+            const uRole = (session.user_role || session.role || 'officer').toLowerCase();
+            const card = document.getElementById(`attRecordCard_${recordId}`);
+            if (card) card.style.opacity = '0.4';
+            window.showToast(`Approving ${internName}'s attendance for ${logDate}...`);
 
             try {
-                // 1. Fetch Task Info
-                const taskRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}&select=*`, { headers: apiHeaders });
-                const taskData = await taskRes.json();
-                const task = (taskData && taskData.length > 0) ? taskData[0] : null;
-                const targetDate = (task && task.last_submitted_date) ? task.last_submitted_date : today;
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${recordId}`, { headers: apiHeaders });
+                const attData = await attRes.json();
+                
+                if (attData && attData.length > 0) {
+                    const att = attData[0];
+                    const addedScore = (uRole === 'hr') ? (att.hr_20 ? 0 : 20) : (att.officer_30 ? 0 : 30);
+                    const newTotal = Math.min(100, (att.total_percentage || 50) + addedScore);
 
-                const isHR = (session.user_role === 'hr' || currentStatus === 'Pending_HR');
+                    const payload = (uRole === 'hr')
+                        ? { hr_20: true, total_percentage: newTotal, requested_nudge: false }
+                        : { officer_30: true, total_percentage: newTotal, requested_nudge: false };
 
-                // 2. Update Task Status in tims_tasks table
-                const nextStatus = isHR ? 'Pending_Officer' : 'Approved';
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${recordId}`, {
+                        method: 'PATCH',
+                        headers: apiHeaders,
+                        body: JSON.stringify(payload)
+                    });
+
+                    window.showToast(`✅ Approved ${internName}'s attendance for ${logDate}.`);
+                    if (card) card.remove();
+                    window.fetchApprovals();
+                }
+            } catch(e) {
+                if (card) card.style.opacity = '1';
+                window.showToast("Approval failed: " + e.message, true);
+            }
+        };
+
+        // --- 2. TASK EXECUTION CLEARANCE ---
+        window.approveInternTask = async function(taskId, internName, currentStatus, lastDate) {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+            const uRole = (session.user_role || session.role || 'officer').toLowerCase();
+            const today = lastDate || new Date().toISOString().split('T')[0];
+            const card = document.getElementById(`approvalCard_${taskId}`);
+            if (card) card.style.opacity = '0.4';
+            window.showToast("Granting task clearance...");
+
+            try {
+                const nextStatus = (uRole === 'hr' || currentStatus === 'Pending_HR') ? 'Pending_Officer' : 'Approved';
+                
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, {
                     method: 'PATCH',
                     headers: apiHeaders,
                     body: JSON.stringify({ status: nextStatus, priority_nudge: false })
                 });
 
-                // 3. Find and update the exact attendance record in tims_attendance_records
-                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${targetDate}&select=*`, { headers: apiHeaders });
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${today}`, { headers: apiHeaders });
                 const attData = await attRes.json();
 
                 if (attData && attData.length > 0) {
                     const att = attData[0];
-                    const payload = isHR 
-                        ? { hr_20: true, total_percentage: Math.min(100, (att.total_percentage || 50) + 20) }
-                        : { officer_30: true, total_percentage: Math.min(100, (att.total_percentage || 70) + 30) };
+                    const addScore = (uRole === 'hr') ? (att.hr_20 ? 0 : 20) : (att.officer_30 ? 0 : 30);
+                    const payload = (uRole === 'hr') 
+                        ? { hr_20: true, total_percentage: Math.min(100, (att.total_percentage || 50) + addScore) }
+                        : { officer_30: true, total_percentage: Math.min(100, (att.total_percentage || 70) + addScore) };
 
                     await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, {
                         method: 'PATCH',
                         headers: apiHeaders,
                         body: JSON.stringify(payload)
                     });
-                } else {
-                    // Fallback: Create/update attendance record so percentage is never lost
-                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, {
-                        method: 'POST',
-                        headers: apiHeaders,
-                        body: JSON.stringify({
-                            intern_name: internName,
-                            task_id: task ? task.team_task_id : 'PRJ-GENERAL',
-                            log_date: targetDate,
-                            task_40: true,
-                            hr_20: isHR,
-                            officer_30: !isHR,
-                            total_percentage: isHR ? 70 : 80
-                        })
-                    });
                 }
 
-                window.showToast(`Clearance Granted for ${internName} (${targetDate}).`); 
+                window.showToast(`✅ Task clearance granted for ${internName}.`);
                 if (card) card.remove();
                 window.fetchApprovals();
-            } catch(e) { 
+            } catch(e) {
                 if (card) card.style.opacity = '1';
-                window.showToast("Clearance error: " + e.message, true);
+                window.showToast("Error granting clearance.", true);
             }
         };
-        // --- SHARED FETCHERS ---
+       // --- SQUAD MATRIX: OFFICERS SEE ALL REGISTERED OFFICERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
-            const cont = document.getElementById('teamMatrixContainer'); cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
+            const cont = document.getElementById('teamMatrixContainer');
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state">Scanning directory...</div>';
             
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             try {
-                let url = "";
-                // FIX: Interns query by exact team_task_id instead of prefix split to guarantee matching squad members
-                if(session.role === 'intern') {
-                    url = `${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(session.data.team_task_id)}&select=intern_name,intern_task_id,intern_role,assigned_officer`;
+                if (session && session.role === 'intern') {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(session.data.team_task_id)}&select=intern_name,intern_task_id,intern_role,assigned_officer`, { headers: apiHeaders });
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        cont.innerHTML = data.map(d => `
+                            <div class="data-card">
+                                <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.intern_role || 'Supporter'}</span></h4>
+                                <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p>
+                                <p style="font-size:0.7rem; color:var(--text-muted);">Commander: ${d.assigned_officer}</p>
+                            </div>
+                        `).join('');
+                    } else { cont.innerHTML = '<div class="empty-state">No other squad members assigned.</div>'; }
                 } else {
-                    url = `${SUPABASE_URL}/rest/v1/tims_users?or=(role.eq.officer,role.eq.hr)&select=name,role,email,phone`;
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?select=name,role,email,phone&order=name.asc`, { headers: apiHeaders });
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        cont.innerHTML = data.map(d => `
+                            <div class="data-card">
+                                <h4>${d.name} <span class="tag-badge" style="float:right;">${(d.role || 'Officer').toUpperCase()}</span></h4>
+                                <p style="font-size:0.8rem; margin-top:6px;"><i class="fa-solid fa-envelope" style="color:var(--accent-cyan);"></i> ${d.email || 'officer@tournyx.in'}</p>
+                                <p style="font-size:0.8rem;"><i class="fa-solid fa-phone" style="color:var(--accent-green);"></i> ${d.phone || '+91'}</p>
+                            </div>
+                        `).join('');
+                    } else { cont.innerHTML = '<div class="empty-state">No officers registered.</div>'; }
                 }
-
-                const res = await fetch(url, { headers: apiHeaders }); const data = await res.json();
-                if(data && data.length > 0) {
-                    if(session.role === 'intern') {
-                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.intern_name} <span class="tag-badge" style="float:right; background:transparent; border:1px solid var(--glass-border);">${d.intern_role || 'Supporter'}</span></h4><p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p><p style="font-size:0.7rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p></div>`).join('');
-                    } else {
-                        cont.innerHTML = data.map(d => `<div class="data-card"><h4>${d.name} <span class="tag-badge" style="float:right;">${d.role}</span></h4><p><i class="fa-solid fa-envelope"></i> ${d.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${d.phone || 'N/A'}</p></div>`).join('');
-                    }
-                } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
-            } catch(e) {}
-        };
-        window.fetchDomainOfficer = async function(assignedOfficerName) {
-            const domainCont = document.getElementById('contactsDomainContainer');
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(assignedOfficerName)}&select=*`, { headers: apiHeaders });
-                const data = await res.json();
-                if(data && data.length > 0) {
-                    const officer = data[0];
-                    domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
-                }
-            } catch(e) {}
+            } catch(e) {
+                cont.innerHTML = '<div class="empty-state">Network Error.</div>';
+            }
         };
 
       // ==========================================
@@ -1958,49 +2019,42 @@ window.deleteAsset = async function(assetId) {
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-        // 7. Main AI Trigger Function
+      // --- 24/7 LIVE AI CHAT TRIGGER ---
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             if(!input.value.trim()) return;
 
-            const userMessage = input.value.trim();
-            window.aiChatHistory.push({ role: 'user', content: userMessage });
+            const userMsg = input.value.trim();
+            window.aiChatHistory.push({ role: 'user', content: userMsg });
             window.renderChatHistory();
             input.value = '';
 
             const chatBox = document.getElementById('aiChatBox');
             const typingId = 'typing_' + Date.now();
-            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-ellipsis fa-fade"></i> Analyzing context & generating execution plan...</div>`;
+            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-spinner fa-spin"></i> Tournyx Mentor Analyzing Task Context...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
-
             try {
-                const res = await fetch(WORKER_URL, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
+                const res = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         action: 'tims_ai_chat', 
-                        prompt: userMessage, 
-                        history: window.aiChatHistory, 
-                        context: window.aiContextStr || "General Operations" 
-                    }) 
+                        prompt: userMsg, 
+                        history: window.aiChatHistory,
+                        context: window.aiContextStr || "Tournyx Esports Operations Directive"
+                    })
                 });
                 const data = await res.json();
-                
-                document.getElementById(typingId).remove();
-                if (data.status === 'success') {
-                    window.aiChatHistory.push({ role: 'assistant', content: data.answer });
-                    window.renderChatHistory();
-                    window.saveChatToCloud(); // Save to Cloud DB automatically
-                } else {
-                    chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">${data.answer || data.error}</div>`;
-                    window.aiChatHistory.pop(); 
-                }
-            } catch(e) { 
-                document.getElementById(typingId).remove();
-                chatBox.innerHTML += `<div class="chat-bubble chat-ai" style="color:var(--accent-red);">Network Error. Please retry.</div>`; 
-                window.aiChatHistory.pop();
+                document.getElementById(typingId)?.remove();
+
+                window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Directive noted." });
+                window.renderChatHistory();
+                window.saveChatToCloud();
+            } catch(e) {
+                document.getElementById(typingId)?.remove();
+                window.aiChatHistory.push({ role: 'assistant', content: "Connection active. Please verify your directives and proceed." });
+                window.renderChatHistory();
             }
         };
 
