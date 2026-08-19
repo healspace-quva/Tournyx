@@ -968,7 +968,7 @@
             if(session) localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('qSummary').value);
         };
 
-        window.submitTaskFinal = async function() {
+       window.submitTaskFinal = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const qFunc = document.getElementById('qFunctions').value.trim();
             const qUpg = document.getElementById('qUpgrades').value.trim();
@@ -978,29 +978,67 @@
             const qSum = document.getElementById('qSummary').value.trim();
             const timeLog = document.getElementById('activeTimer').innerText;
 
-            if (!qSum && !qFunc) { window.showToast("Please fill in the execution details before submitting.", true); return; }
+            if (!qSum && !qFunc) { 
+                window.showToast("Please fill in execution details before submitting.", true); 
+                return; 
+            }
             
             clearInterval(timerInterval);
-            const combinedProgress = `[Functions Implemented]: ${qFunc || 'N/A'}\n[Upgrades Added]: ${qUpg || 'N/A'}\n[Bugs Resolved]: ${qBugs || 'N/A'}\n[Code Logic]: ${qLog || 'N/A'}\n[Challenges Faced]: ${qChall || 'N/A'}\n[Summary]: ${qSum || 'Completed'}`.trim();
+            const today = new Date().toISOString().split('T')[0];
+            const combinedProgress = `[Date]: ${today}\n[Functions]: ${qFunc || 'N/A'}\n[Upgrades]: ${qUpg || 'N/A'}\n[Bugs Fixed]: ${qBugs || 'N/A'}\n[Logic]: ${qLog || 'N/A'}\n[Challenges]: ${qChall || 'N/A'}\n[Summary]: ${qSum || 'Completed'}`;
 
-            window.showToast("Syncing Database...");
+            window.showToast("Logging daily progress...");
             try {
-                // BUG FIX: Status changed to Pending_HR for the waterfall effect
+                // 1. Update active task with latest progress and mark Pending_HR
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
-                    method: 'PATCH', headers: apiHeaders, 
-                    body: JSON.stringify({ progress_text: combinedProgress, functions_implemented: qFunc, upgrades_added: qUpg, bugs_resolved: qBugs, code_logic: qLog, challenges_faced: qChall, final_summary: qSum, status: 'Pending_HR', time_spent: timeLog }) 
+                    method: 'PATCH', 
+                    headers: apiHeaders, 
+                    body: JSON.stringify({ 
+                        progress_text: combinedProgress, 
+                        status: 'Pending_HR', 
+                        time_spent: timeLog,
+                        last_submitted_date: today
+                    }) 
                 });
                 
-                const dateString = new Date().toISOString().split('T')[0];
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ task_40: true, total_percentage: 50 }) });
-                
-                // Triggers the automated Resend email with the exact Row ID
-                fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_task_email', intern: session.name, taskId: session.data.id, progress: combinedProgress, timeSpent: timeLog, date: dateString }) });
+                // 2. Lock 40% task progress for today's attendance record
+                const attCheck = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${today}&select=*`, { headers: apiHeaders });
+                const attData = await attCheck.json();
 
-                window.showToast("Operation Submitted (+40%). HR Notified via automated mail.");
-                localStorage.removeItem(`draft_${session.data.team_task_id}_${session.name}`);
-                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Operation Successfully Submitted</h3><p style="color:var(--accent-green);">Your report and timer (${timeLog}) have been securely logged. Awaiting HR Verification.</p>`;
-            } catch(e) { window.showToast("Sync Failed.", true); }
+                if (attData && attData.length > 0) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${attData[0].id}`, { 
+                        method: 'PATCH', 
+                        headers: apiHeaders, 
+                        body: JSON.stringify({ task_40: true, total_percentage: 50 }) 
+                    });
+                } else {
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { 
+                        method: 'POST', 
+                        headers: apiHeaders, 
+                        body: JSON.stringify({ intern_name: session.name, task_id: session.data.team_task_id, log_date: today, task_40: true, total_percentage: 50 }) 
+                    });
+                }
+                
+                // 3. Dispatch Email to HR with the current row ID
+                fetch(WORKER_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        action: 'submit_task_email', 
+                        intern: session.name, 
+                        taskId: session.data.id, 
+                        progress: combinedProgress, 
+                        timeSpent: timeLog, 
+                        date: today 
+                    }) 
+                });
+
+                window.showToast("Daily Progress Submitted (+40%). HR Notified.");
+                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Progress Successfully Logged</h3><p style="color:var(--accent-green);">Your report for ${today} has been securely logged. 50% attendance verified for today.</p>`;
+                window.fetchAttendance();
+            } catch(e) { 
+                window.showToast("Sync Failed.", true); 
+            }
         };
 
         window.fetchAttendance = async function() {
@@ -1029,21 +1067,30 @@
             const cont = document.getElementById('attHistoryContainer');
             if(!cont || !session) return;
             cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching attendance records...</div>';
+
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=*&order=log_date.desc`, { headers: apiHeaders });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&select=id,log_date,total_percentage,task_40,hr_20,officer_30&order=log_date.desc`, { headers: apiHeaders });
                 const data = await res.json();
-                if(data && data.length > 0) {
+
+                if (data && data.length > 0) {
                     cont.innerHTML = data.map(d => `
-                        <div class="data-card">
+                        <div class="data-card" style="cursor:pointer;" onclick="window.openTodayAttendanceBreakdown('${d.log_date}')" title="Click to view & request clearances for this day">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <h4>${new Date(d.log_date).toLocaleDateString()}</h4>
                                 <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${d.total_percentage}% Score</span>
                             </div>
-                            <p style="font-size:0.75rem; margin-top:8px;">HR Approved: ${d.hr_20 ? 'Yes' : 'Pending'} | Officer Cleared: ${d.officer_30 ? 'Yes' : 'Pending'}</p>
+                            <p style="font-size:0.75rem; margin-top:6px; color:var(--text-muted);">
+                                Task: ${d.task_40 ? '✅ 40%' : '❌'} | HR: ${d.hr_20 ? '✅ 20%' : '⏳'} | Officer: ${d.officer_30 ? '✅ 30%' : '⏳'}
+                            </p>
+                            <span style="font-size:0.65rem; color:var(--accent-cyan); display:inline-block; margin-top:4px;">Click to view breakdown & request approval <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
                         </div>
                     `).join('');
-                } else { cont.innerHTML = '<div class="empty-state">No past attendance logs recorded.</div>'; }
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Failed to load history.</div>'; }
+                } else { 
+                    cont.innerHTML = '<div class="empty-state">No past attendance logs recorded.</div>'; 
+                }
+            } catch(e) { 
+                cont.innerHTML = '<div class="empty-state">Failed to load history.</div>'; 
+            }
         };
 
         // --- 8. ADVANCED OFFICER TASK DEPLOYER ---
@@ -1699,33 +1746,41 @@ window.deleteAsset = async function(assetId) {
         };
        window.approveIntern = async function(internName, taskId, currentStatus) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer')); 
-            const dateString = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
             
             document.getElementById(`approvalCard_${taskId}`).style.display = 'none';
             window.showToast("Processing Clearance...");
 
             try {
-                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
+                // Fetch the task to get the exact last submitted date
+                const taskRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}&select=last_submitted_date`, { headers: apiHeaders });
+                const taskData = await taskRes.json();
+                const targetDate = (taskData && taskData.length > 0 && taskData[0].last_submitted_date) ? taskData[0].last_submitted_date : today;
+
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${targetDate}&select=*`, { headers: apiHeaders });
                 const attData = await attRes.json();
                 
-                if(attData.length > 0) {
+                if (attData.length > 0) {
                     const att = attData[0]; 
                     let payload = {};
                     
-                    if(currentStatus === 'Pending_HR' || session.user_role === 'hr') {
+                    if (currentStatus === 'Pending_HR' || session.user_role === 'hr') {
                         payload = { hr_20: true, total_percentage: (att.total_percentage || 50) + 20 };
-                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Pending_Officer' }) });
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Pending_Officer', priority_nudge: false }) });
                     }
                     else {
                         payload = { officer_30: true, total_percentage: (att.total_percentage || 70) + 30 };
-                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved' }) });
+                        await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ status: 'Approved', priority_nudge: false }) });
                     }
                     
                     await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
-                    window.showToast("Clearance Granted Successfully."); 
+                    window.showToast(`Clearance Granted for ${targetDate}.`); 
                     window.fetchApprovals();
                 }
-            } catch(e) { document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; }
+            } catch(e) { 
+                document.getElementById(`approvalCard_${taskId}`).style.display = 'block'; 
+                window.showToast("Approval error: " + e.message, true);
+            }
         };
         // --- SHARED FETCHERS ---
         window.fetchTeamMatrix = async function(teamTaskId) {
@@ -2059,68 +2114,70 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // --- INTERACTIVE ATTENDANCE BREAKDOWN & INSTANT NUDGE ---
-        window.openTodayAttendanceBreakdown = async function() {
+        // --- MULTI-DAY ATTENDANCE BREAKDOWN & EXACT RECORD NUDGE ---
+        window.openTodayAttendanceBreakdown = async function(targetDate = null) {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            if(!session) return;
+            if (!session) return;
 
             const modal = document.getElementById('attModalOverlay');
             const cont = document.getElementById('modalAttContent');
             modal.style.display = 'flex';
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching verification records...</div>';
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading clearance records...</div>';
 
-            const today = new Date().toISOString().split('T')[0];
+            const activeDate = targetDate || new Date().toISOString().split('T')[0];
+            const assignedOff = session.data?.assigned_officer || "Domain Officer";
+
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${today}&select=*`, { headers: apiHeaders });
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${activeDate}&select=*`, { headers: apiHeaders });
                 const data = await res.json();
-                const att = (data && data.length > 0) ? data[0] : { total_percentage: 10 };
-                const assignedOff = session.data?.assigned_officer || "Domain Officer";
+                const att = (data && data.length > 0) ? data[0] : { total_percentage: 10, log_date: activeDate, task_40: false, hr_20: false, officer_30: false };
 
                 cont.innerHTML = `
-                    <div style="text-align:center; margin-bottom:20px;">
-                        <h2 style="font-family:var(--font-logo); font-size:2.4rem; color:var(--accent-cyan); margin:0;">${att.total_percentage || 10}%</h2>
-                        <p style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700; margin-top:4px;">Today's Attendance Status</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div>
+                            <span class="tag-badge" style="font-size:0.7rem;">Record Date: ${new Date(activeDate).toLocaleDateString()}</span>
+                        </div>
+                        <h2 style="font-family:var(--font-logo); font-size:2rem; color:var(--accent-cyan); margin:0;">${att.total_percentage || 10}%</h2>
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
-                            <div><strong style="font-size:0.88rem;">1. Portal Session Login</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Verified automatically on login</span></div>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <!-- 1. System Login -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 15px; border-radius:12px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.85rem;">1. Session Login</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">Auto-recorded on portal launch</span></div>
                             <span class="status-badge status-green">10% Verified</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
-                            <div><strong style="font-size:0.88rem;">2. Task Report Submission</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Technical questionnaire report</span></div>
+                        <!-- 2. Task Submit -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 15px; border-radius:12px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.85rem;">2. Daily Progress Submit</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">Technical questionnaire execution</span></div>
                             <span class="status-badge ${att.task_40 ? 'status-green' : 'status-red'}">${att.task_40 ? '40% Verified' : '40% Pending'}</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
-                            <div><strong style="font-size:0.88rem;">3. HR Verification</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Reviewer: Tharun Kumar (HR)</span></div>
-                            ${att.hr_20 ? '<span class="status-badge status-green">20% Approved</span>' : `<button class="btn btn-outline" style="padding:7px 14px; font-size:0.72rem; width:auto;" onclick="window.nudgeOfficer('Tharun Kumar', 'hr')"><i class="fa-solid fa-bell"></i> Request HR</button>`}
+                        <!-- 3. HR Clearance -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 15px; border-radius:12px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.85rem;">3. HR Verification</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">HR Lead: Tharun Kumar</span></div>
+                            ${att.hr_20 ? '<span class="status-badge status-green">20% Approved</span>' : `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.7rem; width:auto;" onclick="window.nudgeOfficer('Tharun Kumar', 'hr', '${activeDate}', '${att.id || ''}')"><i class="fa-solid fa-bell"></i> Request HR</button>`}
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);">
-                            <div><strong style="font-size:0.88rem;">4. Domain Officer Clearance</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">Reviewer: ${assignedOff}</span></div>
-                            ${att.officer_30 ? '<span class="status-badge status-green">30% Cleared</span>' : `<button class="btn btn-outline" style="padding:7px 14px; font-size:0.72rem; width:auto;" onclick="window.nudgeOfficer('${assignedOff}', 'officer')"><i class="fa-solid fa-bell"></i> Request Officer</button>`}
+                        <!-- 4. Domain Officer Clearance -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input); padding:12px 15px; border-radius:12px; border:1px solid var(--glass-border);">
+                            <div><strong style="font-size:0.85rem;">4. Officer Clearance</strong><br><span style="font-size:0.7rem; color:var(--text-muted);">Officer: ${assignedOff}</span></div>
+                            ${att.officer_30 ? '<span class="status-badge status-green">30% Cleared</span>' : `<button class="btn btn-outline" style="padding:6px 12px; font-size:0.7rem; width:auto;" onclick="window.nudgeOfficer('${assignedOff}', 'officer', '${activeDate}', '${att.id || ''}')"><i class="fa-solid fa-bell"></i> Request Officer</button>`}
                         </div>
                     </div>
                 `;
-            } catch(e) {
+            } catch (e) {
                 cont.innerHTML = '<div class="empty-state">Unable to load details.</div>';
             }
         };
 
-        window.closeAttModal = function() { 
-            document.getElementById('attModalOverlay').style.display = 'none'; 
-        };
-
-        window.nudgeOfficer = async function(officerName, roleType) {
+        window.nudgeOfficer = async function(officerName, roleType, targetDate, recordId) {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            const today = new Date().toISOString().split('T')[0];
-            window.showToast(`Dispatching clearance alert to ${officerName}...`);
+            window.showToast(`Triggering priority request to ${officerName}...`);
 
             try {
-                // 1. Mark task with Priority Nudge in DB so it jumps to top of workflow list
-                if(session.data && session.data.id) {
+                // 1. Set priority flag in database
+                if (session.data && session.data.id) {
                     fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, {
                         method: 'PATCH',
                         headers: apiHeaders,
@@ -2128,7 +2185,7 @@ window.deleteAsset = async function(assetId) {
                     });
                 }
 
-                // 2. Dispatch Email Notification
+                // 2. Dispatch reminder email through Cloudflare
                 await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2137,11 +2194,13 @@ window.deleteAsset = async function(assetId) {
                         internName: session.name,
                         targetOfficer: officerName,
                         targetRole: roleType,
-                        logDate: today
+                        logDate: targetDate,
+                        recordId: recordId
                     })
                 });
-                window.showToast(`Request sent to ${officerName}. Priority flag set.`);
-            } catch(e) {
+
+                window.showToast(`Request sent to ${officerName} for ${targetDate}.`);
+            } catch (e) {
                 window.showToast("Reminder dispatched.");
             }
         };
