@@ -3,26 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TIMS Engine - Unified Command Hub</title>
+    <title>TIMS Engine - Unified Command Gateway</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-main: #04010a; --text-main: #ffffff; --text-muted: #9e9cb6;
-            --bg-glass: rgba(15, 10, 25, 0.55); --bg-glass-solid: rgba(18, 12, 30, 0.9); --bg-input: rgba(0, 0, 0, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1); --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            --bg-main: #04010a; 
+            --text-main: #ffffff; 
+            --text-muted: #9e9cb6;
+            --bg-glass: rgba(15, 10, 25, 0.55); 
+            --bg-glass-solid: rgba(18, 12, 30, 0.92); 
+            --bg-input: rgba(0, 0, 0, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1); 
+            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             --sidebar-width: 260px;
-            --accent-cyan: #00f2ff; --accent-purple: #bd00ff; --accent-red: #ff334b; --accent-green: #00ff88; --accent-orange: #ff9900;
-            --font-head: 'Inter', sans-serif; --font-body: 'Inter', sans-serif; --font-logo: 'Orbitron', sans-serif;
+            --accent-cyan: #00f2ff; 
+            --accent-purple: #bd00ff; 
+            --accent-red: #ff334b; 
+            --accent-green: #00ff88; 
+            --accent-orange: #ff9900;
+            --accent-gold: #FFD700;
+            --font-head: 'Inter', sans-serif; 
+            --font-body: 'Inter', sans-serif; 
+            --font-logo: 'Orbitron', sans-serif;
         }
 
         body.light-theme {
-            --bg-main: #f3f6fa; --text-main: #0f172a; --text-muted: #475569;
-            --bg-glass: rgba(255, 255, 255, 0.75); --bg-glass-solid: #ffffff; --bg-input: #f8fafc;
-            --glass-border: rgba(0, 0, 0, 0.12); --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
-            --accent-cyan: #0284c7; --accent-purple: #7c3aed;
+            --bg-main: #f3f6fa; 
+            --text-main: #0f172a; 
+            --text-muted: #475569;
+            --bg-glass: rgba(255, 255, 255, 0.85); 
+            --bg-glass-solid: #ffffff; 
+            --bg-input: #f8fafc;
+            --glass-border: rgba(0, 0, 0, 0.12); 
+            --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
+            --accent-cyan: #0284c7; 
+            --accent-purple: #7c3aed;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -54,7 +75,6 @@
 
         .form-group { margin-bottom: 15px; width: 100%; }
         .form-label { display: block; color: var(--accent-cyan); font-size: 0.72rem; margin-bottom: 6px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; padding-left: 12px;}
-        body.light-theme .form-label { color: var(--accent-cyan); }
         .form-control { width: 100%; background: var(--bg-input); border: 1px solid var(--glass-border); color: var(--text-main); padding: 14px 20px; border-radius: 50px; font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; outline: none; transition: 0.3s; }
         .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.25);}
         textarea.form-control { border-radius: 16px; resize: vertical; min-height: 80px; padding: 14px 18px; }
@@ -124,6 +144,15 @@
         .modal-card { width: 100%; max-width: 520px; border-radius: 24px; padding: 25px; background: var(--bg-glass-solid); border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0,242,255,0.25); animation: popIn 0.3s ease; }
         @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 
+        /* PREVIEWS & UPLOADS */
+        .preview-container { width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); background: #000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 15px; display: flex; justify-content: center; align-items: center;}
+        .preview-container img { width: 100%; display: block; object-fit: contain; max-height: 400px; }
+        .preview-container iframe { width: 100%; height: 400px; border: none; background: white; }
+        .preview-container video { width: 100%; display: block; }
+        .upload-zone { border: 2px dashed var(--accent-cyan); padding: 30px; text-align: center; border-radius: 16px; cursor: pointer; transition: background 0.3s ease; background: rgba(0,242,255,0.05); }
+        .upload-zone i { font-size: 2rem; color: var(--accent-cyan); margin-bottom: 10px; }
+        .empty-state { text-align: center; color: var(--text-muted); padding: 35px 20px; border: 1px dashed var(--glass-border); border-radius: 16px; font-style: italic; font-size: 0.9rem;}
+
         /* AI CHAT VIEW */
         #panel-ai { height: 100%; display: none; flex-direction: column; }
         #panel-ai.active { display: flex; }
@@ -145,9 +174,23 @@
         .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 600; width: 42px; height: 42px; border-radius: 12px; align-items: center; justify-content: center; background: var(--bg-glass-solid); border: 1px solid var(--glass-border); color: var(--accent-cyan); cursor: pointer; }
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 400; backdrop-filter: blur(5px); }
         .mobile-overlay.open { display: block; }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-input); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border);}
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-cyan); }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
 <body>
+    <!-- GLOBAL BOOT LOADER -->
+    <div id="globalLoader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-main); z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s ease;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px;"></i>
+        <h2 style="font-family: var(--font-logo); color: white; letter-spacing: 2px;">TIMS <span style="color: var(--accent-cyan);">ENGINE</span></h2>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;">Establishing Secure Connection...</p>
+    </div>
+
     <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
     <div id="toast"><i class="fa-solid fa-circle-check" style="color:var(--accent-cyan);"></i> <span id="toastMsg">Message</span></div>
 
@@ -162,12 +205,14 @@
         </div>
     </div>
 
-    <!-- VIEW 1: AUTHENTICATION -->
+    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN GATEWAY                      -->
+    <!-- ========================================== -->
     <div id="view-login">
         <div class="login-card glass-panel">
             <div class="header-logo">
                 <h1>TIMS ENGINE</h1>
-                <p>Unified Command Gateway</p>
+                <p>Unified Operational Gateway</p>
             </div>
             <div class="auth-toggle">
                 <div id="tab-intern" class="active" onclick="window.toggleAuth('intern')">Intern Login</div>
@@ -187,15 +232,17 @@
         </div>
     </div>
 
-    <!-- VIEW 2: MASTER DASHBOARD -->
+    <!-- ========================================== -->
+    <!-- VIEW 2: MASTER DASHBOARD                   -->
+    <!-- ========================================== -->
     <div id="view-dashboard">
         <div class="mobile-overlay" id="mobileOverlay" onclick="window.closeSidebar()"></div>
         <button class="mobile-menu-btn glass-panel" onclick="window.toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
 
         <div class="sidebar glass-panel" id="sidebar">
-            <div class="sidebar-brand">
-                <img src="https://tournyx.in/favicon.png" alt="Tournyx" style="width:55px; height:55px; border-radius:50%; border:2px solid var(--accent-cyan); margin-bottom:8px;" onerror="this.src='https://ui-avatars.com/api/?name=TX&background=00f2ff&color=000'">
-                <h2>TIMS HUB</h2>
+            <div class="sidebar-brand" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding-top: 10px;">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgaAKNL-I8YoIYtKsz7XskA1UeyJPcZGYA4Fhmw4uUOxV3dktQfOcMBxotRDsviM2__QHqltvBnGu2tGuQ1aKkWEEnhTgK-ObF0qnxmPeD98f0K82cEq8ZapqgePiX2RLVh8AFXpQQ2m6ejZhVKBaIx98g1vbsscj2xOBBs_omt2F5SZ1PMOrtXVRF94BI/s1264/1000093706.png" alt="Tournyx Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.3); object-fit: cover;">
+                <h2 style="margin: 0;">TIMS HUB</h2>
             </div>
             <ul class="nav-menu" id="dynamicNavMenu"></ul>
             <div class="sidebar-footer">
@@ -206,8 +253,8 @@
         <div class="main-content" id="mainContentScroll">
             <div class="dash-top-bar glass-panel">
                 <div class="dash-greeting">
-                    <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">Operative</span></h2>
-                    <p id="dashRole">Command Level</p>
+                    <h2>Welcome, <span id="dashName" style="color:var(--accent-cyan);">User</span></h2>
+                    <p id="dashRole">Role Data</p>
                 </div>
                 <div>
                     <span class="status-badge status-green"><i class="fa-solid fa-satellite-dish"></i> 24/7 AI ACTIVE</span>
@@ -255,7 +302,7 @@
                 </div>
             </div>
 
-            <!-- INTERN: OPERATION TASK WITH PREVIOUS WORK LOG -->
+            <!-- INTERN: OPERATION TASK -->
             <div id="panel-intern-task" class="content-panel">
                 <div class="panel-card glass-panel" id="taskDetailState">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 15px;">
@@ -276,6 +323,12 @@
                         <p style="color:var(--accent-cyan); font-size: 0.75rem; text-transform:uppercase; font-weight:800; margin-bottom:4px;">Tech Stack / Tools:</p>
                         <p style="color:var(--text-main); font-size: 0.9rem; margin-bottom: 12px;" id="intTaskTools">Loading...</p>
                         
+                        <p style="color:var(--accent-cyan); font-size: 0.75rem; text-transform:uppercase; font-weight:800; margin-bottom:4px;">UI/UX Guidelines:</p>
+                        <p style="color:var(--text-main); font-size: 0.9rem; margin-bottom: 12px;" id="intTaskUX">Loading...</p>
+
+                        <p style="color:var(--accent-cyan); font-size: 0.75rem; text-transform:uppercase; font-weight:800; margin-bottom:4px;">Deadline / ETA:</p>
+                        <p style="color:var(--accent-red); font-size: 0.9rem; margin-bottom: 12px; font-weight:bold;" id="intTaskDeadline">Loading...</p>
+
                         <p style="color:var(--accent-cyan); font-size: 0.75rem; text-transform:uppercase; font-weight:800; margin-bottom:4px;">Step-by-Step Directives:</p>
                         <p style="color:var(--text-muted); font-size: 0.88rem; line-height: 1.55; white-space:pre-wrap;" id="intTaskDesc">Loading...</p>
                     </div>
@@ -384,6 +437,16 @@
                     <div class="form-group"><label class="form-label">Objective</label><textarea id="addObjective" class="form-control" placeholder="Primary objective..."></textarea></div>
                     <div class="form-group"><label class="form-label">Tools Required</label><textarea id="addTools" class="form-control" placeholder="e.g. HTML, JavaScript, API"></textarea></div>
                     <div class="form-group"><label class="form-label">Step-by-Step Process</label><textarea id="addInternSteps" class="form-control" placeholder="1. Step one... 2. Step two..."></textarea></div>
+                    
+                    <div class="upload-zone" onclick="document.getElementById('taskFileUploader').click()">
+                        <i class="fa-solid fa-file-arrow-up" id="taskUploadIcon"></i>
+                        <h4 id="taskUploadText">Attach Up To 5 Reference Assets</h4>
+                        <p style="font-size: 0.7rem; color: #888;">PDF/IMG automatically encoded to Base64.</p>
+                        <input type="file" id="taskFileUploader" style="display:none;" multiple onchange="window.handleTaskFileMulti(event)" accept="image/*,application/pdf">
+                    </div>
+                    <div id="multiFilePreviewContainer" style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;"></div>
+                    <br>
+
                     <button class="btn btn-primary" id="btnAssignIntern" onclick="window.assignInternTask()"><i class="fa-solid fa-satellite-dish"></i> Assign Intern & Update Matrix</button>
                 </div>
             </div>
@@ -393,6 +456,103 @@
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-clipboard-check"></i> Pending Workflows & Clearances</h3>
                     <div id="approvalMatrixContainer"></div>
+                </div>
+            </div>
+
+            <!-- OFFICER: ASSET UPLOADS -->
+            <div id="panel-officer-assets" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Asset Distribution Node</h3>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Upload structural assets to DB directly. Select specific Team assignment if needed.</p>
+                    
+                    <div class="data-grid">
+                        <div class="form-group">
+                            <label class="form-label">Asset Type</label>
+                            <select id="assetType" class="form-control" style="appearance:auto;" onchange="window.handleAssetTypeChange()">
+                                <option value="SOP">SOP Document</option>
+                                <option value="TED">TED Resource</option>
+                                <option value="Video">Video Archive</option>
+                                <option value="Announcement">Announcement</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="assetTitleGroup">
+                            <label class="form-label" id="assetTitleLabel">Asset Title</label>
+                            <input type="text" id="assetTitle" class="form-control" placeholder="e.g. Architecture Guide">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Target Audience (Optional)</label>
+                        <input type="text" id="assetTargetTeam" class="form-control" placeholder="Leave blank for 'ALL', or enter Team Task ID (e.g. prj-abc1)">
+                    </div>
+                    
+                    <div class="form-group" id="assetAnnouncementGroup" style="display:none;">
+                        <label class="form-label">Announcement Message</label>
+                        <textarea id="assetAnnouncementDesc" class="form-control" placeholder="Write full announcement here..."></textarea>
+                    </div>
+
+                    <div class="form-group" id="assetVideoGroup" style="display:none;">
+                        <label class="form-label">Video URL (YouTube / Direct MP4 Link)</label>
+                        <input type="text" id="assetVideoUrl" class="form-control" placeholder="https://youtube.com/...">
+                    </div>
+                    
+                    <div class="upload-zone" id="assetUploadZone" onclick="document.getElementById('fileUploader').click()">
+                        <i class="fa-solid fa-file-arrow-up" id="uploadIcon"></i>
+                        <h4 id="uploadText">Click to Select File</h4>
+                        <p style="font-size: 0.75rem; color: #888;">Natively encoded to Base64 (PDF/Images only).</p>
+                        <input type="file" id="fileUploader" style="display:none;" onchange="window.handleGlobalFile(event)" accept="image/*,application/pdf">
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
+                </div>
+
+                <div class="panel-card glass-panel" style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
+                        <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
+                            <i class="fa-solid fa-folder-open"></i> Your Uploaded Assets
+                        </h3>
+                        <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.7rem;" onclick="window.fetchOfficerAssets()">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="officerAssetsContainer">
+                        <div class="empty-state">Click Refresh to load assets.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHARED: DYNAMIC ASSETS PREVIEWS -->
+            <div id="panel-dynamic-assets" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 20px;">
+                        <h3 class="panel-title" style="margin:0; border:none; padding:0;" id="assetTitleHeader"><i class="fa-solid fa-folder-open"></i> Asset Database</h3>
+                    </div>
+                    <div id="assetContainer"></div>
+                </div>
+            </div>
+
+            <!-- SHARED: SQUAD MATRIX -->
+            <div id="panel-team" class="content-panel">
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-users"></i> Team Squad Matrix</h3>
+                    <div class="data-grid" id="teamMatrixContainer"></div>
+                </div>
+            </div>
+
+            <!-- SHARED: CONTACTS -->
+            <div id="panel-contacts" class="content-panel">
+                <div class="panel-card glass-panel" id="assignedOfficerSection" style="display:none;">
+                    <h3 class="panel-title"><i class="fa-solid fa-user-shield"></i> Your Domain Officer</h3>
+                    <div class="data-grid" id="contactsDomainContainer"></div>
+                </div>
+
+                <div class="panel-card glass-panel">
+                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Headquarters & Leadership Directory</h3>
+                    <div class="data-grid" id="contactsExecContainer">
+                        <div class="data-card"><h4>Thilakeshwaran</h4><p class="tag-badge">Founder & CEO</p><p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p></div>
+                        <div class="data-card"><h4>Shiva Kumar</h4><p class="tag-badge">COTCO / CTO</p><p><i class="fa-solid fa-envelope"></i> ops@tournyx.in</p></div>
+                        <div class="data-card"><h4>Tharun Kumar</h4><p class="tag-badge">HR & Operations Manager</p><p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p></div>
+                    </div>
                 </div>
             </div>
 
@@ -417,26 +577,6 @@
                 </div>
             </div>
 
-            <!-- SHARED: SQUAD MATRIX -->
-            <div id="panel-team" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-users"></i> Team Squad Matrix</h3>
-                    <div class="data-grid" id="teamMatrixContainer"></div>
-                </div>
-            </div>
-
-            <!-- SHARED: CONTACTS -->
-            <div id="panel-contacts" class="content-panel">
-                <div class="panel-card glass-panel">
-                    <h3 class="panel-title"><i class="fa-solid fa-address-book"></i> Headquarters & Leadership Directory</h3>
-                    <div class="data-grid" id="contactsExecContainer">
-                        <div class="data-card"><h4>Thilakeshwaran</h4><p class="tag-badge">Founder & CEO</p><p><i class="fa-solid fa-envelope"></i> ceo@tournyx.in</p></div>
-                        <div class="data-card"><h4>Shiva Kumar</h4><p class="tag-badge">COTCO / CTO</p><p><i class="fa-solid fa-envelope"></i> ops@tournyx.in</p></div>
-                        <div class="data-card"><h4>Tharun Kumar</h4><p class="tag-badge">HR & Operations Manager</p><p><i class="fa-solid fa-envelope"></i> hr@tournyx.in</p></div>
-                    </div>
-                </div>
-            </div>
-
             <!-- SHARED: SETTINGS -->
             <div id="panel-settings" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -450,7 +590,9 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT ENGINE -->
+    <!-- ========================================== -->
+    <!-- SECURE JAVASCRIPT ENGINE                   -->
+    <!-- ========================================== -->
     <script>
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
@@ -459,7 +601,11 @@
         const apiHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
         
         window.currentTeamTaskId = null;
+        window.taskFilesArray = [];
+        window.globalFileBase64 = null;
+        window.globalFileType = null;
         window.aiChatHistory = [];
+        window.activeChatId = null;
         let timerInterval = null;
         let timerSeconds = 0;
 
@@ -571,6 +717,8 @@
                 document.getElementById('intTaskRole').innerText = data.intern_role || "Supporter";
                 document.getElementById('intTaskObj').innerHTML = (data.task_objective || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskTools').innerHTML = (data.tools_required || "N/A").replace(/\n/g, '<br>');
+                document.getElementById('intTaskUX').innerHTML = (data.ux_guidelines || "N/A").replace(/\n/g, '<br>');
+                document.getElementById('intTaskDeadline').innerHTML = data.deadline || "N/A";
                 document.getElementById('intTaskDesc').innerHTML = (data.step_by_step_process || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('dashTaskSnippet').innerText = `${data.title} (${data.intern_task_id})`;
 
@@ -586,12 +734,17 @@
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
                 `;
             }
 
             menu.innerHTML += `
                 <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Squad Matrix</li>
+                <li class="nav-item" onclick="window.loadAssets('SOP', 'Distributed SOPs', this)"><i class="fa-solid fa-file-contract"></i> SOPs</li>
+                <li class="nav-item" onclick="window.loadAssets('TED', 'TED Library', this)"><i class="fa-solid fa-book"></i> TED</li>
+                <li class="nav-item" onclick="window.loadAssets('Video', 'Video Archives', this)"><i class="fa-solid fa-video"></i> Videos</li>
+                <li class="nav-item" onclick="window.loadAssets('Announcement', 'Announcements', this)"><i class="fa-solid fa-bullhorn"></i> Announcements</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx 24/7 AI</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
                 <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
@@ -934,12 +1087,277 @@
             window.location.reload();
         };
 
+        // OFFICER DEPLOY & ASSET METHODS
+        window.openCreateProjectView = function() {
+            document.getElementById('offProjectListView').style.display = 'none';
+            document.getElementById('offProjectCreateView').style.display = 'block';
+            document.getElementById('offAddInternView').style.display = 'none';
+            document.getElementById('newTeamTaskId').value = "PRJ-" + Math.random().toString(36).substr(2, 4).toUpperCase();
+        };
+
+        window.backToProjectList = function() {
+            document.getElementById('offProjectCreateView').style.display = 'none';
+            document.getElementById('offAddInternView').style.display = 'none';
+            document.getElementById('offProjectListView').style.display = 'block';
+            window.fetchDeployedTasks();
+        };
+
+        window.createTeamProject = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+            const payload = { team_task_id: document.getElementById('newTeamTaskId').value, project_name: document.getElementById('newProjectName').value, created_by: session.name };
+            if(!payload.project_name) { window.showToast("Project Name is required.", true); return; }
+
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
+                window.showToast("Team Task Created Successfully.");
+                document.getElementById('newProjectName').value = '';
+                window.backToProjectList();
+            } catch(e) { window.showToast("Failed to create project.", true); }
+        };
+
+        window.fetchDeployedTasks = async function() {
+            const cont = document.getElementById('activeTeamProjectsContainer');
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning matrices...</div>';
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?select=*&order=created_at.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="cursor:pointer;" onclick="window.openTeamTask('${d.team_task_id}', '${d.project_name}')">
+                            <h4 style="color:var(--accent-cyan);">${d.team_task_id}</h4>
+                            <p style="color:white; font-weight:bold; margin-bottom:10px;">${d.project_name}</p>
+                            <span class="tag-badge">Manage Squad <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No deployed operations found. Click Deploy to assign tasks.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
+        };
+
+        window.openTeamTask = async function(taskId, projectName) {
+            document.getElementById('offProjectListView').style.display = 'none';
+            document.getElementById('offAddInternView').style.display = 'block';
+            document.getElementById('detailProjectTitle').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${projectName} <span style="font-size:0.8rem; color:var(--text-muted);">(${taskId})</span>`;
+            window.currentTeamTaskId = taskId;
+            window.fetchProjectInterns(taskId);
+        };
+
+        window.generateUniqueTaskID = function() {
+            const intern = document.getElementById('addInternName').value.trim().toUpperCase().replace(/\s+/g, '');
+            document.getElementById('addUniqueId').value = (window.currentTeamTaskId && intern) ? `${window.currentTeamTaskId}-${intern}` : "";
+        };
+
+        window.fetchProjectInterns = async function(taskId) {
+            const cont = document.getElementById('projectInternsList');
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching assigned operatives...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(taskId)}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="border-left-color: var(--accent-purple);">
+                            <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.status}</span></h4>
+                            <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">${d.intern_task_id}</p>
+                            <p style="font-size:0.7rem; color:white; font-weight:bold; margin-top:5px;">Role: ${d.intern_role}</p>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state" style="padding: 20px; font-size:0.8rem;">No interns assigned to this specific team task yet. Add one below.</div>'; }
+            } catch(e) { cont.innerHTML = ''; }
+        };
+
+        window.handleTaskFileMulti = function(event) {
+            const files = event.target.files;
+            if(!files || files.length === 0) return;
+            if(window.taskFilesArray.length + files.length > 5) {
+                window.showToast("Maximum of 5 files allowed.", true);
+                return;
+            }
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.taskFilesArray.push(e.target.result);
+                    window.renderMultiFiles();
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        window.renderMultiFiles = function() {
+            const cont = document.getElementById('multiFilePreviewContainer');
+            cont.innerHTML = window.taskFilesArray.map((base64Str, i) => `
+                <div style="position:relative; width:60px; height:60px; border-radius:8px; overflow:hidden; border:1px solid var(--accent-cyan);">
+                    <img src="${base64Str.startsWith('data:image') ? base64Str : 'https://via.placeholder.com/60x60.png?text=FILE'}" style="width:100%; height:100%; object-fit:cover;">
+                    <button onclick="window.removeTaskFile(${i})" style="position:absolute; top:0; right:0; background:var(--accent-red); color:white; border:none; width:20px; height:20px; cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+                </div>
+            `).join('');
+        };
+
+        window.removeTaskFile = function(index) {
+            window.taskFilesArray.splice(index, 1);
+            window.renderMultiFiles();
+        };
+
+        window.assignInternTask = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+            const payload = {
+                team_task_id: window.currentTeamTaskId,
+                intern_task_id: document.getElementById('addUniqueId').value,
+                intern_name: document.getElementById('addInternName').value.trim(),
+                intern_role: document.getElementById('addInternRole').value,
+                assigned_officer: session.name,
+                title: document.getElementById('detailProjectTitle').innerText.replace('Project', '').replace(`(${window.currentTeamTaskId})`, '').trim(),
+                task_objective: document.getElementById('addObjective').value.trim(),
+                tools_required: document.getElementById('addTools').value.trim(),
+                deadline: document.getElementById('addDeadline').value.trim(),
+                step_by_step_process: document.getElementById('addInternSteps').value,
+                reference_files: window.taskFilesArray
+            };
+
+            if(!payload.intern_task_id || !payload.step_by_step_process) { window.showToast("Missing intern name or directives.", true); return; }
+
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
+                window.showToast("Intern Assigned Successfully.");
+                document.getElementById('addInternName').value = '';
+                document.getElementById('addUniqueId').value = '';
+                document.getElementById('addInternSteps').value = '';
+                window.taskFilesArray = [];
+                window.renderMultiFiles();
+                window.fetchProjectInterns(window.currentTeamTaskId);
+            } catch(e) { window.showToast("Assignment Failed.", true); }
+        };
+
+        window.handleAssetTypeChange = function() {
+            const type = document.getElementById('assetType').value;
+            document.getElementById('assetAnnouncementGroup').style.display = (type === 'Announcement') ? 'block' : 'none';
+            document.getElementById('assetVideoGroup').style.display = (type === 'Video' || type === 'TED') ? 'block' : 'none';
+            document.getElementById('assetUploadZone').style.display = (type === 'SOP') ? 'block' : 'none';
+        };
+
+        window.handleGlobalFile = function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window.globalFileBase64 = e.target.result;
+                window.globalFileType = file.type;
+                document.getElementById('uploadText').innerText = "File Attached & Encoded";
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.broadcastAsset = async function() {
+            const session = JSON.parse(localStorage.getItem('tims_session_officer'));
+            const type = document.getElementById('assetType').value;
+            const title = document.getElementById('assetTitle').value;
+            const targetTeam = document.getElementById('assetTargetTeam').value || 'ALL';
+            let finalUrl = (type === 'Video' || type === 'TED') ? document.getElementById('assetVideoUrl').value : (window.globalFileBase64 || 'none');
+            let finalDesc = (type === 'Announcement') ? document.getElementById('assetAnnouncementDesc').value : '';
+
+            if(!title) { window.showToast("Title Required.", true); return; }
+
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, {
+                    method: 'POST',
+                    headers: apiHeaders,
+                    body: JSON.stringify({
+                        asset_type: type,
+                        title: title,
+                        description: finalDesc,
+                        file_type: window.globalFileType || 'text',
+                        file_url: finalUrl,
+                        assigned_team: targetTeam,
+                        uploaded_by: session ? session.name : 'Commander'
+                    })
+                });
+                window.showToast("Asset Distributed Successfully.");
+                document.getElementById('assetTitle').value = "";
+                window.fetchOfficerAssets();
+            } catch(e) { window.showToast("Broadcast Failed.", true); }
+        };
+
+        window.fetchOfficerAssets = async function() {
+            const cont = document.getElementById('officerAssetsContainer');
+            if(!cont) return;
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning uploaded assets...</div>';
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?select=*&order=created_at.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
+                        <div class="data-card">
+                            <span class="tag-badge">${asset.asset_type}</span>
+                            <h4>${asset.title}</h4>
+                            <p style="font-size:0.75rem; color:var(--text-muted);">Target: ${asset.assigned_team || 'ALL'}</p>
+                        </div>
+                    `).join('') + `</div>`;
+                } else { cont.innerHTML = '<div class="empty-state">No uploaded assets found.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Failed to load assets.</div>'; }
+        };
+
+        window.createPreviewBlock = function(fileUrl, title, type) {
+            if(!fileUrl || fileUrl === 'none') return '';
+            if(fileUrl.includes('youtube.com') || fileUrl.includes('youtu.be')) {
+                let embedUrl = fileUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+                return `<div class="preview-container"><iframe src="${embedUrl}" allowfullscreen></iframe></div>`;
+            }
+            if(fileUrl.startsWith('data:image') || (type && type.startsWith('image'))) {
+                return `<div class="preview-container"><img src="${fileUrl}" alt="${title}"></div>`;
+            }
+            return `<a href="${fileUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding:8px 15px; font-size:0.75rem;"><i class="fa-solid fa-download"></i> Access Asset</a>`;
+        };
+
+        window.loadAssets = async function(type, title, navEl) {
+            document.getElementById('assetTitleHeader').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${title}`;
+            window.switchPanel('panel-dynamic-assets', navEl);
+            const cont = document.getElementById('assetContainer');
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Decrypting files...</div>';
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&select=*&order=created_at.desc`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card" style="margin-bottom:15px;">
+                            <h4>${d.title}</h4>
+                            <p style="font-size:0.85rem; color:var(--text-main); margin-bottom:10px;">${d.description || ''}</p>
+                            ${window.createPreviewBlock(d.file_url, d.title, d.file_type)}
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = `<div class="empty-state">No ${type} assets found.</div>`; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error.</div>'; }
+        };
+
+        // FETCH SQUAD MATRIX
+        window.fetchTeamMatrix = async function(teamTaskId) {
+            const cont = document.getElementById('teamMatrixContainer');
+            cont.innerHTML = '<div class="empty-state">Scanning frequencies...</div>';
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?team_task_id=eq.${encodeURIComponent(teamTaskId)}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    cont.innerHTML = data.map(d => `
+                        <div class="data-card">
+                            <h4>${d.intern_name} <span class="tag-badge" style="float:right;">${d.intern_role || 'Supporter'}</span></h4>
+                            <p style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">${d.intern_task_id}</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted);">Officer: ${d.assigned_officer}</p>
+                        </div>
+                    `).join('');
+                } else { cont.innerHTML = '<div class="empty-state">No other operatives found.</div>'; }
+            } catch(e) { cont.innerHTML = '<div class="empty-state">Unable to load squad.</div>'; }
+        };
+
         // AUTO-LOGIN RECOVERY
         window.addEventListener('DOMContentLoaded', () => {
             if(localStorage.getItem('tims_theme') === 'light') {
                 document.body.classList.add('light-theme');
                 document.getElementById('themeToggle').checked = true;
             }
+
+            const loader = document.getElementById('globalLoader');
+            if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }
 
             const sInt = JSON.parse(localStorage.getItem('tims_session_intern'));
             const sOff = JSON.parse(localStorage.getItem('tims_session_officer'));
