@@ -183,6 +183,29 @@
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent-cyan); }
         input:checked + .slider:before { transform: translateX(20px); }
+        /* AI LIVE ANIMATED PULSE LOADER */
+        .ai-pulse-loader {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        .ai-pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            animation: pulseWave 1.4s infinite ease-in-out both;
+        }
+        .ai-pulse-dot:nth-child(1) { animation-delay: -0.32s; }
+        .ai-pulse-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes pulseWave {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px var(--accent-cyan); }
+        }
     </style>
 </head>
 <body>
@@ -337,7 +360,22 @@
                         <h4 style="font-size:0.9rem; margin-bottom:10px; color:var(--accent-cyan);">Attached Reference Assets:</h4>
                         <div id="internReferencePreview" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
                     </div>
-                    
+                    <!-- LIVE IN-TASK AI COPILOT CHAT -->
+                    <div id="inTaskAiContainer" style="display:none; margin-top:20px; border:1px solid rgba(189,0,255,0.4); border-radius:18px; padding:18px; background:rgba(0,0,0,0.55);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(189,0,255,0.2); padding-bottom:10px; margin-bottom:12px;">
+                            <h4 style="color:var(--accent-purple); font-size:0.9rem; font-family:var(--font-logo); margin:0; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-microchip"></i> Live Task AI Copilot
+                            </h4>
+                            <span class="status-badge status-green" style="font-size:0.65rem;">Active Guidance</span>
+                        </div>
+                        <div id="inTaskAiChatBox" style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:10px; background:var(--bg-input); border-radius:12px; border:1px solid var(--glass-border); margin-bottom:12px;">
+                            <div class="chat-bubble chat-ai" style="font-size:0.85rem;">I am your active task copilot. Ask me any questions about requirements, code architecture, or bugs while executing this task.</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="inTaskAiInput" class="form-control" placeholder="Ask for execution help or code advice..." onkeypress="if(event.key==='Enter') window.triggerInTaskAI()" style="padding:10px 16px; font-size:0.85rem;">
+                            <button class="btn btn-primary" style="width:45px; height:42px; padding:0; border-radius:50%; flex-shrink:0;" onclick="window.triggerInTaskAI()"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
                     <button class="btn btn-primary" id="btnStartTimer" style="margin-top: 20px; width:fit-content; padding: 12px 30px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation & Timer</button>
                 </div>
 
@@ -818,80 +856,75 @@
             } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
         };
         // --- 6. DYNAMIC ROLE ROUTING ---
-        window.buildDashboardRole = function(role, data) {
+        window.buildDashboardRole = async function(role, userRole, data) {
             const menu = document.getElementById('dynamicNavMenu');
             menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
-            document.getElementById('internHomeSection').style.display = role === 'intern' ? 'block' : 'none';
-            document.getElementById('officerHomeSection').style.display = role !== 'intern' ? 'block' : 'none';
-            document.getElementById('assignedOfficerSection').style.display = role === 'intern' ? 'block' : 'none';
 
-            if(role === 'intern') {
+            document.getElementById('internHomeSection').style.display = (role === 'intern') ? 'block' : 'none';
+            document.getElementById('officerHomeSection').style.display = (role !== 'intern') ? 'block' : 'none';
+
+            if (role === 'intern') {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance(); window.fetchAttendanceHistory();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
                 `;
-                document.getElementById('intTaskTitle').innerText = data.title || "Operation Node";
-                document.getElementById('intTaskID').innerText = data.intern_task_id; 
+                document.getElementById('intTaskTitle').innerText = data.title || "Active Operation";
+                document.getElementById('intTaskID').innerText = data.intern_task_id;
                 document.getElementById('intTaskRole').innerText = data.intern_role || "Supporter";
-                
-                // FIX: Apply line breaks to prevent clumping
                 document.getElementById('intTaskObj').innerHTML = (data.task_objective || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskTools').innerHTML = (data.tools_required || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskUX').innerHTML = (data.ux_guidelines || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskDeadline').innerHTML = data.deadline || "N/A";
                 document.getElementById('intTaskDesc').innerHTML = (data.step_by_step_process || "N/A").replace(/\n/g, '<br>');
-                // Show Previous Submission
-                if(data.progress_text) {
+                document.getElementById('dashTaskSnippet').innerText = `${data.title} (${data.intern_task_id})`;
+
+                if (data.progress_text) {
                     document.getElementById('prevSubmissionContainer').style.display = 'block';
                     document.getElementById('prevSubmissionText').innerText = data.progress_text;
                 }
 
-                // Trigger 24/7 AI Mentor Coaching
-                window.triggerMentorAnalysis(data);
-                if(data.reference_files && Array.isArray(data.reference_files) && data.reference_files.length > 0) {
-                    document.getElementById('internReferenceLink').style.display = 'block';
-                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'unknown')).join('');
-                }
-
-                // FIX: Restore ALL 6 draft fields securely
-                const draftStr = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
-                if(draftStr) {
-                    try {
-                        const draftObj = JSON.parse(draftStr);
-                        document.getElementById('qFunctions').value = draftObj.q1 || '';
-                        document.getElementById('qUpgrades').value = draftObj.q2 || '';
-                        document.getElementById('qBugs').value = draftObj.q3 || '';
-                        document.getElementById('qLogic').value = draftObj.q4 || '';
-                        document.getElementById('qChallenges').value = draftObj.q5 || '';
-                        document.getElementById('qSummary').value = draftObj.q6 || '';
-                        window.showToast("Local draft data restored.");
-                    } catch(e) {}
-                }
-                
-               if (role === 'intern') {
+                // INJECT LIVE INTERN TASK DATA INTO AI CONTEXT
                 window.aiContextStr = `OPERATIVE CONTEXT:
 - Name: ${data.intern_name}
 - Role: ${data.intern_role || 'Developer'}
 - Active Task: ${data.title} (${data.intern_task_id})
 - Objective: ${data.task_objective || 'N/A'}
 - Tools: ${data.tools_required || 'N/A'}
-- Guidelines: ${data.ux_guidelines || 'N/A'}
 - Directives: ${data.step_by_step_process || 'N/A'}
 - Last Logged Progress: ${data.progress_text || 'None'}`;
-            } else {
-                window.aiContextStr = `COMMANDER CONTEXT:
-- Officer Name: ${data.name}
-- Authority Role: ${(data.role || 'Officer').toUpperCase()}
-- Division: Operations & Engineering Command
-- Focus: Task generation, team project deployments, code reviews, and workflow approvals.`;
-            }
-                window.fetchAnnouncementsDashboard();
+
+                window.triggerMentorAnalysis(data);
+                window.fetchTeamMatrix(data.team_task_id);
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
-                    <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
                 `;
+
+                // FETCH LIVE ROSTER OF ALL INTERNS SO THE AI NEVER USES PLACEHOLDER NAMES
+                try {
+                    const rosterRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_task_id,team_task_id,intern_role,title,status,assigned_officer`, { headers: apiHeaders });
+                    const rosterData = await rosterRes.json();
+                    
+                    let liveRosterSummary = rosterData.map(i => `- ${i.intern_name} | Role: ${i.intern_role} | Task: ${i.title} (${i.intern_task_id}) | Team: ${i.team_task_id} | Status: ${i.status} | Commander: ${i.assigned_officer}`).join('\n');
+
+                    window.aiContextStr = `COMMANDER CONTEXT:
+- Commander Name: ${data.name}
+- Authority Role: ${(data.role || 'Officer').toUpperCase()}
+- LIVE INTERN ROSTER (${rosterData.length} Active Operatives):
+${liveRosterSummary}`;
+                } catch(e) {
+                    window.aiContextStr = `COMMANDER CONTEXT: ${data.name} (${data.role})`;
+                }
+            }
+
+            menu.innerHTML += `
+                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Squad Matrix</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx 24/7 AI</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
+                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
+            `;
+        };
                 window.aiContextStr = `User is an Officer/Commander named ${data.name}. Assist them with generating tasks, analyzing metrics, or leadership.`;
             }
 
@@ -947,15 +980,20 @@
             document.getElementById('topRightTimer').style.display = 'flex';
             document.getElementById('btnStartTimer').style.display = 'none';
             document.getElementById('taskQuestionnaireState').style.display = 'block';
-            window.showToast("Timer Started. Complete the technical breakdown below.");
+            
+            // SHOW THE IN-TASK LIVE AI COPILOT
+            const inTaskAi = document.getElementById('inTaskAiContainer');
+            if(inTaskAi) inTaskAi.style.display = 'block';
 
-            const timerEl = document.getElementById('activeTimer');
-            if (!timerInterval) {
+            window.showToast("Timer Activated. AI Task Copilot is online.");
+
+            const tEl = document.getElementById('activeTimer');
+            if(!timerInterval) {
                 timerInterval = setInterval(() => {
                     timerSeconds++;
-                    let hrs = Math.floor(timerSeconds / 3600); let mins = Math.floor((timerSeconds % 3600) / 60); let secs = timerSeconds % 60;
-                    timerEl.innerText = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                    document.getElementById('activeTimerLarge').innerText = timerEl.innerText;
+                    let h = Math.floor(timerSeconds / 3600), m = Math.floor((timerSeconds % 3600) / 60), s = timerSeconds % 60;
+                    tEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    document.getElementById('activeTimerLarge').innerText = tEl.innerText;
                 }, 1000);
             }
         };
@@ -2025,19 +2063,28 @@ window.deleteAsset = async function(assetId) {
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-      // --- 24/7 LIVE AI CHAT TRIGGER ---
+      // --- MAIN AI CHAT TRIGGER (WITH ANIMATED LOADER) ---
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             if(!input.value.trim()) return;
 
             const userMsg = input.value.trim();
             window.aiChatHistory.push({ role: 'user', content: userMsg });
-            window.renderChatHistory();
+            window.renderChat();
             input.value = '';
 
             const chatBox = document.getElementById('aiChatBox');
             const typingId = 'typing_' + Date.now();
-            chatBox.innerHTML += `<div class="chat-bubble chat-ai" id="${typingId}"><i class="fa-solid fa-spinner fa-spin"></i> Tournyx Mentor Analyzing Task Context...</div>`;
+            chatBox.innerHTML += `
+                <div class="chat-bubble chat-ai" id="${typingId}">
+                    <div class="ai-pulse-loader">
+                        <span class="ai-pulse-dot"></span>
+                        <span class="ai-pulse-dot"></span>
+                        <span class="ai-pulse-dot"></span>
+                        <span style="margin-left:5px;">Tournyx Neural Node Processing...</span>
+                    </div>
+                </div>
+            `;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
@@ -2048,22 +2095,64 @@ window.deleteAsset = async function(assetId) {
                         action: 'tims_ai_chat', 
                         prompt: userMsg, 
                         history: window.aiChatHistory,
-                        context: window.aiContextStr || "Tournyx Esports Operations Directive"
+                        context: window.aiContextStr || "Tournyx Esports Operations"
                     })
                 });
                 const data = await res.json();
                 document.getElementById(typingId)?.remove();
 
                 window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Directive noted." });
-                window.renderChatHistory();
+                window.renderChat();
                 window.saveChatToCloud();
             } catch(e) {
                 document.getElementById(typingId)?.remove();
                 window.aiChatHistory.push({ role: 'assistant', content: "Connection active. Please verify your directives and proceed." });
-                window.renderChatHistory();
+                window.renderChat();
             }
         };
 
+        // --- IN-TASK COPILOT TRIGGER (RUNS WHILE EXECUTING TASKS) ---
+        window.triggerInTaskAI = async function() {
+            const input = document.getElementById('inTaskAiInput');
+            if(!input.value.trim()) return;
+
+            const query = input.value.trim();
+            const box = document.getElementById('inTaskAiChatBox');
+            box.innerHTML += `<div class="chat-bubble chat-user" style="font-size:0.85rem; padding:10px 14px;">${query}</div>`;
+            input.value = '';
+
+            const typingId = 'taskTyping_' + Date.now();
+            box.innerHTML += `
+                <div class="chat-bubble chat-ai" id="${typingId}" style="font-size:0.85rem; padding:10px 14px;">
+                    <div class="ai-pulse-loader">
+                        <span class="ai-pulse-dot"></span>
+                        <span class="ai-pulse-dot"></span>
+                        <span class="ai-pulse-dot"></span>
+                        <span style="margin-left:4px; font-size:0.75rem;">Analyzing Task Directives...</span>
+                    </div>
+                </div>
+            `;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'tims_ai_chat',
+                        prompt: query,
+                        context: window.aiContextStr || "In-Task Operation Execution"
+                    })
+                });
+                const data = await res.json();
+                document.getElementById(typingId)?.remove();
+                box.innerHTML += `<div class="chat-bubble chat-ai" style="font-size:0.85rem; padding:10px 14px;">${data.answer}</div>`;
+                box.scrollTop = box.scrollHeight;
+            } catch(e) {
+                document.getElementById(typingId)?.remove();
+                box.innerHTML += `<div class="chat-bubble chat-ai" style="font-size:0.85rem; color:var(--accent-red);">Network Error. Please retry.</div>`;
+            }
+        };
         // 8. Panel Routing Hook
         window.switchPanel = function(panelId, navElement) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
