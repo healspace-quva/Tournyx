@@ -1571,6 +1571,41 @@ ${liveRosterSummary}`;
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
+        // --- SAFE ASSET OPENER (BYPASSES BROWSER about:blank#blocked) ---
+        window.openAssetSafe = function(dataUrl, title = 'Asset') {
+            if (!dataUrl || dataUrl === 'none') {
+                window.showToast("No file attached.", true);
+                return;
+            }
+            if (dataUrl.startsWith('http://') || dataUrl.startsWith('https://')) {
+                window.open(dataUrl, '_blank');
+                return;
+            }
+            try {
+                const parts = dataUrl.split(';base64,');
+                const contentType = parts[0].split(':')[1] || 'application/octet-stream';
+                const byteCharacters = atob(parts[1]);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const blob = new Blob([new Uint8Array(byteNumbers)], { type: contentType });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const win = window.open(blobUrl, '_blank');
+                if (!win) {
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = title || 'Asset';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            } catch(e) {
+                window.showToast("Error loading asset: " + e.message, true);
+            }
+        };
+
         window.createPreviewBlock = function(fileUrl, title, type) {
             if (!fileUrl || fileUrl === 'none') return '';
             if (fileUrl.includes('youtube.com') || fileUrl.includes('youtu.be')) {
@@ -1580,7 +1615,7 @@ ${liveRosterSummary}`;
             if (fileUrl.startsWith('data:image') || (type && type.startsWith('image'))) {
                 return `<div class="preview-container"><img src="${fileUrl}" alt="${title}"></div>`;
             }
-            return `<a href="${fileUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
+            return `<button type="button" class="btn btn-outline" style="width:fit-content; padding: 10px 18px; font-size: 0.8rem;" onclick="window.openAssetSafe('${fileUrl}', '${title}')"><i class="fa-solid fa-link"></i> ACCESS ASSET</button>`;
         };
 
         window.loadAssets = async function(type, title, navElement) {
@@ -2138,19 +2173,29 @@ ${liveRosterSummary}`;
             if(modal) modal.style.display = 'none'; 
         };
 
-        window.nudgeOfficer = async function(officerName, roleType, targetDate) {
+       window.nudgeOfficer = async function(officerName, roleType, targetDate, recordId) {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             if (!session) return;
             const dateStr = targetDate || new Date().toISOString().split('T')[0];
-            window.showToast(`Request sent to ${officerName} for ${dateStr}...`);
+            window.showToast(`Dispatching request email to ${officerName}...`);
 
             try {
+                // 1. Mark requested_nudge flag in DB
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateStr}`, {
                     method: 'PATCH',
                     headers: apiHeaders,
                     body: JSON.stringify({ requested_nudge: true, nudge_officer: officerName })
                 });
 
+                // 2. Fetch specific progress text if available
+                let progressSnippet = "Daily attendance clearance requested.";
+                try {
+                    const r = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateStr}&select=progress_text`, { headers: apiHeaders });
+                    const d = await r.json();
+                    if (d && d.length > 0 && d[0].progress_text) progressSnippet = d[0].progress_text;
+                } catch(e) {}
+
+                // 3. Dispatch structured notification email with 1-click approval button
                 await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2159,13 +2204,17 @@ ${liveRosterSummary}`;
                         internName: session.name,
                         targetOfficer: officerName,
                         targetRole: roleType,
-                        logDate: dateStr
+                        logDate: dateStr,
+                        recordId: recordId || '',
+                        taskId: session.data?.id || '',
+                        taskDetails: `${session.data?.title || 'Operation Task'} (${session.data?.intern_task_id || ''})`,
+                        progressSummary: progressSnippet
                     })
                 });
 
-                window.showToast(`Clearance request registered and notified.`);
+                window.showToast(`Request sent with 1-click clearance link to ${officerName}.`);
             } catch (e) {
-                window.showToast("Clearance request sent.");
+                window.showToast("Request registered.");
             }
         };
 
