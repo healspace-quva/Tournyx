@@ -402,7 +402,14 @@
                     <div class="form-group"><label class="form-label">4. Code Logic & Architecture Brief</label><textarea id="qLogic" class="form-control" placeholder="Briefly explain your architectural approach..."></textarea></div>
                     <div class="form-group"><label class="form-label">5. Technical Challenges & Solutions</label><textarea id="qChallenges" class="form-control" placeholder="What obstacles were faced during execution?"></textarea></div>
                     <div class="form-group"><label class="form-label">6. Final Execution Summary & Notes</label><textarea id="qSummary" class="form-control" placeholder="Provide a general summary for HR and Domain Officer review..." oninput="window.saveDraft()"></textarea></div>
-
+                    <!-- INTERN DAILY PROGRESS PROOF ASSET UPLOADER -->
+                    <div class="upload-zone" style="margin-bottom: 18px;" onclick="document.getElementById('internProofUploader').click()">
+                        <i class="fa-solid fa-cloud-arrow-up" id="internProofIcon" style="color: var(--accent-cyan);"></i>
+                        <h4 id="internProofText" style="font-size: 0.9rem; margin-top: 6px;">Attach Daily Execution Proof (Images / PDF / Screenshots)</h4>
+                        <p style="font-size: 0.72rem; color: var(--text-muted);">Up to 4 files (auto-encoded for officer review).</p>
+                        <input type="file" id="internProofUploader" style="display:none;" multiple onchange="window.handleInternProofFiles(event)" accept="image/*,application/pdf">
+                    </div>
+                    <div id="internProofPreviewContainer" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;"></div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn btn-outline" style="flex: 1;" onclick="window.saveDraft()"><i class="fa-solid fa-save"></i> Auto-Save Draft</button>
                         <button class="btn btn-success" style="flex: 1;" onclick="window.submitTaskFinal()"><i class="fa-solid fa-paper-plane"></i> Final Submit & Stop Timer</button>
@@ -1020,6 +1027,58 @@ ${liveRosterSummary}`;
             }
         };
 
+        window.internProofFiles = [];
+
+        window.handleInternProofFiles = function(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            if (window.internProofFiles.length + files.length > 4) {
+                window.showToast("Maximum of 4 proof files allowed.", true);
+                return;
+            }
+
+            document.getElementById('internProofIcon').className = "fa-solid fa-spinner fa-spin";
+            document.getElementById('internProofText').innerText = "Encoding Proof Files...";
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.internProofFiles.push({
+                        name: file.name,
+                        type: file.type,
+                        data: e.target.result
+                    });
+                    window.renderProofPreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        window.renderProofPreviews = function() {
+            const cont = document.getElementById('internProofPreviewContainer');
+            if (!cont) return;
+            cont.innerHTML = window.internProofFiles.map((f, i) => `
+                <div style="position:relative; width:65px; height:65px; border-radius:10px; overflow:hidden; border:1px solid var(--accent-cyan); background:#000;">
+                    <img src="${f.data.startsWith('data:image') ? f.data : 'https://via.placeholder.com/65?text=DOC'}" style="width:100%; height:100%; object-fit:cover;">
+                    <button type="button" onclick="window.removeProofFile(${i})" style="position:absolute; top:0; right:0; background:var(--accent-red); color:white; border:none; width:20px; height:20px; cursor:pointer; font-size:0.7rem;"><i class="fa-solid fa-times"></i></button>
+                </div>
+            `).join('');
+
+            document.getElementById('internProofIcon').className = "fa-solid fa-circle-check";
+            document.getElementById('internProofText').innerText = `${window.internProofFiles.length} Proof File(s) Attached`;
+        };
+
+        window.removeProofFile = function(i) {
+            window.internProofFiles.splice(i, 1);
+            window.renderProofPreviews();
+            if (window.internProofFiles.length === 0) {
+                document.getElementById('internProofIcon').className = "fa-solid fa-cloud-arrow-up";
+                document.getElementById('internProofText').innerText = "Attach Daily Execution Proof (Images / PDF / Screenshots)";
+            }
+        };
+
+        // --- SUBMIT DAILY TASK & PERMANENTLY RECORD IN ATTENDANCE ARCHIVE ---
         window.submitTaskFinal = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const qFunc = document.getElementById('qFunctions').value.trim();
@@ -1031,7 +1090,7 @@ ${liveRosterSummary}`;
             const timeLog = document.getElementById('activeTimer').innerText;
 
             if (!qSum && !qFunc) { 
-                window.showToast("Please fill in execution details before submitting.", true); 
+                window.showToast("Please detail your execution report.", true); 
                 return; 
             }
             
@@ -1039,9 +1098,9 @@ ${liveRosterSummary}`;
             const today = new Date().toISOString().split('T')[0];
             const combinedProgress = `[Date]: ${today}\n[Functions]: ${qFunc || 'N/A'}\n[Upgrades]: ${qUpg || 'N/A'}\n[Bugs Fixed]: ${qBugs || 'N/A'}\n[Logic]: ${qLog || 'N/A'}\n[Challenges]: ${qChall || 'N/A'}\n[Summary]: ${qSum || 'Completed'}`;
 
-            window.showToast("Logging daily progress...");
+            window.showToast("Archiving daily progress and syncing attendance...");
             try {
-                // 1. Update active task with latest progress and mark Pending_HR
+                // 1. Update Master Task State
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, { 
                     method: 'PATCH', 
                     headers: apiHeaders, 
@@ -1053,25 +1112,45 @@ ${liveRosterSummary}`;
                     }) 
                 });
                 
-                // 2. Lock 40% task progress for today's attendance record
+                // 2. Upsert/Record All Detailed Fields into tims_attendance_records for Permanent History
                 const attCheck = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${today}&select=*`, { headers: apiHeaders });
                 const attData = await attCheck.json();
+
+                const recordPayload = {
+                    intern_name: session.name,
+                    task_id: session.data.team_task_id,
+                    task_title: session.data.title || "Operation Task",
+                    assigned_officer: session.data.assigned_officer || "Commander",
+                    log_date: today,
+                    time_spent: timeLog,
+                    progress_text: combinedProgress,
+                    functions_implemented: qFunc,
+                    upgrades_added: qUpg,
+                    bugs_resolved: qBugs,
+                    code_logic: qLog,
+                    challenges_faced: qChall,
+                    final_summary: qSum,
+                    task_proof_files: window.internProofFiles,
+                    task_40: true,
+                    status: 'Pending_HR',
+                    total_percentage: 50
+                };
 
                 if (attData && attData.length > 0) {
                     await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${attData[0].id}`, { 
                         method: 'PATCH', 
                         headers: apiHeaders, 
-                        body: JSON.stringify({ task_40: true, total_percentage: 50 }) 
+                        body: JSON.stringify(recordPayload) 
                     });
                 } else {
                     await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { 
                         method: 'POST', 
                         headers: apiHeaders, 
-                        body: JSON.stringify({ intern_name: session.name, task_id: session.data.team_task_id, log_date: today, task_40: true, total_percentage: 50 }) 
+                        body: JSON.stringify(recordPayload) 
                     });
                 }
                 
-                // 3. Dispatch Email to HR
+                // 3. Dispatch Notification to HR
                 fetch(WORKER_URL, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
@@ -1085,11 +1164,11 @@ ${liveRosterSummary}`;
                     }) 
                 });
 
-                window.showToast("Daily Progress Submitted (+40%). HR Notified.");
-                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Progress Successfully Logged</h3><p style="color:var(--accent-green);">Your report for ${today} has been securely logged. 50% attendance verified for today.</p>`;
+                window.showToast("Progress Archived (+40%). HR Clearance Pending.");
+                document.getElementById('taskQuestionnaireState').innerHTML = `<h3 class="panel-title"><i class="fa-solid fa-circle-check"></i> Daily Execution Verified</h3><p style="color:var(--accent-green);">Your report and proof assets for ${today} have been locked. 50% daily attendance registered.</p>`;
                 window.fetchAttendance();
             } catch(e) { 
-                window.showToast("Sync Failed.", true); 
+                window.showToast("Sync Failed: " + e.message, true); 
             }
         };
 
@@ -1538,10 +1617,11 @@ ${liveRosterSummary}`;
         };
 
         // --- VERIFY WORKFLOWS: FETCHES BOTH TASK REPORTS & ALL ATTENDANCE REQUESTS ---
+        // --- ONLY SHOW PENDING SUBMITTED TASK WORKFLOWS (CLEAN & FAST) ---
         window.fetchApprovals = async function() {
             const cont = document.getElementById('approvalMatrixContainer'); 
             if (!cont) return;
-            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning workflow queues...</div>';
+            cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading pending task submissions...</div>';
             
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
@@ -1550,99 +1630,66 @@ ${liveRosterSummary}`;
                 const uRole = (session.user_role || session.role || 'officer').toLowerCase();
                 const officerName = (session.name || '').trim();
 
-                // 1. Fetch Task Reports from tims_tasks
-                const taskFields = "id,intern_name,intern_task_id,team_task_id,intern_role,assigned_officer,title,status,time_spent,progress_text,priority_nudge,last_submitted_date";
-                let taskUrl = (uRole === 'hr') 
-                    ? `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_HR&select=${taskFields}&order=created_at.desc`
-                    : `${SUPABASE_URL}/rest/v1/tims_tasks?status=eq.Pending_Officer&assigned_officer=ilike.${encodeURIComponent(officerName)}&select=${taskFields}&order=created_at.desc`;
+                // Query attendance records that have task_40 = true (submitted work) needing review
+                let url = (uRole === 'hr')
+                    ? `${SUPABASE_URL}/rest/v1/tims_attendance_records?task_40=eq.true&hr_20=eq.false&select=*&order=requested_nudge.desc,log_date.desc`
+                    : `${SUPABASE_URL}/rest/v1/tims_attendance_records?task_40=eq.true&officer_30=eq.false&assigned_officer=ilike.${encodeURIComponent(officerName)}&select=*&order=requested_nudge.desc,log_date.desc`;
 
-                const taskRes = await fetch(taskUrl, { headers: apiHeaders });
-                const taskData = await taskRes.json();
+                const res = await fetch(url, { headers: apiHeaders });
+                const data = await res.json();
 
-                // 2. Fetch Attendance Requests (All Dates)
-                let attUrl = (uRole === 'hr')
-                    ? `${SUPABASE_URL}/rest/v1/tims_attendance_records?hr_20=eq.false&select=*&order=requested_nudge.desc,log_date.desc`
-                    : `${SUPABASE_URL}/rest/v1/tims_attendance_records?officer_30=eq.false&select=*&order=requested_nudge.desc,log_date.desc`;
-
-                const attRes = await fetch(attUrl, { headers: apiHeaders });
-                const attData = await attRes.json();
-
-                let html = '';
-
-                // SECTION A: ATTENDANCE CLEARANCE REQUESTS (ALL DATES)
-                if (attData && Array.isArray(attData) && attData.length > 0) {
-                    html += `
-                        <div style="margin-bottom:25px;">
-                            <h4 style="color:var(--accent-cyan); font-size:0.9rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-bell"></i> Attendance Clearance Requests (${attData.length})
-                            </h4>
-                            <div class="data-grid">
-                    ` + attData.map(a => `
-                                <div class="data-card" id="attRecordCard_${a.id}" style="${a.requested_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.25);' : ''}">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <h4>${a.intern_name} ${a.requested_nudge ? '<span class="status-badge status-yellow" style="margin-left:5px;">Priority Request</span>' : ''}</h4>
-                                            <span class="tag-badge" style="font-size:0.65rem;">📅 Date: ${new Date(a.log_date).toLocaleDateString()}</span>
-                                        </div>
-                                        <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${a.total_percentage || 10}% Score</span>
-                                    </div>
-                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
-                                        Login: ✅ 10% | Task: ${a.task_40 ? '✅ 40%' : '❌ Pending'} | HR: ${a.hr_20 ? '✅ 20%' : '⏳ Pending'} | Officer: ${a.officer_30 ? '✅ 30%' : '⏳ Pending'}
-                                    </p>
-                                    <button class="btn btn-success" style="margin-top:12px; padding:9px; font-size:0.72rem;" onclick="window.approveAttendanceById('${a.id}', '${a.intern_name}', '${a.log_date}')">
-                                        <i class="fa-solid fa-check-double"></i> Approve Attendance (${uRole === 'hr' ? '+20%' : '+30%'})
-                                    </button>
+                if (data && Array.isArray(data) && data.length > 0) {
+                    cont.innerHTML = `<div class="data-grid">` + data.map(d => {
+                        const proofList = (d.task_proof_files && Array.isArray(d.task_proof_files)) ? d.task_proof_files : [];
+                        const proofsHtml = proofList.length > 0 ? `
+                            <div style="margin-top:10px;">
+                                <strong style="font-size:0.75rem; color:var(--accent-cyan);">Attached Execution Proof:</strong>
+                                <div style="display:flex; gap:8px; margin-top:5px; flex-wrap:wrap;">
+                                    ${proofList.map((p, idx) => `
+                                        <a href="${p.data}" target="_blank" download="proof_${idx+1}" style="display:inline-block; width:50px; height:50px; border-radius:8px; overflow:hidden; border:1px solid var(--accent-cyan);">
+                                            <img src="${p.data.startsWith('data:image') ? p.data : 'https://via.placeholder.com/50?text=FILE'}" style="width:100%; height:100%; object-fit:cover;">
+                                        </a>
+                                    `).join('')}
                                 </div>
-                    `).join('') + `
                             </div>
-                        </div>
-                    `;
-                }
+                        ` : '';
 
-                // SECTION B: SUBMITTED TASK EXECUTION REPORTS
-                if (taskData && Array.isArray(taskData) && taskData.length > 0) {
-                    html += `
-                        <div>
-                            <h4 style="color:var(--accent-purple); font-size:0.9rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-file-code"></i> Submitted Task Execution Reports (${taskData.length})
-                            </h4>
-                            <div class="data-grid">
-                    ` + taskData.map(d => `
-                                <div class="data-card" id="approvalCard_${d.id}">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <h4>${d.intern_name}</h4>
-                                            <span class="tag-badge" style="font-size:0.65rem;">${d.intern_task_id}</span>
-                                        </div>
-                                        <span class="status-badge status-yellow">${d.status}</span>
-                                    </div>
-                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">⏱️ Logged: <strong style="color:var(--accent-cyan);">${d.time_spent || 'Active'}</strong></p>
-                                    
-                                    <div id="verifyText_${d.id}" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.6); border-radius:10px; border-left:3px solid var(--accent-purple);">
-                                        <pre style="color:#ffffff; font-size:0.8rem; word-wrap:break-word; white-space:pre-wrap; font-family:inherit; margin:0;">${d.progress_text || 'No text submitted.'}</pre>
-                                    </div>
-                                    
-                                    <div style="display:flex; gap:8px; margin-top:14px;">
-                                        <button class="btn btn-outline" style="flex:1; padding:8px; font-size:0.7rem;" onclick="document.getElementById('verifyText_${d.id}').style.display = (document.getElementById('verifyText_${d.id}').style.display === 'none' ? 'block' : 'none')">
-                                            <i class="fa-solid fa-eye"></i> View Report
-                                        </button>
-                                        <button class="btn btn-success" style="flex:1; padding:8px; font-size:0.7rem;" onclick="window.approveInternTask('${d.id}', '${d.intern_name}', '${d.status}', '${d.last_submitted_date}')">
-                                            <i class="fa-solid fa-check"></i> Grant Task Clearance
-                                        </button>
-                                    </div>
+                        return `
+                        <div class="data-card" id="approvalCard_${d.id}" style="${d.requested_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.25);' : ''}">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <h4>${d.intern_name} ${d.requested_nudge ? '<span class="status-badge status-yellow">Priority Nudge</span>' : ''}</h4>
+                                    <span class="tag-badge" style="font-size:0.68rem;">📅 Log Date: ${new Date(d.log_date).toLocaleDateString()}</span>
                                 </div>
-                    `).join('') + `
+                                <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${d.total_percentage || 50}% Score</span>
                             </div>
-                        </div>
-                    `;
+                            
+                            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:8px;">
+                                Task: <strong style="color:#fff;">${d.task_title || d.task_id || 'Operation Task'}</strong> | Time: <strong style="color:var(--accent-cyan);">${d.time_spent || 'Active'}</strong>
+                            </p>
+                            
+                            <div id="verifyReport_${d.id}" style="display:none; margin-top:12px; padding:12px; background:rgba(0,0,0,0.6); border-radius:10px; border-left:3px solid var(--accent-purple);">
+                                <pre style="color:#ffffff; font-size:0.8rem; word-wrap:break-word; white-space:pre-wrap; font-family:inherit; margin:0; line-height:1.4;">${d.progress_text || 'No detailed text available.'}</pre>
+                                ${proofsHtml}
+                            </div>
+                            
+                            <div style="display:flex; gap:8px; margin-top:14px;">
+                                <button class="btn btn-outline" style="flex:1; padding:8px; font-size:0.72rem;" onclick="document.getElementById('verifyReport_${d.id}').style.display = (document.getElementById('verifyReport_${d.id}').style.display === 'none' ? 'block' : 'none')">
+                                    <i class="fa-solid fa-eye"></i> View Report & Proof
+                                </button>
+                                <button class="btn btn-success" style="flex:1; padding:8px; font-size:0.72rem;" onclick="window.approveTaskExecution('${d.id}', '${d.intern_name}', '${d.log_date}')">
+                                    <i class="fa-solid fa-check"></i> Grant Clearance (${uRole === 'hr' ? '+20%' : '+30%'})
+                                </button>
+                            </div>
+                        </div>`;
+                    }).join('') + `</div>`;
+                } else {
+                    cont.innerHTML = '<div class="empty-state">No pending task submissions requiring review.</div>';
                 }
-
-                cont.innerHTML = html || '<div class="empty-state">No pending attendance requests or task reports found.</div>';
-            } catch (e) {
-                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Please retry.</div>';
+            } catch(e) {
+                cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error loading workflows.</div>';
             }
         };
-
         // --- 1. DIRECT ATTENDANCE RECORD CLEARANCE (BY ID) ---
         window.approveAttendanceById = async function(recordId, internName, logDate) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer'));
@@ -1680,50 +1727,51 @@ ${liveRosterSummary}`;
             }
         };
 
-        // --- 2. TASK EXECUTION CLEARANCE ---
-        window.approveInternTask = async function(taskId, internName, currentStatus, lastDate) {
+       // --- ATOMIC DATABASE CLEARANCE BY RECORD ID ---
+        window.approveTaskExecution = async function(recordId, internName, logDate) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer'));
             const uRole = (session.user_role || session.role || 'officer').toLowerCase();
-            const today = lastDate || new Date().toISOString().split('T')[0];
-            const card = document.getElementById(`approvalCard_${taskId}`);
+            const card = document.getElementById(`approvalCard_${recordId}`);
             if (card) card.style.opacity = '0.4';
-            window.showToast("Granting task clearance...");
+            window.showToast(`Granting clearance for ${internName} (${logDate})...`);
 
             try {
-                const nextStatus = (uRole === 'hr' || currentStatus === 'Pending_HR') ? 'Pending_Officer' : 'Approved';
-                
-                await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${taskId}`, {
-                    method: 'PATCH',
-                    headers: apiHeaders,
-                    body: JSON.stringify({ status: nextStatus, priority_nudge: false })
-                });
-
-                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(internName)}&log_date=eq.${today}`, { headers: apiHeaders });
+                const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${recordId}`, { headers: apiHeaders });
                 const attData = await attRes.json();
 
                 if (attData && attData.length > 0) {
                     const att = attData[0];
-                    const addScore = (uRole === 'hr') ? (att.hr_20 ? 0 : 20) : (att.officer_30 ? 0 : 30);
-                    const payload = (uRole === 'hr') 
-                        ? { hr_20: true, total_percentage: Math.min(100, (att.total_percentage || 50) + addScore) }
-                        : { officer_30: true, total_percentage: Math.min(100, (att.total_percentage || 70) + addScore) };
+                    const isHR = (uRole === 'hr');
+                    const addedScore = isHR ? (att.hr_20 ? 0 : 20) : (att.officer_30 ? 0 : 30);
+                    const newTotal = Math.min(100, (att.total_percentage || 50) + addedScore);
 
-                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${att.id}`, {
+                    const payload = isHR 
+                        ? { hr_20: true, status: 'Pending_Officer', total_percentage: newTotal, requested_nudge: false }
+                        : { officer_30: true, status: 'Approved', total_percentage: newTotal, requested_nudge: false };
+
+                    // 1. Update Attendance Record
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${recordId}`, {
                         method: 'PATCH',
                         headers: apiHeaders,
                         body: JSON.stringify(payload)
                     });
-                }
 
-                window.showToast(`✅ Task clearance granted for ${internName}.`);
-                if (card) card.remove();
-                window.fetchApprovals();
+                    // 2. Update Master Task State
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?intern_name=ilike.${encodeURIComponent(internName)}`, {
+                        method: 'PATCH',
+                        headers: apiHeaders,
+                        body: JSON.stringify({ status: isHR ? 'Pending_Officer' : 'Approved', priority_nudge: false })
+                    });
+
+                    window.showToast(`✅ Clearance Approved for ${internName}.`);
+                    if (card) card.remove();
+                    window.fetchApprovals();
+                }
             } catch(e) {
                 if (card) card.style.opacity = '1';
-                window.showToast("Error granting clearance.", true);
+                window.showToast("Clearance error: " + e.message, true);
             }
         };
-
         // --- SQUAD MATRIX ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer');
@@ -1876,7 +1924,37 @@ ${liveRosterSummary}`;
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-        // --- MAIN AI CHAT TRIGGER (WITH ANIMATED LOADER) ---
+        // --- REAL-TIME AI TYPEWRITER STREAMING ENGINE ---
+        window.streamTextEffect = function(element, fullHtml, speed = 12) {
+            element.innerHTML = "";
+            let i = 0;
+            const plainText = fullHtml;
+            
+            // Check if string contains HTML tags
+            if (!/<[a-z][\s\S]*>/i.test(fullHtml)) {
+                const timer = setInterval(() => {
+                    if (i < plainText.length) {
+                        element.textContent += plainText.charAt(i);
+                        i++;
+                        element.parentElement.scrollTop = element.parentElement.scrollHeight;
+                    } else {
+                        clearInterval(timer);
+                    }
+                }, speed);
+            } else {
+                // Instantly render rich HTML with a fast fade-in transition
+                element.style.opacity = '0';
+                element.innerHTML = fullHtml;
+                let opacity = 0;
+                const fade = setInterval(() => {
+                    opacity += 0.1;
+                    element.style.opacity = opacity;
+                    if (opacity >= 1) clearInterval(fade);
+                }, 30);
+            }
+        };
+
+        // --- MAIN TOURYNX AGENT CHAT TRIGGER ---
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             if(!input.value.trim()) return;
@@ -1887,14 +1965,16 @@ ${liveRosterSummary}`;
             input.value = '';
 
             const chatBox = document.getElementById('aiChatBox');
-            const typingId = 'typing_' + Date.now();
+            const responseId = 'aiResp_' + Date.now();
+            
+            // Live pulsing loader indicator
             chatBox.innerHTML += `
-                <div class="chat-bubble chat-ai" id="${typingId}">
+                <div class="chat-bubble chat-ai" id="${responseId}">
                     <div class="ai-pulse-loader">
                         <span class="ai-pulse-dot"></span>
                         <span class="ai-pulse-dot"></span>
                         <span class="ai-pulse-dot"></span>
-                        <span style="margin-left:5px;">Tournyx Neural Node Processing...</span>
+                        <span style="margin-left:5px;">Analyzing Live Roster & Directives...</span>
                     </div>
                 </div>
             `;
@@ -1908,23 +1988,26 @@ ${liveRosterSummary}`;
                         action: 'tims_ai_chat', 
                         prompt: userMsg, 
                         history: window.aiChatHistory,
-                        context: window.aiContextStr || "Tournyx Esports Operations"
+                        context: window.aiContextStr || "Tournyx Operations"
                     })
                 });
                 const data = await res.json();
-                document.getElementById(typingId)?.remove();
+                const container = document.getElementById(responseId);
 
-                window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Directive noted." });
-                window.renderChatHistory();
-                window.saveChatToCloud();
+                if (data.status === 'success') {
+                    window.streamTextEffect(container, data.answer);
+                    window.aiChatHistory.push({ role: 'assistant', content: data.answer });
+                    window.saveChatToCloud();
+                } else {
+                    container.innerHTML = `<span style="color:var(--accent-red);">${data.answer || 'Error contacting node.'}</span>`;
+                }
             } catch(e) {
-                document.getElementById(typingId)?.remove();
-                window.aiChatHistory.push({ role: 'assistant', content: "Connection active. Please verify your directives and proceed." });
-                window.renderChatHistory();
+                const container = document.getElementById(responseId);
+                if (container) container.innerHTML = `<span style="color:var(--accent-red);">Network Error. Please retry.</span>`;
             }
         };
 
-        // --- IN-TASK COPILOT TRIGGER (RUNS WHILE EXECUTING TASKS) ---
+       // --- IN-TASK COPILOT TRIGGER ---
         window.triggerInTaskAI = async function() {
             const input = document.getElementById('inTaskAiInput');
             if(!input.value.trim()) return;
@@ -1934,14 +2017,14 @@ ${liveRosterSummary}`;
             box.innerHTML += `<div class="chat-bubble chat-user" style="font-size:0.85rem; padding:10px 14px;">${query}</div>`;
             input.value = '';
 
-            const typingId = 'taskTyping_' + Date.now();
+            const typingId = 'taskResp_' + Date.now();
             box.innerHTML += `
                 <div class="chat-bubble chat-ai" id="${typingId}" style="font-size:0.85rem; padding:10px 14px;">
                     <div class="ai-pulse-loader">
                         <span class="ai-pulse-dot"></span>
                         <span class="ai-pulse-dot"></span>
                         <span class="ai-pulse-dot"></span>
-                        <span style="margin-left:4px; font-size:0.75rem;">Analyzing Task Directives...</span>
+                        <span style="margin-left:4px; font-size:0.75rem;">Processing Task Assistance...</span>
                     </div>
                 </div>
             `;
@@ -1954,16 +2037,15 @@ ${liveRosterSummary}`;
                     body: JSON.stringify({
                         action: 'tims_ai_chat',
                         prompt: query,
-                        context: window.aiContextStr || "In-Task Operation Execution"
+                        context: window.aiContextStr || "Active Task Execution"
                     })
                 });
                 const data = await res.json();
-                document.getElementById(typingId)?.remove();
-                box.innerHTML += `<div class="chat-bubble chat-ai" style="font-size:0.85rem; padding:10px 14px;">${data.answer}</div>`;
-                box.scrollTop = box.scrollHeight;
+                const target = document.getElementById(typingId);
+                window.streamTextEffect(target, data.answer, 8);
             } catch(e) {
-                document.getElementById(typingId)?.remove();
-                box.innerHTML += `<div class="chat-bubble chat-ai" style="font-size:0.85rem; color:var(--accent-red);">Network Error. Please retry.</div>`;
+                const target = document.getElementById(typingId);
+                if (target) target.innerHTML = `<span style="color:var(--accent-red); font-size:0.8rem;">Network Error.</span>`;
             }
         };
 
