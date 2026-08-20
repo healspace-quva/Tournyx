@@ -215,6 +215,14 @@
             transition: all 0.3s ease;
         }
 
+        .form-input[readonly] {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(0, 242, 255, 0.25);
+            color: var(--neon-cyan);
+            cursor: default;
+            font-weight: 700;
+        }
+
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             border-color: var(--neon-cyan);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
@@ -496,19 +504,43 @@
                 <div class="input-group">
                     <label><span>06</span> Neutral Record Key (Permanent Identifier)</label>
                     <div class="key-input-wrapper">
-                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" required>
+                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" readonly required>
                         <button type="button" class="btn-gen-key" onclick="regenerateRecordKey()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 2: INTERNSHIP & PROJECT ARCHITECTURE -->
+            <!-- SECTION 2: CERTIFICATE & REGISTRY AUTHORITY -->
             <div class="section-header">
-                <i class="fa-solid fa-folder-tree"></i> 2. Domain Track & Project Architecture
+                <i class="fa-solid fa-award"></i> 2. Certificate & Registry Authority
             </div>
             <div class="form-grid">
                 <div class="input-group">
-                    <label><span>07</span> Domain Role</label>
+                    <label><span>07</span> Certificate ID (Document Identifier)</label>
+                    <div class="key-input-wrapper">
+                        <input type="text" id="certificateId" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" readonly required>
+                        <button type="button" class="btn-gen-key" onclick="regenerateCertificateId()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label><span>08</span> Enterprise Udyam Registration No.</label>
+                    <input type="text" id="udyamRegNo" class="form-input" value="UDYAM-TN-08-0094821" readonly required>
+                </div>
+
+                <div class="input-group full-width">
+                    <label><span>09</span> Official Document Issue Date</label>
+                    <input type="date" id="issueDate" class="form-input" required>
+                </div>
+            </div>
+
+            <!-- SECTION 3: DOMAIN TRACK & PROJECT ARCHITECTURE -->
+            <div class="section-header">
+                <i class="fa-solid fa-folder-tree"></i> 3. Domain Track & Project Architecture
+            </div>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label><span>10</span> Domain Role</label>
                     <select id="domainRole" class="form-select" onchange="handleRolePresetChange()" required>
                         <option value="" disabled selected>Select Domain Specialization Track...</option>
                         <option value="AI VIBE CODING">AI VIBE CODING</option>
@@ -520,48 +552,48 @@
                 </div>
 
                 <div class="input-group">
-                    <label><span>08</span> Department</label>
-                    <input type="text" id="department" class="form-input" placeholder="Enter department name (e.g. Artificial Intelligence & Systems)" required>
+                    <label><span>11</span> Department</label>
+                    <input type="text" id="department" class="form-input" placeholder="Enter department (e.g. Artificial Intelligence & Systems)" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>09</span> Assigned Project Name</label>
+                    <label><span>12</span> Assigned Project Name</label>
                     <input type="text" id="projectName" class="form-input" placeholder="Enter project title (e.g. Tournyx AI Vision Engine)" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>10</span> Project Identifier Code</label>
-                    <input type="text" id="projectId" class="form-input" placeholder="Enter project ID (e.g. TX-PRJ-2026-AI)" required>
+                    <label><span>13</span> Project Identifier Code</label>
+                    <input type="text" id="projectId" class="form-input" placeholder="Enter project code (e.g. TX-PRJ-2026-AI)" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>11</span> Start Date</label>
+                    <label><span>14</span> Start Date</label>
                     <input type="date" id="startDate" class="form-input" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>12</span> End Date</label>
+                    <label><span>15</span> End Date</label>
                     <input type="date" id="endDate" class="form-input" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>13</span> Tenure Duration (Months)</label>
-                    <input type="number" id="durationMonths" class="form-input" placeholder="e.g. 2" min="1" max="12" required>
+                    <label><span>16</span> Duration (Months)</label>
+                    <input type="number" id="durationMonths" class="form-input" placeholder="Enter duration in months (e.g. 2)" min="1" max="12" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>14</span> Performance Score</label>
-                    <input type="text" id="performanceScore" class="form-input" placeholder="e.g. 98/100" required>
+                    <label><span>17</span> Performance Score</label>
+                    <input type="text" id="performanceScore" class="form-input" placeholder="Enter evaluation score (e.g. 98/100)" required>
                 </div>
             </div>
 
-            <!-- SECTION 3: SUPERVISION & SIGNATURE AUTHORIZATION -->
+            <!-- SECTION 4: SUPERVISION & SIGNATURE AUTHORIZATION -->
             <div class="section-header">
-                <i class="fa-solid fa-signature"></i> 3. Supervising Authority & Signatures
+                <i class="fa-solid fa-signature"></i> 4. Supervising Authority & Signatures
             </div>
             <div class="form-grid">
                 <div class="input-group full-width">
-                    <label><span>15</span> Select Supervising Domain Officer</label>
+                    <label><span>18</span> Select Supervising Domain Officer</label>
                     <select id="officerSelect" class="form-select" onchange="syncOfficerSelection()" required>
                         <option value="" disabled selected>Select Authorizing Officer...</option>
                         <option value="domain_officer">Chief AI & Systems Architect (AI Domain Lead)</option>
@@ -589,18 +621,18 @@
                 </div>
 
                 <div class="input-group full-width">
-                    <label><span>16</span> Officer Signature Title on Document</label>
+                    <label><span>19</span> Officer Signature Title on Document</label>
                     <input type="text" id="officerTitle" class="form-input" placeholder="Enter official executive title to display on certificate" required>
                 </div>
 
                 <div class="input-group full-width">
-                    <label><span>17</span> 3-Month Milestone & Technical Competency Summary</label>
+                    <label><span>20</span> 3-Month Milestone & Technical Competency Summary</label>
                     <textarea id="milestoneSummary" class="form-textarea" placeholder="Detail the technical deliverables engineered, sprint milestones hit, and responsibilities fulfilled by the candidate..."></textarea>
                 </div>
 
                 <!-- PDF Milestone Dossier Upload -->
                 <div class="input-group full-width">
-                    <label><span>18</span> Official 3-Month Milestone Dossier (PDF)</label>
+                    <label><span>21</span> Official 3-Month Milestone Dossier (PDF)</label>
                     <div class="pdf-upload-box" onclick="document.getElementById('pdfFileInput').click()">
                         <i class="fa-solid fa-file-pdf pdf-icon"></i>
                         <p style="font-size:0.85rem; color:#fff; font-weight:600;">Click to select or drop official Intern Documentation PDF</p>
@@ -658,8 +690,8 @@
 
         let selectedPdfFile = null;
 
-        // Generate CSPRNG Crockford Base32 Record Key
-        function generateRecordKey() {
+        // Generate CSPRNG Crockford Base32 Unique Keys
+        function generateCrockfordKey() {
             const charset = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
             const seg = () => {
                 let res = '';
@@ -674,10 +706,28 @@
         }
 
         function regenerateRecordKey() {
-            document.getElementById('recordKey').value = generateRecordKey();
+            document.getElementById('recordKey').value = generateCrockfordKey();
         }
 
-        // Suggest field placeholders based on selected track without overwriting entered text
+        function regenerateCertificateId() {
+            document.getElementById('certificateId').value = generateCrockfordKey();
+        }
+
+        // Automatic Generation on Typing Intern Details
+        function triggerAutoIdentifiers() {
+            const rk = document.getElementById('recordKey');
+            const cid = document.getElementById('certificateId');
+            if (!rk.value.trim()) rk.value = generateCrockfordKey();
+            if (!cid.value.trim()) cid.value = generateCrockfordKey();
+        }
+
+        // Attach listeners across identity fields
+        ['internName', 'internEmail', 'internPhone', 'internCollege', 'internCourse'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', triggerAutoIdentifiers);
+        });
+
+        // Suggest field placeholders based on selected track without pre-filling
         function handleRolePresetChange() {
             const role = document.getElementById('domainRole').value;
             const dept = document.getElementById('department');
@@ -769,7 +819,7 @@
             }
         }
 
-        // Fetch officer list dynamically on load
+        // Fetch officer list dynamically from signatures table
         async function fetchOfficers() {
             try {
                 const { data, error } = await supabase
@@ -790,11 +840,11 @@
                     });
                 }
             } catch (err) {
-                console.warn("Could not load dynamic officer list, using standard presets:", err);
+                console.warn("Could not load dynamic officer list:", err);
             }
         }
 
-        // Convert File to Base64 (Reliable Storage Fallback)
+        // Convert File to Base64 String for zero-fail fallback
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -816,7 +866,11 @@
             const internPhone = document.getElementById('internPhone').value.trim();
             const internCollege = document.getElementById('internCollege').value.trim();
             const internCourse = document.getElementById('internCourse').value.trim();
-            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase();
+            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase() || generateCrockfordKey();
+
+            const certId = document.getElementById('certificateId').value.trim().toUpperCase() || generateCrockfordKey();
+            const udyamRegNo = document.getElementById('udyamRegNo').value.trim();
+            const issueDate = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
 
             const domainRole = document.getElementById('domainRole').value;
             const department = document.getElementById('department').value.trim() || document.getElementById('department').placeholder;
@@ -828,7 +882,7 @@
             const performanceScore = document.getElementById('performanceScore').value.trim() || '98/100';
             
             let officerKey = document.getElementById('officerSelect').value;
-            let officerTitle = document.getElementById('officerTitle').value.trim();
+            let officerTitle = document.getElementById('officerTitle').value.trim() || 'CHIEF EXECUTIVE';
             const summary = document.getElementById('milestoneSummary').value.trim();
             const docPassword = document.getElementById('documentPassword').value.trim();
 
@@ -837,11 +891,10 @@
                 officerKey = customKey || `custom_${Date.now()}`;
             }
 
-            const certId = 'TX-CERT-2026-' + Math.floor(1000 + Math.random() * 9000);
             let pdfPublicUrl = null;
 
             try {
-                // 1. Process PDF Document with dual storage fallback
+                // 1. Process PDF Document with dual-storage fallback
                 if (selectedPdfFile) {
                     const cleanCertId = certId.replace(/[^a-zA-Z0-9_-]/g, '_');
                     const fileName = `${cleanCertId}_${Date.now()}_dossier.pdf`;
@@ -860,7 +913,7 @@
                             throw storageErr;
                         }
                     } catch (storageException) {
-                        console.warn("Supabase Storage bucket upload skipped or restricted, applying secure data string fallback:", storageException.message);
+                        console.warn("Storage upload restricted, applying Base64 fallback string:", storageException.message);
                         pdfPublicUrl = await fileToBase64(selectedPdfFile);
                     }
                 }
@@ -869,6 +922,7 @@
                 const certPayload = {
                     certificate_id: certId,
                     record_key: recordKey,
+                    udyam_reg_no: udyamRegNo,
                     intern_name: internName,
                     intern_email: internEmail,
                     domain_role: domainRole,
@@ -877,7 +931,7 @@
                     project_id: projectId,
                     start_date: startDate,
                     end_date: endDate,
-                    issue_date: new Date().toISOString().split('T')[0],
+                    issue_date: issueDate,
                     duration_months: durationMonths,
                     domain_officer_title: officerTitle,
                     domain_officer_key: officerKey,
@@ -955,7 +1009,9 @@
         function closeSuccessModal() {
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('certUploadForm').reset();
-            regenerateRecordKey();
+            document.getElementById('recordKey').value = '';
+            document.getElementById('certificateId').value = '';
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
             selectedPdfFile = null;
             document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('docPasswordGroup').style.display = 'none';
@@ -963,7 +1019,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            regenerateRecordKey();
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
             fetchOfficers();
         });
     </script>
