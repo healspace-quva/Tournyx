@@ -230,7 +230,7 @@
             background: rgba(0, 242, 255, 0.1);
             border: 1px solid var(--neon-cyan);
             color: var(--neon-cyan);
-            padding: 0 14px;
+            padding: 0 16px;
             border-radius: 10px;
             cursor: pointer;
             font-family: var(--font-head);
@@ -238,11 +238,15 @@
             font-weight: 800;
             transition: all 0.3s ease;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-gen-key:hover {
             background: var(--neon-cyan);
             color: #040508;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
         .form-textarea {
@@ -280,6 +284,42 @@
             color: var(--success-green);
             margin-top: 8px;
             display: none;
+        }
+
+        /* DYNAMIC PASSWORD PROTECTION FIELD */
+        #docPasswordGroup {
+            display: none;
+            background: rgba(157, 0, 255, 0.05);
+            border: 1px solid rgba(157, 0, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 14px;
+            animation: fadeInPass 0.4s ease-out;
+        }
+
+        @keyframes fadeInPass {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pass-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .pass-toggle-btn {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .pass-toggle-btn:hover {
+            color: var(--neon-cyan);
         }
 
         /* --- SUBMIT BUTTON --- */
@@ -541,14 +581,28 @@
 
                 <!-- PDF Milestone Dossier Upload -->
                 <div class="input-group full-width">
-                    <label><span>18</span> Official 3-Month Milestone Dossier PDF</label>
+                    <label><span>18</span> Official 3-Month Milestone Dossier (PDF)</label>
                     <div class="pdf-upload-box" onclick="document.getElementById('pdfFileInput').click()">
                         <i class="fa-solid fa-file-pdf pdf-icon"></i>
                         <p style="font-size:0.85rem; color:#fff; font-weight:600;">Click to select or drop official Intern Documentation PDF</p>
-                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Document will be linked to certificate QR dossier)</span>
+                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Maximum 15MB)</span>
                         <div class="file-name-display" id="fileNameDisplay"></div>
                     </div>
                     <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;" onchange="handlePdfSelection(event)">
+
+                    <!-- Dynamic Password Protection for Dossier -->
+                    <div id="docPasswordGroup">
+                        <label style="color:var(--neon-cyan); display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-lock"></i> Set Security Passcode for this Document
+                        </label>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">
+                            Protect this intern's milestone PDF. Anyone accessing this file on the public verification ledger will be required to enter this passcode.
+                        </p>
+                        <div class="pass-input-wrapper">
+                            <input type="password" id="documentPassword" class="form-input" placeholder="Enter secure document passcode (e.g. TX-SEC-9284)..." autocomplete="new-password">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVisibility()"><i class="fa-solid fa-eye" id="passToggleIcon"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -563,7 +617,7 @@
         <div class="result-box">
             <i class="fa-solid fa-circle-check" style="font-size:3rem; color:var(--success-green); margin-bottom:12px;"></i>
             <h3>Credential Inscribed Successfully</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">The master profile, internship record, and cryptographic certificate are live.</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">The master profile, internship record, password-protected dossier, and certificate are live.</p>
             
             <a href="#" target="_blank" class="link-pill" id="certLink"><i class="fa-solid fa-award"></i> View Live Certificate</a>
             <a href="#" target="_blank" class="link-pill" id="verifyLink"><i class="fa-solid fa-fingerprint"></i> View Public Verification Dossier</a>
@@ -666,10 +720,25 @@
                 const display = document.getElementById('fileNameDisplay');
                 display.style.display = 'block';
                 display.innerText = `Selected File: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+
+                // Unveil Password Protection Field
+                document.getElementById('docPasswordGroup').style.display = 'block';
             }
         }
 
-        // Fetch officer list dynamically on load
+        function togglePassVisibility() {
+            const passInput = document.getElementById('documentPassword');
+            const icon = document.getElementById('passToggleIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        // Fetch officer signatures dynamically on load
         async function fetchOfficers() {
             try {
                 const { data, error } = await supabase
@@ -679,7 +748,6 @@
 
                 if (!error && data && data.length > 0) {
                     const officerSel = document.getElementById('officerSelect');
-                    // Add distinct officers to dropdown if not already present
                     data.forEach(off => {
                         const exists = Array.from(officerSel.options).some(opt => opt.value === off.officer_key);
                         if (!exists && off.officer_name) {
@@ -700,7 +768,7 @@
             e.preventDefault();
             const btn = document.getElementById('btnSubmitForm');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Inscribing Ledger Across Tables...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encrypting & Inscribing Master Ledger...';
 
             const internName = document.getElementById('internName').value.trim();
             const internEmail = document.getElementById('internEmail').value.trim().toLowerCase();
@@ -721,6 +789,7 @@
             const officerKey = document.getElementById('officerSelect').value;
             const officerTitle = document.getElementById('officerTitle').value.trim();
             const summary = document.getElementById('milestoneSummary').value.trim();
+            const docPassword = document.getElementById('documentPassword').value.trim();
 
             const certId = 'TX-CERT-2026-' + Math.floor(1000 + Math.random() * 9000);
             let pdfPublicUrl = null;
@@ -765,10 +834,13 @@
                     hr_coordinator_key: 'hr',
                     performance_score: performanceScore,
                     documentation_pdf_url: pdfPublicUrl,
+                    documentation_password: docPassword || null,
                     intern_dossier: {
                         summary: summary || "Successfully fulfilled all designated engineering deliverables.",
                         performance_score: performanceScore,
-                        pdf_documentation: pdfPublicUrl
+                        pdf_documentation: pdfPublicUrl,
+                        is_password_protected: Boolean(docPassword),
+                        document_passcode: docPassword || null
                     },
                     is_verified: true
                 };
@@ -792,6 +864,7 @@
                         end_date: endDate,
                         domain_officer_title: officerTitle,
                         documentation_pdf_url: pdfPublicUrl,
+                        documentation_password: docPassword || null,
                         status: 'Completed'
                     }]),
 
@@ -808,8 +881,8 @@
 
                     // timeline_audit_events
                     supabase.from('timeline_audit_events').insert([{
-                        event_type: 'Certificate Issued',
-                        event_description: `Official Certificate ${certId} issued for ${domainRole}.`,
+                        event_type: 'Certificate & Dossier Minted',
+                        event_description: `Official Certificate ${certId} issued for ${domainRole}. Dossier password protection: ${docPassword ? 'Enabled' : 'Disabled'}.`,
                         authorized_by: officerTitle
                     }])
                 ]);
@@ -835,6 +908,7 @@
             autoFillPresets();
             selectedPdfFile = null;
             document.getElementById('fileNameDisplay').style.display = 'none';
+            document.getElementById('docPasswordGroup').style.display = 'none';
         }
 
         window.addEventListener('DOMContentLoaded', () => {
