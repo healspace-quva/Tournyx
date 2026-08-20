@@ -6,7 +6,7 @@
     <title>Tournyx Esports - Officer Certificate & Dossier Portal</title>
     <link rel="icon" type="image/png" href="favicon.png">
     
-    <!-- Typography & Icons -->
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -63,7 +63,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- PORTAL HEADER --- */
+        /* --- HEADER --- */
         .portal-header {
             text-align: center;
             margin-bottom: 25px;
@@ -80,8 +80,8 @@
         }
 
         .header-brand-logo {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--neon-cyan);
@@ -134,7 +134,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- ADMIN CARD CONTAINER --- */
+        /* --- ADMIN CARD --- */
         .admin-card {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
@@ -149,14 +149,14 @@
 
         .section-header {
             font-family: var(--font-head);
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             color: var(--neon-cyan);
             letter-spacing: 1.5px;
             text-transform: uppercase;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 25px 0 15px;
+            margin: 28px 0 16px;
             padding-bottom: 8px;
             border-bottom: 1px dashed rgba(255,255,255,0.1);
         }
@@ -204,7 +204,7 @@
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            padding: 13px 16px;
+            padding: 12px 16px;
             background: #05070c;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 10px;
@@ -215,18 +215,17 @@
             transition: all 0.3s ease;
         }
 
-        .form-input[readonly] {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(0, 242, 255, 0.25);
-            color: var(--neon-cyan);
-            cursor: default;
-            font-weight: 700;
-        }
-
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             border-color: var(--neon-cyan);
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
             background: #080b12;
+        }
+
+        .form-input[readonly] {
+            background: #070a12;
+            color: var(--neon-cyan);
+            cursor: not-allowed;
+            border-color: rgba(0, 242, 255, 0.25);
         }
 
         .key-input-wrapper {
@@ -259,7 +258,7 @@
 
         .form-textarea {
             resize: vertical;
-            min-height: 85px;
+            min-height: 80px;
         }
 
         /* --- PDF UPLOAD BOX --- */
@@ -267,7 +266,7 @@
             border: 2px dashed rgba(0, 242, 255, 0.3);
             background: rgba(0, 242, 255, 0.02);
             border-radius: 14px;
-            padding: 24px 18px;
+            padding: 22px 18px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -281,31 +280,31 @@
         }
 
         .pdf-icon {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: var(--neon-cyan);
             margin-bottom: 6px;
         }
 
         .file-name-display {
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: var(--success-green);
             margin-top: 8px;
             display: none;
         }
 
-        /* DYNAMIC PASSWORD PROTECTION & CUSTOM OFFICER ACCORDIONS */
-        #docPasswordGroup, #customOfficerFields {
+        /* DYNAMIC PASSWORD PROTECTION FIELD */
+        #docPasswordGroup {
             display: none;
-            background: rgba(157, 0, 255, 0.06);
+            background: rgba(157, 0, 255, 0.05);
             border: 1px solid rgba(157, 0, 255, 0.3);
             border-radius: 12px;
-            padding: 18px;
+            padding: 16px;
             margin-top: 14px;
-            animation: fadeInGroup 0.35s ease-out;
+            animation: fadeInPass 0.4s ease-out;
         }
 
-        @keyframes fadeInGroup {
+        @keyframes fadeInPass {
             from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -314,20 +313,40 @@
             position: relative;
             display: flex;
             align-items: center;
+            gap: 8px;
         }
 
         .pass-toggle-btn {
             position: absolute;
-            right: 12px;
+            right: 90px;
             background: transparent;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .pass-toggle-btn:hover {
             color: var(--neon-cyan);
+        }
+
+        .btn-gen-pass {
+            background: rgba(157, 0, 255, 0.15);
+            border: 1px solid var(--neon-purple);
+            color: #d896ff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-head);
+            font-size: 0.72rem;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .btn-gen-pass:hover {
+            background: var(--neon-purple);
+            color: #fff;
         }
 
         /* --- SUBMIT BUTTON --- */
@@ -364,7 +383,7 @@
             transform: none;
         }
 
-        /* --- SUCCESS MODAL --- */
+        /* --- SUCCESS POPUP --- */
         .result-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -382,7 +401,7 @@
             border: 1px solid var(--neon-cyan);
             border-radius: 20px;
             padding: 30px;
-            max-width: 520px;
+            max-width: 560px;
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(0,242,255,0.2);
@@ -392,18 +411,56 @@
             font-family: var(--font-head);
             color: var(--neon-cyan);
             font-size: 1.3rem;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+        }
+
+        .meta-preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .meta-pill {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.15);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .meta-pill span {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-family: var(--font-sub);
+            font-weight: 700;
+        }
+
+        .meta-pill strong {
+            font-size: 0.82rem;
+            color: #fff;
+            font-family: var(--font-head);
+            letter-spacing: 0.5px;
+        }
+
+        .link-pill-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
         }
 
         .link-pill {
+            flex: 1;
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 14px;
+            padding: 11px 14px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--neon-cyan);
             word-break: break-all;
-            margin: 12px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -419,20 +476,38 @@
             background: rgba(0,242,255,0.08);
         }
 
+        .btn-copy-pill {
+            background: rgba(0, 242, 255, 0.12);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-pill:hover {
+            background: var(--neon-cyan);
+            color: #000;
+        }
+
         .btn-close {
             background: transparent;
             border: 1px solid var(--text-muted);
             color: #fff;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 10px;
             cursor: pointer;
             font-family: var(--font-head);
-            margin-top: 10px;
+            font-size: 0.8rem;
+            margin-top: 12px;
             transition: 0.3s;
         }
 
         .btn-close:hover {
             border-color: #fff;
+            background: rgba(255,255,255,0.05);
         }
 
         /* --- FOOTER CREDITS --- */
@@ -471,78 +546,83 @@
     <div class="admin-card">
         <form id="certUploadForm" onsubmit="handleCertificateUpload(event)">
             
-            <!-- SECTION 1: MASTER PROFILE & IDENTITY -->
+            <!-- SECTION 1: MASTER PROFILE & CONTACT -->
             <div class="section-header">
                 <i class="fa-solid fa-user-shield"></i> 1. Intern Identity & Master Profile
             </div>
             <div class="form-grid">
                 <div class="input-group">
                     <label><span>01</span> Full Legal Name</label>
-                    <input type="text" id="internName" class="form-input" placeholder="Enter intern legal name (e.g. Joshitha S)" required>
+                    <input type="text" id="internName" class="form-input" placeholder="e.g. Joshitha S" oninput="handleIdentityInput()" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>02</span> Registered Email</label>
-                    <input type="email" id="internEmail" class="form-input" placeholder="Enter registered email (e.g. candidate@domain.com)" required>
+                    <input type="email" id="internEmail" class="form-input" placeholder="e.g. candidate@tournyx.in" oninput="handleIdentityInput()" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>03</span> Contact Phone Number</label>
-                    <input type="tel" id="internPhone" class="form-input" placeholder="Enter phone number (e.g. +91 98765 43210)">
+                    <input type="tel" id="internPhone" class="form-input" placeholder="e.g. +91 98765 43210" oninput="handleIdentityInput()">
                 </div>
 
                 <div class="input-group">
                     <label><span>04</span> College / Institution</label>
-                    <input type="text" id="internCollege" class="form-input" placeholder="Enter institution name (e.g. Chennai Institute of Technology)">
+                    <input type="text" id="internCollege" class="form-input" placeholder="e.g. Chennai Institute of Technology">
                 </div>
 
                 <div class="input-group">
-                    <label><span>05</span> Academic Degree / Specialization</label>
-                    <input type="text" id="internCourse" class="form-input" placeholder="Enter course / specialization (e.g. B.Tech Artificial Intelligence)">
+                    <label><span>05</span> Academic Course / Specialization</label>
+                    <input type="text" id="internCourse" class="form-input" placeholder="e.g. B.Tech Computer Science (AI & DS)">
                 </div>
 
                 <div class="input-group">
                     <label><span>06</span> Neutral Record Key (Permanent Identifier)</label>
                     <div class="key-input-wrapper">
-                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" readonly required>
+                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" readonly required>
                         <button type="button" class="btn-gen-key" onclick="regenerateRecordKey()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 2: CERTIFICATE & REGISTRY AUTHORITY -->
+            <!-- SECTION 2: OFFICIAL CERTIFICATE & REGISTRATION (NEW SECTION) -->
             <div class="section-header">
-                <i class="fa-solid fa-award"></i> 2. Certificate & Registry Authority
+                <i class="fa-solid fa-stamp"></i> 2. Official Credential Registry & Alignment
             </div>
             <div class="form-grid">
                 <div class="input-group">
-                    <label><span>07</span> Certificate ID (Document Identifier)</label>
+                    <label><span>07</span> Certificate Identifier Code</label>
                     <div class="key-input-wrapper">
-                        <input type="text" id="certificateId" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" readonly required>
-                        <button type="button" class="btn-gen-key" onclick="regenerateCertificateId()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
+                        <input type="text" id="certificateId" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" readonly required>
+                        <button type="button" class="btn-gen-key" onclick="regenerateCertId()"><i class="fa-solid fa-rotate"></i> New ID</button>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label><span>08</span> Enterprise Udyam Registration No.</label>
-                    <input type="text" id="udyamRegNo" class="form-input" value="UDYAM-TN-08-0094821" readonly required>
+                    <label><span>08</span> Government MSME / Udyam Registry Number</label>
+                    <!-- Readonly locked official registry number (leave gap/customizable in value) -->
+                    <input type="text" id="udyamNumber" class="form-input" value="UDYAM-TN-02-0089421" readonly>
                 </div>
 
-                <div class="input-group full-width">
-                    <label><span>09</span> Official Document Issue Date</label>
+                <div class="input-group">
+                    <label><span>09</span> Certificate Issue Date</label>
                     <input type="date" id="issueDate" class="form-input" required>
+                </div>
+
+                <div class="input-group">
+                    <label><span>10</span> Integrity Ledger Validation</label>
+                    <input type="text" id="integrityStatus" class="form-input" value="TX-VERIFIED-REGISTRY-MINT" readonly style="color:var(--success-green);">
                 </div>
             </div>
 
-            <!-- SECTION 3: DOMAIN TRACK & PROJECT ARCHITECTURE -->
+            <!-- SECTION 3: INTERNSHIP & PROJECT ARCHITECTURE -->
             <div class="section-header">
                 <i class="fa-solid fa-folder-tree"></i> 3. Domain Track & Project Architecture
             </div>
             <div class="form-grid">
                 <div class="input-group">
-                    <label><span>10</span> Domain Role</label>
-                    <select id="domainRole" class="form-select" onchange="handleRolePresetChange()" required>
-                        <option value="" disabled selected>Select Domain Specialization Track...</option>
+                    <label><span>11</span> Domain Role</label>
+                    <select id="domainRole" class="form-select" onchange="autoFillPresets()" required>
                         <option value="AI VIBE CODING">AI VIBE CODING</option>
                         <option value="FULL STACK DEVELOPER">FULL STACK DEVELOPER</option>
                         <option value="CORE FRONTEND DEVELOPER">CORE FRONTEND DEVELOPER</option>
@@ -552,91 +632,73 @@
                 </div>
 
                 <div class="input-group">
-                    <label><span>11</span> Department</label>
-                    <input type="text" id="department" class="form-input" placeholder="Enter department (e.g. Artificial Intelligence & Systems)" required>
+                    <label><span>12</span> Department</label>
+                    <input type="text" id="department" class="form-input" value="Artificial Intelligence & Systems" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>12</span> Assigned Project Name</label>
-                    <input type="text" id="projectName" class="form-input" placeholder="Enter project title (e.g. Tournyx AI Vision Engine)" required>
+                    <label><span>13</span> Assigned Project Name</label>
+                    <input type="text" id="projectName" class="form-input" value="Tournyx AI Vision Engine" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>13</span> Project Identifier Code</label>
-                    <input type="text" id="projectId" class="form-input" placeholder="Enter project code (e.g. TX-PRJ-2026-AI)" required>
+                    <label><span>14</span> Project Identifier Code</label>
+                    <input type="text" id="projectId" class="form-input" value="TX-PRJ-2026-AI" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>14</span> Start Date</label>
-                    <input type="date" id="startDate" class="form-input" required>
+                    <label><span>15</span> Start Date</label>
+                    <input type="date" id="startDate" class="form-input" value="2026-05-30" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>15</span> End Date</label>
-                    <input type="date" id="endDate" class="form-input" required>
+                    <label><span>16</span> End Date</label>
+                    <input type="date" id="endDate" class="form-input" value="2026-08-06" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>16</span> Duration (Months)</label>
-                    <input type="number" id="durationMonths" class="form-input" placeholder="Enter duration in months (e.g. 2)" min="1" max="12" required>
+                    <label><span>17</span> Tenure Duration (Months)</label>
+                    <input type="number" id="durationMonths" class="form-input" value="2" min="1" max="12" required>
                 </div>
 
                 <div class="input-group">
-                    <label><span>17</span> Performance Score</label>
-                    <input type="text" id="performanceScore" class="form-input" placeholder="Enter evaluation score (e.g. 98/100)" required>
+                    <label><span>18</span> Performance Score</label>
+                    <input type="text" id="performanceScore" class="form-input" value="98/100" required>
                 </div>
             </div>
 
             <!-- SECTION 4: SUPERVISION & SIGNATURE AUTHORIZATION -->
             <div class="section-header">
-                <i class="fa-solid fa-signature"></i> 4. Supervising Authority & Signatures
+                <i class="fa-solid fa-signature"></i> 4. Supervising Authority & Milestone Dossier
             </div>
             <div class="form-grid">
-                <div class="input-group full-width">
-                    <label><span>18</span> Select Supervising Domain Officer</label>
+                <div class="input-group">
+                    <label><span>19</span> Supervising Domain Officer</label>
                     <select id="officerSelect" class="form-select" onchange="syncOfficerSelection()" required>
-                        <option value="" disabled selected>Select Authorizing Officer...</option>
-                        <option value="domain_officer">Chief AI & Systems Architect (AI Domain Lead)</option>
+                        <option value="domain_officer">Chief AI & Systems Architect (Default AI Officer)</option>
                         <option value="custom_training_mgr">Chief Software Development & Training Manager</option>
                         <option value="custom_creative_dir">Lead Product Design & Creative Director</option>
                         <option value="custom_esports_dir">Tournament & League Operations Director</option>
-                        <option value="ceo">Founder & Chief Executive Officer</option>
-                        <option value="hr">HR & Internship Operations Coordinator</option>
-                        <option value="other_custom">-- Other / Custom Authorizing Officer --</option>
                     </select>
                 </div>
 
-                <!-- Custom Officer Dynamic Accordion -->
-                <div class="input-group full-width" id="customOfficerFields">
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label style="color:var(--neon-cyan);"><i class="fa-solid fa-user-plus"></i> Custom Officer Name</label>
-                            <input type="text" id="customOfficerName" class="form-input" placeholder="Enter officer legal name">
-                        </div>
-                        <div class="input-group">
-                            <label style="color:var(--neon-cyan);"><i class="fa-solid fa-id-badge"></i> Custom Officer Key Identifier</label>
-                            <input type="text" id="customOfficerKey" class="form-input" placeholder="e.g. custom_lead_eng">
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <label><span>20</span> Officer Signature Title</label>
+                    <input type="text" id="officerTitle" class="form-input" value="CHIEF AI & SYSTEMS ARCHITECT" required>
                 </div>
 
                 <div class="input-group full-width">
-                    <label><span>19</span> Officer Signature Title on Document</label>
-                    <input type="text" id="officerTitle" class="form-input" placeholder="Enter official executive title to display on certificate" required>
-                </div>
-
-                <div class="input-group full-width">
-                    <label><span>20</span> 3-Month Milestone & Technical Competency Summary</label>
+                    <label><span>21</span> 3-Month Milestone & Technical Deliverables Summary</label>
                     <textarea id="milestoneSummary" class="form-textarea" placeholder="Detail the technical deliverables engineered, sprint milestones hit, and responsibilities fulfilled by the candidate..."></textarea>
                 </div>
 
-                <!-- PDF Milestone Dossier Upload -->
+                <!-- PDF Milestone Dossier Upload & Passcode Protection -->
                 <div class="input-group full-width">
-                    <label><span>21</span> Official 3-Month Milestone Dossier (PDF)</label>
-                    <div class="pdf-upload-box" onclick="document.getElementById('pdfFileInput').click()">
+                    <label><span>22</span> Official Milestone Dossier (PDF)</label>
+                    <div class="pdf-upload-box" id="pdfUploadBox" onclick="document.getElementById('pdfFileInput').click()">
                         <i class="fa-solid fa-file-pdf pdf-icon"></i>
                         <p style="font-size:0.85rem; color:#fff; font-weight:600;">Click to select or drop official Intern Documentation PDF</p>
-                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Document will be linked to certificate QR dossier)</span>
+                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Maximum 15MB)</span>
                         <div class="file-name-display" id="fileNameDisplay"></div>
                     </div>
                     <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;" onchange="handlePdfSelection(event)">
@@ -647,11 +709,12 @@
                             <i class="fa-solid fa-lock"></i> Set Security Passcode for this Document
                         </label>
                         <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">
-                            Protect this intern's milestone PDF. Anyone accessing this file on the public verification ledger will be required to enter this passcode.
+                            Protect this candidate's milestone dossier. Anyone accessing this PDF on the public ledger will be required to enter this passcode.
                         </p>
                         <div class="pass-input-wrapper">
-                            <input type="password" id="documentPassword" class="form-input" placeholder="Enter secure document passcode (e.g. TX-SEC-9284)..." autocomplete="new-password">
-                            <button type="button" class="pass-toggle-btn" onclick="togglePassVisibility()"><i class="fa-solid fa-eye" id="passToggleIcon"></i></button>
+                            <input type="password" id="documentPassword" class="form-input" placeholder="Enter secure passcode (e.g. TX-SEC-9284)..." autocomplete="new-password">
+                            <button type="button" class="pass-toggle-btn" onclick="togglePassVisibility()" title="Show/Hide Passcode"><i class="fa-solid fa-eye" id="passToggleIcon"></i></button>
+                            <button type="button" class="btn-gen-pass" onclick="autoGeneratePasscode()"><i class="fa-solid fa-key"></i> Auto Pass</button>
                         </div>
                     </div>
                 </div>
@@ -668,10 +731,28 @@
         <div class="result-box">
             <i class="fa-solid fa-circle-check" style="font-size:3rem; color:var(--success-green); margin-bottom:12px;"></i>
             <h3>Credential Inscribed Successfully</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">The master profile, internship record, password-protected dossier, and certificate are live.</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">The master profile, internship record, password-protected dossier, and certificate are live on the ledger.</p>
             
-            <a href="#" target="_blank" class="link-pill" id="certLink"><i class="fa-solid fa-award"></i> View Live Certificate</a>
-            <a href="#" target="_blank" class="link-pill" id="verifyLink"><i class="fa-solid fa-fingerprint"></i> View Public Verification Dossier</a>
+            <div class="meta-preview-grid">
+                <div class="meta-pill">
+                    <span>Certificate ID</span>
+                    <strong id="modalCertId">TX-CERT-2026</strong>
+                </div>
+                <div class="meta-pill">
+                    <span>Record Key</span>
+                    <strong id="modalRecordKey">XXXX-XXXX-XXXX</strong>
+                </div>
+            </div>
+
+            <div class="link-pill-wrap">
+                <a href="#" target="_blank" class="link-pill" id="certLink"><i class="fa-solid fa-award"></i> View Live Certificate</a>
+                <button type="button" class="btn-copy-pill" onclick="copyLink('certLink')" title="Copy Certificate Link"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            
+            <div class="link-pill-wrap">
+                <a href="#" target="_blank" class="link-pill" id="verifyLink"><i class="fa-solid fa-fingerprint"></i> View Public Verification Dossier</a>
+                <button type="button" class="btn-copy-pill" onclick="copyLink('verifyLink')" title="Copy Verification Link"><i class="fa-regular fa-copy"></i></button>
+            </div>
 
             <button class="btn-close" onclick="closeSuccessModal()">Register Next Candidate</button>
         </div>
@@ -682,16 +763,17 @@
         <p style="margin-top: 4px;">Powered by <span class="quva-badge">QUVA TECHNOLOGIES</span></p>
     </footer>
 
-    <!-- ENGINE LOGIC -->
+    <!-- LOGIC & DATABASE SYNC ENGINE -->
     <script>
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let selectedPdfFile = null;
+        let selectedPdfBase64 = null;
 
-        // Generate CSPRNG Crockford Base32 Unique Keys
-        function generateCrockfordKey() {
+        // CSPRNG Crockford Base32 Record Key Generator
+        function generateRecordKey() {
             const charset = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
             const seg = () => {
                 let res = '';
@@ -705,30 +787,35 @@
             return `${seg()}-${seg()}-${seg()}`;
         }
 
+        // Auto-generate Certificate ID
+        function generateCertificateId() {
+            const randVal = Math.floor(1000 + Math.random() * 9000);
+            return `TX-CERT-2026-${randVal}`;
+        }
+
         function regenerateRecordKey() {
-            document.getElementById('recordKey').value = generateCrockfordKey();
+            document.getElementById('recordKey').value = generateRecordKey();
         }
 
-        function regenerateCertificateId() {
-            document.getElementById('certificateId').value = generateCrockfordKey();
+        function regenerateCertId() {
+            document.getElementById('certificateId').value = generateCertificateId();
         }
 
-        // Automatic Generation on Typing Intern Details
-        function triggerAutoIdentifiers() {
-            const rk = document.getElementById('recordKey');
-            const cid = document.getElementById('certificateId');
-            if (!rk.value.trim()) rk.value = generateCrockfordKey();
-            if (!cid.value.trim()) cid.value = generateCrockfordKey();
+        // Auto-generate when filling out identity info if blank
+        function handleIdentityInput() {
+            const keyField = document.getElementById('recordKey');
+            if (!keyField.value || keyField.value.trim() === '') {
+                keyField.value = generateRecordKey();
+            }
         }
 
-        // Attach listeners across identity fields
-        ['internName', 'internEmail', 'internPhone', 'internCollege', 'internCourse'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', triggerAutoIdentifiers);
-        });
+        function autoGeneratePasscode() {
+            const pass = 'TX-SEC-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('documentPassword').value = pass;
+        }
 
-        // Suggest field placeholders based on selected track without pre-filling
-        function handleRolePresetChange() {
+        // Auto-fill presets based on domain role
+        function autoFillPresets() {
             const role = document.getElementById('domainRole').value;
             const dept = document.getElementById('department');
             const title = document.getElementById('officerTitle');
@@ -736,60 +823,49 @@
             const officerSel = document.getElementById('officerSelect');
 
             if (role === 'AI VIBE CODING') {
-                dept.placeholder = 'Artificial Intelligence & Systems';
-                projId.placeholder = 'TX-PRJ-2026-AI';
-                if (!officerSel.value) officerSel.value = 'domain_officer';
-                if (!title.value) title.placeholder = 'CHIEF AI & SYSTEMS ARCHITECT';
+                dept.value = 'Artificial Intelligence & Systems';
+                title.value = 'CHIEF AI & SYSTEMS ARCHITECT';
+                projId.value = 'TX-PRJ-2026-AI';
+                officerSel.value = 'domain_officer';
             } else if (role === 'FULL STACK DEVELOPER') {
-                dept.placeholder = 'Platform Architecture';
-                projId.placeholder = 'TX-PRJ-2026-FS';
-                if (!officerSel.value) officerSel.value = 'custom_training_mgr';
-                if (!title.value) title.placeholder = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+                dept.value = 'Platform Architecture';
+                title.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+                projId.value = 'TX-PRJ-2026-FS';
+                officerSel.value = 'custom_training_mgr';
             } else if (role === 'CORE FRONTEND DEVELOPER') {
-                dept.placeholder = 'Frontend Engineering';
-                projId.placeholder = 'TX-PRJ-2026-FE';
-                if (!officerSel.value) officerSel.value = 'custom_training_mgr';
-                if (!title.value) title.placeholder = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+                dept.value = 'Frontend Engineering';
+                title.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+                projId.value = 'TX-PRJ-2026-FE';
+                officerSel.value = 'custom_training_mgr';
             } else if (role === 'UI/UX DESIGN') {
-                dept.placeholder = 'Product Design & Creative';
-                projId.placeholder = 'TX-PRJ-2026-UX';
-                if (!officerSel.value) officerSel.value = 'custom_creative_dir';
-                if (!title.value) title.placeholder = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
+                dept.value = 'Product Design & Creative';
+                title.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
+                projId.value = 'TX-PRJ-2026-UX';
+                officerSel.value = 'custom_creative_dir';
             } else if (role === 'ESPORTS OPERATIONS') {
-                dept.placeholder = 'League Operations & Events';
-                projId.placeholder = 'TX-PRJ-2026-OPS';
-                if (!officerSel.value) officerSel.value = 'custom_esports_dir';
-                if (!title.value) title.placeholder = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
+                dept.value = 'League Operations & Events';
+                title.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
+                projId.value = 'TX-PRJ-2026-OPS';
+                officerSel.value = 'custom_esports_dir';
             }
         }
 
         function syncOfficerSelection() {
             const officerSel = document.getElementById('officerSelect').value;
             const titleInput = document.getElementById('officerTitle');
-            const customBox = document.getElementById('customOfficerFields');
 
-            if (officerSel === 'other_custom') {
-                customBox.style.display = 'block';
-                titleInput.value = '';
-                titleInput.placeholder = 'Enter custom officer title (e.g. LEAD RESEARCH SCIENTIST)';
-            } else {
-                customBox.style.display = 'none';
-                if (officerSel === 'domain_officer') {
-                    titleInput.value = 'CHIEF AI & SYSTEMS ARCHITECT';
-                } else if (officerSel === 'custom_training_mgr') {
-                    titleInput.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
-                } else if (officerSel === 'custom_creative_dir') {
-                    titleInput.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
-                } else if (officerSel === 'custom_esports_dir') {
-                    titleInput.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
-                } else if (officerSel === 'ceo') {
-                    titleInput.value = 'FOUNDER & CHIEF EXECUTIVE OFFICER';
-                } else if (officerSel === 'hr') {
-                    titleInput.value = 'HR & INTERNSHIP OPERATIONS COORDINATOR';
-                }
+            if (officerSel === 'domain_officer') {
+                titleInput.value = 'CHIEF AI & SYSTEMS ARCHITECT';
+            } else if (officerSel === 'custom_training_mgr') {
+                titleInput.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+            } else if (officerSel === 'custom_creative_dir') {
+                titleInput.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
+            } else if (officerSel === 'custom_esports_dir') {
+                titleInput.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
             }
         }
 
+        // Handle PDF File Selection & Encode Base64 Backup
         function handlePdfSelection(e) {
             const file = e.target.files[0];
             if (file) {
@@ -802,7 +878,14 @@
                 display.style.display = 'block';
                 display.innerText = `Selected File: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
 
-                // Display Password Protection Field
+                // Read Base64 representation for storage fallback
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    selectedPdfBase64 = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // Unveil Password Protection Field
                 document.getElementById('docPasswordGroup').style.display = 'block';
             }
         }
@@ -819,7 +902,7 @@
             }
         }
 
-        // Fetch officer list dynamically from signatures table
+        // Fetch officer signatures dynamically
         async function fetchOfficers() {
             try {
                 const { data, error } = await supabase
@@ -835,26 +918,16 @@
                             const opt = document.createElement('option');
                             opt.value = off.officer_key;
                             opt.innerText = `${off.officer_name} (${off.officer_title || off.officer_key})`;
-                            officerSel.insertBefore(opt, officerSel.querySelector('option[value="other_custom"]'));
+                            officerSel.appendChild(opt);
                         }
                     });
                 }
             } catch (err) {
-                console.warn("Could not load dynamic officer list:", err);
+                console.warn("Using default officer list:", err);
             }
         }
 
-        // Convert File to Base64 String for zero-fail fallback
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // Form Submit Handler
+        // Master Form Submit Handler
         async function handleCertificateUpload(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitForm');
@@ -866,35 +939,30 @@
             const internPhone = document.getElementById('internPhone').value.trim();
             const internCollege = document.getElementById('internCollege').value.trim();
             const internCourse = document.getElementById('internCourse').value.trim();
-            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase() || generateCrockfordKey();
+            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase();
 
-            const certId = document.getElementById('certificateId').value.trim().toUpperCase() || generateCrockfordKey();
-            const udyamRegNo = document.getElementById('udyamRegNo').value.trim();
-            const issueDate = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
+            const certId = document.getElementById('certificateId').value.trim();
+            const udyamNumber = document.getElementById('udyamNumber').value.trim();
+            const issueDate = document.getElementById('issueDate').value;
 
             const domainRole = document.getElementById('domainRole').value;
-            const department = document.getElementById('department').value.trim() || document.getElementById('department').placeholder;
-            const projectName = document.getElementById('projectName').value.trim() || 'Tournyx Platform';
-            const projectId = document.getElementById('projectId').value.trim() || 'TX-PRJ-2026';
+            const department = document.getElementById('department').value.trim();
+            const projectName = document.getElementById('projectName').value.trim();
+            const projectId = document.getElementById('projectId').value.trim();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             const durationMonths = parseInt(document.getElementById('durationMonths').value) || 2;
-            const performanceScore = document.getElementById('performanceScore').value.trim() || '98/100';
+            const performanceScore = document.getElementById('performanceScore').value.trim();
             
-            let officerKey = document.getElementById('officerSelect').value;
-            let officerTitle = document.getElementById('officerTitle').value.trim() || 'CHIEF EXECUTIVE';
+            const officerKey = document.getElementById('officerSelect').value;
+            const officerTitle = document.getElementById('officerTitle').value.trim();
             const summary = document.getElementById('milestoneSummary').value.trim();
             const docPassword = document.getElementById('documentPassword').value.trim();
 
-            if (officerKey === 'other_custom') {
-                const customKey = document.getElementById('customOfficerKey').value.trim();
-                officerKey = customKey || `custom_${Date.now()}`;
-            }
-
-            let pdfPublicUrl = null;
+            let finalPdfUrl = null;
 
             try {
-                // 1. Process PDF Document with dual-storage fallback
+                // 1. Storage Upload with Base64 Fallback
                 if (selectedPdfFile) {
                     const cleanCertId = certId.replace(/[^a-zA-Z0-9_-]/g, '_');
                     const fileName = `${cleanCertId}_${Date.now()}_dossier.pdf`;
@@ -908,21 +976,19 @@
                             const { data: publicData } = supabase.storage
                                 .from('dossiers')
                                 .getPublicUrl(`intern_docs/${fileName}`);
-                            pdfPublicUrl = publicData.publicUrl;
+                            finalPdfUrl = publicData.publicUrl;
                         } else {
-                            throw storageErr;
+                            finalPdfUrl = selectedPdfBase64;
                         }
-                    } catch (storageException) {
-                        console.warn("Storage upload restricted, applying Base64 fallback string:", storageException.message);
-                        pdfPublicUrl = await fileToBase64(selectedPdfFile);
+                    } catch (sErr) {
+                        finalPdfUrl = selectedPdfBase64;
                     }
                 }
 
-                // 2. Insert into tims_intern_certificates
+                // 2. Primary Insert: tims_intern_certificates
                 const certPayload = {
                     certificate_id: certId,
                     record_key: recordKey,
-                    udyam_reg_no: udyamRegNo,
                     intern_name: internName,
                     intern_email: internEmail,
                     domain_role: domainRole,
@@ -938,14 +1004,16 @@
                     ceo_key: 'ceo',
                     hr_coordinator_key: 'hr',
                     performance_score: performanceScore,
-                    documentation_pdf_url: pdfPublicUrl,
+                    documentation_pdf_url: finalPdfUrl,
                     documentation_password: docPassword || null,
+                    udyam_registration_number: udyamNumber,
                     intern_dossier: {
                         summary: summary || "Successfully fulfilled all designated engineering deliverables.",
                         performance_score: performanceScore,
-                        pdf_documentation: pdfPublicUrl,
+                        pdf_documentation: finalPdfUrl,
                         is_password_protected: Boolean(docPassword),
-                        document_passcode: docPassword || null
+                        document_passcode: docPassword || null,
+                        udyam_registration_number: udyamNumber
                     },
                     is_verified: true
                 };
@@ -956,9 +1024,8 @@
 
                 if (certErr) throw certErr;
 
-                // 3. Multi-table Sync Across Data Models
+                // 3. Multi-table Sync (Non-blocking)
                 await Promise.allSettled([
-                    // internship_records
                     supabase.from('internship_records').insert([{
                         record_key: recordKey,
                         domain_role: domainRole,
@@ -968,12 +1035,11 @@
                         start_date: startDate,
                         end_date: endDate,
                         domain_officer_title: officerTitle,
-                        documentation_pdf_url: pdfPublicUrl,
+                        documentation_pdf_url: finalPdfUrl,
                         documentation_password: docPassword || null,
                         status: 'Completed'
                     }]),
 
-                    // master_profiles
                     supabase.from('master_profiles').insert([{
                         record_key: recordKey,
                         full_name: internName,
@@ -984,43 +1050,57 @@
                         record_status: 'Completed'
                     }]),
 
-                    // timeline_audit_events
                     supabase.from('timeline_audit_events').insert([{
                         event_type: 'Certificate & Dossier Minted',
-                        event_description: `Official Certificate ${certId} minted for ${domainRole}. Passcode status: ${docPassword ? 'Protected' : 'Standard'}.`,
+                        event_description: `Official Certificate ${certId} issued for ${domainRole}. Dossier password protection: ${docPassword ? 'Enabled' : 'Disabled'}.`,
                         authorized_by: officerTitle
                     }])
                 ]);
 
-                // 4. Show Success Modal
+                // 4. Populate and show success modal
+                document.getElementById('modalCertId').innerText = certId;
+                document.getElementById('modalRecordKey').innerText = recordKey;
                 document.getElementById('certLink').href = `certificate.html?id=${encodeURIComponent(certId)}`;
                 document.getElementById('verifyLink').href = `verify.html?id=${encodeURIComponent(certId)}`;
                 document.getElementById('resultOverlay').style.display = 'flex';
 
             } catch (err) {
                 console.error("Minting Error:", err);
-                alert("Minting Failed: " + (err.message || "Database error occurred. Please verify table permissions."));
+                alert("Minting Failed: " + (err.message || "Database error. Check table permissions."));
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-certificate"></i> Mint Credential & Inscribe Ledger';
             }
         }
 
+        function copyLink(linkId) {
+            const url = document.getElementById(linkId).href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Copied to clipboard: ' + url);
+            }).catch(() => {
+                prompt('Copy this link:', url);
+            });
+        }
+
         function closeSuccessModal() {
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('certUploadForm').reset();
-            document.getElementById('recordKey').value = '';
-            document.getElementById('certificateId').value = '';
-            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+            regenerateRecordKey();
+            regenerateCertId();
+            autoFillPresets();
             selectedPdfFile = null;
+            selectedPdfBase64 = null;
             document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('docPasswordGroup').style.display = 'none';
-            document.getElementById('customOfficerFields').style.display = 'none';
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+            regenerateRecordKey();
+            regenerateCertId();
+            autoFillPresets();
             fetchOfficers();
+            document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
         });
     </script>
 </body>
