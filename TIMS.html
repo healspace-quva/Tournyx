@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TIMS Engine - Unified Gateway</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -14,7 +14,7 @@
             --bg-glass: rgba(15, 10, 25, 0.45); --bg-glass-solid: rgba(20, 15, 30, 0.85); --bg-input: rgba(0, 0, 0, 0.5);
             --glass-border: rgba(255, 255, 255, 0.08); --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
             --sidebar-width: 260px;
-            --accent-cyan: #00f2ff; --accent-purple: #bd00ff; --accent-red: #ff3333; --accent-green: #00ff66;
+            --accent-cyan: #00f2ff; --accent-purple: #bd00ff; --accent-red: #ff3333; --accent-green: #00ff66; --accent-orange: #ff9900;
             --font-head: 'Inter', sans-serif; --font-body: 'Inter', sans-serif; --font-logo: 'Orbitron', sans-serif;
         }
 
@@ -162,6 +162,7 @@
         .status-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 8px; font-weight: bold; }
         .status-red { background: rgba(255,51,51,0.1); color: var(--accent-red); }
         .status-green { background: rgba(0,255,102,0.1); color: var(--accent-green); }
+        .status-yellow { background: rgba(255,153,0,0.15); color: var(--accent-orange); }
 
         #toast { position: fixed; top: 20px; right: 20px; background: var(--bg-glass-solid); backdrop-filter: blur(20px); border: 1px solid var(--accent-cyan); border-left: 4px solid var(--accent-cyan); color: var(--text-main); padding: 12px 20px; border-radius: 12px; transform: translateX(150%); transition: transform 0.4s ease; z-index: 999999; box-shadow: 0 8px 30px rgba(0,0,0,0.3); text-transform: uppercase; display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;}
         #toast.show { transform: translateX(0); }
@@ -183,6 +184,7 @@
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent-cyan); }
         input:checked + .slider:before { transform: translateX(20px); }
+
         /* AI LIVE ANIMATED PULSE LOADER */
         .ai-pulse-loader {
             display: inline-flex;
@@ -218,16 +220,18 @@
 
     <div class="ambient-bg"><div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div></div>
     <div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Message</span></div>
-   <!-- ATTENDANCE BREAKDOWN MODAL POPUP -->
+
+    <!-- ATTENDANCE BREAKDOWN MODAL POPUP -->
     <div class="modal-overlay" id="attModalOverlay" onclick="window.closeAttModal(event)">
         <div class="modal-card glass-panel" onclick="event.stopPropagation()">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:12px; margin-bottom:16px;">
                 <h3 style="font-family:var(--font-logo); font-size:1.1rem; color:var(--accent-cyan); margin:0;"><i class="fa-solid fa-shield-halved"></i> Clearance Matrix</h3>
-                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem;" onclick="window.closeAttModal()"></i>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem;" onclick="window.closeAttModal(event)"></i>
             </div>
             <div id="modalAttContent">Loading verification breakdown...</div>
         </div>
     </div>
+
     <!-- ========================================== -->
     <!-- VIEW 1: LOGIN GATEWAY                      -->
     <!-- ========================================== -->
@@ -245,7 +249,6 @@
 
             <div id="form-intern" class="auth-form active">
                 <div class="form-group"><label class="form-label">Intern Name</label><input type="text" id="loginInternName" class="form-control" placeholder="Enter Name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
-                <!-- UPDATED FIELD LABEL AND PLACEHOLDER -->
                 <div class="form-group"><label class="form-label">Project or Unique Task ID</label><input type="text" id="loginTaskId" class="form-control" placeholder="e.g. prj-x8b2 OR prj-x8b2-name" autocomplete="off" onkeypress="window.handleEnter(event, 'intern')"></div>
                 <button type="button" class="btn btn-primary" id="btn-login-intern" onclick="window.initiateLogin('intern')"><i class="fa-solid fa-right-to-bracket"></i> Initiate Session</button>
             </div>
@@ -291,6 +294,7 @@
                     <h4><i class="fa-solid fa-robot"></i> Tournyx 24/7 AI Mentor Analysis</h4>
                     <p id="mentorBriefText" style="color:var(--text-main); font-size:0.88rem; line-height:1.5;">Analyzing your active operational trajectory...</p>
                 </div>
+
                 <div class="panel-card glass-panel" id="internHomeSection" style="display:none;">
                     <h3 class="panel-title"><i class="fa-solid fa-house"></i> Daily Operations Check-In</h3>
                     <div class="data-grid">
@@ -311,7 +315,7 @@
                     <div class="data-grid">
                         <div class="data-card" onclick="window.switchPanel('panel-officer-approvals', document.querySelector('.nav-item:nth-child(4)'))" style="cursor:pointer;">
                             <h4>Pending Workflows</h4>
-                            <p style="color:var(--text-muted); font-size:0.85rem;">Click here to verify and approve intern submissions.</p>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">Click here to verify and approve intern submissions & attendance requests.</p>
                         </div>
                         <div class="data-card" onclick="window.switchPanel('panel-officer-tasks', document.querySelector('.nav-item:nth-child(2)'))" style="cursor:pointer;">
                             <h4>Deploy Matrix</h4>
@@ -351,15 +355,18 @@
                         <p style="color:var(--accent-cyan); font-size: 0.8rem; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">Step-by-Step Directives:</p>
                         <p style="color:var(--text-muted); font-size: 0.85rem; line-height: 1.5; white-space:pre-wrap;" id="intTaskDesc">Loading...</p>
                     </div>
+
                     <!-- PREVIOUS SUBMISSION SUMMARY / WHAT WAS COMPLETED -->
                     <div id="prevSubmissionContainer" style="margin-top: 18px; padding: 15px; background: rgba(0, 242, 255, 0.05); border: 1px dashed rgba(0,242,255,0.3); border-radius: 14px; display:none;">
                         <h4 style="color:var(--accent-cyan); font-size:0.85rem; text-transform:uppercase; font-weight:800; margin-bottom:8px;"><i class="fa-solid fa-clock-rotate-left"></i> Your Last Submitted Progress</h4>
                         <p style="font-size:0.85rem; color:var(--text-main); white-space:pre-wrap;" id="prevSubmissionText"></p>
                     </div>
+
                     <div id="internReferenceLink" style="margin-top:20px; display:none;">
                         <h4 style="font-size:0.9rem; margin-bottom:10px; color:var(--accent-cyan);">Attached Reference Assets:</h4>
                         <div id="internReferencePreview" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
                     </div>
+
                     <!-- LIVE IN-TASK AI COPILOT CHAT -->
                     <div id="inTaskAiContainer" style="display:none; margin-top:20px; border:1px solid rgba(189,0,255,0.4); border-radius:18px; padding:18px; background:rgba(0,0,0,0.55);">
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(189,0,255,0.2); padding-bottom:10px; margin-bottom:12px;">
@@ -376,6 +383,7 @@
                             <button class="btn btn-primary" style="width:45px; height:42px; padding:0; border-radius:50%; flex-shrink:0;" onclick="window.triggerInTaskAI()"><i class="fa-solid fa-paper-plane"></i></button>
                         </div>
                     </div>
+
                     <button class="btn btn-primary" id="btnStartTimer" style="margin-top: 20px; width:fit-content; padding: 12px 30px;" onclick="window.startTaskTimer()"><i class="fa-solid fa-play"></i> Start Operation & Timer</button>
                 </div>
 
@@ -418,6 +426,10 @@
                     <div class="att-metrics" style="margin-top: 15px;">
                         <div>HR Verification <br><span class="status-badge" id="attHRBadge">20% Pending</span></div>
                         <div>Officer Clearance <br><span class="status-badge" id="attOfficerBadge">30% Pending</span></div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:20px;">
+                        <button class="btn btn-outline" style="width:auto; display:inline-flex; padding:8px 20px; font-size:0.75rem;" onclick="window.openTodayAttendanceBreakdown()"><i class="fa-solid fa-circle-info"></i> View Today's Breakdown & Request Approvals</button>
                     </div>
                 </div>
 
@@ -566,7 +578,7 @@
                     <button class="btn btn-primary" onclick="window.broadcastAsset()"><i class="fa-solid fa-broadcast-tower"></i> Broadcast Asset</button>
                 </div>
 
-                <!-- OFFICER UPLOADED ASSETS LIST (FIXED TO STAY IN PANEL) -->
+                <!-- OFFICER UPLOADED ASSETS LIST -->
                 <div class="panel-card glass-panel" style="margin-top: 25px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 10px;">
                         <h3 class="panel-title" style="color: var(--accent-cyan); margin:0; border:none; padding:0;">
@@ -581,7 +593,7 @@
                     </div>
                 </div>
             </div>
-           
+            
             <!-- SHARED: Dynamic Assets (PREVIEWS) -->
             <div id="panel-dynamic-assets" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -596,7 +608,7 @@
             <div id="panel-team" class="content-panel">
                 <div class="panel-card glass-panel">
                     <h3 class="panel-title"><i class="fa-solid fa-users-viewfinder"></i> Team Squad Matrix</h3>
-                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Operatives assigned to your active Team Task ID.</p>
+                    <p style="color:var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Operatives directory.</p>
                     <div class="data-grid" id="teamMatrixContainer"></div>
                 </div>
             </div>
@@ -676,6 +688,7 @@
 
                 </div>
             </div>
+
             <!-- SHARED: Settings -->
             <div id="panel-settings" class="content-panel">
                 <div class="panel-card glass-panel">
@@ -728,6 +741,7 @@
         window.globalFileType = null;
         window.aiContextStr = "No context established.";
         window.aiChatHistory = [];
+        window.activeChatId = null;
         
         let timerInterval = null;
         let timerSeconds = 0;
@@ -782,8 +796,7 @@
             return ((new Date().getTime() - session.timestamp) / (1000 * 60 * 60)) < 24; 
         };
 
-        
-        // --- 5. NATIVE REST API LOGIN (CASE INSENSITIVE & DUAL ID SUPPORT) ---
+        // --- NATIVE REST API LOGIN ---
         window.initiateLogin = async function(role) {
             if(navigator.vibrate) navigator.vibrate(20);
             let nameInput = role === 'intern' ? document.getElementById('loginInternName').value.trim().toLowerCase() : document.getElementById('loginOfficerName').value.trim().toLowerCase();
@@ -795,7 +808,6 @@
             const btn = document.getElementById(btnId); const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true;
 
-            // FIX: Interns can now login with EITHER Team Task ID OR Unique Task ID
             let url = role === 'intern' 
                 ? `${SUPABASE_URL}/rest/v1/tims_tasks?intern_name=ilike.${encodeURIComponent(nameInput)}&or=(team_task_id.ilike.${encodeURIComponent(secondaryInput)},intern_task_id.ilike.${encodeURIComponent(secondaryInput)})&select=*`
                 : `${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(nameInput)}&access_pin=eq.${encodeURIComponent(secondaryInput)}&select=*`;
@@ -817,6 +829,8 @@
                 const safeStorageData = { ...sessionData };
                 if (safeStorageData.reference_files) delete safeStorageData.reference_files; 
                 
+                const actualRole = (role === 'intern') ? 'intern' : (sessionData.role || 'officer').toLowerCase();
+
                 if(role === 'intern') {
                     try {
                         const dateString = new Date().toISOString().split('T')[0];
@@ -824,12 +838,10 @@
                         const attRes = await fetchWithTimeout(fetch(attUrl, { method: 'GET', headers: apiHeaders }), 3000);
                         if (attRes.ok) {
                             const attData = await attRes.json();
-                            if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id }) });
+                            if(attData.length === 0) await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records`, { method: 'POST', headers: apiHeaders, body: JSON.stringify({ intern_name: sessionData.intern_name, task_id: sessionData.team_task_id, total_percentage: 10 }) });
                         }
                     } catch (attError) {}
                 }
-
-               const actualRole = (role === 'intern') ? 'intern' : (sessionData.role || 'officer').toLowerCase();
 
                 localStorage.setItem(`tims_session_${role}`, JSON.stringify({ 
                     name: sessionData.name || sessionData.intern_name, 
@@ -840,50 +852,74 @@
                 }));
                 
                 document.getElementById('view-login').style.opacity = '0';
-                setTimeout(() => {
+                setTimeout(async () => {
                     document.getElementById('view-login').style.visibility = 'hidden'; document.getElementById('view-login').style.display = 'none';
                     const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex';
                     setTimeout(() => { dashView.style.opacity = '1'; }, 50);
                     
                     document.getElementById('dashName').innerText = sessionData.name || sessionData.intern_name; 
-                    document.getElementById('dashRole').innerText = `${role} access level`;
+                    document.getElementById('dashRole').innerText = `${actualRole.toUpperCase()} access level`;
                     document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
                     
-                    window.buildDashboardRole(role, sessionData); window.showToast("System Access Granted.");
+                    await window.buildDashboardRole(role, actualRole, sessionData); 
+                    window.showToast("System Access Granted.");
                 }, 400); 
 
-            } catch (err) { window.showToast("Error: " + err.message, true);
-            } finally { if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } }
+            } catch (err) { 
+                window.showToast("Error: " + err.message, true);
+            } finally { 
+                if(btn) { btn.innerHTML = originalHTML; btn.disabled = false; } 
+            }
         };
-        // --- 6. DYNAMIC ROLE ROUTING ---
+
+        // --- 6. DYNAMIC ROLE ROUTING & CONTEXT BUILDER ---
         window.buildDashboardRole = async function(role, userRole, data) {
             const menu = document.getElementById('dynamicNavMenu');
             menu.innerHTML = `<li class="nav-item active" onclick="window.switchPanel('panel-dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>`;
-
+            
             document.getElementById('internHomeSection').style.display = (role === 'intern') ? 'block' : 'none';
             document.getElementById('officerHomeSection').style.display = (role !== 'intern') ? 'block' : 'none';
+            document.getElementById('assignedOfficerSection').style.display = (role === 'intern') ? 'block' : 'none';
 
-            if (role === 'intern') {
+            if(role === 'intern') {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-task', this)"><i class="fa-solid fa-crosshairs"></i> Operation Task</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-intern-attendance', this); window.fetchAttendance(); window.fetchAttendanceHistory();"><i class="fa-solid fa-calendar-check"></i> Attendance Matrix</li>
                 `;
-                document.getElementById('intTaskTitle').innerText = data.title || "Active Operation";
-                document.getElementById('intTaskID').innerText = data.intern_task_id;
+                document.getElementById('intTaskTitle').innerText = data.title || "Operation Node";
+                document.getElementById('intTaskID').innerText = data.intern_task_id; 
                 document.getElementById('intTaskRole').innerText = data.intern_role || "Supporter";
+                
                 document.getElementById('intTaskObj').innerHTML = (data.task_objective || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskTools').innerHTML = (data.tools_required || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskUX').innerHTML = (data.ux_guidelines || "N/A").replace(/\n/g, '<br>');
                 document.getElementById('intTaskDeadline').innerHTML = data.deadline || "N/A";
                 document.getElementById('intTaskDesc').innerHTML = (data.step_by_step_process || "N/A").replace(/\n/g, '<br>');
-                document.getElementById('dashTaskSnippet').innerText = `${data.title} (${data.intern_task_id})`;
-
+                
                 if (data.progress_text) {
                     document.getElementById('prevSubmissionContainer').style.display = 'block';
                     document.getElementById('prevSubmissionText').innerText = data.progress_text;
                 }
 
-                // INJECT LIVE INTERN TASK DATA INTO AI CONTEXT
+                if(data.reference_files && Array.isArray(data.reference_files) && data.reference_files.length > 0) {
+                    document.getElementById('internReferenceLink').style.display = 'block';
+                    document.getElementById('internReferencePreview').innerHTML = data.reference_files.map((fileUrl, index) => window.createPreviewBlock(fileUrl, `Asset ${index+1}`, 'unknown')).join('');
+                }
+
+                const draftStr = localStorage.getItem(`draft_${data.team_task_id}_${data.intern_name}`);
+                if(draftStr) {
+                    try {
+                        const draftObj = JSON.parse(draftStr);
+                        document.getElementById('qFunctions').value = draftObj.q1 || '';
+                        document.getElementById('qUpgrades').value = draftObj.q2 || '';
+                        document.getElementById('qBugs').value = draftObj.q3 || '';
+                        document.getElementById('qLogic').value = draftObj.q4 || '';
+                        document.getElementById('qChallenges').value = draftObj.q5 || '';
+                        document.getElementById('qSummary').value = draftObj.q6 || '';
+                    } catch(e) {}
+                }
+                
+                // INJECT RICH LIVE TASK CONTEXT FOR INTERN
                 window.aiContextStr = `OPERATIVE CONTEXT:
 - Name: ${data.intern_name}
 - Role: ${data.intern_role || 'Developer'}
@@ -894,14 +930,15 @@
 - Last Logged Progress: ${data.progress_text || 'None'}`;
 
                 window.triggerMentorAnalysis(data);
-                window.fetchTeamMatrix(data.team_task_id);
+                window.fetchAnnouncementsDashboard();
             } else {
                 menu.innerHTML += `
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-tasks', this); window.fetchDeployedTasks();"><i class="fa-solid fa-satellite-dish"></i> Deploy Tasks</li>
+                    <li class="nav-item" onclick="window.switchPanel('panel-officer-assets', this)"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Assets</li>
                     <li class="nav-item" onclick="window.switchPanel('panel-officer-approvals', this); window.fetchApprovals();"><i class="fa-solid fa-clipboard-check"></i> Verify Workflows</li>
                 `;
 
-                // FETCH LIVE ROSTER OF ALL INTERNS SO THE AI NEVER USES PLACEHOLDER NAMES
+                // FETCH LIVE ROSTER OF ALL INTERNS SO THE AI NEVER HALLUCINATES
                 try {
                     const rosterRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?select=intern_name,intern_task_id,team_task_id,intern_role,title,status,assigned_officer`, { headers: apiHeaders });
                     const rosterData = await rosterRes.json();
@@ -919,16 +956,6 @@ ${liveRosterSummary}`;
             }
 
             menu.innerHTML += `
-                <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users"></i> Squad Matrix</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-ai', this)"><i class="fa-solid fa-robot"></i> Tournyx 24/7 AI</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-contacts', this)"><i class="fa-solid fa-address-book"></i> Contacts</li>
-                <li class="nav-item" onclick="window.switchPanel('panel-settings', this)"><i class="fa-solid fa-gear"></i> Settings</li>
-            `;
-        };
-                window.aiContextStr = `User is an Officer/Commander named ${data.name}. Assist them with generating tasks, analyzing metrics, or leadership.`;
-            }
-
-            menu.innerHTML += `
                 <li class="nav-item" onclick="window.switchPanel('panel-team', this)"><i class="fa-solid fa-users-viewfinder"></i> Squad Matrix</li>
                 <li class="nav-item" onclick="window.loadAssets('SOP', 'Distributed SOPs', this)"><i class="fa-solid fa-file-contract"></i> SOPs</li>
                 <li class="nav-item" onclick="window.loadAssets('TED', 'TED Library', this)"><i class="fa-solid fa-book"></i> TED</li>
@@ -942,12 +969,6 @@ ${liveRosterSummary}`;
             if(data) {
                 window.fetchTeamMatrix(role === 'intern' ? data.team_task_id : "ALL");
                 if(role === 'intern') window.fetchDomainOfficer(data.assigned_officer);
-            }
-
-            const lastPanel = localStorage.getItem(`tims_last_panel_${role}`);
-            if(lastPanel) {
-                const el = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(lastPanel));
-                if(el) el.click();
             }
         };
 
@@ -963,6 +984,7 @@ ${liveRosterSummary}`;
                     q6: document.getElementById('qSummary').value
                 };
                 localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, JSON.stringify(draftObj));
+                window.showToast("Draft saved locally.");
             }
         };
 
@@ -973,7 +995,7 @@ ${liveRosterSummary}`;
                 if(data.length > 0) document.getElementById('dashAnnouncements').innerHTML = `<p style="font-size:0.8rem; font-weight:bold; color:var(--accent-cyan); margin-bottom:5px;">${data[0].title}</p><p style="font-size:0.75rem; color:var(--text-muted); word-wrap:break-word;">${data[0].description}</p>`;
                 else document.getElementById('dashAnnouncements').innerHTML = `<p style="font-size:0.8rem; color:#aaa;">No recent announcements.</p>`;
             } catch(e) {}
-        }
+        };
 
         // --- 7. WORKFLOW, TIMER & SUBMISSION ---
         window.startTaskTimer = function() {
@@ -998,21 +1020,7 @@ ${liveRosterSummary}`;
             }
         };
 
-        window.markAttendance = async function() { 
-            window.showToast("System Auto-Logged on Login (10%). Continue task for remaining clearance."); 
-            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            const dateString = new Date().toISOString().split('T')[0];
-            const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateString}&select=*`, { headers: apiHeaders });
-            const attData = await attRes.json();
-            if(attData.length > 0) document.getElementById('dashInternStatus').innerText = "Logged In (10%)";
-        };
-        
-        window.saveDraft = function() {
-            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            if(session) localStorage.setItem(`draft_${session.data.team_task_id}_${session.name}`, document.getElementById('qSummary').value);
-        };
-
-       window.submitTaskFinal = async function() {
+        window.submitTaskFinal = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
             const qFunc = document.getElementById('qFunctions').value.trim();
             const qUpg = document.getElementById('qUpgrades').value.trim();
@@ -1063,7 +1071,7 @@ ${liveRosterSummary}`;
                     });
                 }
                 
-                // 3. Dispatch Email to HR with the current row ID
+                // 3. Dispatch Email to HR
                 fetch(WORKER_URL, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
@@ -1099,9 +1107,6 @@ ${liveRosterSummary}`;
                     document.getElementById('attSubmitBadge').className = att.task_40 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attSubmitBadge').innerText = att.task_40 ? '40% Verified' : 'Task Not Submitted';
                     document.getElementById('attHRBadge').className = att.hr_20 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attHRBadge').innerText = att.hr_20 ? '20% Verified' : 'HR Not Approved';
                     document.getElementById('attOfficerBadge').className = att.officer_30 ? 'status-badge status-green' : 'status-badge status-red'; document.getElementById('attOfficerBadge').innerText = att.officer_30 ? '30% Verified' : 'Officer Not Approved';
-                    
-                    if(att.hr_20 && !att.officer_30) window.showToast("HR Approved. Awaiting Domain Officer clearance.", false);
-                    if(att.total_percentage === 100) window.showToast("Full Attendance Secured for today.", false);
                 }
             } catch(e) {}
         };
@@ -1168,7 +1173,7 @@ ${liveRosterSummary}`;
             } catch(e) { window.showToast("Failed to create project.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-      // --- FETCH DEPLOYED TASKS (STRICT CREATOR MATCH) ---
+        // --- FETCH DEPLOYED TASKS (STRICT CREATOR MATCH) ---
         window.fetchDeployedTasks = async function() {
             const cont = document.getElementById('activeTeamProjectsContainer');
             if (!cont) return;
@@ -1179,8 +1184,6 @@ ${liveRosterSummary}`;
                 if (!session) return;
                 
                 const officerName = (session.name || '').trim();
-                
-                // Strict case-insensitive query for the logged-in officer
                 const url = `${SUPABASE_URL}/rest/v1/tims_team_projects?created_by=ilike.${encodeURIComponent(officerName)}&select=*&order=created_at.desc`;
 
                 const res = await fetch(url, { headers: apiHeaders });
@@ -1211,50 +1214,41 @@ ${liveRosterSummary}`;
                 cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Click Deploy to create a new task.</div>'; 
             }
         };
-        // Edit Project Name
-window.editProjectName = async function(projectId, currentName) {
-    const newName = prompt("Enter new Project Title:", currentName);
-    if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
 
-    window.showToast("Updating Project Title...");
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
-            method: 'PATCH',
-            headers: apiHeaders,
-            body: JSON.stringify({ project_name: newName.trim() })
-        });
-        if (res.ok) {
-            window.showToast("Project Title Updated Successfully.");
-            window.fetchDeployedTasks();
-        } else {
-            window.showToast("Failed to update project title.", true);
-        }
-    } catch (e) {
-        window.showToast("Network Error.", true);
-    }
-};
+        window.editProjectName = async function(projectId, currentName) {
+            const newName = prompt("Enter new Project Title:", currentName);
+            if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
 
-// Delete Project
-window.deleteProject = async function(projectId, teamTaskId) {
-    if (!confirm(`Are you sure you want to delete operation ${teamTaskId}? This action cannot be undone.`)) return;
+            window.showToast("Updating Project Title...");
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
+                    method: 'PATCH',
+                    headers: apiHeaders,
+                    body: JSON.stringify({ project_name: newName.trim() })
+                });
+                if (res.ok) {
+                    window.showToast("Project Title Updated Successfully.");
+                    window.fetchDeployedTasks();
+                }
+            } catch (e) {}
+        };
 
-    window.showToast("Deleting Operation...");
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
-            method: 'DELETE',
-            headers: apiHeaders
-        });
-        if (res.ok) {
-            window.showToast("Operation Deleted Successfully.");
-            window.fetchDeployedTasks();
-        } else {
-            window.showToast("Failed to delete operation.", true);
-        }
-    } catch (e) {
-        window.showToast("Network Error.", true);
-    }
-};
-        // 1. Fetch Officer Assets (Bug-Proofed)
+        window.deleteProject = async function(projectId, teamTaskId) {
+            if (!confirm(`Are you sure you want to delete operation ${teamTaskId}? This action cannot be undone.`)) return;
+
+            window.showToast("Deleting Operation...");
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_team_projects?id=eq.${projectId}`, {
+                    method: 'DELETE',
+                    headers: apiHeaders
+                });
+                if (res.ok) {
+                    window.showToast("Operation Deleted Successfully.");
+                    window.fetchDeployedTasks();
+                }
+            } catch (e) {}
+        };
+
         window.fetchOfficerAssets = async function() {
             const cont = document.getElementById('officerAssetsContainer');
             if (!cont) return;
@@ -1262,21 +1256,12 @@ window.deleteProject = async function(projectId, teamTaskId) {
 
             try {
                 const session = JSON.parse(localStorage.getItem('tims_session_officer'));
-                if (!session) {
-                    cont.innerHTML = '<div class="empty-state">Unauthorized access.</div>';
-                    return;
-                }
+                if (!session) return;
 
-                // First try querying assets specifically uploaded by this officer
                 let res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?uploaded_by=ilike.${encodeURIComponent(session.name)}&select=*&order=created_at.desc`, { headers: apiHeaders });
-                
-                // Fallback: If column filtering fails, fetch all assets
-                if (!res.ok) {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?select=*&order=created_at.desc`, { headers: apiHeaders });
-                }
+                if (!res.ok) res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?select=*&order=created_at.desc`, { headers: apiHeaders });
 
                 const data = await res.json();
-
                 if (data && Array.isArray(data) && data.length > 0) {
                     cont.innerHTML = `<div class="data-grid">` + data.map(asset => `
                         <div class="data-card" style="position:relative; padding-right:85px;">
@@ -1288,70 +1273,34 @@ window.deleteProject = async function(projectId, teamTaskId) {
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
-
-                            <span class="tag-badge" style="background:rgba(0,242,255,0.15); color:var(--accent-cyan); font-size:0.65rem; display:inline-block; margin-bottom:6px;">
-                                ${asset.asset_type || 'Asset Document'}
-                            </span>
-                            <h4 style="color:white; font-size:0.95rem; margin-bottom:4px; padding-right:10px;">${asset.title}</h4>
+                            <span class="tag-badge" style="font-size:0.65rem;">${asset.asset_type || 'Asset Document'}</span>
+                            <h4 style="color:white; font-size:0.95rem; margin-bottom:4px;">${asset.title}</h4>
                             <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Target: ${asset.assigned_team || asset.target_audience || 'ALL TEAMS'}</p>
-                            
                             ${asset.file_url && asset.file_url !== 'none' ? `
-                                <a href="${asset.file_url}" download="${asset.title}" target="_blank" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; align-items:center; gap:5px; text-decoration:none; width:auto;">
+                                <a href="${asset.file_url}" download="${asset.title}" target="_blank" class="btn btn-outline" style="padding:5px 10px; font-size:0.68rem; display:inline-flex; width:auto;">
                                     <i class="fa-solid fa-download"></i> Access Asset
                                 </a>
                             ` : ''}
                         </div>
                     `).join('') + `</div>`;
                 } else {
-                    cont.innerHTML = '<div class="empty-state">No uploaded assets found under your account.</div>';
+                    cont.innerHTML = '<div class="empty-state">No uploaded assets found.</div>';
                 }
-            } catch (e) {
-                cont.innerHTML = '<div class="empty-state" style="color:var(--text-muted);">No assets available.</div>';
-            }
+            } catch (e) {}
         };
-// 2. Edit Asset Title
-window.editAssetTitle = async function(assetId, currentTitle) {
-    const newTitle = prompt("Enter new Asset Title:", currentTitle);
-    if (!newTitle || newTitle.trim() === "" || newTitle.trim() === currentTitle) return;
 
-    window.showToast("Updating Asset Title...");
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, {
-            method: 'PATCH',
-            headers: apiHeaders,
-            body: JSON.stringify({ title: newTitle.trim() })
-        });
-        if (res.ok) {
-            window.showToast("Asset Title Updated.");
+        window.editAssetTitle = async function(assetId, currentTitle) {
+            const newTitle = prompt("Enter new Asset Title:", currentTitle);
+            if (!newTitle || newTitle.trim() === "") return;
+            await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify({ title: newTitle.trim() }) });
             window.fetchOfficerAssets();
-        } else {
-            window.showToast("Failed to update asset title.", true);
-        }
-    } catch (e) {
-        window.showToast("Network Error.", true);
-    }
-};
+        };
 
-// 3. Delete Asset
-window.deleteAsset = async function(assetId) {
-    if (!confirm("Are you sure you want to delete this asset permanently?")) return;
-
-    window.showToast("Deleting Asset...");
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, {
-            method: 'DELETE',
-            headers: apiHeaders
-        });
-        if (res.ok) {
-            window.showToast("Asset Deleted Successfully.");
+        window.deleteAsset = async function(assetId) {
+            if (!confirm("Delete asset permanently?")) return;
+            await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?id=eq.${assetId}`, { method: 'DELETE', headers: apiHeaders });
             window.fetchOfficerAssets();
-        } else {
-            window.showToast("Failed to delete asset.", true);
-        }
-    } catch (e) {
-        window.showToast("Network Error.", true);
-    }
-};
+        };
 
         window.filterTeamProjects = function(val) {
             const cards = document.getElementById('activeTeamProjectsContainer').children;
@@ -1364,14 +1313,11 @@ window.deleteAsset = async function(assetId) {
             document.getElementById('offProjectListView').style.display = 'none'; document.getElementById('offAddInternView').style.display = 'block';
             document.getElementById('detailProjectTitle').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${projectName} <span style="font-size:0.8rem; color:var(--text-muted);">(${taskId})</span>`;
             window.currentTeamTaskId = taskId; 
-            
-            // Clear inputs
             window.taskFilesArray = [];
             document.getElementById('multiFilePreviewContainer').innerHTML = '';
             document.getElementById('taskUploadText').innerText = "Attach Up To 5 Reference Assets";
             document.getElementById('btnAssignIntern').innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Assign Intern & Update Matrix';
             document.getElementById('editTaskIdHidden').value = '';
-            
             window.fetchProjectInterns(taskId);
         };
 
@@ -1413,39 +1359,28 @@ window.deleteAsset = async function(assetId) {
                     document.getElementById('addTools').value = task.tools_required || "";
                     document.getElementById('addUX').value = task.ux_guidelines || "";
                     document.getElementById('addInternSteps').value = task.step_by_step_process;
-                    
                     document.getElementById('editTaskIdHidden').value = taskId;
                     document.getElementById('btnAssignIntern').innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Update Intern Assignment';
-
                     if(task.reference_files) {
                         window.taskFilesArray = typeof task.reference_files === 'string' ? JSON.parse(task.reference_files) : task.reference_files;
                         window.renderMultiFiles();
                     }
-                    window.showToast("Task loaded for editing. Adjust fields and update.");
                 }
-            } catch(e) { window.showToast("Failed to load task for editing.", true); }
+            } catch(e) {}
         };
 
         window.handleTaskFileMulti = function(event) {
             const files = event.target.files;
             if(!files || files.length === 0) return;
-            
             if(window.taskFilesArray.length + files.length > 5) {
                 window.showToast("Maximum of 5 files allowed.", true);
                 return;
             }
-
-            document.getElementById('taskUploadIcon').className = "fa-solid fa-spinner fa-spin"; document.getElementById('taskUploadText').innerText = "Encoding Base64...";
-            
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     window.taskFilesArray.push(e.target.result);
                     window.renderMultiFiles();
-                    if(window.taskFilesArray.length === files.length) {
-                        document.getElementById('taskUploadIcon').className = "fa-solid fa-file-circle-check"; 
-                        document.getElementById('taskUploadText').innerText = `${window.taskFilesArray.length} Files Attached`;
-                    }
                 };
                 reader.readAsDataURL(file);
             });
@@ -1464,8 +1399,6 @@ window.deleteAsset = async function(assetId) {
         window.removeTaskFile = function(index) {
             window.taskFilesArray.splice(index, 1);
             window.renderMultiFiles();
-            document.getElementById('taskUploadText').innerText = `${window.taskFilesArray.length} Files Attached`;
-            if(window.taskFilesArray.length === 0) document.getElementById('taskUploadText').innerText = "Attach Up To 5 Reference Assets";
         };
 
         window.assignInternTask = async function() {
@@ -1486,102 +1419,56 @@ window.deleteAsset = async function(assetId) {
                 ux_guidelines: document.getElementById('addUX').value.trim(),
                 deadline: document.getElementById('addDeadline').value.trim(),
                 step_by_step_process: document.getElementById('addInternSteps').value,
-                reference_files: window.taskFilesArray // Array of up to 5 files
+                reference_files: window.taskFilesArray
             };
 
             if(!payload.intern_task_id || !payload.step_by_step_process) { window.showToast("Missing intern name or directives.", true); btn.innerHTML = ogText; btn.disabled = false; return; }
 
             try {
-                let res;
                 if (editId) {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${editId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${editId}`, { method: 'PATCH', headers: apiHeaders, body: JSON.stringify(payload) });
                 } else {
-                    res = await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
-                }
-
-                if(!res.ok) {
-                    const errObj = await res.json();
-                    throw new Error(errObj.message || "Database rejected assignment.");
+                    await fetch(`${SUPABASE_URL}/rest/v1/tims_tasks`, { method: 'POST', headers: apiHeaders, body: JSON.stringify(payload) });
                 }
                 window.showToast("Intern Assigned Successfully.");
-                
-                // Clear fields
                 document.getElementById('addInternName').value = ''; document.getElementById('addUniqueId').value = ''; 
                 document.getElementById('addInternSteps').value = ''; document.getElementById('addObjective').value = '';
                 document.getElementById('addTools').value = ''; document.getElementById('addUX').value = ''; document.getElementById('addDeadline').value = '';
-                document.getElementById('taskUploadIcon').className = "fa-solid fa-file-arrow-up"; document.getElementById('taskUploadText').innerText = "Attach Up To 5 Reference Assets"; 
                 window.taskFilesArray = []; window.renderMultiFiles();
                 document.getElementById('editTaskIdHidden').value = '';
-                btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Assign Intern & Update Matrix';
-                
                 window.fetchProjectInterns(window.currentTeamTaskId);
-            } catch(e) { 
-                console.error(e);
-                window.showToast("Assignment Failed. Task ID may already exist.", true); 
-            } finally { btn.innerHTML = ogText; btn.disabled = false; }
+            } catch(e) { window.showToast("Assignment Failed.", true); } finally { btn.innerHTML = ogText; btn.disabled = false; }
         };
 
-        // --- ASSET UPLOAD NATIVE ---
+        // --- ASSET BROADCAST & PREVIEWS ---
         window.handleAssetTypeChange = function() {
             const type = document.getElementById('assetType').value;
-            if(type === 'Video' || type === 'TED') {
-                document.getElementById('assetTitleGroup').style.display = 'block';
-                document.getElementById('assetAnnouncementGroup').style.display = 'none';
-                document.getElementById('assetVideoGroup').style.display = 'block';
-                document.getElementById('assetUploadZone').style.display = 'none';
-            } else if (type === 'Announcement') {
-                document.getElementById('assetTitleGroup').style.display = 'block';
-                document.getElementById('assetTitleLabel').innerText = 'Announcement Subject';
-                document.getElementById('assetAnnouncementGroup').style.display = 'block';
-                document.getElementById('assetVideoGroup').style.display = 'none';
-                document.getElementById('assetUploadZone').style.display = 'none';
-            } else {
-                document.getElementById('assetTitleGroup').style.display = 'block';
-                document.getElementById('assetTitleLabel').innerText = 'Asset Title';
-                document.getElementById('assetAnnouncementGroup').style.display = 'none';
-                document.getElementById('assetVideoGroup').style.display = 'none';
-                document.getElementById('assetUploadZone').style.display = 'block';
-            }
+            document.getElementById('assetAnnouncementGroup').style.display = (type === 'Announcement') ? 'block' : 'none';
+            document.getElementById('assetVideoGroup').style.display = (type === 'Video' || type === 'TED') ? 'block' : 'none';
+            document.getElementById('assetUploadZone').style.display = (type === 'SOP') ? 'block' : 'none';
         };
 
         window.handleGlobalFile = function(event) {
             const file = event.target.files[0];
             if(!file) return;
-            document.getElementById('uploadIcon').className = "fa-solid fa-spinner fa-spin"; document.getElementById('uploadText').innerText = "Encoding Base64...";
-            
             const reader = new FileReader();
             reader.onload = function(e) {
                 window.globalFileBase64 = e.target.result;
                 window.globalFileType = file.type;
-                document.getElementById('uploadIcon').className = "fa-solid fa-file-circle-check"; document.getElementById('uploadText').innerText = "File Attached & Encoded";
+                document.getElementById('uploadText').innerText = "File Attached & Encoded";
             };
             reader.readAsDataURL(file);
-        }
+        };
 
         window.broadcastAsset = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_officer'));
             const type = document.getElementById('assetType').value;
             const title = document.getElementById('assetTitle').value; 
             const targetTeam = document.getElementById('assetTargetTeam').value || 'ALL';
-            let finalUrl = "";
-            let finalDesc = "";
-            let finalType = "";
+            let finalUrl = (type === 'Video' || type === 'TED') ? document.getElementById('assetVideoUrl').value : (window.globalFileBase64 || 'none');
+            let finalDesc = (type === 'Announcement') ? document.getElementById('assetAnnouncementDesc').value : '';
 
             if(!title) { window.showToast("Title/Subject Required.", true); return; }
-
-            if(type === 'Video' || type === 'TED') {
-                finalUrl = document.getElementById('assetVideoUrl').value;
-                if(!finalUrl) { window.showToast("URL Required.", true); return; }
-                finalType = "video/mp4";
-            } else if (type === 'Announcement') {
-                finalDesc = document.getElementById('assetAnnouncementDesc').value;
-                if(!finalDesc) { window.showToast("Message Required.", true); return; }
-                finalUrl = "none"; finalType = "text";
-            } else {
-                if(!window.globalFileBase64) { window.showToast("Please attach a file first.", true); return; }
-                finalUrl = window.globalFileBase64;
-                finalType = window.globalFileType;
-            }
 
             try {
                 await fetch(`${SUPABASE_URL}/rest/v1/tims_assets`, { 
@@ -1591,95 +1478,30 @@ window.deleteAsset = async function(assetId) {
                         asset_type: type, 
                         title: title, 
                         description: finalDesc, 
-                        file_type: finalType, 
+                        file_type: window.globalFileType || 'text', 
                         file_url: finalUrl, 
                         assigned_team: targetTeam,
-                        uploaded_by: session ? session.name : 'Commander' // Fix: Saves Officer Name
+                        uploaded_by: session ? session.name : 'Commander'
                     }) 
                 });
                 window.showToast("Asset Distributed to Network.");
-                document.getElementById('uploadIcon').className = "fa-solid fa-file-arrow-up"; 
-                document.getElementById('uploadText').innerText = "Click to Select File";
-                window.globalFileBase64 = null; 
-                window.globalFileType = null; 
                 document.getElementById('assetTitle').value = ""; 
                 document.getElementById('assetAnnouncementDesc').value = ""; 
                 document.getElementById('assetVideoUrl').value = "";
-                window.fetchOfficerAssets(); // Refresh assets automatically
+                window.fetchOfficerAssets();
             } catch(e) { window.showToast("Broadcast Failed.", true); }
         };
 
-       window.createPreviewBlock = function(fileUrl, title, type) {
+        window.createPreviewBlock = function(fileUrl, title, type) {
             if (!fileUrl || fileUrl === 'none') return '';
-
-            let finalUrl = fileUrl;
-
-            // Step 1: Safely parse Base64 into a local Blob URL for seamless rendering
-            try {
-                if (fileUrl.startsWith('data:')) {
-                    const parts = fileUrl.split(';base64,');
-                    const contentType = parts[0].split(':')[1];
-                    const byteCharacters = atob(parts[1]);
-                    const byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) {
-                        byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    }
-                    const blob = new Blob([new Uint8Array(byteNumbers)], {type: contentType});
-                    finalUrl = URL.createObjectURL(blob);
-                }
-            } catch(e) { console.warn("Blob conversion bypassed."); }
-
-            // Step 2: YouTube / 3rd Party Embed Logic
             if (fileUrl.includes('youtube.com') || fileUrl.includes('youtu.be')) {
-                let embedUrl = fileUrl;
-                // Auto-convert standard YouTube links to Embed format
-                if (fileUrl.includes('watch?v=')) {
-                    embedUrl = fileUrl.replace('watch?v=', 'embed/').split('&')[0];
-                } else if (fileUrl.includes('youtu.be/')) {
-                    embedUrl = fileUrl.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
-                }
-                
-                return `
-                <div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000; position:relative; padding-bottom:56.25%; height:0; margin-bottom: 10px;">
-                    <iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%;"></iframe>
-                </div>`;
+                let embedUrl = fileUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+                return `<div class="preview-container"><iframe src="${embedUrl}" allowfullscreen></iframe></div>`;
             }
-
-            // Step 3: Direct MP4 / Uploaded Video Logic
-            if ((type && type.startsWith('video')) || fileUrl.endsWith('.mp4') || fileUrl.startsWith('data:video')) {
-                return `
-                <div class="video-container" style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#000; margin-bottom: 10px;">
-                    <video controls preload="metadata" style="width:100%; max-height:400px;">
-                        <source src="${finalUrl}" type="video/mp4">
-                    </video>
-                </div>`;
+            if (fileUrl.startsWith('data:image') || (type && type.startsWith('image'))) {
+                return `<div class="preview-container"><img src="${fileUrl}" alt="${title}"></div>`;
             }
-
-            // Step 4: Inline PDF Preview Logic
-            if ((type && type.includes('pdf')) || fileUrl.endsWith('.pdf') || fileUrl.startsWith('data:application/pdf')) {
-                return `
-                <div style="border-radius:12px; overflow:hidden; border:1px solid var(--glass-border); background:#fff; height:450px; margin-bottom: 10px;">
-                    <iframe src="${finalUrl}#toolbar=0" style="width:100%; height:100%; border:none;" title="${title}"></iframe>
-                </div>
-                <div style="text-align: right; margin-bottom: 15px;">
-                    <a href="${finalUrl}" target="_blank" class="btn btn-outline" style="padding:8px 15px; font-size:0.75rem; width:auto; display:inline-flex;">
-                        <i class="fa-solid fa-up-right-from-square"></i> Open Fullscreen
-                    </a>
-                </div>`;
-            }
-
-            // Step 5: Uploaded Image Logic
-            if ((type && type.startsWith('image')) || fileUrl.startsWith('data:image')) {
-                return `
-                <div class="preview-container" style="max-height:350px; overflow:hidden; border-radius:12px; border:1px solid var(--accent-cyan); text-align:center; background:rgba(0,0,0,0.4); margin-bottom: 10px;">
-                    <a href="${finalUrl}" target="_blank" style="display:block;">
-                        <img src="${finalUrl}" alt="${title}" style="max-width:100%; max-height:350px; object-fit:contain;">
-                    </a>
-                </div>`;
-            }
-
-            // Step 6: Fallback for generic links
-            return `<a href="${finalUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem; margin-bottom: 10px;"><i class="fa-solid fa-link"></i> Access Linked Asset</a>`;
+            return `<a href="${fileUrl}" target="_blank" class="btn btn-outline" style="width:fit-content; padding: 10px; font-size: 0.8rem;"><i class="fa-solid fa-link"></i> Access Asset</a>`;
         };
 
         window.loadAssets = async function(type, title, navElement) {
@@ -1690,9 +1512,7 @@ window.deleteAsset = async function(assetId) {
             
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             let teamFilter = "ALL";
-            if(session && session.role === 'intern' && session.data) {
-                teamFilter = session.data.team_task_id || "ALL";
-            }
+            if(session && session.role === 'intern' && session.data) teamFilter = session.data.team_task_id || "ALL";
 
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_assets?asset_type=eq.${type}&or=(assigned_team.eq.ALL,assigned_team.ilike.${encodeURIComponent(teamFilter)})&select=*&order=created_at.desc`, { headers: apiHeaders });
@@ -1709,9 +1529,7 @@ window.deleteAsset = async function(assetId) {
                     } else { 
                         cont.innerHTML = data.map(d => `
                             <div class="data-card" style="margin-bottom:15px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                    <h4>${d.title}</h4>
-                                </div>
+                                <h4>${d.title}</h4>
                                 ${window.createPreviewBlock(d.file_url, d.title, d.file_type)}
                             </div>`).join(''); 
                     }
@@ -1719,7 +1537,7 @@ window.deleteAsset = async function(assetId) {
             } catch(e) { cont.innerHTML = '<div class="empty-state" style="color: var(--accent-red);">Network Error.</div>'; }
         };
 
-       // --- VERIFY WORKFLOWS: FETCHES BOTH TASK REPORTS & ALL ATTENDANCE REQUESTS ---
+        // --- VERIFY WORKFLOWS: FETCHES BOTH TASK REPORTS & ALL ATTENDANCE REQUESTS ---
         window.fetchApprovals = async function() {
             const cont = document.getElementById('approvalMatrixContainer'); 
             if (!cont) return;
@@ -1763,7 +1581,7 @@ window.deleteAsset = async function(assetId) {
                                 <div class="data-card" id="attRecordCard_${a.id}" style="${a.requested_nudge ? 'border-color:var(--accent-orange); box-shadow:0 0 15px rgba(255,153,0,0.25);' : ''}">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                         <div>
-                                            <h4>${a.intern_name} ${a.requested_nudge ? '<span class="status-badge status-yellow" style="margin-left:5px;">Priority Nudge</span>' : ''}</h4>
+                                            <h4>${a.intern_name} ${a.requested_nudge ? '<span class="status-badge status-yellow" style="margin-left:5px;">Priority Request</span>' : ''}</h4>
                                             <span class="tag-badge" style="font-size:0.65rem;">📅 Date: ${new Date(a.log_date).toLocaleDateString()}</span>
                                         </div>
                                         <span class="tag-badge" style="background:rgba(0,255,102,0.15); color:var(--accent-green);">${a.total_percentage || 10}% Score</span>
@@ -1819,27 +1637,19 @@ window.deleteAsset = async function(assetId) {
                     `;
                 }
 
-                if (!html) {
-                    cont.innerHTML = '<div class="empty-state">No pending attendance requests or task reports found.</div>';
-                } else {
-                    cont.innerHTML = html;
-                }
+                cont.innerHTML = html || '<div class="empty-state">No pending attendance requests or task reports found.</div>';
             } catch (e) {
                 cont.innerHTML = '<div class="empty-state" style="color:var(--accent-red);">Network Error. Please retry.</div>';
             }
         };
 
-        window.toggleVerifyText = function(id) {
-            const el = document.getElementById(`verifyText_${id}`);
-            if(el) el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
-        };
-      // --- 1. DIRECT ATTENDANCE RECORD CLEARANCE (BY ID) ---
+        // --- 1. DIRECT ATTENDANCE RECORD CLEARANCE (BY ID) ---
         window.approveAttendanceById = async function(recordId, internName, logDate) {
             const session = JSON.parse(localStorage.getItem('tims_session_officer'));
             const uRole = (session.user_role || session.role || 'officer').toLowerCase();
             const card = document.getElementById(`attRecordCard_${recordId}`);
             if (card) card.style.opacity = '0.4';
-            window.showToast(`Approving ${internName}'s attendance for ${logDate}...`);
+            window.showToast(`Approving ${internName}'s attendance...`);
 
             try {
                 const attRes = await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?id=eq.${recordId}`, { headers: apiHeaders });
@@ -1860,7 +1670,7 @@ window.deleteAsset = async function(assetId) {
                         body: JSON.stringify(payload)
                     });
 
-                    window.showToast(`✅ Approved ${internName}'s attendance for ${logDate}.`);
+                    window.showToast(`✅ Approved attendance for ${internName} (${logDate}).`);
                     if (card) card.remove();
                     window.fetchApprovals();
                 }
@@ -1913,7 +1723,8 @@ window.deleteAsset = async function(assetId) {
                 window.showToast("Error granting clearance.", true);
             }
         };
-       // --- SQUAD MATRIX: OFFICERS SEE ALL REGISTERED OFFICERS ---
+
+        // --- SQUAD MATRIX ---
         window.fetchTeamMatrix = async function(teamTaskId) {
             const cont = document.getElementById('teamMatrixContainer');
             if(!cont) return;
@@ -1951,13 +1762,21 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-      // ==========================================
+        window.fetchDomainOfficer = async function(assignedOfficerName) {
+            const domainCont = document.getElementById('contactsDomainContainer');
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/tims_users?name=ilike.${encodeURIComponent(assignedOfficerName)}&select=*`, { headers: apiHeaders });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const officer = data[0];
+                    domainCont.innerHTML = `<div class="data-card" style="border-left-color: var(--accent-purple);"><h4>${officer.name}</h4><p style="text-transform:uppercase; color:var(--accent-purple); font-weight:700; font-size:0.75rem;">Domain Officer</p><p><i class="fa-solid fa-envelope"></i> ${officer.email || 'N/A'}</p><p><i class="fa-solid fa-phone"></i> ${officer.phone || 'N/A'}</p></div>`;
+                }
+            } catch(e) {}
+        };
+
+        // ==========================================
         // TOURNYX AGENT AI (CLOUD SAVED + ChatGPT UI)
         // ==========================================
-        window.activeChatId = null;
-        window.aiChatHistory = [];
-
-        // 1. Fetch Past Chat Sessions from Supabase
         window.loadRecentChats = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             const listCont = document.getElementById('recentChatsList');
@@ -1982,7 +1801,6 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // 2. Open Selected Past Chat
         window.openChatSession = async function(chatId) {
             window.activeChatId = chatId;
             const chatBox = document.getElementById('aiChatBox');
@@ -2004,7 +1822,6 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // 3. Create New Chat Session
         window.createNewChatSession = function() {
             window.activeChatId = null;
             window.aiChatHistory = [];
@@ -2013,12 +1830,10 @@ window.deleteAsset = async function(assetId) {
             window.loadRecentChats();
         };
 
-        // 4. Save Current Session to Supabase Cloud
         window.saveChatToCloud = async function() {
             const session = JSON.parse(localStorage.getItem('tims_session_intern')) || JSON.parse(localStorage.getItem('tims_session_officer'));
             if (!session || window.aiChatHistory.length === 0) return;
 
-            // Generate title from first query
             const firstUserQuery = window.aiChatHistory.find(m => m.role === 'user')?.content || "Operational Query";
             const title = firstUserQuery.substring(0, 30) + (firstUserQuery.length > 30 ? "..." : "");
 
@@ -2039,10 +1854,9 @@ window.deleteAsset = async function(assetId) {
                     if (newChatData && newChatData.length > 0) window.activeChatId = newChatData[0].id;
                 }
                 window.loadRecentChats();
-            } catch (e) { console.warn("Cloud chat sync failed."); }
+            } catch (e) {}
         };
 
-        // 5. Delete Chat Session
         window.deleteActiveChatSession = async function() {
             if (!window.activeChatId) { window.createNewChatSession(); return; }
             if (confirm("Delete this chat session permanently?")) {
@@ -2054,7 +1868,6 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // 6. Render Chat Messages Box
         window.renderChatHistory = function() {
             const chatBox = document.getElementById('aiChatBox');
             chatBox.innerHTML = window.aiChatHistory.map(msg => 
@@ -2063,14 +1876,14 @@ window.deleteAsset = async function(assetId) {
             chatBox.scrollTop = chatBox.scrollHeight;
         };
 
-      // --- MAIN AI CHAT TRIGGER (WITH ANIMATED LOADER) ---
+        // --- MAIN AI CHAT TRIGGER (WITH ANIMATED LOADER) ---
         window.triggerAI = async function() {
             const input = document.getElementById('aiInput');
             if(!input.value.trim()) return;
 
             const userMsg = input.value.trim();
             window.aiChatHistory.push({ role: 'user', content: userMsg });
-            window.renderChat();
+            window.renderChatHistory();
             input.value = '';
 
             const chatBox = document.getElementById('aiChatBox');
@@ -2102,12 +1915,12 @@ window.deleteAsset = async function(assetId) {
                 document.getElementById(typingId)?.remove();
 
                 window.aiChatHistory.push({ role: 'assistant', content: data.answer || "Directive noted." });
-                window.renderChat();
+                window.renderChatHistory();
                 window.saveChatToCloud();
             } catch(e) {
                 document.getElementById(typingId)?.remove();
                 window.aiChatHistory.push({ role: 'assistant', content: "Connection active. Please verify your directives and proceed." });
-                window.renderChat();
+                window.renderChatHistory();
             }
         };
 
@@ -2153,119 +1966,7 @@ window.deleteAsset = async function(assetId) {
                 box.innerHTML += `<div class="chat-bubble chat-ai" style="font-size:0.85rem; color:var(--accent-red);">Network Error. Please retry.</div>`;
             }
         };
-        // 8. Panel Routing Hook
-        window.switchPanel = function(panelId, navElement) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navElement.classList.add('active');
-            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
-            const activePanel = document.getElementById(panelId); if(!activePanel) return; 
-            
-            // --- ADD THESE TRIGGERS HERE ---
-            if (panelId === 'panel-ai') { window.loadRecentChats(); }
-            if (panelId === 'panel-deploy') { window.fetchDeployedTasks(); }
-            if (panelId === 'panel-officer-assets' || panelId === 'panel-upload') { 
-                if(window.fetchOfficerAssets) window.fetchOfficerAssets(); 
-            }
-            // -------------------------------
-            
-            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
-            if(session) localStorage.setItem('tims_last_panel_intern', panelId);
-            if(s_off) localStorage.setItem('tims_last_panel_officer', panelId);
 
-            activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
-            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
-        };
-
-        // MOBILE SIDEBAR TOGGLE
-        window.toggleSidebar = function() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('open')) {
-                window.closeSidebar();
-            } else {
-                window.openSidebar();
-            }
-        };
-
-        window.openSidebar = function() { 
-            document.getElementById('sidebar').classList.add('open'); 
-            document.getElementById('mobileOverlay').classList.add('open'); 
-            const icon = document.querySelector('.mobile-menu-btn i');
-            if(icon) { icon.classList.remove('fa-bars'); icon.classList.add('fa-xmark'); }
-        };
-
-        window.closeSidebar = function() { 
-            document.getElementById('sidebar').classList.remove('open'); 
-            document.getElementById('mobileOverlay').classList.remove('open'); 
-            const icon = document.querySelector('.mobile-menu-btn i');
-            if(icon) { icon.classList.remove('fa-xmark'); icon.classList.add('fa-bars'); }
-        };
-        
-        window.logout = function() {
-            // Check which role is logging out to not kill multiple tabs
-            const isInternTab = document.getElementById('intTaskTitle').innerText !== "";
-            if (isInternTab) {
-                localStorage.removeItem('tims_session_intern');
-                localStorage.removeItem('tims_last_panel_intern');
-            } else {
-                localStorage.removeItem('tims_session_officer');
-                localStorage.removeItem('tims_last_panel_officer');
-            }
-            
-            const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
-            setTimeout(() => {
-                dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
-                const loginView = document.getElementById('view-login'); loginView.style.visibility = 'visible'; loginView.style.display = 'flex';
-                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
-                document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
-                document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
-                window.closeSidebar(); window.showToast("Session Terminated Securely.");
-            }, 500);
-        };
-
-        // --- SAFE BOOT SEQUENCE ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('tims_theme');
-            if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
-            try {
-                const canvas = document.getElementById('particles-canvas'); const ctx = canvas.getContext('2d');
-                let width = window.innerWidth; let height = window.innerHeight; canvas.width = width; canvas.height = height; let pArray = [];
-                for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
-                function draw() { ctx.clearRect(0, 0, width, height); pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); }); requestAnimationFrame(draw); }
-                draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
-            } catch(e) {}
-
-            const finishBoot = () => {
-                setTimeout(() => {
-                    const loader = document.getElementById('globalLoader');
-                    if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }
-                }, 600); // Allow time for panels to render
-            };
-
-            let session = null; let role = null;
-            const s_int = JSON.parse(localStorage.getItem('tims_session_intern'));
-            const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
-            if(s_int && window.isSessionValid(s_int)) { session = s_int; role = 'intern'; }
-            if(s_off && window.isSessionValid(s_off)) { session = s_off; role = 'officer'; }
-
-            if(session) {
-                document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
-                const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
-                document.getElementById('dashName').innerText = session.name; document.getElementById('dashRole').innerText = `${role} access level`;
-                document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
-                
-                if (role === 'intern') {
-                    fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=eq.${encodeURIComponent(session.data.intern_task_id)}&select=*`, { headers: apiHeaders })
-                    .then(res => res.json())
-                    .then(taskData => {
-                        if(taskData && taskData.length > 0) window.buildDashboardRole(role, taskData[0]);
-                        else window.buildDashboardRole(role, session.data);
-                        finishBoot();
-                    }).catch(() => { window.buildDashboardRole(role, session.data); finishBoot(); });
-                } else {
-                    window.buildDashboardRole(role, session.data); finishBoot();
-                }
-            } else { finishBoot(); }
-        });
         // AI Mentor Coaching Trigger
         window.triggerMentorAnalysis = async function(taskData) {
             const card = document.getElementById('mentorBriefCard');
@@ -2348,27 +2049,26 @@ window.deleteAsset = async function(assetId) {
             }
         };
 
-        // CLOSE MODAL FIX (WORKS RELIABLY)
+        // CLOSE MODAL FIX
         window.closeAttModal = function(e) { 
             if(e) e.stopPropagation();
             const modal = document.getElementById('attModalOverlay');
             if(modal) modal.style.display = 'none'; 
         };
-        window.nudgeOfficer = async function(officerName, roleType, targetDate, recordId) {
+
+        window.nudgeOfficer = async function(officerName, roleType, targetDate) {
             const session = JSON.parse(localStorage.getItem('tims_session_intern'));
-            window.showToast(`Triggering priority request to ${officerName}...`);
+            if (!session) return;
+            const dateStr = targetDate || new Date().toISOString().split('T')[0];
+            window.showToast(`Request sent to ${officerName} for ${dateStr}...`);
 
             try {
-                // 1. Set priority flag in database
-                if (session.data && session.data.id) {
-                    fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?id=eq.${session.data.id}`, {
-                        method: 'PATCH',
-                        headers: apiHeaders,
-                        body: JSON.stringify({ priority_nudge: true })
-                    });
-                }
+                await fetch(`${SUPABASE_URL}/rest/v1/tims_attendance_records?intern_name=ilike.${encodeURIComponent(session.name)}&log_date=eq.${dateStr}`, {
+                    method: 'PATCH',
+                    headers: apiHeaders,
+                    body: JSON.stringify({ requested_nudge: true, nudge_officer: officerName })
+                });
 
-                // 2. Dispatch reminder email through Cloudflare
                 await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2377,16 +2077,118 @@ window.deleteAsset = async function(assetId) {
                         internName: session.name,
                         targetOfficer: officerName,
                         targetRole: roleType,
-                        logDate: targetDate,
-                        recordId: recordId
+                        logDate: dateStr
                     })
                 });
 
-                window.showToast(`Request sent to ${officerName} for ${targetDate}.`);
+                window.showToast(`Clearance request registered and notified.`);
             } catch (e) {
-                window.showToast("Reminder dispatched.");
+                window.showToast("Clearance request sent.");
             }
         };
+
+        // 8. Panel Routing Hook
+        window.switchPanel = function(panelId, navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
+            if(navElement) navElement.classList.add('active');
+            document.querySelectorAll('.content-panel').forEach(p => { p.classList.remove('active'); p.style.opacity = '0'; p.style.transform = 'translateY(15px)'; });
+            const activePanel = document.getElementById(panelId); if(!activePanel) return; 
+            
+            if (panelId === 'panel-ai') { window.loadRecentChats(); }
+            if (panelId === 'panel-officer-tasks') { window.fetchDeployedTasks(); }
+            if (panelId === 'panel-officer-approvals') { window.fetchApprovals(); }
+            if (panelId === 'panel-officer-assets') { window.fetchOfficerAssets(); }
+            
+            const session = JSON.parse(localStorage.getItem('tims_session_intern'));
+            const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
+            if(session) localStorage.setItem('tims_last_panel_intern', panelId);
+            if(s_off) localStorage.setItem('tims_last_panel_officer', panelId);
+
+            activePanel.classList.add('active'); setTimeout(() => { activePanel.style.opacity = '1'; activePanel.style.transform = 'translateY(0)'; }, 10);
+            document.getElementById('mainContentScroll').scrollTo({top: 0, behavior: 'smooth'}); if(window.innerWidth <= 850) window.closeSidebar();
+        };
+
+        // MOBILE SIDEBAR TOGGLE
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('open')) window.closeSidebar();
+            else window.openSidebar();
+        };
+
+        window.openSidebar = function() { 
+            document.getElementById('sidebar').classList.add('open'); 
+            document.getElementById('mobileOverlay').classList.add('open'); 
+            const icon = document.querySelector('.mobile-menu-btn i');
+            if(icon) { icon.classList.remove('fa-bars'); icon.classList.add('fa-xmark'); }
+        };
+
+        window.closeSidebar = function() { 
+            document.getElementById('sidebar').classList.remove('open'); 
+            document.getElementById('mobileOverlay').classList.remove('open'); 
+            const icon = document.querySelector('.mobile-menu-btn i');
+            if(icon) { icon.classList.remove('fa-xmark'); icon.classList.add('fa-bars'); }
+        };
+        
+        window.logout = function() {
+            localStorage.clear();
+            const dashView = document.getElementById('view-dashboard'); dashView.style.opacity = '0';
+            setTimeout(() => {
+                dashView.style.visibility = 'hidden'; dashView.style.display = 'none';
+                const loginView = document.getElementById('view-login'); loginView.style.visibility = 'visible'; loginView.style.display = 'flex';
+                setTimeout(() => { loginView.style.opacity = '1'; }, 50);
+                document.getElementById('loginInternName').value = ''; document.getElementById('loginTaskId').value = '';
+                document.getElementById('loginOfficerName').value = ''; document.getElementById('loginPin').value = '';
+                window.closeSidebar(); window.showToast("Session Terminated Securely.");
+            }, 500);
+        };
+
+        // --- SAFE BOOT SEQUENCE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('tims_theme');
+            if(savedTheme === 'light') { document.body.classList.add('light-theme'); document.getElementById('themeToggle').checked = true; }
+            try {
+                const canvas = document.getElementById('particles-canvas'); 
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    let width = window.innerWidth; let height = window.innerHeight; canvas.width = width; canvas.height = height; let pArray = [];
+                    for(let i = 0; i < 35; i++) { pArray.push({ x: Math.random() * width, y: Math.random() * height, s: Math.random() * 2.5, c: Math.random() > 0.5 ? '#bd00ff' : '#00f2ff', v: (Math.random() * 0.4) + 0.1 }); }
+                    function draw() { ctx.clearRect(0, 0, width, height); pArray.forEach(p => { p.y -= p.v; if(p.y < 0) p.y = height; ctx.fillStyle = p.c; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill(); }); requestAnimationFrame(draw); }
+                    draw(); window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; });
+                }
+            } catch(e) {}
+
+            const finishBoot = () => {
+                setTimeout(() => {
+                    const loader = document.getElementById('globalLoader');
+                    if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 500); }
+                }, 500);
+            };
+
+            let session = null; let role = null;
+            const s_int = JSON.parse(localStorage.getItem('tims_session_intern'));
+            const s_off = JSON.parse(localStorage.getItem('tims_session_officer'));
+            if(s_int && window.isSessionValid(s_int)) { session = s_int; role = 'intern'; }
+            if(s_off && window.isSessionValid(s_off)) { session = s_off; role = 'officer'; }
+
+            if(session) {
+                document.getElementById('view-login').style.display = 'none'; document.getElementById('view-login').style.visibility = 'hidden';
+                const dashView = document.getElementById('view-dashboard'); dashView.style.visibility = 'visible'; dashView.style.display = 'flex'; dashView.style.opacity = '1';
+                document.getElementById('dashName').innerText = session.name; document.getElementById('dashRole').innerText = `${role} access level`;
+                document.getElementById('dashName').style.color = role === 'officer' ? 'var(--accent-purple)' : 'var(--accent-cyan)';
+                
+                if (role === 'intern') {
+                    fetch(`${SUPABASE_URL}/rest/v1/tims_tasks?intern_task_id=eq.${encodeURIComponent(session.data.intern_task_id)}&select=*`, { headers: apiHeaders })
+                    .then(res => res.json())
+                    .then(async taskData => {
+                        if(taskData && taskData.length > 0) await window.buildDashboardRole(role, 'intern', taskData[0]);
+                        else await window.buildDashboardRole(role, 'intern', session.data);
+                        finishBoot();
+                    }).catch(async () => { await window.buildDashboardRole(role, 'intern', session.data); finishBoot(); });
+                } else {
+                    window.buildDashboardRole(role, session.user_role || session.data.role, session.data).then(finishBoot).catch(finishBoot);
+                }
+            } else { finishBoot(); }
+        });
     </script>
 </body>
 </html>
