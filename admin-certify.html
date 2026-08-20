@@ -6,7 +6,7 @@
     <title>Tournyx Esports - Officer Certificate & Dossier Portal</title>
     <link rel="icon" type="image/png" href="favicon.png">
     
-    <!-- Fonts & Icons -->
+    <!-- Typography & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -63,7 +63,7 @@
             100% { opacity: 1; }
         }
 
-        /* --- HEADER --- */
+        /* --- PORTAL HEADER --- */
         .portal-header {
             text-align: center;
             margin-bottom: 25px;
@@ -80,8 +80,8 @@
         }
 
         .header-brand-logo {
-            width: 52px;
-            height: 52px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--neon-cyan);
@@ -134,14 +134,14 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- ADMIN CARD --- */
+        /* --- ADMIN CARD CONTAINER --- */
         .admin-card {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
             border-radius: 24px;
             padding: 35px 30px;
             width: 100%;
-            max-width: 860px;
+            max-width: 880px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(0,242,255,0.05);
             position: relative;
             z-index: 2;
@@ -149,7 +149,7 @@
 
         .section-header {
             font-family: var(--font-head);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--neon-cyan);
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -204,7 +204,7 @@
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            padding: 12px 16px;
+            padding: 13px 16px;
             background: #05070c;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 10px;
@@ -251,7 +251,7 @@
 
         .form-textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 85px;
         }
 
         /* --- PDF UPLOAD BOX --- */
@@ -259,7 +259,7 @@
             border: 2px dashed rgba(0, 242, 255, 0.3);
             background: rgba(0, 242, 255, 0.02);
             border-radius: 14px;
-            padding: 22px 18px;
+            padding: 24px 18px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -273,31 +273,31 @@
         }
 
         .pdf-icon {
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: var(--neon-cyan);
             margin-bottom: 6px;
         }
 
         .file-name-display {
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             font-weight: 700;
             color: var(--success-green);
             margin-top: 8px;
             display: none;
         }
 
-        /* DYNAMIC PASSWORD PROTECTION FIELD */
-        #docPasswordGroup {
+        /* DYNAMIC PASSWORD PROTECTION & CUSTOM OFFICER ACCORDIONS */
+        #docPasswordGroup, #customOfficerFields {
             display: none;
-            background: rgba(157, 0, 255, 0.05);
+            background: rgba(157, 0, 255, 0.06);
             border: 1px solid rgba(157, 0, 255, 0.3);
             border-radius: 12px;
-            padding: 16px;
+            padding: 18px;
             margin-top: 14px;
-            animation: fadeInPass 0.4s ease-out;
+            animation: fadeInGroup 0.35s ease-out;
         }
 
-        @keyframes fadeInPass {
+        @keyframes fadeInGroup {
             from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -315,7 +315,7 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .pass-toggle-btn:hover {
@@ -356,7 +356,7 @@
             transform: none;
         }
 
-        /* --- SUCCESS POPUP --- */
+        /* --- SUCCESS MODAL --- */
         .result-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -463,40 +463,40 @@
     <div class="admin-card">
         <form id="certUploadForm" onsubmit="handleCertificateUpload(event)">
             
-            <!-- SECTION 1: MASTER PROFILE & CONTACT -->
+            <!-- SECTION 1: MASTER PROFILE & IDENTITY -->
             <div class="section-header">
                 <i class="fa-solid fa-user-shield"></i> 1. Intern Identity & Master Profile
             </div>
             <div class="form-grid">
                 <div class="input-group">
                     <label><span>01</span> Full Legal Name</label>
-                    <input type="text" id="internName" class="form-input" placeholder="e.g. Joshitha S" required>
+                    <input type="text" id="internName" class="form-input" placeholder="Enter intern legal name (e.g. Joshitha S)" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>02</span> Registered Email</label>
-                    <input type="email" id="internEmail" class="form-input" placeholder="e.g. intern@tournyx.in" required>
+                    <input type="email" id="internEmail" class="form-input" placeholder="Enter registered email (e.g. candidate@domain.com)" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>03</span> Contact Phone Number</label>
-                    <input type="tel" id="internPhone" class="form-input" placeholder="e.g. +91 98765 43210">
+                    <input type="tel" id="internPhone" class="form-input" placeholder="Enter phone number (e.g. +91 98765 43210)">
                 </div>
 
                 <div class="input-group">
                     <label><span>04</span> College / Institution</label>
-                    <input type="text" id="internCollege" class="form-input" placeholder="e.g. Chennai Institute of Technology">
+                    <input type="text" id="internCollege" class="form-input" placeholder="Enter institution name (e.g. Chennai Institute of Technology)">
                 </div>
 
                 <div class="input-group">
-                    <label><span>05</span> Academic Course / Degree</label>
-                    <input type="text" id="internCourse" class="form-input" placeholder="e.g. B.Tech Computer Science (AI & DS)">
+                    <label><span>05</span> Academic Degree / Specialization</label>
+                    <input type="text" id="internCourse" class="form-input" placeholder="Enter course / specialization (e.g. B.Tech Artificial Intelligence)">
                 </div>
 
                 <div class="input-group">
                     <label><span>06</span> Neutral Record Key (Permanent Identifier)</label>
                     <div class="key-input-wrapper">
-                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" required>
+                        <input type="text" id="recordKey" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" required>
                         <button type="button" class="btn-gen-key" onclick="regenerateRecordKey()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
                     </div>
                 </div>
@@ -509,7 +509,8 @@
             <div class="form-grid">
                 <div class="input-group">
                     <label><span>07</span> Domain Role</label>
-                    <select id="domainRole" class="form-select" onchange="autoFillPresets()" required>
+                    <select id="domainRole" class="form-select" onchange="handleRolePresetChange()" required>
+                        <option value="" disabled selected>Select Domain Specialization Track...</option>
                         <option value="AI VIBE CODING">AI VIBE CODING</option>
                         <option value="FULL STACK DEVELOPER">FULL STACK DEVELOPER</option>
                         <option value="CORE FRONTEND DEVELOPER">CORE FRONTEND DEVELOPER</option>
@@ -520,37 +521,37 @@
 
                 <div class="input-group">
                     <label><span>08</span> Department</label>
-                    <input type="text" id="department" class="form-input" value="Artificial Intelligence & Systems" required>
+                    <input type="text" id="department" class="form-input" placeholder="Enter department name (e.g. Artificial Intelligence & Systems)" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>09</span> Assigned Project Name</label>
-                    <input type="text" id="projectName" class="form-input" value="Tournyx AI Vision Engine" required>
+                    <input type="text" id="projectName" class="form-input" placeholder="Enter project title (e.g. Tournyx AI Vision Engine)" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>10</span> Project Identifier Code</label>
-                    <input type="text" id="projectId" class="form-input" value="TX-PRJ-2026-AI" required>
+                    <input type="text" id="projectId" class="form-input" placeholder="Enter project ID (e.g. TX-PRJ-2026-AI)" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>11</span> Start Date</label>
-                    <input type="date" id="startDate" class="form-input" value="2026-05-30" required>
+                    <input type="date" id="startDate" class="form-input" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>12</span> End Date</label>
-                    <input type="date" id="endDate" class="form-input" value="2026-08-06" required>
+                    <input type="date" id="endDate" class="form-input" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>13</span> Tenure Duration (Months)</label>
-                    <input type="number" id="durationMonths" class="form-input" value="2" min="1" max="12" required>
+                    <input type="number" id="durationMonths" class="form-input" placeholder="e.g. 2" min="1" max="12" required>
                 </div>
 
                 <div class="input-group">
                     <label><span>14</span> Performance Score</label>
-                    <input type="text" id="performanceScore" class="form-input" value="98/100" required>
+                    <input type="text" id="performanceScore" class="form-input" placeholder="e.g. 98/100" required>
                 </div>
             </div>
 
@@ -559,19 +560,37 @@
                 <i class="fa-solid fa-signature"></i> 3. Supervising Authority & Signatures
             </div>
             <div class="form-grid">
-                <div class="input-group">
+                <div class="input-group full-width">
                     <label><span>15</span> Select Supervising Domain Officer</label>
                     <select id="officerSelect" class="form-select" onchange="syncOfficerSelection()" required>
-                        <option value="domain_officer">Chief AI & Systems Architect (Default AI Officer)</option>
+                        <option value="" disabled selected>Select Authorizing Officer...</option>
+                        <option value="domain_officer">Chief AI & Systems Architect (AI Domain Lead)</option>
                         <option value="custom_training_mgr">Chief Software Development & Training Manager</option>
                         <option value="custom_creative_dir">Lead Product Design & Creative Director</option>
                         <option value="custom_esports_dir">Tournament & League Operations Director</option>
+                        <option value="ceo">Founder & Chief Executive Officer</option>
+                        <option value="hr">HR & Internship Operations Coordinator</option>
+                        <option value="other_custom">-- Other / Custom Authorizing Officer --</option>
                     </select>
                 </div>
 
-                <div class="input-group">
+                <!-- Custom Officer Dynamic Accordion -->
+                <div class="input-group full-width" id="customOfficerFields">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label style="color:var(--neon-cyan);"><i class="fa-solid fa-user-plus"></i> Custom Officer Name</label>
+                            <input type="text" id="customOfficerName" class="form-input" placeholder="Enter officer legal name">
+                        </div>
+                        <div class="input-group">
+                            <label style="color:var(--neon-cyan);"><i class="fa-solid fa-id-badge"></i> Custom Officer Key Identifier</label>
+                            <input type="text" id="customOfficerKey" class="form-input" placeholder="e.g. custom_lead_eng">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
                     <label><span>16</span> Officer Signature Title on Document</label>
-                    <input type="text" id="officerTitle" class="form-input" value="CHIEF AI & SYSTEMS ARCHITECT" required>
+                    <input type="text" id="officerTitle" class="form-input" placeholder="Enter official executive title to display on certificate" required>
                 </div>
 
                 <div class="input-group full-width">
@@ -585,7 +604,7 @@
                     <div class="pdf-upload-box" onclick="document.getElementById('pdfFileInput').click()">
                         <i class="fa-solid fa-file-pdf pdf-icon"></i>
                         <p style="font-size:0.85rem; color:#fff; font-weight:600;">Click to select or drop official Intern Documentation PDF</p>
-                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Maximum 15MB)</span>
+                        <span style="font-size:0.7rem; color:var(--text-muted);">Accepted format: .pdf (Document will be linked to certificate QR dossier)</span>
                         <div class="file-name-display" id="fileNameDisplay"></div>
                     </div>
                     <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;" onchange="handlePdfSelection(event)">
@@ -658,8 +677,8 @@
             document.getElementById('recordKey').value = generateRecordKey();
         }
 
-        // Auto-fill presets based on domain role
-        function autoFillPresets() {
+        // Suggest field placeholders based on selected track without overwriting entered text
+        function handleRolePresetChange() {
             const role = document.getElementById('domainRole').value;
             const dept = document.getElementById('department');
             const title = document.getElementById('officerTitle');
@@ -667,45 +686,57 @@
             const officerSel = document.getElementById('officerSelect');
 
             if (role === 'AI VIBE CODING') {
-                dept.value = 'Artificial Intelligence & Systems';
-                title.value = 'CHIEF AI & SYSTEMS ARCHITECT';
-                projId.value = 'TX-PRJ-2026-AI';
-                officerSel.value = 'domain_officer';
+                dept.placeholder = 'Artificial Intelligence & Systems';
+                projId.placeholder = 'TX-PRJ-2026-AI';
+                if (!officerSel.value) officerSel.value = 'domain_officer';
+                if (!title.value) title.placeholder = 'CHIEF AI & SYSTEMS ARCHITECT';
             } else if (role === 'FULL STACK DEVELOPER') {
-                dept.value = 'Platform Architecture';
-                title.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
-                projId.value = 'TX-PRJ-2026-FS';
-                officerSel.value = 'custom_training_mgr';
+                dept.placeholder = 'Platform Architecture';
+                projId.placeholder = 'TX-PRJ-2026-FS';
+                if (!officerSel.value) officerSel.value = 'custom_training_mgr';
+                if (!title.value) title.placeholder = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
             } else if (role === 'CORE FRONTEND DEVELOPER') {
-                dept.value = 'Frontend Engineering';
-                title.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
-                projId.value = 'TX-PRJ-2026-FE';
-                officerSel.value = 'custom_training_mgr';
+                dept.placeholder = 'Frontend Engineering';
+                projId.placeholder = 'TX-PRJ-2026-FE';
+                if (!officerSel.value) officerSel.value = 'custom_training_mgr';
+                if (!title.value) title.placeholder = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
             } else if (role === 'UI/UX DESIGN') {
-                dept.value = 'Product Design & Creative';
-                title.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
-                projId.value = 'TX-PRJ-2026-UX';
-                officerSel.value = 'custom_creative_dir';
+                dept.placeholder = 'Product Design & Creative';
+                projId.placeholder = 'TX-PRJ-2026-UX';
+                if (!officerSel.value) officerSel.value = 'custom_creative_dir';
+                if (!title.value) title.placeholder = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
             } else if (role === 'ESPORTS OPERATIONS') {
-                dept.value = 'League Operations & Events';
-                title.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
-                projId.value = 'TX-PRJ-2026-OPS';
-                officerSel.value = 'custom_esports_dir';
+                dept.placeholder = 'League Operations & Events';
+                projId.placeholder = 'TX-PRJ-2026-OPS';
+                if (!officerSel.value) officerSel.value = 'custom_esports_dir';
+                if (!title.value) title.placeholder = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
             }
         }
 
         function syncOfficerSelection() {
             const officerSel = document.getElementById('officerSelect').value;
             const titleInput = document.getElementById('officerTitle');
+            const customBox = document.getElementById('customOfficerFields');
 
-            if (officerSel === 'domain_officer') {
-                titleInput.value = 'CHIEF AI & SYSTEMS ARCHITECT';
-            } else if (officerSel === 'custom_training_mgr') {
-                titleInput.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
-            } else if (officerSel === 'custom_creative_dir') {
-                titleInput.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
-            } else if (officerSel === 'custom_esports_dir') {
-                titleInput.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
+            if (officerSel === 'other_custom') {
+                customBox.style.display = 'block';
+                titleInput.value = '';
+                titleInput.placeholder = 'Enter custom officer title (e.g. LEAD RESEARCH SCIENTIST)';
+            } else {
+                customBox.style.display = 'none';
+                if (officerSel === 'domain_officer') {
+                    titleInput.value = 'CHIEF AI & SYSTEMS ARCHITECT';
+                } else if (officerSel === 'custom_training_mgr') {
+                    titleInput.value = 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER';
+                } else if (officerSel === 'custom_creative_dir') {
+                    titleInput.value = 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR';
+                } else if (officerSel === 'custom_esports_dir') {
+                    titleInput.value = 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR';
+                } else if (officerSel === 'ceo') {
+                    titleInput.value = 'FOUNDER & CHIEF EXECUTIVE OFFICER';
+                } else if (officerSel === 'hr') {
+                    titleInput.value = 'HR & INTERNSHIP OPERATIONS COORDINATOR';
+                }
             }
         }
 
@@ -721,7 +752,7 @@
                 display.style.display = 'block';
                 display.innerText = `Selected File: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
 
-                // Unveil Password Protection Field
+                // Display Password Protection Field
                 document.getElementById('docPasswordGroup').style.display = 'block';
             }
         }
@@ -738,7 +769,7 @@
             }
         }
 
-        // Fetch officer signatures dynamically on load
+        // Fetch officer list dynamically on load
         async function fetchOfficers() {
             try {
                 const { data, error } = await supabase
@@ -754,13 +785,23 @@
                             const opt = document.createElement('option');
                             opt.value = off.officer_key;
                             opt.innerText = `${off.officer_name} (${off.officer_title || off.officer_key})`;
-                            officerSel.appendChild(opt);
+                            officerSel.insertBefore(opt, officerSel.querySelector('option[value="other_custom"]'));
                         }
                     });
                 }
             } catch (err) {
-                console.warn("Could not load dynamic officer list, using standard matrix:", err);
+                console.warn("Could not load dynamic officer list, using standard presets:", err);
             }
+        }
+
+        // Convert File to Base64 (Reliable Storage Fallback)
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
 
         // Form Submit Handler
@@ -778,39 +819,49 @@
             const recordKey = document.getElementById('recordKey').value.trim().toUpperCase();
 
             const domainRole = document.getElementById('domainRole').value;
-            const department = document.getElementById('department').value.trim();
-            const projectName = document.getElementById('projectName').value.trim();
-            const projectId = document.getElementById('projectId').value.trim();
+            const department = document.getElementById('department').value.trim() || document.getElementById('department').placeholder;
+            const projectName = document.getElementById('projectName').value.trim() || 'Tournyx Platform';
+            const projectId = document.getElementById('projectId').value.trim() || 'TX-PRJ-2026';
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             const durationMonths = parseInt(document.getElementById('durationMonths').value) || 2;
-            const performanceScore = document.getElementById('performanceScore').value.trim();
+            const performanceScore = document.getElementById('performanceScore').value.trim() || '98/100';
             
-            const officerKey = document.getElementById('officerSelect').value;
-            const officerTitle = document.getElementById('officerTitle').value.trim();
+            let officerKey = document.getElementById('officerSelect').value;
+            let officerTitle = document.getElementById('officerTitle').value.trim();
             const summary = document.getElementById('milestoneSummary').value.trim();
             const docPassword = document.getElementById('documentPassword').value.trim();
+
+            if (officerKey === 'other_custom') {
+                const customKey = document.getElementById('customOfficerKey').value.trim();
+                officerKey = customKey || `custom_${Date.now()}`;
+            }
 
             const certId = 'TX-CERT-2026-' + Math.floor(1000 + Math.random() * 9000);
             let pdfPublicUrl = null;
 
             try {
-                // 1. Upload PDF Documentation if attached
+                // 1. Process PDF Document with dual storage fallback
                 if (selectedPdfFile) {
                     const cleanCertId = certId.replace(/[^a-zA-Z0-9_-]/g, '_');
                     const fileName = `${cleanCertId}_${Date.now()}_dossier.pdf`;
 
-                    const { error: storageErr } = await supabase.storage
-                        .from('dossiers')
-                        .upload(`intern_docs/${fileName}`, selectedPdfFile, { contentType: 'application/pdf', upsert: true });
-
-                    if (!storageErr) {
-                        const { data: publicData } = supabase.storage
+                    try {
+                        const { error: storageErr } = await supabase.storage
                             .from('dossiers')
-                            .getPublicUrl(`intern_docs/${fileName}`);
-                        pdfPublicUrl = publicData.publicUrl;
-                    } else {
-                        console.warn("Storage bucket upload skipped/failed:", storageErr.message);
+                            .upload(`intern_docs/${fileName}`, selectedPdfFile, { contentType: 'application/pdf', upsert: true });
+
+                        if (!storageErr) {
+                            const { data: publicData } = supabase.storage
+                                .from('dossiers')
+                                .getPublicUrl(`intern_docs/${fileName}`);
+                            pdfPublicUrl = publicData.publicUrl;
+                        } else {
+                            throw storageErr;
+                        }
+                    } catch (storageException) {
+                        console.warn("Supabase Storage bucket upload skipped or restricted, applying secure data string fallback:", storageException.message);
+                        pdfPublicUrl = await fileToBase64(selectedPdfFile);
                     }
                 }
 
@@ -851,7 +902,7 @@
 
                 if (certErr) throw certErr;
 
-                // 3. Multi-table Sync (Non-blocking fallback)
+                // 3. Multi-table Sync Across Data Models
                 await Promise.allSettled([
                     // internship_records
                     supabase.from('internship_records').insert([{
@@ -882,19 +933,19 @@
                     // timeline_audit_events
                     supabase.from('timeline_audit_events').insert([{
                         event_type: 'Certificate & Dossier Minted',
-                        event_description: `Official Certificate ${certId} issued for ${domainRole}. Dossier password protection: ${docPassword ? 'Enabled' : 'Disabled'}.`,
+                        event_description: `Official Certificate ${certId} minted for ${domainRole}. Passcode status: ${docPassword ? 'Protected' : 'Standard'}.`,
                         authorized_by: officerTitle
                     }])
                 ]);
 
-                // 4. Trigger Success Display
+                // 4. Show Success Modal
                 document.getElementById('certLink').href = `certificate.html?id=${encodeURIComponent(certId)}`;
                 document.getElementById('verifyLink').href = `verify.html?id=${encodeURIComponent(certId)}`;
                 document.getElementById('resultOverlay').style.display = 'flex';
 
             } catch (err) {
                 console.error("Minting Error:", err);
-                alert("Minting Failed: " + (err.message || "Database error occurred. Check table permissions."));
+                alert("Minting Failed: " + (err.message || "Database error occurred. Please verify table permissions."));
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-certificate"></i> Mint Credential & Inscribe Ledger';
@@ -905,15 +956,14 @@
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('certUploadForm').reset();
             regenerateRecordKey();
-            autoFillPresets();
             selectedPdfFile = null;
             document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('docPasswordGroup').style.display = 'none';
+            document.getElementById('customOfficerFields').style.display = 'none';
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             regenerateRecordKey();
-            autoFillPresets();
             fetchOfficers();
         });
     </script>
