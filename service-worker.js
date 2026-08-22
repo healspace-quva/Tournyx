@@ -37,3 +37,11 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        fetch(event.request).catch(() => {
+            return caches.match('404.html');
+        })
+    );
+});
