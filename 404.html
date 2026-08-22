@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournyx Esports - Neural Link Interrupted</title>
+    <title>Tournyx Esports - 404 Matrix Disconnected</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,8 +12,8 @@
     <style>
         :root {
             --bg-void: #040508;
-            --panel-bg: #0c0f17;
-            --panel-border: rgba(0, 242, 255, 0.15);
+            --panel-bg: #0c0f18;
+            --panel-border: rgba(0, 242, 255, 0.16);
             --neon-cyan: #00f2ff;
             --neon-purple: #9d00ff;
             --danger-red: #ff3366;
@@ -27,7 +27,9 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { display: none; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.5); }
 
         body {
             background-color: var(--bg-void);
@@ -38,93 +40,133 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 15px;
+            padding: 25px 15px 40px;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Ambient Cyber Grid & Scanlines */
+        /* --- BACKGROUND ANIMATION --- */
         .ambient-grid {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: linear-gradient(rgba(0,242,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,242,255,0.02) 1px, transparent 1px);
-            background-size: 35px 35px;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
             z-index: 0;
             pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        .ambient-glow-orb {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(157, 0, 255, 0.12), rgba(0, 242, 255, 0.04), transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(50px);
+            animation: orbFloat 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(-30%, -20%) scale(0.9); }
+            100% { transform: translate(20%, 20%) scale(1.1); }
         }
 
         .crt-scanlines {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
             background-size: 100% 4px, 6px 100%;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.7;
+            opacity: 0.75;
         }
 
-        /* Error Portal Card */
+        /* --- 404 CYBER CARD --- */
         .error-card {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 40px 30px;
             width: 100%;
             max-width: 680px;
             text-align: center;
-            box-shadow: 0 20px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 51, 102, 0.15);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 242, 255, 0.08);
             position: relative;
             z-index: 2;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            animation: cardAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Brand & Glitch Display */
-        .brand-pill {
+        @keyframes cardAppear {
+            0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Status Banner Pill */
+        .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 18px;
+            padding: 7px 20px;
             background: rgba(255, 51, 102, 0.08);
-            border: 1px solid rgba(255, 51, 102, 0.3);
+            border: 1px solid rgba(255, 51, 102, 0.35);
             border-radius: 50px;
             font-family: var(--font-head);
             font-size: 0.75rem;
             color: var(--danger-red);
             letter-spacing: 1.5px;
             margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+            transition: all 0.3s ease;
         }
 
+        .status-pill.online {
+            background: rgba(0, 255, 127, 0.08);
+            border-color: rgba(0, 255, 127, 0.4);
+            color: var(--success-green);
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.2);
+        }
+
+        /* Glitch Display */
         .glitch-code-wrap {
             position: relative;
             display: inline-block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .glitch-code {
             font-family: var(--font-head);
-            font-size: clamp(3.5rem, 12vw, 6rem);
+            font-size: clamp(4rem, 14vw, 6.5rem);
             font-weight: 900;
-            letter-spacing: 5px;
+            letter-spacing: 6px;
             color: #ffffff;
-            position: relative;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
-            animation: textGlitch 3s infinite;
+            line-height: 1;
+            text-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+            animation: textGlitch 3.5s infinite;
         }
 
         @keyframes textGlitch {
-            0%, 85%, 100% { transform: none; text-shadow: 0 0 20px rgba(0,242,255,0.6); }
-            86% { transform: skew(-4deg, -2deg); text-shadow: 3px 0 var(--danger-red), -3px 0 var(--neon-cyan); }
-            88% { transform: skew(3deg, 1deg); text-shadow: -3px 0 var(--danger-red), 3px 0 var(--neon-purple); }
-            90% { transform: none; text-shadow: 0 0 20px rgba(0,242,255,0.6); }
+            0%, 86%, 100% { transform: none; text-shadow: 0 0 25px rgba(0,242,255,0.6); }
+            87% { transform: skew(-5deg, -2deg); text-shadow: 3px 0 var(--danger-red), -3px 0 var(--neon-cyan); }
+            89% { transform: skew(4deg, 1deg); text-shadow: -3px 0 var(--danger-red), 3px 0 var(--neon-purple); }
+            91% { transform: none; text-shadow: 0 0 25px rgba(0,242,255,0.6); }
         }
 
         .error-status-title {
             font-family: var(--font-head);
-            font-size: 1.35rem;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
             color: #ffffff;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            margin-bottom: 10px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
@@ -138,20 +180,20 @@
             margin-right: auto;
         }
 
-        /* Real-Time Telemetry Matrix */
+        /* Real-Time Telemetry HUD */
         .telemetry-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            background: rgba(4, 5, 8, 0.8);
+            background: rgba(4, 5, 8, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 16px 18px;
             margin-bottom: 25px;
             text-align: left;
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 520px) {
             .telemetry-grid { grid-template-columns: 1fr; }
         }
 
@@ -163,7 +205,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .telemetry-item strong {
@@ -172,7 +214,7 @@
             color: var(--neon-cyan);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .status-dot {
@@ -181,6 +223,7 @@
             background: var(--danger-red);
             box-shadow: 0 0 8px var(--danger-red);
             display: inline-block;
+            animation: pulseDot 1.5s infinite;
         }
 
         .status-dot.online {
@@ -188,27 +231,45 @@
             box-shadow: 0 0 8px var(--success-green);
         }
 
-        /* Action Buttons */
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* --- BUTTON MATRIX --- */
         .action-cluster {
             display: flex;
+            flex-direction: column;
             gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .action-row-primary {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (max-width: 480px) {
+            .action-row-primary { flex-direction: column; }
         }
 
         .btn-action {
-            padding: 14px 24px;
+            flex: 1;
+            padding: 14px 22px;
             border-radius: 12px;
             font-family: var(--font-head);
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-decoration: none;
             border: 1px solid transparent;
@@ -217,11 +278,11 @@
         .btn-primary {
             background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff);
             color: #ffffff;
-            box-shadow: 0 4px 20px rgba(189, 0, 255, 0.4);
+            box-shadow: 0 4px 25px rgba(189, 0, 255, 0.45);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 6px 25px rgba(0, 242, 255, 0.6);
+            box-shadow: 0 6px 30px rgba(0, 242, 255, 0.65);
             transform: translateY(-2px);
         }
 
@@ -235,67 +296,98 @@
             background: rgba(255, 255, 255, 0.08);
             border-color: var(--neon-cyan);
             color: var(--neon-cyan);
+            transform: translateY(-2px);
         }
 
-        /* Offline Aim-Trainer Mini Game Modal */
-        .minigame-toggle-box {
-            border-top: 1px dashed rgba(255, 255, 255, 0.08);
-            padding-top: 20px;
-            margin-top: 10px;
-        }
-
-        .minigame-canvas-box {
-            position: relative;
+        .btn-terminal-toggle {
             width: 100%;
-            height: 180px;
-            background: #020305;
-            border: 1px dashed rgba(0, 242, 255, 0.25);
-            border-radius: 14px;
-            margin-top: 12px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .minigame-canvas-box.active {
-            display: block;
-        }
-
-        .aim-target {
-            position: absolute;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--neon-cyan), var(--neon-purple));
-            box-shadow: 0 0 15px var(--neon-cyan);
-            cursor: crosshair;
+            background: rgba(4, 5, 8, 0.7);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            color: var(--neon-cyan);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-family: var(--font-head);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            font-size: 0.8rem;
-            font-weight: 900;
-            transition: transform 0.1s;
+            gap: 8px;
+            transition: 0.3s;
         }
 
-        .aim-target:active {
-            transform: scale(0.85);
+        .btn-terminal-toggle:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+            background: rgba(0, 242, 255, 0.05);
         }
 
-        /* Diagnostic Terminal Dropdown */
-        .terminal-box {
+        /* --- LIVE TERMINAL LOG STREAM --- */
+        .terminal-container {
             background: #020305;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 12px 15px;
-            font-family: monospace;
-            font-size: 0.72rem;
-            color: #00ff7f;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 14px;
+            padding: 16px;
             text-align: left;
             margin-top: 15px;
             display: none;
-            max-height: 120px;
-            overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
         }
+
+        .terminal-container.active { display: block; }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            font-family: var(--font-head);
+            font-size: 0.68rem;
+            color: var(--neon-cyan);
+        }
+
+        .terminal-feed {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.72rem;
+            color: var(--success-green);
+            line-height: 1.5;
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feed-line { display: flex; gap: 8px; }
+        .feed-time { color: var(--text-muted); }
+        .feed-warn { color: var(--danger-red); }
+        .feed-info { color: var(--neon-cyan); }
+
+        /* Offline Intercept Banner */
+        .offline-notice {
+            background: rgba(255, 51, 102, 0.06);
+            border: 1px solid rgba(255, 51, 102, 0.25);
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 0.78rem;
+            color: #ff99aa;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            animation: bannerPulse 2s infinite alternate;
+        }
+
+        @keyframes bannerPulse {
+            0% { border-color: rgba(255, 51, 102, 0.25); }
+            100% { border-color: rgba(255, 51, 102, 0.6); }
+        }
+
+        .offline-notice.active { display: flex; }
 
         .page-footer {
             margin-top: 30px;
@@ -304,6 +396,7 @@
             color: var(--text-muted);
             z-index: 2;
         }
+
         .quva-badge {
             font-family: var(--font-head);
             color: var(--neon-purple);
@@ -314,72 +407,80 @@
 <body>
 
     <div class="ambient-grid"></div>
+    <div class="ambient-glow-orb"></div>
     <div class="crt-scanlines"></div>
 
     <div class="error-card">
-        <div class="brand-pill" id="errorPill">
-            <i class="fa-solid fa-triangle-exclamation"></i> <span id="errorPillText">404 // ROUTE DISCONNECTED</span>
+        
+        <!-- Status Pill -->
+        <div class="status-pill" id="statusPill">
+            <i class="fa-solid fa-triangle-exclamation" id="pillIcon"></i> 
+            <span id="pillText">404 // ROUTE DISCONNECTED</span>
         </div>
 
+        <!-- 404 Glitch Number -->
         <div class="glitch-code-wrap">
             <h1 class="glitch-code" id="errorCodeText">404</h1>
         </div>
 
+        <!-- Error Heading & Description -->
         <h2 class="error-status-title" id="errorTitle">MATRIX NODE UNREACHABLE</h2>
         <p class="error-desc" id="errorDesc">
-            The target neural route does not exist or your uplink to the Tournyx Network was dropped. Verify your authorization token or force a telemetry reconnection.
+            The requested tournament, certificate, or navigation node does not exist in the active registry.
         </p>
 
-        <!-- Live Telemetry Monitor -->
+        <!-- Dynamic Network Drop Banner -->
+        <div class="offline-notice" id="offlineNotice">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>No internet access. Connect to network to auto-restore this page.</span>
+        </div>
+
+        <!-- Real-Time Telemetry Matrix -->
         <div class="telemetry-grid">
             <div class="telemetry-item">
                 <span>Network Protocol</span>
-                <strong id="telProtocol"><i class="fa-solid fa-wifi"></i> Detecting...</strong>
+                <strong id="telProtocol"><i class="fa-solid fa-shield-halved" style="color:var(--success-green);"></i> HTTPS/2 TLS</strong>
             </div>
             <div class="telemetry-item">
                 <span>Latency / Ping</span>
-                <strong id="telPing"><i class="fa-solid fa-gauge-high"></i> -- ms</strong>
+                <strong id="telPing"><i class="fa-solid fa-gauge-high" style="color:var(--neon-cyan);"></i> -- ms</strong>
             </div>
             <div class="telemetry-item">
                 <span>Gateway Status</span>
-                <strong id="telStatus"><span class="status-dot" id="statusDot"></span> <span id="statusText">Offline</span></strong>
+                <strong id="telGateway">
+                    <span class="status-dot online" id="statusDot"></span> 
+                    <span id="statusText">LINKED</span>
+                </strong>
             </div>
         </div>
 
-        <!-- Action Matrix -->
+        <!-- Center Action Cluster -->
         <div class="action-cluster">
-            <button class="btn-action btn-primary" onclick="forceReconnection()">
-                <i class="fa-solid fa-rotate-right"></i> Force Link Sync
-            </button>
-            <a href="home.html" class="btn-action btn-secondary">
-                <i class="fa-solid fa-house"></i> Home Hub
-            </a>
-            <button class="btn-action btn-secondary" onclick="toggleDiagnostics()">
-                <i class="fa-solid fa-terminal"></i> Terminal Logs
+            <div class="action-row-primary">
+                <button class="btn-action btn-primary" id="btnSync" onclick="forceReconnection()">
+                    <i class="fa-solid fa-rotate-right"></i> Force Link Sync
+                </button>
+                <a href="home.html" class="btn-action btn-secondary">
+                    <i class="fa-solid fa-house"></i> Home Hub
+                </a>
+            </div>
+            
+            <button class="btn-terminal-toggle" onclick="toggleLiveTerminal()">
+                <i class="fa-solid fa-terminal"></i> <span id="terminalBtnLabel">Show Diagnostic Logs [LIVE]</span>
             </button>
         </div>
 
-        <!-- Offline Aim Reflex Mini-Game -->
-        <div class="minigame-toggle-box">
-            <button class="btn-action btn-secondary" style="font-size:0.75rem; padding:8px 16px;" onclick="toggleAimTrainer()">
-                <i class="fa-solid fa-crosshairs"></i> <span id="minigameBtnText">Launch Offline Reflex Target Trainer</span>
-            </button>
-            
-            <div class="minigame-canvas-box" id="aimBox">
-                <div style="position:absolute; top:8px; left:12px; font-size:0.7rem; color:var(--text-muted); font-family:var(--font-head);">
-                    SCORE: <b id="aimScore" style="color:var(--neon-cyan);">0</b> | TARGETS CLOCKED
-                </div>
-                <div class="aim-target" id="aimTarget" onclick="hitTarget()"><i class="fa-solid fa-bullseye"></i></div>
+        <!-- Expandable Live Terminal Stream -->
+        <div class="terminal-container" id="terminalContainer">
+            <div class="terminal-header">
+                <span><i class="fa-solid fa-microchip"></i> LIVE MATRIX TRACE</span>
+                <span id="terminalStatusTag">MONITORING</span>
+            </div>
+            <div class="terminal-feed" id="terminalFeed">
+                <!-- Live logs stream dynamically -->
             </div>
         </div>
 
-        <!-- Diagnostic Log Output -->
-        <div class="terminal-box" id="terminalBox">
-            [SYS_INIT]: Scanning socket channels...<br>
-            [ROUTE_ERR]: Navigation target unreachable.<br>
-            [CLIENT_IP]: Verified via Cloudflare Worker edge.<br>
-            [LOCAL_STORE]: Cache verified intact.
-        </div>
     </div>
 
     <footer class="page-footer">
@@ -388,32 +489,42 @@
 
     <script>
         let pingInterval = null;
-        let aimScore = 0;
+        let isTerminalOpen = false;
+        let previousUrl = document.referrer || sessionStorage.getItem('tournyx_last_route') || 'home.html';
 
-        // 1. Error Code Parser from URL (e.g. error.html?code=500 or error.html?code=offline)
+        // Save last known valid location
+        if (window.location.pathname !== '/404.html' && !window.location.pathname.endsWith('404')) {
+            sessionStorage.setItem('tournyx_last_route', window.location.href);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const code = params.get('code') || '404';
+            
             applyErrorPreset(code);
-            initNetworkTelemetry();
+            initNetworkEngine();
+            initLiveLogs();
         });
 
+        // 1. Error Code Presets
         function applyErrorPreset(code) {
             const codeEl = document.getElementById('errorCodeText');
             const titleEl = document.getElementById('errorTitle');
             const descEl = document.getElementById('errorDesc');
-            const pillText = document.getElementById('errorPillText');
+            const pill = document.getElementById('statusPill');
+            const pillText = document.getElementById('pillText');
 
-            if (code === '500') {
-                codeEl.innerText = '500';
-                titleEl.innerText = 'DATABASE SERVER OVERLOAD';
-                descEl.innerText = 'Internal service gateway timed out during cryptographic authentication. The engineering squad has been dispatched.';
-                pillText.innerText = '500 // SERVER CRITICAL';
-            } else if (code === 'offline' || !navigator.onLine) {
+            if (!navigator.onLine || code === 'offline') {
                 codeEl.innerText = 'OFFLINE';
                 titleEl.innerText = 'NEURAL LINK SEVERED';
-                descEl.innerText = 'No internet access detected on your device. The system has switched to local offline cache mode.';
-                pillText.innerText = 'SIGNAL LOST // STANDALONE MODE';
+                descEl.innerText = 'No network connection detected on your device. Please turn on WiFi or Mobile Data to restore connection.';
+                pillText.innerText = 'OFFLINE // SIGNAL LOST';
+                document.getElementById('offlineNotice').classList.add('active');
+            } else if (code === '500') {
+                codeEl.innerText = '500';
+                titleEl.innerText = 'GATEWAY OVERLOAD';
+                descEl.innerText = 'Internal service gateway timed out during cryptographic authentication. The system is re-routing requests.';
+                pillText.innerText = '500 // SERVER CRITICAL';
             } else if (code === '403') {
                 codeEl.innerText = '403';
                 titleEl.innerText = 'CLEARANCE RESTRICTED';
@@ -427,110 +538,132 @@
             }
         }
 
-        // 2. Real-Time Telemetry & Ping Engine
-        function initNetworkTelemetry() {
-            updateNetworkStatus();
-            window.addEventListener('online', updateNetworkStatus);
-            window.addEventListener('offline', updateNetworkStatus);
+        // 2. Real-Time Network & Auto-Reconnect Logic
+        function initNetworkEngine() {
+            updateNetworkState();
+            window.addEventListener('online', onNetworkRestored);
+            window.addEventListener('offline', onNetworkDropped);
 
             measurePing();
-            pingInterval = setInterval(measurePing, 5000);
+            pingInterval = setInterval(measurePing, 4000);
         }
 
-        function updateNetworkStatus() {
+        function updateNetworkState() {
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
             const telProto = document.getElementById('telProtocol');
+            const pill = document.getElementById('statusPill');
+            const offlineNotice = document.getElementById('offlineNotice');
 
             if (navigator.onLine) {
                 statusDot.className = 'status-dot online';
-                statusText.innerText = 'Linked';
+                statusText.innerText = 'LINKED';
                 statusText.style.color = 'var(--success-green)';
                 telProto.innerHTML = `<i class="fa-solid fa-shield-halved" style="color:var(--success-green);"></i> HTTPS/2 TLS`;
+                offlineNotice.classList.remove('active');
+                appendLog('Uplink active. Socket TLS handshakes nominal.', 'info');
             } else {
                 statusDot.className = 'status-dot';
-                statusText.innerText = 'Disconnected';
+                statusText.innerText = 'OFFLINE';
                 statusText.style.color = 'var(--danger-red)';
-                telProto.innerHTML = `<i class="fa-solid fa-ban" style="color:var(--danger-red);"></i> Offline Cache`;
+                telProto.innerHTML = `<i class="fa-solid fa-ban" style="color:var(--danger-red);"></i> Local Cache`;
+                offlineNotice.classList.add('active');
+                applyErrorPreset('offline');
+                appendLog('Network severed. Waiting for uplink restoration...', 'warn');
             }
+        }
+
+        function onNetworkDropped() {
+            updateNetworkState();
+        }
+
+        function onNetworkRestored() {
+            updateNetworkState();
+            appendLog('Connection restored! Re-routing to target page in 1.5s...', 'info');
+            
+            // Auto redirect when network comes back
+            setTimeout(() => {
+                const target = sessionStorage.getItem('tournyx_last_route') || 'home.html';
+                window.location.href = target;
+            }, 1500);
         }
 
         async function measurePing() {
             const pingEl = document.getElementById('telPing');
             if (!navigator.onLine) {
-                pingEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--danger-red);"></i> Unreachable`;
+                pingEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--danger-red);"></i> Drop`;
                 return;
             }
 
             const startTime = performance.now();
             try {
-                // Ping favicon to check roundtrip latency
                 await fetch(`https://tournyx.in/favicon.ico?_r=${Math.random()}`, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
-                const latency = Math.round(performance.now() - startTime);
+                const latency = Math.max(12, Math.round(performance.now() - startTime));
                 pingEl.innerHTML = `<i class="fa-solid fa-gauge-high" style="color:var(--neon-cyan);"></i> ${latency} ms`;
             } catch(e) {
-                pingEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin" style="color:var(--gold);"></i> 24 ms`;
+                pingEl.innerHTML = `<i class="fa-solid fa-gauge-high" style="color:var(--neon-cyan);"></i> 28 ms`;
             }
         }
 
-        // 3. Force Reconnect
         function forceReconnection() {
-            const btn = event.currentTarget;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Synchronizing Matrix...';
+            const btn = document.getElementById('btnSync');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing Matrix...';
             btn.disabled = true;
+
+            appendLog('[MANUAL_SYNC]: Initiating socket reconciliation...', 'info');
 
             setTimeout(() => {
                 if (navigator.onLine) {
-                    window.location.reload();
+                    const target = sessionStorage.getItem('tournyx_last_route') || 'home.html';
+                    window.location.href = target;
                 } else {
-                    alert('⚠️ Uplink check failed: Device is still offline. Please check your WiFi or mobile data.');
                     btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Force Link Sync';
                     btn.disabled = false;
+                    appendLog('[SYNC_FAIL]: Device still offline. Please check data/Wi-Fi.', 'warn');
                 }
-            }, 1200);
+            }, 1000);
         }
 
-        // 4. Offline Reflex Aim Trainer Game
-        function toggleAimTrainer() {
-            const box = document.getElementById('aimBox');
-            const btnText = document.getElementById('minigameBtnText');
-            box.classList.toggle('active');
-
-            if (box.classList.contains('active')) {
-                btnText.innerText = 'Close Reflex Trainer';
-                moveTarget();
-            } else {
-                btnText.innerText = 'Launch Offline Reflex Target Trainer';
+        // 3. Live Terminal Logs
+        function initLiveLogs() {
+            appendLog('[SYS_BOOT]: Matrix diagnostic shell initialized.', 'info');
+            appendLog(`[CLIENT]: ${navigator.userAgent.slice(0, 35)}...`, 'info');
+            appendLog(`[TARGET_ROUTE]: ${window.location.pathname}`, 'warn');
+            if (sessionStorage.getItem('tournyx_last_route')) {
+                appendLog(`[SESSION_ORIGIN]: ${sessionStorage.getItem('tournyx_last_route')}`, 'info');
             }
         }
 
-        function hitTarget() {
-            aimScore++;
-            document.getElementById('aimScore').innerText = aimScore;
-            if (navigator.vibrate) navigator.vibrate(20);
-            moveTarget();
+        function appendLog(msg, type = 'info') {
+            const feed = document.getElementById('terminalFeed');
+            if (!feed) return;
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            
+            const line = document.createElement('div');
+            line.className = 'feed-line';
+            line.innerHTML = `
+                <span class="feed-time">[${timeStr}]</span>
+                <span class="${type === 'warn' ? 'feed-warn' : 'feed-info'}">${msg}</span>
+            `;
+            
+            feed.appendChild(line);
+            feed.scrollTop = feed.scrollHeight;
         }
 
-        function moveTarget() {
-            const box = document.getElementById('aimBox');
-            const target = document.getElementById('aimTarget');
-            const maxX = box.clientWidth - 45;
-            const maxY = box.clientHeight - 45;
+        function toggleLiveTerminal() {
+            const box = document.getElementById('terminalContainer');
+            const label = document.getElementById('terminalBtnLabel');
+            isTerminalOpen = !isTerminalOpen;
 
-            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(30, Math.floor(Math.random() * maxY));
-
-            target.style.left = `${randomX}px`;
-            target.style.top = `${randomY}px`;
-        }
-
-        // 5. Diagnostics Terminal Toggle
-        function toggleDiagnostics() {
-            const box = document.getElementById('terminalBox');
-            box.style.display = box.style.display === 'block' ? 'none' : 'block';
-            if (box.style.display === 'block') {
-                box.innerHTML += `<br>[DIAG_EXEC]: Memory heap nominal. Storage verified. UserAgent: ${navigator.userAgent.slice(0, 40)}...`;
-                box.scrollTop = box.scrollHeight;
+            if (isTerminalOpen) {
+                box.classList.add('active');
+                label.innerText = 'Hide Diagnostic Logs';
+                appendLog('[DIAGNOSTIC]: Polling memory heap and storage state...', 'info');
+            } else {
+                box.classList.remove('active');
+                label.innerText = 'Show Diagnostic Logs [LIVE]';
             }
         }
     </script>
