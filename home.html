@@ -5,6 +5,8 @@
     <meta name="google-adsense-account" content="ca-pub-2610280925070403">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2610280925070403" crossorigin="anonymous"></script>
     <link rel="manifest" href="/manifest.json">
+    <!-- SUPABASE CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -1866,9 +1868,14 @@ async function secureFetch(params) {
     }
 }
         
-// --- TOURNYX ENGINE & VISION AI AUTOMATED CONTROLLER ---
-const WORKER_VISION_ENDPOINT = 'https://tournyx-vision-ai.your-subdomain.workers.dev';
+// --- SUPABASE DIRECT CLIENT INITIALIZATION ---
+const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co'; 
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
+const db = (typeof supabase !== 'undefined') 
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
+        
 let telemetryStream = null;
 let telemetryTimer = null;
 let currentActiveTask = null;
@@ -2256,7 +2263,7 @@ window.addEventListener('DOMContentLoaded', async function() {
     // Fail-safe to hide loader even if APIs fail
     setTimeout(() => {
         if (typeof hideLoader === 'function') hideLoader();
-    }, 4500);
+    }, 2000);
 
     let animPaused = false;
     let user = null;
@@ -2306,43 +2313,59 @@ window.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function loadLiveBackendData() {
-    let fetchPromises = [];
+    if (!db) {
+        if (typeof hideLoader === 'function') hideLoader();
+        return;
+    }
 
-    fetchPromises.push(secureFetch({ action: 'get_tournaments' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) {
-            renderFeaturedTournaments(res.data);
-            loadLiveTournamentsSlider(res.data);
+    try {
+        const [tourneysRes, dropsRes, proRes, scoutRes] = await Promise.allSettled([
+            db.from('Tournaments').select('*').order('created_at', { ascending: false }),
+            db.from('FlashDrops').select('*').order('id', { ascending: true }),
+            db.from('ProMatches').select('*').order('id', { ascending: false }),
+            db.from('Users').select('username, ign, wins, avatar, role').order('wins', { ascending: false }).limit(10)
+        ]);
+
+        // 1. Tournaments
+        if (tourneysRes.status === 'fulfilled' && tourneysRes.value.data && tourneysRes.value.data.length > 0) {
+            renderFeaturedTournaments(tourneysRes.value.data);
+            loadLiveTournamentsSlider(tourneysRes.value.data);
         } else {
             document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Campaigns Running', 'We are preparing new tournaments for you.');
             document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-trophy', 'No Live Events', 'Check back later.');
         }
-    }).catch(() => { 
-        document.getElementById('featuredSlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
-        document.getElementById('liveTourneySlider').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); 
-    }));
 
-    fetchPromises.push(secureFetch({ action: 'get_drops' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderFlashDrops(res.data);
-        else document.getElementById('flashDropsSection').style.display = 'none';
-    }).catch(() => { document.getElementById('flashDropsSection').style.display = 'none'; }));
+        // 2. Flash Drops
+        if (dropsRes.status === 'fulfilled' && dropsRes.value.data && dropsRes.value.data.length > 0) {
+            renderFlashDrops(dropsRes.value.data);
+            document.getElementById('flashDropsSection').style.display = 'block';
+        } else {
+            document.getElementById('flashDropsSection').style.display = 'none';
+        }
 
-    fetchPromises.push(secureFetch({ action: 'get_promatches' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderProMatches(res.data);
-        else document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
-    }).catch(() => { document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to reach the servers right now.'); }));
+        // 3. Pro Matches
+        if (proRes.status === 'fulfilled' && proRes.value.data && proRes.value.data.length > 0) {
+            renderProMatches(proRes.value.data);
+        } else {
+            document.getElementById('proMatchesContainer').innerHTML = getEmptyState('fa-solid fa-gamepad', 'No Matches Scheduled', 'The pro circuit is currently at rest.');
+        }
 
-    fetchPromises.push(secureFetch({ action: 'get_scouting' }).then(res => {
-        if (res.status === "success" && res.data && res.data.length > 0) renderScouting(res.data);
-        else document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
-    }).catch(() => { document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-wifi', 'Connection Error', 'Unable to load scouting data.'); }));
+        // 4. Scouting
+        if (scoutRes.status === 'fulfilled' && scoutRes.value.data && scoutRes.value.data.length > 0) {
+            renderScouting(scoutRes.value.data);
+        } else {
+            document.getElementById('scoutingContainer').innerHTML = getEmptyState('fa-solid fa-user-secret', 'No Profiles Found', 'No verified scouting data is available.');
+        }
 
-    fetchPromises.push(loadQuestsFromSheets());
-    fetchPromises.push(loadLeaderboard()); 
+        // 5. Quests & Leaderboard
+        await Promise.allSettled([loadQuestsFromSheets(), loadLeaderboard()]);
 
-    await Promise.allSettled(fetchPromises);
-    if (typeof hideLoader === 'function') hideLoader();
+    } catch (err) {
+        console.error("Backend fetch error:", err);
+    } finally {
+        if (typeof hideLoader === 'function') hideLoader();
+    }
 }
-
 function showToast(msg, isError = false) {
     var x = document.getElementById("customToast");
     if(!x) return;
@@ -2435,32 +2458,41 @@ function calculateTimeRemaining(dateStr) {
 }
 
 async function fetchNextMatch(user) {
+    if (!db || !user || !user.email) return;
     try {
-        const [tRes, mRes] = await Promise.all([
-            secureFetch({ action: 'get_tournaments' }),
-            secureFetch({ action: 'get_matches', email: user.email })
+        const [tourneysRes, matchesRes] = await Promise.all([
+            db.from('Tournaments').select('*'),
+            db.from('Matches').select('*').eq('email', user.email)
         ]);
-        let allTourneys = tRes.data || [];
-        let myMatches = mRes.data || [];
+
+        let allTourneys = tourneysRes.data || [];
+        let myMatches = matchesRes.data || [];
         let activeMatches = [];
+
         myMatches.forEach(entry => {
             let t = allTourneys.find(x => x.id === entry.match_id || x.title === entry.tournament_title);
-            if(t && t.status && !t.status.toLowerCase().includes('completed')) { activeMatches.push(t); }
+            if (t && t.status && !t.status.toLowerCase().includes('completed')) {
+                activeMatches.push(t);
+            }
         });
 
         const widget = document.getElementById('nextMatchWidget');
-        if(activeMatches.length > 0) {
-            let next = activeMatches[0]; 
+        if (activeMatches.length > 0) {
+            let next = activeMatches[0];
             document.getElementById('nmTitle').innerText = next.title;
             let status = next.status || 'Upcoming';
             let sColor = status.toLowerCase().includes('live') ? 'var(--accent-green)' : 'var(--accent-cyan)';
             let rawDate = next.match_period || next.date;
-            let displayDate = rawDate;
-            if (rawDate) { let fDate = formatDateTime(rawDate); if (fDate !== "TBA" && fDate !== "TBD" && fDate !== rawDate) { displayDate = fDate; } }
+            let displayDate = rawDate ? formatDateTime(rawDate) : "TBA";
+
             document.getElementById('nmDate').innerHTML = `<span style="color:${sColor}; font-weight:bold; font-family:var(--font-head);"><i class="fa-solid fa-satellite-dish fa-fade"></i> ${status.toUpperCase()}</span> • ${displayDate}`;
             widget.style.display = 'block';
-        } else { widget.style.display = 'none'; }
-    } catch(e) {}
+        } else {
+            widget.style.display = 'none';
+        }
+    } catch (e) {
+        console.error("Next match error:", e);
+    }
 }
 
 function renderFeaturedTournaments(featuredArray) {
@@ -2658,23 +2690,30 @@ function toggleBottomSheet() {
 // --- CLOUD-SYNCED DAILY QUESTS ---
 let currentDynamicQuests = [];
 async function loadQuestsFromSheets() {
-    try {
-        let result = await secureFetch({ action: 'get_quests' });
-        let data = result.data || result.message || result.result || result;
-        if (result.status === "success" && data && data.length > 0) {
-            currentDynamicQuests = data; 
-            renderQuests(); 
-        } else {
-            document.getElementById('dynamicQuestsWrapper').innerHTML = getEmptyState('fa-solid fa-list-check', 'No Quests Available', 'Check back later for new daily challenges.');
-        }
-    } catch(e) {
-        currentDynamicQuests = [
-            { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: 'home.html' },
-            { id: 'q2', title: 'Top 10 in BR Match', reward: 150, reqType: 'open', reqVal: '', redirect: 'home.html' },
-            { id: 'q3', title: 'Ignore Penalty Zone Demo', reward: 0, reqType: 'penalty', reqVal: '', redirect: 'home.html' }
-        ];
-        renderQuests();
+    if (!db) {
+        fallbackQuests();
+        return;
     }
+    try {
+        const { data, error } = await db.from('Quests').select('*').order('id', { ascending: true });
+        if (!error && data && data.length > 0) {
+            currentDynamicQuests = data;
+            renderQuests();
+        } else {
+            fallbackQuests();
+        }
+    } catch (e) {
+        fallbackQuests();
+    }
+}
+
+function fallbackQuests() {
+    currentDynamicQuests = [
+        { id: 'q1', title: 'Achieve 10 Headshots', reward: 50, reqType: 'open', reqVal: '', redirect: 'home.html' },
+        { id: 'q2', title: 'Top 10 in BR Match', reward: 150, reqType: 'open', reqVal: '', redirect: 'home.html' },
+        { id: 'q3', title: 'Daily Battle Check-in', reward: 100, reqType: 'open', reqVal: '', redirect: 'home.html' }
+    ];
+    renderQuests();
 }
 
 function renderQuests() {
@@ -2734,17 +2773,17 @@ function switchTab(tabId, tabElement) {
 }
 
 async function loadLeaderboard() {
+    if (!db) return;
     try {
-        const apiRes = await secureFetch({ action: 'get_community_leaderboard', t: new Date().getTime() });
-        const data = apiRes.data || apiRes.message || apiRes.result || apiRes;
+        const [orgs, teams, contribs] = await Promise.all([
+            db.from('Users').select('username, wins, avatar').eq('role', 'Organizer').order('wins', { ascending: false }).limit(10),
+            db.from('Clans').select('clan_name, wins, logo_url').order('wins', { ascending: false }).limit(10),
+            db.from('Users').select('username, earnings, avatar').order('earnings', { ascending: false }).limit(10)
+        ]);
 
-        if (data && (data.organizers || data.teams || data.contributors)) {
-            renderLeaderboardList('organizers', data.organizers || [], 'Wins', '', 'var(--accent-cyan)');
-            renderLeaderboardList('teams', data.teams || [], 'Wins', '', 'var(--accent-purple)');
-            renderLeaderboardList('contributors', data.contributors || [], 'Earnings', '₹ ', '#ffd700');
-        } else {
-            throw new Error("Leaderboard data format mismatch or empty.");
-        }
+        renderLeaderboardList('organizers', (orgs.data || []).map(o => ({ name: o.username, value: o.wins, image: o.avatar })), 'Wins', '', 'var(--accent-cyan)');
+        renderLeaderboardList('teams', (teams.data || []).map(t => ({ name: t.clan_name, value: t.wins, image: t.logo_url })), 'Wins', '', 'var(--accent-purple)');
+        renderLeaderboardList('contributors', (contribs.data || []).map(c => ({ name: c.username, value: c.earnings, image: c.avatar })), 'Earnings', '₹ ', '#ffd700');
     } catch (e) {
         renderLeaderboardList('organizers', [], '', '', '');
         renderLeaderboardList('teams', [], '', '', '');
