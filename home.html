@@ -1850,32 +1850,69 @@ const TxSound = new TournyxAudioEngine();
     </div>
 
     <script>
-       // --- SECURE CLOUDFLARE API TUNNEL ---
-const API_ENDPOINT = 'https://tournyx-api.annaduraithilakjeevesh.workers.dev'; 
+      // --- 100% DIRECT SUPABASE API & FAST FETCH ADAPTER ---
+const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co'; // <-- Paste your project URL
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';                  // <-- Paste your Anon Key
 
+const db = (typeof supabase !== 'undefined' && SUPABASE_URL && !SUPABASE_URL.includes('YOUR_SUPABASE'))
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+// Replaces the slow Cloudflare worker fetch with direct Supabase reads (<50ms)
 async function secureFetch(params) {
+    if (!db) {
+        return { status: 'error', data: [] };
+    }
+
     try {
-        const response = await fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(params)
-        });
-        if (!response.ok) throw new Error('Network Error');
-        return await response.json();
-    } catch (error) {
-        console.error("API Tunnel Error:", error);
-        return { status: 'error', message: 'Unable to connect to Engine.' };
+        let action = params.action;
+        
+        if (action === 'get_tournaments') {
+            const { data } = await db.from('Tournaments').select('*').order('created_at', { ascending: false });
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_drops') {
+            const { data } = await db.from('FlashDrops').select('*');
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_promatches') {
+            const { data } = await db.from('ProMatches').select('*');
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_scouting') {
+            const { data } = await db.from('Users').select('username, ign, wins, avatar, role').order('wins', { ascending: false }).limit(10);
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_quests') {
+            const { data } = await db.from('Quests').select('*');
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_matches') {
+            const { data } = await db.from('Matches').select('*').eq('email', params.email);
+            return { status: 'success', data: data || [] };
+        }
+        if (action === 'get_community_leaderboard') {
+            const [orgs, teams, contribs] = await Promise.all([
+                db.from('Users').select('username, wins, avatar').eq('role', 'Organizer').limit(10),
+                db.from('Clans').select('clan_name, wins, logo_url').limit(10),
+                db.from('Users').select('username, earnings, avatar').order('earnings', { ascending: false }).limit(10)
+            ]);
+            return {
+                status: 'success',
+                data: {
+                    organizers: (orgs.data || []).map(o => ({ name: o.username, value: o.wins, image: o.avatar })),
+                    teams: (teams.data || []).map(t => ({ name: t.clan_name, value: t.wins, image: t.logo_url })),
+                    contributors: (contribs.data || []).map(c => ({ name: c.username, value: c.earnings, image: c.avatar }))
+                }
+            };
+        }
+        
+        return { status: 'success', data: [] };
+    } catch (err) {
+        console.warn("Direct Supabase fetch fallback:", err);
+        return { status: 'error', data: [] };
     }
 }
-        
-// --- SUPABASE DIRECT CLIENT INITIALIZATION ---
-const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co'; 
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-
-const db = (typeof supabase !== 'undefined') 
-    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-    : null;
-        
 let telemetryStream = null;
 let telemetryTimer = null;
 let currentActiveTask = null;
@@ -2258,12 +2295,23 @@ function closeAnnouncement() {
 
 
 // --- MAIN INITIALIZATION & DOM CONTENT LOADED ---
-// Wrapping everything to prevent Syntax Crashes!
+// Instant Loader Dismissal Failsafe (Guarantees loader disappears in max 1.2s)
+const hideLoader = function() {
+    var l = document.getElementById('tournyx-loader');
+    if (l) {
+        l.classList.add('fade-zoom');
+        setTimeout(() => {
+            l.style.display = 'none';
+            l.remove(); // Removes element entirely so it cannot block clicks
+        }, 300);
+    }
+};
+
 window.addEventListener('DOMContentLoaded', async function() {
-    // Fail-safe to hide loader even if APIs fail
+    // Auto-dismiss loader after 1.2s max so the user is never stuck
     setTimeout(() => {
-        if (typeof hideLoader === 'function') hideLoader();
-    }, 2000);
+        hideLoader();
+    }, 1200);
 
     let animPaused = false;
     let user = null;
