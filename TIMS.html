@@ -209,6 +209,21 @@
             40% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px var(--accent-cyan); }
         }
     </style>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((reg) => console.log('Tournyx Service Worker Active:', reg.scope))
+                .catch((err) => console.warn('Service Worker registration failed:', err));
+        });
+    }
+
+    // Instant redirect if network drops while actively browsing
+    window.addEventListener('offline', () => {
+        sessionStorage.setItem('tournyx_last_route', window.location.href);
+        window.location.href = '/404.html?code=offline';
+    });
+</script>
 </head>
 <body>
     <!-- GLOBAL BOOT LOADER -->
