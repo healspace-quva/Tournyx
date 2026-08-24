@@ -159,28 +159,38 @@
   box-shadow: 0 0 35px rgba(0, 242, 255, 0.8);
 }
 
-/* ─── VISION AI FLOATING BUBBLE ─── */
-@keyframes engBubbleFloatGlow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.4), inset 0 0 10px rgba(0, 242, 255, 0.2);
-    transform: translateY(0px);
-  }
-  50% {
-    box-shadow: 0 0 35px rgba(0, 242, 255, 0.75), inset 0 0 20px rgba(189, 0, 255, 0.35);
-    transform: translateY(-5px);
-  }
+/* ─── CYBER CREST LOGO SVG ANIMATIONS ─── */
+@keyframes txRingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
+@keyframes txCorePulse {
+  0%, 100% { transform: scale(0.88); opacity: 0.85; }
+  50% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 8px #00f2ff); }
+}
+
+.tx-ring-spin {
+  transform-origin: 50px 50px;
+  animation: txRingSpin 10s linear infinite;
+}
+
+.tx-core-pulse {
+  transform-origin: 50px 50px;
+  animation: txCorePulse 2.2s ease-in-out infinite;
+}
+
+/* ─── VISION AI FLOATING BUBBLE ─── */
 #tx-vision-bubble {
   position: fixed;
-  bottom: 95px;
-  right: 18px;
+  top: 0;
+  left: 0;
   z-index: 9998;
-  width: 62px;
-  height: 62px;
-  background: rgba(8, 8, 16, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  width: 66px;
+  height: 66px;
+  background: rgba(6, 6, 14, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid var(--eng-cyan);
   border-radius: 50%;
   display: flex;
@@ -188,11 +198,15 @@
   justify-content: center;
   cursor: grab;
   user-select: none;
-  animation: engBubbleFloatGlow 3s ease-in-out infinite;
-  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2),
-              height 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2),
-              border-radius 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2),
-              padding 0.3s ease;
+  touch-action: none;
+  will-change: transform;
+  box-shadow: 0 0 25px rgba(0, 242, 255, 0.45), inset 0 0 15px rgba(189, 0, 255, 0.25);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#tx-vision-bubble.is-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 0 45px rgba(0, 242, 255, 0.85), inset 0 0 25px rgba(189, 0, 255, 0.6) !important;
 }
 
 #tx-vision-bubble.expanded {
@@ -201,8 +215,8 @@
   border-radius: 20px;
   padding: 16px;
   cursor: default;
-  animation: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 242, 255, 0.3);
+  touch-action: auto;
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 255, 0.35);
 }
 
 .tx-hud-chip {
@@ -216,6 +230,30 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+/* ─── MOBILE TOUCH & BUTTON FIXES ─── */
+.em-nav-btn, .em-task-claim-btn, .auth-btn, .btn-pulse-system, .dna-card, .rankup-continue-btn, .ew2-open-btn, .btn-claim-streak {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ─── ADAPTIVE DEVICE GRAPHIC TIERS ─── */
+body.eng-tier-performance * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.eng-tier-performance .engine-modal-box,
+body.eng-tier-performance #tx-vision-bubble {
+  background: #0d0d15 !important;
+  border: 1px solid rgba(0, 242, 255, 0.3) !important;
+}
+body.eng-tier-ultra {
+  /* Ultra visual auras enabled */
 }
 
 /* ─── RADAR & CANVAS CONTAINERS ─── */
@@ -319,20 +357,127 @@
   animation: fadeIn 0.2s ease;
 }
 
-/* ─── RESPONSIVENESS ─── */
+/* ─── MODAL & SCROLLBAR LAYOUT FIXES ─── */
+.engine-modal-box {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgba(10, 10, 18, 0.94);
+  border: 1px solid rgba(0, 242, 255, 0.25);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 255, 0.15);
+}
+
+.engine-modal-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.em-nav-menu {
+  width: 220px;
+  overflow-y: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.em-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  min-height: 0;
+}
+
+.em-tab-content::-webkit-scrollbar,
+.em-nav-menu::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.em-tab-content::-webkit-scrollbar-thumb,
+.em-nav-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 242, 255, 0.25);
+  border-radius: 3px;
+}
+
+/* ─── RESPONSIVENESS (MOBILE & TABLET) ─── */
 @media (max-width: 768px) {
   #tx-vision-bubble {
-    bottom: 85px;
-    right: 12px;
-    width: 54px;
-    height: 54px;
+    width: 56px;
+    height: 56px;
   }
-  #tx-vision-bubble.expanded {
-    width: 250px;
+  
+  .engine-modal-box {
+    width: 95% !important;
+    max-height: 92vh !important;
+    border-radius: 16px !important;
   }
+
+  .engine-modal-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 12px 14px !important;
+  }
+
+  .em-header-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    width: 100% !important;
+    gap: 4px !important;
+    text-align: center;
+  }
+
+  .em-stat-item {
+    padding: 4px 2px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .engine-modal-body {
+    flex-direction: column !important;
+  }
+
+  .em-nav-menu {
+    width: 100% !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+
+  .em-nav-btn {
+    padding: 7px 12px !important;
+    font-size: 0.72rem !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+  }
+
+  .em-tab-content {
+    padding: 12px !important;
+  }
+
+  .em-skill-bars {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dna-grid {
+    grid-template-columns: 1fr !important;
+  }
+
   .rankup-tier-text {
     font-size: 2.1rem;
   }
+  
   .rankup-badge-icon {
     font-size: 3.5rem;
   }
