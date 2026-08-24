@@ -1,8 +1,10 @@
 /**
  * ==============================================================================
- * TOURNYX ENGINE v2.0 - MASTER ENGINE PLUGIN
+ * TOURNYX ENGINE v3.0 - MASTER ESPORTS OS & PLUGIN
  * Architecture: Solo Levelling Hero System x Indian Esports x Vision AI
- * Database: Supabase (PostgreSQL + Realtime Channel)
+ * Database: Supabase (PostgreSQL + Realtime Sync + Edge Handlers)
+ * Device Adaptive: Low-End (Performance) to High-End (Ultra Cyberpunk)
+ * Native Bridge: Flutter Android / iOS Ready
  * ==============================================================================
  */
 
@@ -51,24 +53,48 @@ const TournyxEngine = (() => {
     visionInterval: null,
     audioCtx: null,
     bossRaidData: null,
+    graphicTier: 'balanced',
   };
 
   // ─── 3. INITIALIZATION ─────────────────────────────────────────────────────
   function init(dbInstance) {
-    state.db = dbInstance;
+    state.db = dbInstance || (typeof db !== 'undefined' ? db : null);
     try { state.user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e) {}
     
-    _injectDynamicTabs();
+    _detectDevicePerformance();
+    _mountEngineModal();
     _bindDOMEvents();
     loadEngineData();
     _initRealtimeSubscription();
     _initBossRaid();
     
-    console.log('%c⚡ TOURNYX ENGINE v2.0 ACTIVE', 'color:#00f2ff; font-weight:bold; font-size:14px;');
+    console.log('%c⚡ TOURNYX ENGINE v3.0 MASTER ACTIVE', 'color:#00f2ff; font-weight:bold; font-size:14px;');
   }
 
-  // ─── 4. SOUND SYNTHESIZER (WEB AUDIO API) ──────────────────────────────────
+  // ─── 4. ADAPTIVE DEVICE PERFORMANCE OPTIMIZER ──────────────────────────────
+  function _detectDevicePerformance() {
+    const cores = navigator.hardwareConcurrency || 4;
+    const memory = navigator.deviceMemory || 4;
+    
+    if (cores <= 2 || memory <= 2) {
+      setGraphicTier('performance');
+    } else if (cores >= 8 && memory >= 8) {
+      setGraphicTier('ultra');
+    } else {
+      setGraphicTier('balanced');
+    }
+  }
+
+  function setGraphicTier(tier) {
+    state.graphicTier = tier;
+    document.body.classList.remove('eng-tier-performance', 'eng-tier-balanced', 'eng-tier-ultra');
+    document.body.classList.add('eng-tier-' + tier);
+    localStorage.setItem('tournyx_graphic_tier', tier);
+  }
+
+  // ─── 5. SOUND SYNTHESIZER (WEB AUDIO API) ──────────────────────────────────
   function _playChime(type) {
+    if (state.graphicTier === 'performance') return;
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!AudioContext) return;
@@ -103,28 +129,31 @@ const TournyxEngine = (() => {
     } catch(e) {}
   }
 
-  // ─── 5. DATA SYNC & SUPABASE LOADER ────────────────────────────────────────
+  // ─── 6. DATA SYNC & SUPABASE LOADER ────────────────────────────────────────
   async function loadEngineData() {
+    try { state.user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e) {}
+    
     if (!state.user || !state.user.email) {
       _renderGuestWidget();
       return;
     }
+
+    const cleanEmail = (state.user.email || '').trim().toLowerCase();
 
     if (state.db) {
       try {
         const { data, error } = await state.db
           .from('player_engine')
           .select('*')
-          .eq('email', state.user.email)
-          .single();
+          .ilike('email', cleanEmail)
+          .limit(1);
 
-        if (!error && data) {
-          state.engineData = data;
-          _updateEngineWidget(data);
-          _updateModalHeader(data);
+        if (!error && data && data.length > 0) {
+          state.engineData = data[0];
+          _updateEngineWidget(data[0]);
+          _updateModalHeader(data[0]);
           return;
         } else {
-          // Create user engine record if not found
           await _bootstrapProfile();
           return;
         }
@@ -133,7 +162,6 @@ const TournyxEngine = (() => {
       }
     }
 
-    // Local / Offline fallback
     _computeLocalProfile();
   }
 
@@ -147,7 +175,7 @@ const TournyxEngine = (() => {
 
     const defaultProfile = {
       user_id: state.user.id || '00000000-0000-0000-0000-000000000000',
-      email: state.user.email,
+      email: (state.user.email || '').trim().toLowerCase(),
       username: state.user.username || state.user.ign || 'Player',
       power_level: power,
       rank_tier: _getRankTierByPower(power),
@@ -234,7 +262,7 @@ const TournyxEngine = (() => {
     return RANK_TIERS.find(r => r.label === label) || RANK_TIERS[0];
   }
 
-  // ─── 6. WIDGET & HEADER DOM UPDATERS ───────────────────────────────────────
+  // ─── 7. WIDGET & HEADER DOM UPDATERS ───────────────────────────────────────
   function _updateEngineWidget(data) {
     const meta = _getRankMeta(data.rank_tier);
     const setHtml = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
@@ -280,14 +308,110 @@ const TournyxEngine = (() => {
     }
   }
 
-  // ─── 7. MODAL LOGIC & TAB SWITCHER ─────────────────────────────────────────
+  // ─── 8. DYNAMIC ENGINE MODAL MOUNTER ───────────────────────────────────────
+  function _mountEngineModal() {
+    if (document.getElementById('ultimateSystemModal')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ultimateSystemModal';
+    overlay.className = 'auth-popup-overlay';
+    overlay.onclick = (e) => { if (e.target === overlay) closeEngineModal(); };
+
+    overlay.innerHTML = `
+      <div class="engine-modal-box glass-panel">
+        
+        <!-- TOP HEADER BAR -->
+        <div class="engine-modal-header">
+          <div class="em-header-left" style="display:flex; align-items:center; gap:10px;">
+            <div class="tx-cyber-crest" style="width:36px; height:36px;">
+              <svg width="36" height="36" viewBox="0 0 100 100" class="tx-crest-svg">
+                <defs>
+                  <linearGradient id="txHdrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2ff" />
+                    <stop offset="50%" stop-color="#bd00ff" />
+                    <stop offset="100%" stop-color="#ff3300" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="44" fill="none" stroke="url(#txHdrGrad)" stroke-width="3" stroke-dasharray="18 8 36 8" class="tx-ring-spin" />
+                <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.95)" stroke="#00f2ff" stroke-width="2" />
+                <circle cx="50" cy="50" r="14" fill="url(#txHdrGrad)" class="tx-core-pulse" />
+                <path d="M40,42 L60,42 M50,42 L50,60 M56,48 L64,60 M44,48 L36,60" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
+              </svg>
+            </div>
+            <div>
+              <h2 style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:1.15rem; margin:0; letter-spacing:1px; line-height:1.1;">TOURNYX ENGINE</h2>
+              <span style="font-size:0.65rem; color:#00f2ff; letter-spacing:1px; font-weight:bold;">SOLO LEVELLING ESPORTS OS</span>
+            </div>
+          </div>
+          
+          <div class="em-user-badge">
+            <img src="https://via.placeholder.com/40" id="emUserAvatar" class="em-avatar" alt="Avatar">
+            <div class="em-user-info">
+              <span class="em-username" id="emUserName">PlayerX</span>
+              <span class="em-user-lvl" id="emUserLvl">LEVEL 1</span>
+            </div>
+          </div>
+
+          <div class="em-header-stats">
+            <div class="em-stat-item"><span>POWER</span><b id="emStatPower">100</b></div>
+            <div class="em-stat-item"><span>RANK</span><b id="emStatRank" style="color:#00f2ff;">E-RANK</b></div>
+            <div class="em-stat-item"><span>WIN RATE</span><b id="emStatWinRate">0%</b></div>
+            <div class="em-stat-item"><span>XP</span><b id="emStatXP">1,200</b></div>
+          </div>
+
+          <i class="fa-solid fa-xmark auth-close" onclick="TournyxEngineAPI.closeEngineModal()" style="cursor:pointer; font-size:1.3rem;"></i>
+        </div>
+
+        <!-- MAIN BODY -->
+        <div class="engine-modal-body">
+          
+          <!-- SIDEBAR NAV -->
+          <div class="em-nav-menu">
+            <button class="em-nav-btn active" data-tab="player-analysis" onclick="TournyxEngineAPI.switchEngineTab('player-analysis', this)"><i class="fa-solid fa-chart-column"></i> PLAYER ANALYSIS</button>
+            <button class="em-nav-btn" data-tab="todays-tasks" onclick="TournyxEngineAPI.switchEngineTab('todays-tasks', this)"><i class="fa-solid fa-list-check"></i> TODAY'S TASKS</button>
+            <button class="em-nav-btn" data-tab="ai-recommendations" onclick="TournyxEngineAPI.switchEngineTab('ai-recommendations', this)"><i class="fa-solid fa-robot"></i> AI RECOMMENDATIONS</button>
+            <button class="em-nav-btn" data-tab="role-training" onclick="TournyxEngineAPI.switchEngineTab('role-training', this)"><i class="fa-solid fa-crosshairs"></i> ROLE & TRAINING</button>
+            <button class="em-nav-btn" data-tab="player-evolution" onclick="TournyxEngineAPI.switchEngineTab('player-evolution', this)"><i class="fa-solid fa-bolt"></i> PLAYER EVOLUTION</button>
+            <button class="em-nav-btn" data-tab="inventory" onclick="TournyxEngineAPI.switchEngineTab('inventory', this)"><i class="fa-solid fa-briefcase"></i> INVENTORY</button>
+            <button class="em-nav-btn" data-tab="hidden-quests" onclick="TournyxEngineAPI.switchEngineTab('hidden-quests', this)"><i class="fa-solid fa-user-ninja"></i> HIDDEN QUESTS</button>
+            <button class="em-nav-btn" data-tab="system-log" onclick="TournyxEngineAPI.switchEngineTab('system-log', this)"><i class="fa-solid fa-terminal"></i> SYSTEM LOG</button>
+            <button class="em-nav-btn" data-tab="vision-ai" onclick="TournyxEngineAPI.switchEngineTab('vision-ai', this)"><i class="fa-solid fa-eye"></i> VISION AI SCANNER</button>
+            <button class="em-nav-btn" data-tab="boss-raids" onclick="TournyxEngineAPI.switchEngineTab('boss-raids', this)"><i class="fa-solid fa-skull"></i> BOSS RAIDS</button>
+            <button class="em-nav-btn" data-tab="regional-ranks" onclick="TournyxEngineAPI.switchEngineTab('regional-ranks', this)"><i class="fa-solid fa-map-pin"></i> BHARAT RANKS</button>
+          </div>
+
+          <!-- TAB DISPLAY VIEW -->
+          <div class="em-tab-content">
+            <div class="em-pane active" id="tab-player-analysis"></div>
+            <div class="em-pane" id="tab-todays-tasks"></div>
+            <div class="em-pane" id="tab-ai-recommendations"></div>
+            <div class="em-pane" id="tab-role-training"></div>
+            <div class="em-pane" id="tab-player-evolution"></div>
+            <div class="em-pane" id="tab-inventory"></div>
+            <div class="em-pane" id="tab-hidden-quests"></div>
+            <div class="em-pane" id="tab-system-log"></div>
+            <div class="em-pane" id="tab-vision-ai"></div>
+            <div class="em-pane" id="tab-boss-raids"></div>
+            <div class="em-pane" id="tab-regional-ranks"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+  }
+
   function openSystemPopup() {
+    try { state.user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e) {}
+    
     if (!state.user || !state.user.email) {
       document.getElementById('authPopup')?.classList.add('active');
       return;
     }
 
+    _mountEngineModal();
     _updateModalHeader(state.engineData);
+    
     const modal = document.getElementById('ultimateSystemModal');
     if (modal) {
       modal.classList.add('active');
@@ -312,7 +436,9 @@ const TournyxEngine = (() => {
 
     const pane = document.getElementById('tab-' + tabId);
     if (pane) pane.classList.add('active');
-    if (btnEl) btnEl.classList.add('active');
+    
+    const targetBtn = btnEl || document.querySelector(`[data-tab="${tabId}"]`);
+    if (targetBtn) targetBtn.classList.add('active');
 
     state.currentTab = tabId;
     _loadTabContent(tabId);
@@ -336,52 +462,64 @@ const TournyxEngine = (() => {
 
   // ─── TAB 1: PLAYER ANALYSIS + RADAR ────────────────────────────────────────
   function _renderPlayerAnalysis() {
+    const pane = document.getElementById('tab-player-analysis');
+    if (!pane || !state.engineData) return;
     const data = state.engineData;
-    if (!data) return;
 
     const skills = [
-      { key: 'skill_combat',      label: 'Combat',       color: '#ff4d4d' },
-      { key: 'skill_reaction',    label: 'Reaction',     color: '#00f2ff' },
-      { key: 'skill_strategy',    label: 'Strategy',     color: '#bd00ff' },
-      { key: 'skill_teamwork',    label: 'Teamwork',     color: '#00ff7f' },
-      { key: 'skill_leadership',  label: 'Leadership',   color: '#FFD700' },
-      { key: 'skill_consistency', label: 'Consistency',  color: '#ff9800' },
+      { key: 'skill_combat',      label: 'Combat',       color: '#ff4d4d', icon: 'fa-crosshairs' },
+      { key: 'skill_reaction',    label: 'Reaction',     color: '#00f2ff', icon: 'fa-bolt' },
+      { key: 'skill_strategy',    label: 'Strategy',     color: '#bd00ff', icon: 'fa-brain' },
+      { key: 'skill_teamwork',    label: 'Teamwork',     color: '#00ff7f', icon: 'fa-shield-halved' },
+      { key: 'skill_leadership',  label: 'Leadership',   color: '#FFD700', icon: 'fa-map-location-dot' },
+      { key: 'skill_consistency', label: 'Consistency',  color: '#ff9800', icon: 'fa-arrow-trend-up' },
     ];
-
-    skills.forEach(sk => {
-      const val = data[sk.key] || 50;
-      const item = document.querySelector(`[data-skill="${sk.key}"]`);
-      if (item) {
-        const b = item.querySelector('.em-skill-info b');
-        if (b) b.textContent = val + '%';
-        const bar = item.querySelector('.em-bar-fill');
-        if (bar) {
-          bar.style.width = '0%';
-          setTimeout(() => {
-            bar.style.width = val + '%';
-            bar.style.background = sk.color;
-            bar.style.boxShadow = `0 0 10px ${sk.color}`;
-          }, 100);
-        }
-      }
-    });
 
     const weakest = skills.reduce((a, b) => (data[a.key] || 50) < (data[b.key] || 50) ? a : b);
     const strongest = skills.reduce((a, b) => (data[a.key] || 50) > (data[b.key] || 50) ? a : b);
 
-    const reportEl = document.getElementById('em-ai-report-text');
-    if (reportEl) {
-      reportEl.innerHTML = `
+    pane.innerHTML = `
+      <div class="em-section-box">
+        <div class="em-box-title"><i class="fa-solid fa-chart-line" style="color:var(--accent-cyan);"></i> Hunter Skill Attributes</div>
+        <div class="em-skill-bars" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+          ${skills.map(sk => {
+            const val = data[sk.key] || 50;
+            return `
+              <div class="em-skill-item" style="background:rgba(255,255,255,0.02); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+                <div class="em-skill-info" style="display:flex; justify-content:space-between; font-size:0.78rem; font-family:var(--eng-font-head); color:#ccc; margin-bottom:6px;">
+                  <span><i class="fa-solid ${sk.icon}" style="color:${sk.color};"></i> ${sk.label}</span>
+                  <b style="color:white;">${val}%</b>
+                </div>
+                <div class="em-bar-bg" style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                  <div class="em-bar-fill" style="height:100%; width:${val}%; background:${sk.color}; box-shadow:0 0 10px ${sk.color}; transition:width 0.8s ease;"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="em-radar-box" style="margin-top:15px; background:rgba(14,14,24,0.65); border:1px solid rgba(0,242,255,0.2); border-radius:16px; padding:16px;">
+        <div class="em-box-title" style="font-family:var(--eng-font-head); color:var(--accent-purple); margin-bottom:10px;">
+          <i class="fa-solid fa-spider"></i> 6-Axis Skill Radar Matrix
+        </div>
+        <canvas id="skillRadarCanvas" height="210"></canvas>
+      </div>
+
+      <div class="em-section-box" style="margin-top:15px;">
+        <div class="em-box-title" style="font-family:var(--eng-font-head); color:var(--accent-cyan); margin-bottom:8px;">
+          <i class="fa-solid fa-robot"></i> AI Diagnostic Report & Prescription
+        </div>
         <div style="font-size:0.85rem; color:#ccc; line-height:1.6;">
           <p style="margin-bottom:6px;">🌟 Dominant Trait: <b style="color:#00ff7f;">${strongest.label} (${data[strongest.key]}%)</b></p>
           <p style="margin-bottom:6px;">⚠️ Area for Improvement: <b style="color:#ff4d4d;">${weakest.label} (${data[weakest.key]}%)</b></p>
           <p style="margin-bottom:8px;">💡 AI Coach Prescription: <span style="color:#00f2ff;">Engage in 15 mins of daily ${weakest.label.toLowerCase()} drills to boost overall Power Rating.</span></p>
-          <div style="font-family:var(--font-head); color:var(--accent-purple); font-size:0.8rem; font-weight:bold;">
-            BONUS: Complete drill for <b>+250 XP</b>
+          <div style="font-family:var(--eng-font-head); color:var(--accent-purple); font-size:0.8rem; font-weight:bold;">
+            BONUS: Complete AI drill today for <b>+250 XP</b>
           </div>
         </div>
-      `;
-    }
+      </div>
+    `;
 
     _drawRadarChart(skills, data);
   }
@@ -432,68 +570,120 @@ const TournyxEngine = (() => {
             }
           }
         },
-        animation: { duration: 800 }
+        animation: { duration: state.graphicTier === 'performance' ? 0 : 800 }
       }
     });
   }
 
-  // ─── TAB 2: SMART TASKS ────────────────────────────────────────────────────
-  async function _renderTasksTab() {
-    const container = document.getElementById('em-tasks-container');
-    if (!container) return;
+  // ─── TAB 2: SMART AI-RECOMMENDED TASKS ─────────────────────────────────────
+  function _generateAITasksForPlayer(dna, weakest) {
+    const roleTasks = {
+      Rusher: [
+        { id: 'ai_r1', task_title: 'Close-Range Assault: Eliminate 10 Enemies with SMG/Shotgun', xp_reward: 250, target: 10, progress: 0, is_completed: false },
+        { id: 'ai_r2', task_title: 'Entry Fragger: Secure First Blood in 2 Matches', xp_reward: 300, target: 2, progress: 0, is_completed: false },
+        { id: 'ai_r3', task_title: 'Deal 2,500 Total Damage in Ranked BR', xp_reward: 200, target: 2500, progress: 0, is_completed: false }
+      ],
+      Sniper: [
+        { id: 'ai_s1', task_title: 'Marksman Precision: Land 8 Headshots from >100m', xp_reward: 300, target: 8, progress: 0, is_completed: false },
+        { id: 'ai_s2', task_title: 'Eliminate 5 Enemies with Sniper / DMR Rifles', xp_reward: 250, target: 5, progress: 0, is_completed: false },
+        { id: 'ai_s3', task_title: 'Survive in Top 3 without taking early zone damage', xp_reward: 200, target: 1, progress: 0, is_completed: false }
+      ],
+      Support: [
+        { id: 'ai_sp1', task_title: 'Field Medic: Revive 4 Downed Squadmates', xp_reward: 250, target: 4, progress: 0, is_completed: false },
+        { id: 'ai_sp2', task_title: 'Deploy Smoke & Utility in 5 Combat Engagements', xp_reward: 200, target: 5, progress: 0, is_completed: false },
+        { id: 'ai_sp3', task_title: 'Secure Top 5 Squad Finish in 3 Consecutive Games', xp_reward: 350, target: 3, progress: 0, is_completed: false }
+      ],
+      IGL: [
+        { id: 'ai_igl1', task_title: 'Strategic Mastery: Lead Squad to Victory (#1 Winner Winner)', xp_reward: 400, target: 1, progress: 0, is_completed: false },
+        { id: 'ai_igl2', task_title: 'Safe Zone Dominance: Execute 4 Zone Rotations inside Top 10', xp_reward: 250, target: 4, progress: 0, is_completed: false },
+        { id: 'ai_igl3', task_title: 'Maintain 60%+ Squad Survival Rate across 3 Games', xp_reward: 300, target: 3, progress: 0, is_completed: false }
+      ]
+    };
 
-    container.innerHTML = `<div style="color:var(--accent-cyan); text-align:center; padding:25px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Syncing missions...</div>`;
+    const specificRoleList = roleTasks[dna] || roleTasks['Rusher'];
+    const weakDrill = {
+      id: 'ai_weak1',
+      task_title: `AI Prescription Drill: Practice ${weakest.label} Focus in TDM`,
+      xp_reward: 200,
+      target: 1,
+      progress: 0,
+      is_completed: false
+    };
+
+    return [weakDrill, ...specificRoleList];
+  }
+
+  async function _renderTasksTab() {
+    const pane = document.getElementById('tab-todays-tasks');
+    if (!pane || !state.engineData) return;
+
+    const data = state.engineData;
+    const skills = [
+      { key: 'skill_combat', label: 'Combat' },
+      { key: 'skill_reaction', label: 'Reaction' },
+      { key: 'skill_strategy', label: 'Strategy' },
+      { key: 'skill_teamwork', label: 'Teamwork' },
+      { key: 'skill_leadership', label: 'Leadership' },
+      { key: 'skill_consistency', label: 'Consistency' },
+    ];
+    const weakest = skills.reduce((a, b) => (data[a.key] || 50) < (data[b.key] || 50) ? a : b);
+    const dna = data.player_dna || 'Rusher';
 
     let tasks = [];
     if (state.db && state.user?.email) {
       try {
-        const { data } = await state.db
+        const { data: dbTasks } = await state.db
           .from('engine_tasks')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(6);
-        if (data && data.length > 0) tasks = data;
+          .limit(5);
+        if (dbTasks && dbTasks.length > 0) tasks = dbTasks;
       } catch(e) {}
     }
 
     if (tasks.length === 0) {
-      tasks = [
-        { id: 'tsk1', task_title: 'Achieve 10 Headshots in Battle Royale', xp_reward: 200, progress: 0, target: 10, is_completed: false },
-        { id: 'tsk2', task_title: 'Survive in Top 3 Squads for 2 Matches', xp_reward: 250, progress: 0, target: 2, is_completed: false },
-        { id: 'tsk3', task_title: 'Deal 2500 Damage with Assault Rifles', xp_reward: 180, progress: 0, target: 2500, is_completed: false },
-        { id: 'tsk4', task_title: 'Revive 3 Squadmates during Ranked Play', xp_reward: 150, progress: 0, target: 3, is_completed: false },
-        { id: 'tsk5', task_title: 'Maintain 5-Kill Streak in TDM Mode', xp_reward: 300, progress: 0, target: 1, is_completed: false },
-      ];
+      tasks = _generateAITasksForPlayer(dna, weakest);
     }
 
     const doneCount = tasks.filter(t => t.is_completed).length;
     const progressPct = tasks.length > 0 ? Math.floor((doneCount / tasks.length) * 100) : 0;
 
-    container.innerHTML = `
-      <div class="em-task-list">
-        ${tasks.map(t => `
-          <div class="em-task-card ${t.is_completed ? 'completed' : ''}" id="tsk-card-${t.id}">
-            <div class="em-task-info">
-              <i class="${t.is_completed ? 'fa-solid fa-square-check' : 'fa-regular fa-square'}" style="color:${t.is_completed ? 'var(--accent-green)' : 'var(--text-muted)'}; font-size:1.1rem;"></i>
-              <span>${t.task_title}</span>
-              <small>${t.progress || 0}/${t.target || 1}</small>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="${t.is_completed ? 'em-task-status' : 'em-task-xp'}">
-                ${t.is_completed ? 'COMPLETED ✓' : '+' + t.xp_reward + ' XP'}
-              </span>
-              ${!t.is_completed ? `<button class="em-task-claim-btn" onclick="TournyxEngineAPI.claimTask('${t.id}', ${t.xp_reward}, this)" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:5px 12px; border-radius:8px; font-size:0.72rem; font-family:var(--font-head); font-weight:bold; cursor:pointer;">CLAIM</button>` : ''}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      <div style="margin-top:18px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
-        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-family:var(--font-head); color:var(--text-muted); margin-bottom:6px;">
-          <span>MISSION COMPLETION</span>
-          <span style="color:var(--accent-cyan);">${progressPct}%</span>
+    pane.innerHTML = `
+      <div class="em-section-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="em-box-title" style="margin-bottom:0;"><i class="fa-solid fa-list-check" style="color:var(--accent-cyan);"></i> AI-Recommended Daily Missions</div>
+          <span style="font-size:0.7rem; color:var(--accent-cyan); font-family:var(--eng-font-head, sans-serif); background:rgba(0,242,255,0.1); padding:3px 8px; border-radius:10px; border:1px solid rgba(0,242,255,0.25);">
+            DNA: ${dna.toUpperCase()}
+          </span>
         </div>
-        <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-          <div id="em-task-bar-fill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); transition:width 1s ease;"></div>
+        <p style="font-size:0.78rem; color:#aaa; margin-bottom:14px;">Personalized missions calibrated by AI to target your playstyle and weakest skill (${weakest.label}):</p>
+        
+        <div class="em-task-list">
+          ${tasks.map(t => `
+            <div class="em-task-card ${t.is_completed ? 'completed' : ''}" id="tsk-card-${t.id}">
+              <div class="em-task-info">
+                <i class="${t.is_completed ? 'fa-solid fa-square-check' : 'fa-regular fa-square'}" style="color:${t.is_completed ? 'var(--accent-green)' : 'var(--text-muted)'}; font-size:1.1rem;"></i>
+                <span>${t.task_title}</span>
+                <small>${t.progress || 0}/${t.target || 1}</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="${t.is_completed ? 'em-task-status' : 'em-task-xp'}">
+                  ${t.is_completed ? 'COMPLETED ✓' : '+' + t.xp_reward + ' XP'}
+                </span>
+                ${!t.is_completed ? `<button class="em-task-claim-btn" onclick="TournyxEngineAPI.claimTask('${t.id}', ${t.xp_reward}, this)" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:5px 12px; border-radius:8px; font-size:0.72rem; font-family:var(--eng-font-head, sans-serif); font-weight:bold; cursor:pointer;">CLAIM</button>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-top:18px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-family:var(--eng-font-head, sans-serif); color:var(--text-muted); margin-bottom:6px;">
+            <span>DAILY MISSION PROGRESSION</span>
+            <span style="color:var(--accent-cyan);">${progressPct}%</span>
+          </div>
+          <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+            <div id="em-task-bar-fill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); transition:width 1s ease;"></div>
+          </div>
         </div>
       </div>
     `;
