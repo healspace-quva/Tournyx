@@ -2728,38 +2728,50 @@
         
         // --- TOURNYX ENGINE SYSTEM MODAL LOGIC ---
         function openSystemPopup() {
-            let user = null;
-            try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
-            
-            if(user) {
-                document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
-                document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
-                document.getElementById('emStatPower').innerText = (user.wins ? user.wins * 150 : 450);
-                document.getElementById('emStatWinRate').innerText = (user.matches ? Math.floor((user.wins/user.matches)*100) + "%" : "0%");
-                document.getElementById('emStatXP').innerText = user.points || "5,000";
+            if (window.TournyxEngine && typeof window.TournyxEngine.openSystemPopup === 'function') {
+                window.TournyxEngine.openSystemPopup();
+            } else {
+                let user = null;
+                try { user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e){}
+                if(user) {
+                    document.getElementById('emUserName').innerText = user.username || user.ign || "PlayerX";
+                    document.getElementById('emUserAvatar').src = user.avatar || "https://via.placeholder.com/40";
+                    document.getElementById('emStatPower').innerText = (user.wins ? user.wins * 150 : 450);
+                    document.getElementById('emStatWinRate').innerText = (user.matches ? Math.floor((user.wins/user.matches)*100) + "%" : "0%");
+                    document.getElementById('emStatXP').innerText = user.points || "5,000";
+                }
+                document.getElementById('ultimateSystemModal')?.classList.add('active');
             }
-
-            document.getElementById('ultimateSystemModal').classList.add('active');
-            triggerConfetti(document.querySelector('.btn-pulse-system'));
         }
 
         function closeEngineModal() {
-            document.getElementById('ultimateSystemModal').classList.remove('active');
+            if (window.TournyxEngine && typeof window.TournyxEngine.closeEngineModal === 'function') {
+                window.TournyxEngine.closeEngineModal();
+            } else {
+                document.getElementById('ultimateSystemModal')?.classList.remove('active');
+            }
         }
 
         function switchEngineTab(tabId, btnEl) {
-            document.querySelectorAll('.em-pane').forEach(pane => pane.classList.remove('active'));
-            document.querySelectorAll('.em-nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btnEl.classList.add('active');
+            if (window.TournyxEngine && typeof window.TournyxEngine.switchEngineTab === 'function') {
+                window.TournyxEngine.switchEngineTab(tabId, btnEl);
+            } else {
+                document.querySelectorAll('.em-pane').forEach(pane => pane.classList.remove('active'));
+                document.querySelectorAll('.em-nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('tab-' + tabId)?.classList.add('active');
+                if (btnEl) btnEl.classList.add('active');
+            }
         }
 
         function selectRole(roleCard, roleName) {
-            document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
-            roleCard.classList.add('active');
-            document.getElementById('roleTrainingHeading').innerText = roleName.toUpperCase() + " TRAINING";
-            showToast(`Selected Role: ${roleName}`);
+            if (window.TournyxEngine && typeof window.TournyxEngine.selectRole === 'function') {
+                window.TournyxEngine.selectRole(roleCard, roleName);
+            } else {
+                document.querySelectorAll('.em-role-card').forEach(card => card.classList.remove('active'));
+                roleCard.classList.add('active');
+                document.getElementById('roleTrainingHeading').innerText = roleName.toUpperCase() + " TRAINING";
+                showToast(`Selected Role: ${roleName}`);
+            }
         }
 
         // --- 2. SEARCH BAR LOGIC ---
@@ -2889,6 +2901,11 @@
                 // 6. UI Updates
                 buildStreakTimeline(newStreak);
                 syncLiveWalletPoints(user); 
+                
+                // 7. Live Engine XP Surge
+                if (window.TournyxEngine && typeof window.TournyxEngine.awardStreakXP === 'function') {
+                    window.TournyxEngine.awardStreakXP(reward);
+                }
                 
                 if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
                 btn.innerText = "CLAIMED TODAY"; 
