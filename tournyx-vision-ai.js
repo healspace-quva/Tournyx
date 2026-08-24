@@ -1,8 +1,8 @@
 /**
  * ==============================================================================
- * TOURNYX VISION AI v3.0 - MASTER HUD & NEURAL LINK
- * Indestructible Floating Orb • Full Mobile/Desktop Drag • Cyber Crest
- * Standalone Vision AI Modal • Multi-Window PiP • Mobile App Native Push
+ * TOURNYX VISION AI v3.5 - MASTER COMPANION & NEURAL LINK
+ * Indestructible Floating Cyber Orb • Localized Docked Assistant HUD
+ * Multi-Window PiP • Live Speech Synthesis & Waveform • Mobile Native APK Push
  * ==============================================================================
  */
 
@@ -12,9 +12,10 @@ const TournyxVisionAI = (() => {
 
   let state = {
     bubbleEl: null,
-    modalEl: null,
+    dockEl: null,
     isDragging: false,
     hasMoved: false,
+    isOpen: false,
     posX: 0,
     posY: 0,
     dragStartX: 0,
@@ -26,55 +27,49 @@ const TournyxVisionAI = (() => {
     pipCtx: null,
   };
 
-  // ─── 1. INITIALIZE FLOATING ORB & VISION MODAL ─────────────────────────────
+  // ─── 1. INITIALIZE FLOATING CYBER ORB ──────────────────────────────────────
   function init() {
     if (document.getElementById('tx-vision-bubble')) return;
 
     // 1. Create Floating Orb
     const bubble = document.createElement('div');
     bubble.id = 'tx-vision-bubble';
+    bubble.style.position = 'fixed';
+    bubble.style.zIndex = '99999';
+    bubble.style.cursor = 'grab';
+    bubble.style.userSelect = 'none';
+    bubble.style.touchAction = 'none';
     
     // Initial position on screen (bottom-right)
-    state.posX = Math.max(10, window.innerWidth - 76);
-    state.posY = Math.max(10, window.innerHeight - 150);
+    state.posX = Math.max(10, window.innerWidth - 75);
+    state.posY = Math.max(10, window.innerHeight - 145);
 
     bubble.style.left = `${state.posX}px`;
     bubble.style.top = `${state.posY}px`;
 
     bubble.innerHTML = `
-      <div id="tx-bubble-collapsed" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; pointer-events:none;">
-        <div class="tx-cyber-crest">
-          <svg width="40" height="40" viewBox="0 0 100 100" class="tx-crest-svg">
-            <defs>
-              <linearGradient id="txCrestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00f2ff" />
-                <stop offset="50%" stop-color="#bd00ff" />
-                <stop offset="100%" stop-color="#ff3300" />
-              </linearGradient>
-              <filter id="txGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <circle cx="50" cy="50" r="44" fill="none" stroke="url(#txCrestGrad)" stroke-width="2.5" stroke-dasharray="18 8 36 8" class="tx-ring-spin" />
-            <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.95)" stroke="#00f2ff" stroke-width="2" filter="url(#txGlow)" />
-            <circle cx="50" cy="50" r="14" fill="url(#txCrestGrad)" class="tx-core-pulse" />
-            <path d="M40,42 L60,42 M50,42 L50,60 M56,48 L64,60 M44,48 L36,60" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
-          </svg>
-        </div>
-        <div style="font-size:0.52rem; font-family:var(--eng-font-head, sans-serif); color:#00f2ff; letter-spacing:1px; margin-top:2px; font-weight:900; text-shadow:0 0 8px #00f2ff;">VISION</div>
-        <div id="tx-bubble-xp-tag" style="font-size:0.56rem; font-family:var(--eng-font-head, sans-serif); color:#FFD700; font-weight:900; line-height:1;">+0 XP</div>
+      <div class="tx-cyber-crest" style="width:44px; height:44px; pointer-events:none;">
+        <svg width="44" height="44" viewBox="0 0 100 100" class="tx-crest-svg">
+          <defs>
+            <linearGradient id="txOrbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f2ff" />
+              <stop offset="50%" stop-color="#bd00ff" />
+              <stop offset="100%" stop-color="#ff3300" />
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="44" fill="none" stroke="url(#txOrbGrad)" stroke-width="3" stroke-dasharray="18 8 36 8" class="tx-ring-spin" />
+          <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.95)" stroke="#00f2ff" stroke-width="2" />
+          <circle cx="50" cy="50" r="14" fill="url(#txOrbGrad)" class="tx-core-pulse" />
+          <path d="M40,42 L60,42 M50,42 L50,60 M56,48 L64,60 M44,48 L36,60" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
+        </svg>
       </div>
+      <div id="tx-bubble-pulse-dot" style="position:absolute; top:2px; right:2px; width:10px; height:10px; border-radius:50%; background:#00ff7f; box-shadow:0 0 8px #00ff7f;"></div>
     `;
 
     document.body.appendChild(bubble);
     state.bubbleEl = bubble;
 
-    // 2. Create Standalone Vision AI Modal
-    _injectVisionModal();
+    _injectDockedHUD();
     _bindOptimizedDrag(bubble);
     _initPiPElements();
 
@@ -83,122 +78,6 @@ const TournyxVisionAI = (() => {
     }
   }
 
-  // ─── 2. VISION MODAL INJECTION ─────────────────────────────────────────────
-  function _injectVisionModal() {
-    if (document.getElementById('txVisionModalOverlay')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'txVisionModalOverlay';
-    overlay.className = 'auth-popup-overlay';
-    overlay.onclick = (e) => { if (e.target === overlay) closeVisionModal(); };
-
-    overlay.innerHTML = `
-      <div class="auth-popup-box glass-panel" style="max-width:440px; width:92%; max-height:90vh; overflow-y:auto; border-radius:20px; padding:24px; position:relative;">
-        <i class="fa-solid fa-xmark auth-close" onclick="TournyxVisionAI.closeVisionModal()" style="position:absolute; top:18px; right:20px; cursor:pointer; font-size:1.3rem; color:rgba(255,255,255,0.7);"></i>
-        
-        <!-- HEADER -->
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-          <div style="width:36px; height:36px; border-radius:50%; background:rgba(0,242,255,0.1); border:1.5px solid #00f2ff; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-eye fa-fade" style="color:#00f2ff; font-size:1.1rem;"></i>
-          </div>
-          <div>
-            <h3 style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:1.1rem; margin:0; letter-spacing:1px;">TOURNYX VISION AI HUD</h3>
-            <span style="font-size:0.72rem; color:var(--accent-cyan, #00f2ff);">Neural Matrix Live Game Monitor</span>
-          </div>
-        </div>
-
-        <!-- STATS BAR -->
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; background:rgba(255,255,255,0.03); border-radius:12px; padding:10px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.06); text-align:center;">
-          <div>
-            <div id="vmPower" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#FFD700;">100</div>
-            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Power</div>
-          </div>
-          <div style="border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08);">
-            <div id="vmRank" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#00f2ff;">E-RANK</div>
-            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Tier</div>
-          </div>
-          <div>
-            <div id="vmDailyXP" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#00ff7f;">+420</div>
-            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Today XP</div>
-          </div>
-        </div>
-
-        <!-- ACTIVE MISSION -->
-        <div style="background:rgba(0,0,0,0.5); border-left:3px solid #00f2ff; border-radius:8px; padding:10px; margin-bottom:16px;">
-          <div style="font-size:0.62rem; color:#00f2ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; margin-bottom:2px;">RECOMMENDED HUNTER OBJECTIVE</div>
-          <div id="vmActiveMission" style="font-size:0.8rem; color:#eee; line-height:1.4;">Complete 3 ranked matches to surge power and unlock next tier!</div>
-        </div>
-
-        <!-- ACTIONS -->
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          
-          <!-- MOBILE/PC SCREENSHOT OCR -->
-          <button onclick="TournyxVisionAI.openScreenshotScanner()" style="width:100%; padding:12px; background:linear-gradient(90deg, #ff8c00, #ff3300); border:none; border-radius:10px; color:white; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(255,51,0,0.35);">
-            <i class="fa-solid fa-camera"></i> 📸 SCAN MATCH SCREENSHOT (OCR)
-          </button>
-
-          <!-- LIVE SCREEN / CAMERA MONITOR -->
-          <button onclick="TournyxVisionAI.startScreenScan()" style="width:100%; padding:11px; background:rgba(0,242,255,0.12); border:1px solid #00f2ff; border-radius:10px; color:#00f2ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.82rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px;">
-            <i class="fa-solid fa-desktop"></i> INITIALIZE LIVE NEURAL LINK
-          </button>
-
-          <!-- FLOATING MULTI-WINDOW PiP -->
-          <button onclick="TournyxVisionAI.togglePictureInPicture(event)" style="width:100%; padding:10px; background:rgba(189,0,255,0.1); border:1px solid #bd00ff; border-radius:10px; color:#bd00ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.8rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px;">
-            <i class="fa-solid fa-up-right-from-square"></i> OPEN FLOATING OVERLAY (PiP)
-          </button>
-
-          <!-- NATIVE APP DOWNLOAD PROMPT -->
-          <div style="background:rgba(255,215,0,0.06); border:1px dashed #FFD700; border-radius:10px; padding:12px; margin-top:4px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-              <i class="fa-solid fa-mobile-screen-button" style="color:#FFD700;"></i>
-              <b style="color:#FFD700; font-family:var(--eng-font-head, sans-serif); font-size:0.82rem;">TOURNYX MOBILE APP (ANDROID / IOS)</b>
-            </div>
-            <p style="font-size:0.72rem; color:#ccc; margin:0 0 8px; line-height:1.3;">
-              Get in-game floating bubbles directly inside BGMI & Free Fire with automatic background screen recognition!
-            </p>
-            <button onclick="TournyxVisionAI.downloadAppPrompt()" style="width:100%; padding:8px; background:rgba(255,215,0,0.2); border:1px solid #FFD700; border-radius:6px; color:#FFD700; font-size:0.75rem; font-family:var(--eng-font-head, sans-serif); font-weight:bold; cursor:pointer;">
-              <i class="fa-brands fa-google-play"></i> DOWNLOAD NATIVE APK
-            </button>
-          </div>
-
-          <!-- OPEN SYSTEM ENGINE -->
-          <button onclick="TournyxVisionAI.closeVisionModal(); TournyxEngineAPI.openSystemPopup();" style="width:100%; margin-top:6px; padding:12px; background:linear-gradient(90deg, var(--accent-purple, #bd00ff), var(--accent-cyan, #00f2ff)); border:none; border-radius:10px; color:white; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
-            ⚡ LAUNCH FULL ENGINE OS
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-    state.modalEl = overlay;
-  }
-
-  function openVisionModal() {
-    _injectVisionModal();
-    const modal = document.getElementById('txVisionModalOverlay');
-    if (modal) {
-      modal.classList.add('active');
-      if (window.TournyxEngine && window.TournyxEngine.state.engineData) {
-        updateBubble(window.TournyxEngine.state.engineData);
-      }
-    }
-  }
-
-  function closeVisionModal() {
-    const modal = document.getElementById('txVisionModalOverlay');
-    if (modal) modal.classList.remove('active');
-  }
-
-  function openScreenshotScanner() {
-    closeVisionModal();
-    if (window.TournyxEngine && typeof window.TournyxEngine.openSystemPopup === 'function') {
-      window.TournyxEngine.openSystemPopup();
-      window.TournyxEngine.switchEngineTab('vision-ai');
-      setTimeout(() => {
-        document.getElementById('vas-screenshot-input')?.click();
-      }, 300);
-    }
-  }
 
   function downloadAppPrompt() {
     if (typeof showToast === 'function') {
