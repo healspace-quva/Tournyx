@@ -1618,15 +1618,28 @@
             if (user && !isGuestMode) {
                 if(db) {
                     try {
-                        const { data, error } = await db.from('Users').select('*').eq('email', user.email).single();
-                        if (data && !error) {
-                            user.wins = data.wins || user.wins;
-                            user.ign = data.ign || user.ign;
-                            user.avatar = data.avatar || user.avatar;
-                            user.points = data.earnings || user.points;
+                        const cleanEmail = (user.email || '').trim().toLowerCase();
+                        const { data, error } = await db.from('Users').select('*').ilike('email', cleanEmail).limit(1);
+                        if (data && data.length > 0 && !error) {
+                            const u = data[0];
+                            user.id = u.id || user.id;
+                            user.username = u.username || user.username;
+                            user.wins = u.wins !== undefined ? u.wins : user.wins;
+                            user.ign = u.ign || user.ign;
+                            user.avatar = u.avatar || user.avatar;
+                            user.points = u.points !== undefined ? u.points : user.points;
+                            user.earnings = u.earnings !== undefined ? u.earnings : user.earnings;
+                            user.main_game = u.main_game || user.main_game || 'BGMI';
+                            user.state = u.state || user.state || 'Tamil Nadu';
+                            user.city = u.city || user.city || 'Chennai';
+                            user.role = u.role || user.role || 'player';
+                            user.matches_played = u.matches_played !== undefined ? u.matches_played : user.matches_played;
+                            user.is_premium = u.premium !== undefined ? u.premium : user.is_premium;
                             localStorage.setItem('tournyx_user', JSON.stringify(user));
                         }
-                    } catch(e){}
+                    } catch(e){
+                        console.warn("User fetch warning:", e);
+                    }
                 }
 
                 document.body.classList.add('has-sidebar');
@@ -1963,7 +1976,7 @@
             });
         }
 
-        // PERFECT MOBILE UI SYNC
+        // PERFECT LIVE UI & WALLET SYNC
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
@@ -1977,23 +1990,30 @@
                 const wdT = document.getElementById('walletTicketsDesk');
                 const wdP = document.getElementById('walletPointsDesk');
                 
-                if(wmT) wmT.innerText = tix;
-                if(wmP) wmP.innerText = pts;
-                if(wdT) wdT.innerText = tix;
-                if(wdP) wdP.innerText = pts;
+                if(wmT) wmT.innerText = tix.toLocaleString();
+                if(wmP) wmP.innerText = pts.toLocaleString();
+                if(wdT) wdT.innerText = tix.toLocaleString();
+                if(wdP) wdP.innerText = pts.toLocaleString();
             };
 
             // Inject offline/cached data instantly
             updateValues(points, tickets);
 
-            // Fetch Strict Columns from Database
+            // Fetch Strict Columns from Database live
             if (user.email && db) {
-                db.from('Users').select('points, earnings, role').eq('email', user.email).single()
+                const cleanEmail = (user.email || '').trim().toLowerCase();
+                db.from('Users').select('points, earnings, role, username, ign, avatar, state, main_game').ilike('email', cleanEmail).limit(1)
                 .then(({data, error}) => {
-                    if (!error && data) {
-                        user.points = data.points !== undefined ? data.points : user.points;
-                        user.earnings = data.earnings !== undefined ? data.earnings : user.earnings;
-                        user.role = data.role || user.role;
+                    if (!error && data && data.length > 0) {
+                        const liveRow = data[0];
+                        user.points = liveRow.points !== undefined ? liveRow.points : user.points;
+                        user.earnings = liveRow.earnings !== undefined ? liveRow.earnings : user.earnings;
+                        user.role = liveRow.role || user.role;
+                        user.username = liveRow.username || user.username;
+                        user.ign = liveRow.ign || user.ign;
+                        user.avatar = liveRow.avatar || user.avatar;
+                        user.state = liveRow.state || user.state;
+                        user.main_game = liveRow.main_game || user.main_game;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
                         let livePoints = parseInt(user.points) || 0;
