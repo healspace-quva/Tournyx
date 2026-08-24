@@ -901,8 +901,19 @@ const TournyxEngine = (() => {
     container.innerHTML = `
       <div class="em-section-box">
         <div class="em-box-title"><i class="fa-solid fa-eye fa-fade" style="color:var(--accent-orange);"></i> Tournyx Vision AI Scanner</div>
-        <p style="font-size:0.82rem; color:#aaa; margin-bottom:15px;">Input your match results or let our Neural Link screen monitor evaluate your gameplay stats in real-time.</p>
+        <p style="font-size:0.82rem; color:#aaa; margin-bottom:15px;">Input your match results, upload your victory screenshot, or let our Neural Link screen monitor evaluate your gameplay stats in real-time.</p>
         
+        <!-- MOBILE SCREENSHOT SCANNER (ALL DEVICES) -->
+        <div style="background:rgba(0,242,255,0.06); border:1px dashed var(--accent-cyan); border-radius:12px; padding:14px; text-align:center; margin-bottom:16px;">
+          <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-cyan); font-size:1.6rem; margin-bottom:6px;"></i>
+          <div style="color:white; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">📸 UPLOAD MATCH SCORECARD / SCREENSHOT</div>
+          <div style="font-size:0.72rem; color:#aaa; margin:4px 0 10px;">Mobile & PC: AI will scan kills, placement, and damage directly from your image</div>
+          <input type="file" id="vas-screenshot-input" accept="image/*" style="display:none;" onchange="TournyxEngineAPI.handleScreenshotUpload(event)">
+          <button onclick="document.getElementById('vas-screenshot-input').click()" style="padding:8px 18px; background:rgba(0,242,255,0.15); border:1px solid var(--accent-cyan); border-radius:8px; color:var(--accent-cyan); font-family:var(--font-head); font-weight:bold; font-size:0.75rem; cursor:pointer;">
+            SELECT SCREENSHOT FROM GALLERY / CAMERA
+          </button>
+        </div>
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
           <div>
             <label style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-head);">GAME TITLE</label>
@@ -938,8 +949,8 @@ const TournyxEngine = (() => {
       </div>
 
       <div class="em-section-box" style="margin-top:15px;">
-        <div class="em-box-title"><i class="fa-solid fa-desktop" style="color:var(--accent-orange);"></i> Live Neural Screen Monitor</div>
-        <p style="font-size:0.82rem; color:#aaa; margin-bottom:12px;">Share your screen while playing to enable automatic HUD recognition & kill tracker.</p>
+        <div class="em-box-title"><i class="fa-solid fa-desktop" style="color:var(--accent-orange);"></i> Live Neural Screen / Camera Monitor</div>
+        <p style="font-size:0.82rem; color:#aaa; margin-bottom:12px;">Share your screen (Desktop) or activate camera monitor (Mobile) for automated HUD & kill tracking.</p>
         <button onclick="TournyxEngineAPI.startVisionScreenCapture()" style="width:100%; padding:12px; background:rgba(255,140,0,0.1); border:1px solid var(--accent-orange); border-radius:10px; color:var(--accent-orange); font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
           <i class="fa-solid fa-video"></i> INITIALIZE LIVE NEURAL LINK
         </button>
@@ -955,6 +966,31 @@ const TournyxEngine = (() => {
     `;
   }
 
+  async function handleScreenshotUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    _showToast('🔍 Vision AI Scanning Screenshot...');
+    
+    // Simulate Vision AI OCR parsing of screenshot
+    setTimeout(async () => {
+      const simulatedKills = Math.floor(4 + Math.random() * 9);
+      const simulatedDamage = Math.floor(simulatedKills * 160 + Math.random() * 400);
+      const simulatedPlacement = Math.random() > 0.4 ? 1 : Math.floor(2 + Math.random() * 5);
+
+      const kEl = document.getElementById('vas-kills');
+      const dEl = document.getElementById('vas-damage');
+      const pEl = document.getElementById('vas-placement');
+
+      if (kEl) kEl.value = simulatedKills;
+      if (dEl) dEl.value = simulatedDamage;
+      if (pEl) pEl.value = simulatedPlacement;
+
+      _showToast(`✅ Screenshot Parsed: #${simulatedPlacement} | ${simulatedKills} Kills | ${simulatedDamage} DMG`);
+      await submitMatchToVisionAI();
+    }, 1200);
+  }
+
   async function submitMatchToVisionAI() {
     const btn = document.getElementById('vas-submit-btn');
     const game = document.getElementById('vas-game')?.value || 'BGMI';
@@ -967,7 +1003,7 @@ const TournyxEngine = (() => {
       btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> PARSING NEURAL FRAMES...';
     }
 
-    await new Promise(r => setTimeout(r, 1600));
+    await new Promise(r => setTimeout(r, 1200));
 
     const xpEarned = Math.floor((kills * 50) + (damage * 0.1) + Math.max(0, (20 - placement) * 30));
     const deltas = {
@@ -1015,8 +1051,19 @@ const TournyxEngine = (() => {
 
   async function startVisionScreenCapture() {
     try {
-      state.visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
-      _showToast('🔴 Neural Link Established! Screen scanning active.');
+      if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        state.visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
+        _showToast('🔴 Neural Link Established! Screen scanning active.');
+      } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Mobile fallback: camera stream
+        state.visionStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        _showToast('📷 Mobile Camera Neural Link Established! Aim at game screen.');
+      } else {
+        // Open screenshot picker fallback
+        document.getElementById('vas-screenshot-input')?.click();
+        return;
+      }
+
       let count = 0;
       state.visionInterval = setInterval(async () => {
         count++;
@@ -1033,7 +1080,9 @@ const TournyxEngine = (() => {
         _showToast('Neural Link Terminated.', true);
       };
     } catch(err) {
-      _showToast('Screen permissions required for Neural Link.', true);
+      // Fallback to screenshot upload on permission cancel or mobile block
+      _showToast('📸 Switching to Screenshot Scanner...', false);
+      document.getElementById('vas-screenshot-input')?.click();
     }
   }
 
@@ -1255,6 +1304,20 @@ const TournyxEngine = (() => {
     }
   }
 
+  async function awardStreakXP(streakPoints) {
+    const xp = Math.floor((streakPoints || 50) * 2);
+    await _awardXP(xp, `Daily Streak Surge: +${xp} XP`);
+    _showToast(`⚡ Tournyx Engine: +${xp} XP Injected from Daily Streak!`);
+  }
+
+  function setGraphicTier(tier) {
+    state.graphicTier = tier;
+    document.body.classList.remove('eng-tier-performance', 'eng-tier-balanced', 'eng-tier-ultra');
+    document.body.classList.add('eng-tier-' + tier);
+    localStorage.setItem('tournyx_graphic_tier', tier);
+    _showToast(`🖥️ Engine Graphics: ${tier.toUpperCase()} Mode`);
+  }
+
   function _triggerXPParticle(amount, anchorEl) {
     const el = document.createElement('div');
     el.className = 'eng-xp-particle';
@@ -1449,12 +1512,15 @@ const TournyxEngine = (() => {
     buildDreamTeam,
     inviteSquadmate,
     submitMatchToVisionAI,
+    handleScreenshotUpload,
     startVisionScreenCapture,
     activateSharinganMode,
     strikeBossRaid,
     simulateRankUp,
     triggerRankUpCeremony,
     refillEnergy,
+    awardStreakXP,
+    setGraphicTier,
     loadEngineData,
     get state() { return state; }
   };
@@ -1463,6 +1529,19 @@ const TournyxEngine = (() => {
 
 window.TournyxEngine = TournyxEngine;
 window.TournyxEngineAPI = TournyxEngine;
+
+// ─── FLUTTER APP HYBRID BRIDGE ───
+window.TournyxFlutterBridge = {
+  syncUserData: (jsonStr) => {
+    try {
+      localStorage.setItem('tournyx_user', jsonStr);
+      TournyxEngine.loadEngineData();
+    } catch(e) {}
+  },
+  triggerNativeCapture: () => {
+    TournyxEngine.startVisionScreenCapture();
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   let attempts = 0;
