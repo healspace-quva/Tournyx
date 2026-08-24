@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * TOURNYX ENGINE v3.0 - MASTER ESPORTS OS & PLUGIN
+ * TOURNYX ENGINE v3.5 - MASTER ESPORTS OS & GLOBAL PLUGIN
  * Architecture: Solo Levelling Hero System x Indian Esports x Vision AI
  * Database: Supabase (PostgreSQL + Realtime Sync + Edge Handlers)
  * Device Adaptive: Low-End (Performance) to High-End (Ultra Cyberpunk)
@@ -40,6 +40,50 @@ const TournyxEngine = (() => {
     "Abhi rukna nahi hai, SSS-Rank tak jaana hai! 🚀"
   ];
 
+  // ─── 100+ PREBUILT COMPETITIVE TASKS BANK ──────────────────────────────────
+  const TASK_BANK = [
+    // BGMI - Rusher
+    { id: 'bgmi_r_1', game: 'BGMI', role: 'Rusher', title: 'Close-Quarters Carnage: 10 Eliminations with Shotguns/SMGs', target: 10, pts: 250 },
+    { id: 'bgmi_r_2', game: 'BGMI', role: 'Rusher', title: 'Hot-Drop Conqueror: Secure 3 kills in Pochinki / Bootcamp within 3 mins', target: 3, pts: 300 },
+    { id: 'bgmi_r_3', game: 'BGMI', role: 'Rusher', title: 'Armor Shredder: Inflict 2,500 Total Damage in Ranked Squads', target: 2500, pts: 200 },
+    { id: 'bgmi_r_4', game: 'BGMI', role: 'Rusher', title: 'First Blood Pioneer: Secure First Squad Knock in 2 Matches', target: 2, pts: 350 },
+    // BGMI - Sniper
+    { id: 'bgmi_s_1', game: 'BGMI', role: 'Sniper', title: 'Long-Range Precision: 6 Headshot Eliminations >100m with Bolt-Action', target: 6, pts: 300 },
+    { id: 'bgmi_s_2', game: 'BGMI', role: 'Sniper', title: 'Silent Hunter: Eliminate 4 Enemies using Suppressed DMR/Sniper', target: 4, pts: 250 },
+    { id: 'bgmi_s_3', game: 'BGMI', role: 'Sniper', title: 'Ridge Controller: Hold High Ground and Deal 1,500 Long-Range Damage', target: 1500, pts: 200 },
+    // BGMI - Support
+    { id: 'bgmi_sp_1', game: 'BGMI', role: 'Support', title: 'Guardian Angel: Successfully Revive 4 Downed Squadmates', target: 4, pts: 250 },
+    { id: 'bgmi_sp_2', game: 'BGMI', role: 'Support', title: 'Tactical Smokescreen: Deploy 6 Smoke Grenades during Rotations', target: 6, pts: 150 },
+    { id: 'bgmi_sp_3', game: 'BGMI', role: 'Support', title: 'Squad Survival: Reach Top 5 Squads in 3 Consecutive Matches', target: 3, pts: 350 },
+    // BGMI - IGL
+    { id: 'bgmi_igl_1', game: 'BGMI', role: 'IGL', title: 'Zone Dominance: Lead Squad to Victory (#1 Winner Winner)', target: 1, pts: 400 },
+    { id: 'bgmi_igl_2', game: 'BGMI', role: 'IGL', title: 'Macro Rotations: Complete 4 Flawless Safe Zone Transitions in Top 10', target: 4, pts: 250 },
+    { id: 'bgmi_igl_3', game: 'BGMI', role: 'IGL', title: 'Zero Casualty Finish: Win a Match with All 4 Squadmates Alive', target: 1, pts: 500 },
+
+    // Free Fire MAX - Rusher
+    { id: 'ff_r_1', game: 'Free Fire MAX', role: 'Rusher', title: 'MP40 Blitz: 12 Eliminations with SMGs in Clash Squad', target: 12, pts: 250 },
+    { id: 'ff_r_2', game: 'Free Fire MAX', role: 'Rusher', title: 'Gloo Wall Speed Entry: Break 5 Opponent Gloo Walls with Shotgun Rush', target: 5, pts: 200 },
+    { id: 'ff_r_3', game: 'Free Fire MAX', role: 'Rusher', title: 'Clutch Ace: Wipe an Entire 4-Man Squad in Clash Squad', target: 1, pts: 400 },
+    // Free Fire MAX - Sniper
+    { id: 'ff_s_1', game: 'Free Fire MAX', role: 'Sniper', title: 'AWM Specialist: Land 8 Headshots with Double Sniper', target: 8, pts: 300 },
+    { id: 'ff_s_2', game: 'Free Fire MAX', role: 'Sniper', title: 'Crosshair Master: Eliminate 5 Moving Enemies from Range', target: 5, pts: 250 },
+    // Free Fire MAX - Support
+    { id: 'ff_sp_1', game: 'Free Fire MAX', role: 'Support', title: 'Combat Medic: Heal 1,000 HP of Teammates using Active Skills', target: 1000, pts: 200 },
+    { id: 'ff_sp_2', game: 'Free Fire MAX', role: 'Support', title: 'Shield Bastion: Place 15 Gloo Walls to Defend Downed Teammates', target: 15, pts: 180 },
+    // Free Fire MAX - IGL
+    { id: 'ff_igl_1', game: 'Free Fire MAX', role: 'IGL', title: 'Booyah Architect: Win 2 Ranked Battle Royale Matches with #1 Booyah', target: 2, pts: 450 },
+
+    // Valorant / CODM / Universal
+    { id: 'val_u_1', game: 'Valorant', role: 'Rusher', title: 'Entry Fragger: Win 6 Opening Duels as Duelist', target: 6, pts: 300 },
+    { id: 'val_u_2', game: 'Valorant', role: 'Sniper', title: 'Operator Lockdown: Secure 5 Operator Eliminations on Defense', target: 5, pts: 300 },
+    { id: 'val_u_3', game: 'Valorant', role: 'Support', title: 'Site Anchor: Plant or Defuse the Spike 4 Times', target: 4, pts: 200 },
+    { id: 'codm_u_1', game: 'CODM', role: 'Rusher', title: 'Scorestreak Fury: Activate 3 High-Tier Scorestreaks in Ranked MP', target: 3, pts: 250 },
+    { id: 'codm_u_2', game: 'CODM', role: 'Sniper', title: 'DL Q33 Quickscope: 10 Quickscope Eliminations in Search & Destroy', target: 10, pts: 350 },
+    { id: 'univ_1', game: 'Universal', role: 'Universal', title: 'Reaction Reflex Drill: Complete 15 Minutes of Aim Training Drills', target: 1, pts: 150 },
+    { id: 'univ_2', game: 'Universal', role: 'Universal', title: 'Grinder Endurance: Complete 5 Tournament or Scrim Matches in 1 Day', target: 5, pts: 300 },
+    { id: 'univ_3', game: 'Universal', role: 'Universal', title: 'Flawless Win Streak: Achieve 3 Wins in a Row without Defeat', target: 3, pts: 500 },
+  ];
+
   // ─── 2. ENGINE INTERNAL STATE ──────────────────────────────────────────────
   let state = {
     user: null,
@@ -54,6 +98,7 @@ const TournyxEngine = (() => {
     audioCtx: null,
     bossRaidData: null,
     graphicTier: 'balanced',
+    isVisionActive: false,
   };
 
   // ─── 3. INITIALIZATION ─────────────────────────────────────────────────────
@@ -68,7 +113,7 @@ const TournyxEngine = (() => {
     _initRealtimeSubscription();
     _initBossRaid();
     
-    console.log('%c⚡ TOURNYX ENGINE v3.0 MASTER ACTIVE', 'color:#00f2ff; font-weight:bold; font-size:14px;');
+    console.log('%c⚡ TOURNYX ENGINE v3.5 MASTER ACTIVE', 'color:#00f2ff; font-weight:bold; font-size:14px;');
   }
 
   // ─── 4. ADAPTIVE DEVICE PERFORMANCE OPTIMIZER ──────────────────────────────
@@ -92,7 +137,7 @@ const TournyxEngine = (() => {
     localStorage.setItem('tournyx_graphic_tier', tier);
   }
 
-  // ─── 5. SOUND SYNTHESIZER (WEB AUDIO API) ──────────────────────────────────
+  // ─── 5. SOUND SYNTHESIZER ──────────────────────────────────────────────────
   function _playChime(type) {
     if (state.graphicTier === 'performance') return;
     try {
@@ -168,8 +213,8 @@ const TournyxEngine = (() => {
   async function _bootstrapProfile() {
     if (!state.user) return;
     const wins = parseInt(state.user.wins) || 0;
-    const matches = parseInt(state.user.matches) || 0;
-    const points = parseInt(state.user.points) || 0;
+    const matches = parseInt(state.user.matches_played || state.user.matches) || 0;
+    const points = parseInt(state.user.points) || 8000;
     const wr = matches > 0 ? Math.floor((wins / matches) * 100) : 0;
     const power = _calculatePower(wins, matches, points, wr);
 
@@ -179,7 +224,7 @@ const TournyxEngine = (() => {
       username: state.user.username || state.user.ign || 'Player',
       power_level: power,
       rank_tier: _getRankTierByPower(power),
-      total_xp: points * 10 || 1200,
+      total_xp: Math.floor(points / 10), // 100 PTS = 10 XP
       daily_xp: 420,
       skill_combat: Math.min(50 + wins * 2, 98),
       skill_strategy: Math.min(50 + Math.floor(wr / 2), 95),
@@ -187,9 +232,9 @@ const TournyxEngine = (() => {
       skill_reaction: 62,
       skill_leadership: 58,
       skill_consistency: 70,
-      player_dna: 'Rusher',
+      player_dna: state.user.player_role || 'Rusher',
       evolution_stage: wins > 15 ? 'Pro' : 'Rookie',
-      state_region: 'Tamil Nadu',
+      state_region: state.user.state || 'Tamil Nadu',
       karma_score: 100,
       karma_title: 'Disciplined Warrior',
       energy: 85,
@@ -217,15 +262,15 @@ const TournyxEngine = (() => {
   function _computeLocalProfile() {
     const u = state.user || {};
     const wins = parseInt(u.wins) || 0;
-    const matches = parseInt(u.matches) || 0;
-    const points = parseInt(u.points) || 0;
+    const matches = parseInt(u.matches_played || u.matches) || 0;
+    const points = parseInt(u.points) || 8000;
     const wr = matches > 0 ? Math.floor((wins / matches) * 100) : 0;
     const power = _calculatePower(wins, matches, points, wr);
 
     state.engineData = {
       power_level: power,
       rank_tier: _getRankTierByPower(power),
-      total_xp: (points * 10) || 1200,
+      total_xp: Math.floor(points / 10),
       daily_xp: 420,
       skill_combat: Math.min(50 + wins * 2, 98),
       skill_strategy: Math.min(50 + Math.floor(wr / 2), 95),
@@ -233,9 +278,9 @@ const TournyxEngine = (() => {
       skill_reaction: 62,
       skill_leadership: 58,
       skill_consistency: 70,
-      player_dna: 'Rusher',
+      player_dna: u.player_role || 'Rusher',
       evolution_stage: wins > 10 ? 'Pro' : 'Rookie',
-      state_region: 'Tamil Nadu',
+      state_region: u.state || 'Tamil Nadu',
       karma_score: 100,
       karma_title: 'Disciplined Warrior',
       energy: 85,
@@ -297,8 +342,9 @@ const TournyxEngine = (() => {
     setHtml('emStatPower', (data.power_level || 100).toLocaleString());
     setHtml('emStatRank', `<span style="color:${meta.color}; font-weight:bold;">${meta.label}</span>`);
     setHtml('emStatXP', (data.total_xp || 0).toLocaleString());
+    setHtml('emStatPoints', (parseInt(state.user?.points) || 8000).toLocaleString());
 
-    const m = parseInt(state.user?.matches) || 0;
+    const m = parseInt(state.user?.matches_played || state.user?.matches) || 0;
     const w = parseInt(state.user?.wins) || 0;
     setHtml('emStatWinRate', m > 0 ? `${Math.floor((w / m) * 100)}%` : '0%');
 
@@ -320,11 +366,13 @@ const TournyxEngine = (() => {
     overlay.innerHTML = `
       <div class="engine-modal-box glass-panel">
         
-        <!-- TOP HEADER BAR -->
-        <div class="engine-modal-header">
-          <div class="em-header-left" style="display:flex; align-items:center; gap:10px;">
-            <div class="tx-cyber-crest" style="width:36px; height:36px;">
-              <svg width="36" height="36" viewBox="0 0 100 100" class="tx-crest-svg">
+        <!-- TOP HEADER BAR (UN-OVERFLOWED & PERFECTLY CENTERED) -->
+        <div class="engine-modal-header" style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(0,242,255,0.18); background:rgba(8,8,16,0.96); position:relative; gap:12px;">
+          
+          <!-- LEFT: LOGO & WORDMARK -->
+          <div class="em-header-left" style="display:flex; align-items:center; gap:10px; min-width:180px;">
+            <div class="tx-cyber-crest" style="width:34px; height:34px;">
+              <svg width="34" height="34" viewBox="0 0 100 100" class="tx-crest-svg">
                 <defs>
                   <linearGradient id="txHdrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#00f2ff" />
@@ -339,27 +387,36 @@ const TournyxEngine = (() => {
               </svg>
             </div>
             <div>
-              <h2 style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:1.15rem; margin:0; letter-spacing:1px; line-height:1.1;">TOURNYX ENGINE</h2>
-              <span style="font-size:0.65rem; color:#00f2ff; letter-spacing:1px; font-weight:bold;">SOLO LEVELLING ESPORTS OS</span>
+              <h2 style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:1.1rem; margin:0; letter-spacing:1px; line-height:1.1;">TOURNYX ENGINE</h2>
+              <span style="font-size:0.62rem; color:#00f2ff; letter-spacing:1px; font-weight:bold;">SOLO LEVELLING ESPORTS OS</span>
             </div>
           </div>
           
-          <div class="em-user-badge">
-            <img src="https://via.placeholder.com/40" id="emUserAvatar" class="em-avatar" alt="Avatar">
-            <div class="em-user-info">
-              <span class="em-username" id="emUserName">PlayerX</span>
-              <span class="em-user-lvl" id="emUserLvl">LEVEL 1</span>
+          <!-- CENTER: USER BADGE & LIVE STATS PILLS -->
+          <div class="em-header-center" style="display:flex; align-items:center; gap:14px; flex:1; justify-content:center; flex-wrap:wrap;">
+            <div class="em-user-badge" style="display:flex; align-items:center; gap:8px;">
+              <img src="https://via.placeholder.com/38" id="emUserAvatar" class="em-avatar" style="width:36px; height:36px; border-radius:50%; border:1.5px solid #00f2ff; object-fit:cover;">
+              <div>
+                <span class="em-username" id="emUserName" style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:0.85rem; font-weight:bold; display:block;">PlayerX</span>
+                <span class="em-user-lvl" id="emUserLvl" style="font-size:0.68rem; color:var(--eng-cyan, #00f2ff); font-weight:bold;">LEVEL 1</span>
+              </div>
+            </div>
+
+            <div class="em-header-stats" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.03); padding:5px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06);">
+              <div class="em-stat-item"><span style="font-size:0.58rem; color:rgba(255,255,255,0.4); text-transform:uppercase;">Power</span><b id="emStatPower" style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:0.82rem; display:block;">100</b></div>
+              <div class="em-stat-item" style="border-left:1px solid rgba(255,255,255,0.08); padding-left:8px;"><span style="font-size:0.58rem; color:rgba(255,255,255,0.4); text-transform:uppercase;">Rank</span><b id="emStatRank" style="font-family:var(--eng-font-head, sans-serif); color:#00f2ff; font-size:0.82rem; display:block;">E-RANK</b></div>
+              <div class="em-stat-item" style="border-left:1px solid rgba(255,255,255,0.08); padding-left:8px;"><span style="font-size:0.58rem; color:rgba(255,255,255,0.4); text-transform:uppercase;">Win Rate</span><b id="emStatWinRate" style="font-family:var(--eng-font-head, sans-serif); color:#00ff7f; font-size:0.82rem; display:block;">0%</b></div>
+              <div class="em-stat-item" style="border-left:1px solid rgba(255,255,255,0.08); padding-left:8px;"><span style="font-size:0.58rem; color:rgba(255,255,255,0.4); text-transform:uppercase;">Points</span><b id="emStatPoints" style="font-family:var(--eng-font-head, sans-serif); color:#FFD700; font-size:0.82rem; display:block;">8,000</b></div>
+              <div class="em-stat-item" style="border-left:1px solid rgba(255,255,255,0.08); padding-left:8px;"><span style="font-size:0.58rem; color:rgba(255,255,255,0.4); text-transform:uppercase;">XP</span><b id="emStatXP" style="font-family:var(--eng-font-head, sans-serif); color:#bd00ff; font-size:0.82rem; display:block;">800</b></div>
             </div>
           </div>
 
-          <div class="em-header-stats">
-            <div class="em-stat-item"><span>POWER</span><b id="emStatPower">100</b></div>
-            <div class="em-stat-item"><span>RANK</span><b id="emStatRank" style="color:#00f2ff;">E-RANK</b></div>
-            <div class="em-stat-item"><span>WIN RATE</span><b id="emStatWinRate">0%</b></div>
-            <div class="em-stat-item"><span>XP</span><b id="emStatXP">1,200</b></div>
+          <!-- RIGHT: CLOSE BUTTON (ZERO OVERFLOW) -->
+          <div class="em-header-right" style="display:flex; align-items:center; justify-content:flex-end; min-width:40px;">
+            <button class="em-close-btn" onclick="TournyxEngineAPI.closeEngineModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:50%; width:32px; height:32px; color:rgba(255,255,255,0.8); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
           </div>
-
-          <i class="fa-solid fa-xmark auth-close" onclick="TournyxEngineAPI.closeEngineModal()" style="cursor:pointer; font-size:1.3rem;"></i>
         </div>
 
         <!-- MAIN BODY -->
@@ -372,7 +429,7 @@ const TournyxEngine = (() => {
             <button class="em-nav-btn" data-tab="ai-recommendations" onclick="TournyxEngineAPI.switchEngineTab('ai-recommendations', this)"><i class="fa-solid fa-robot"></i> AI RECOMMENDATIONS</button>
             <button class="em-nav-btn" data-tab="role-training" onclick="TournyxEngineAPI.switchEngineTab('role-training', this)"><i class="fa-solid fa-crosshairs"></i> ROLE & TRAINING</button>
             <button class="em-nav-btn" data-tab="player-evolution" onclick="TournyxEngineAPI.switchEngineTab('player-evolution', this)"><i class="fa-solid fa-bolt"></i> PLAYER EVOLUTION</button>
-            <button class="em-nav-btn" data-tab="inventory" onclick="TournyxEngineAPI.switchEngineTab('inventory', this)"><i class="fa-solid fa-briefcase"></i> INVENTORY</button>
+            <button class="em-nav-btn" data-tab="inventory" onclick="TournyxEngineAPI.switchEngineTab('inventory', this)"><i class="fa-solid fa-briefcase"></i> INVENTORY & REWARDS</button>
             <button class="em-nav-btn" data-tab="hidden-quests" onclick="TournyxEngineAPI.switchEngineTab('hidden-quests', this)"><i class="fa-solid fa-user-ninja"></i> HIDDEN QUESTS</button>
             <button class="em-nav-btn" data-tab="system-log" onclick="TournyxEngineAPI.switchEngineTab('system-log', this)"><i class="fa-solid fa-terminal"></i> SYSTEM LOG</button>
             <button class="em-nav-btn" data-tab="vision-ai" onclick="TournyxEngineAPI.switchEngineTab('vision-ai', this)"><i class="fa-solid fa-eye"></i> VISION AI SCANNER</button>
@@ -412,6 +469,12 @@ const TournyxEngine = (() => {
     _mountEngineModal();
     _updateModalHeader(state.engineData);
     
+    // Check if new player needs Solo Levelling Awakening Quest
+    if (!_isAwakened()) {
+      _showSoloAwakeningModal();
+      return;
+    }
+
     const modal = document.getElementById('ultimateSystemModal');
     if (modal) {
       modal.classList.add('active');
@@ -458,6 +521,73 @@ const TournyxEngine = (() => {
       case 'boss-raids': _renderBossRaidTab(); break;
       case 'regional-ranks': _renderRegionalRanksTab(); break;
     }
+  }
+
+  // ─── 9. SOLO LEVELLING REAWAKENING QUEST MODAL ─────────────────────────────
+  function _isAwakened() {
+    return localStorage.getItem('tournyx_awakened') === 'true';
+  }
+
+  function _showSoloAwakeningModal() {
+    let existing = document.getElementById('solo-awakening-modal');
+    if (existing) existing.remove();
+
+    const ign = state.user?.ign || state.user?.username || 'Hunter';
+    const mainGame = state.user?.main_game || 'BGMI';
+    const role = state.user?.player_role || 'Rusher';
+
+    const modal = document.createElement('div');
+    modal.id = 'solo-awakening-modal';
+    modal.className = 'auth-popup-overlay active';
+    modal.innerHTML = `
+      <div class="glass-panel" style="max-width:440px; width:92%; border-radius:20px; padding:28px 24px; text-align:center; background:radial-gradient(circle at top, rgba(0,242,255,0.15) 0%, rgba(10,10,18,0.95) 80%); border:1.5px solid var(--eng-cyan); box-shadow:0 0 45px rgba(0,242,255,0.4);">
+        
+        <div style="font-family:var(--eng-font-head); font-size:0.75rem; letter-spacing:4px; color:#00f2ff; margin-bottom:10px; font-weight:bold;">
+          [ SYSTEM NOTIFICATION ]
+        </div>
+        
+        <div style="width:60px; height:60px; border-radius:50%; background:rgba(0,242,255,0.1); border:2px solid #00f2ff; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; box-shadow:0 0 20px #00f2ff;">
+          <i class="fa-solid fa-bolt" style="color:#00f2ff; font-size:1.6rem;"></i>
+        </div>
+
+        <h2 style="font-family:var(--eng-font-head); color:white; font-size:1.3rem; margin:0 0 10px; letter-spacing:1px; line-height:1.2;">
+          YOU HAVE QUALIFIED AS A "PLAYER"
+        </h2>
+
+        <p style="font-size:0.82rem; color:#ccc; line-height:1.5; margin-bottom:18px;">
+          Welcome Hunter, <b style="color:#FFD700;">${ign}</b>.<br>
+          The Tournyx Esports System has detected your competitive aptitude in <b style="color:#00f2ff;">${mainGame}</b> (<span style="color:#ff4d4d;">${role}</span>).<br>
+          Will you accept the Reawakening Protocol?
+        </p>
+
+        <div style="background:rgba(0,0,0,0.5); border-radius:10px; padding:12px; margin-bottom:18px; text-align:left; font-size:0.78rem; color:#ddd; display:flex; flex-direction:column; gap:8px;">
+          <div><i class="fa-solid fa-check" style="color:#00ff7f;"></i> Calibrate 6-Axis AI Radar Matrix</div>
+          <div><i class="fa-solid fa-check" style="color:#00ff7f;"></i> Unlock Live Neural Match Vision Companion</div>
+          <div><i class="fa-solid fa-check" style="color:#00ff7f;"></i> Earn Tournyx Points & Level Up to SSS-Rank</div>
+        </div>
+
+        <div style="font-size:0.65rem; color:var(--text-muted); letter-spacing:1px; margin-bottom:16px; font-family:var(--eng-font-head);">
+          ⚡ POWERED BY TOURNYX ESPORTS ENGINE
+        </div>
+
+        <button onclick="TournyxEngineAPI.confirmAwakening()" style="width:100%; padding:14px; background:linear-gradient(90deg, #00f2ff, #bd00ff); border:none; border-radius:12px; color:#000; font-family:var(--eng-font-head); font-weight:900; font-size:0.9rem; cursor:pointer; text-transform:uppercase; letter-spacing:2px; box-shadow:0 0 25px rgba(0,242,255,0.6);">
+          ACCEPT REAWAKENING
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    _playChime('rankup');
+  }
+
+  async function confirmAwakening() {
+    localStorage.setItem('tournyx_awakened', 'true');
+    const modal = document.getElementById('solo-awakening-modal');
+    if (modal) modal.remove();
+
+    _showToast('⚡ REAWAKENING COMPLETE: Welcome Hunter!');
+    await _awardPoints(500, 'System Reawakening Welcome Bounty');
+    openSystemPopup();
   }
 
   // ─── TAB 1: PLAYER ANALYSIS + RADAR ────────────────────────────────────────
@@ -515,7 +645,7 @@ const TournyxEngine = (() => {
           <p style="margin-bottom:6px;">⚠️ Area for Improvement: <b style="color:#ff4d4d;">${weakest.label} (${data[weakest.key]}%)</b></p>
           <p style="margin-bottom:8px;">💡 AI Coach Prescription: <span style="color:#00f2ff;">Engage in 15 mins of daily ${weakest.label.toLowerCase()} drills to boost overall Power Rating.</span></p>
           <div style="font-family:var(--eng-font-head); color:var(--accent-purple); font-size:0.8rem; font-weight:bold;">
-            BONUS: Complete AI drill today for <b>+250 XP</b>
+            BONUS: Complete AI drill today for <b>+250 PTS (+25 XP)</b>
           </div>
         </div>
       </div>
@@ -576,41 +706,16 @@ const TournyxEngine = (() => {
   }
 
   // ─── TAB 2: SMART AI-RECOMMENDED TASKS ─────────────────────────────────────
-  function _generateAITasksForPlayer(dna, weakest) {
-    const roleTasks = {
-      Rusher: [
-        { id: 'ai_r1', task_title: 'Close-Range Assault: Eliminate 10 Enemies with SMG/Shotgun', xp_reward: 250, target: 10, progress: 0, is_completed: false },
-        { id: 'ai_r2', task_title: 'Entry Fragger: Secure First Blood in 2 Matches', xp_reward: 300, target: 2, progress: 0, is_completed: false },
-        { id: 'ai_r3', task_title: 'Deal 2,500 Total Damage in Ranked BR', xp_reward: 200, target: 2500, progress: 0, is_completed: false }
-      ],
-      Sniper: [
-        { id: 'ai_s1', task_title: 'Marksman Precision: Land 8 Headshots from >100m', xp_reward: 300, target: 8, progress: 0, is_completed: false },
-        { id: 'ai_s2', task_title: 'Eliminate 5 Enemies with Sniper / DMR Rifles', xp_reward: 250, target: 5, progress: 0, is_completed: false },
-        { id: 'ai_s3', task_title: 'Survive in Top 3 without taking early zone damage', xp_reward: 200, target: 1, progress: 0, is_completed: false }
-      ],
-      Support: [
-        { id: 'ai_sp1', task_title: 'Field Medic: Revive 4 Downed Squadmates', xp_reward: 250, target: 4, progress: 0, is_completed: false },
-        { id: 'ai_sp2', task_title: 'Deploy Smoke & Utility in 5 Combat Engagements', xp_reward: 200, target: 5, progress: 0, is_completed: false },
-        { id: 'ai_sp3', task_title: 'Secure Top 5 Squad Finish in 3 Consecutive Games', xp_reward: 350, target: 3, progress: 0, is_completed: false }
-      ],
-      IGL: [
-        { id: 'ai_igl1', task_title: 'Strategic Mastery: Lead Squad to Victory (#1 Winner Winner)', xp_reward: 400, target: 1, progress: 0, is_completed: false },
-        { id: 'ai_igl2', task_title: 'Safe Zone Dominance: Execute 4 Zone Rotations inside Top 10', xp_reward: 250, target: 4, progress: 0, is_completed: false },
-        { id: 'ai_igl3', task_title: 'Maintain 60%+ Squad Survival Rate across 3 Games', xp_reward: 300, target: 3, progress: 0, is_completed: false }
-      ]
-    };
-
-    const specificRoleList = roleTasks[dna] || roleTasks['Rusher'];
-    const weakDrill = {
-      id: 'ai_weak1',
-      task_title: `AI Prescription Drill: Practice ${weakest.label} Focus in TDM`,
-      xp_reward: 200,
-      target: 1,
-      progress: 0,
-      is_completed: false
-    };
-
-    return [weakDrill, ...specificRoleList];
+  function _getTasksForCurrentPlayer() {
+    const mainGame = state.user?.main_game || 'BGMI';
+    const role = state.engineData?.player_dna || state.user?.player_role || 'Rusher';
+    
+    // Filter matching game and role, plus universal tasks
+    let list = TASK_BANK.filter(t => (t.game === mainGame || t.game === 'Universal') && (t.role === role || t.role === 'Universal'));
+    if (list.length < 4) {
+      list = TASK_BANK.filter(t => t.game === mainGame || t.game === 'Universal');
+    }
+    return list.slice(0, 5);
   }
 
   async function _renderTasksTab() {
@@ -618,90 +723,63 @@ const TournyxEngine = (() => {
     if (!pane || !state.engineData) return;
 
     const data = state.engineData;
-    const skills = [
-      { key: 'skill_combat', label: 'Combat' },
-      { key: 'skill_reaction', label: 'Reaction' },
-      { key: 'skill_strategy', label: 'Strategy' },
-      { key: 'skill_teamwork', label: 'Teamwork' },
-      { key: 'skill_leadership', label: 'Leadership' },
-      { key: 'skill_consistency', label: 'Consistency' },
-    ];
-    const weakest = skills.reduce((a, b) => (data[a.key] || 50) < (data[b.key] || 50) ? a : b);
-    const dna = data.player_dna || 'Rusher';
-
-    let tasks = [];
-    if (state.db && state.user?.email) {
-      try {
-        const { data: dbTasks } = await state.db
-          .from('engine_tasks')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        if (dbTasks && dbTasks.length > 0) tasks = dbTasks;
-      } catch(e) {}
-    }
-
-    if (tasks.length === 0) {
-      tasks = _generateAITasksForPlayer(dna, weakest);
-    }
-
-    const doneCount = tasks.filter(t => t.is_completed).length;
-    const progressPct = tasks.length > 0 ? Math.floor((doneCount / tasks.length) * 100) : 0;
+    const mainGame = state.user?.main_game || 'BGMI';
+    const role = data.player_dna || 'Rusher';
+    const tasks = _getTasksForCurrentPlayer();
 
     pane.innerHTML = `
       <div class="em-section-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="em-box-title" style="margin-bottom:0;"><i class="fa-solid fa-list-check" style="color:var(--accent-cyan);"></i> AI-Recommended Daily Missions</div>
-          <span style="font-size:0.7rem; color:var(--accent-cyan); font-family:var(--eng-font-head, sans-serif); background:rgba(0,242,255,0.1); padding:3px 8px; border-radius:10px; border:1px solid rgba(0,242,255,0.25);">
-            DNA: ${dna.toUpperCase()}
-          </span>
+          <div class="em-box-title" style="margin-bottom:0;"><i class="fa-solid fa-list-check" style="color:var(--accent-cyan);"></i> Live Esports Missions</div>
+          <div style="display:flex; gap:6px;">
+            <span style="font-size:0.7rem; color:#FFD700; font-family:var(--eng-font-head); background:rgba(255,215,0,0.1); padding:3px 8px; border-radius:10px; border:1px solid rgba(255,215,0,0.25);">
+              ${mainGame}
+            </span>
+            <span style="font-size:0.7rem; color:var(--accent-cyan); font-family:var(--eng-font-head); background:rgba(0,242,255,0.1); padding:3px 8px; border-radius:10px; border:1px solid rgba(0,242,255,0.25);">
+              ${role.toUpperCase()}
+            </span>
+          </div>
         </div>
-        <p style="font-size:0.78rem; color:#aaa; margin-bottom:14px;">Personalized missions calibrated by AI to target your playstyle and weakest skill (${weakest.label}):</p>
+        
+        <p style="font-size:0.78rem; color:#aaa; margin-bottom:14px;">Complete competitive objectives in ${mainGame}. Click <b>VERIFY</b> with Vision AI active to earn Points & XP:</p>
         
         <div class="em-task-list">
           ${tasks.map(t => `
-            <div class="em-task-card ${t.is_completed ? 'completed' : ''}" id="tsk-card-${t.id}">
+            <div class="em-task-card" id="tsk-card-${t.id}">
               <div class="em-task-info">
-                <i class="${t.is_completed ? 'fa-solid fa-square-check' : 'fa-regular fa-square'}" style="color:${t.is_completed ? 'var(--accent-green)' : 'var(--text-muted)'}; font-size:1.1rem;"></i>
-                <span>${t.task_title}</span>
-                <small>${t.progress || 0}/${t.target || 1}</small>
+                <i class="fa-regular fa-square" style="color:var(--text-muted); font-size:1.1rem;"></i>
+                <div>
+                  <span style="display:block;">${t.title}</span>
+                  <small style="color:var(--accent-cyan);">+${t.pts} PTS • +${Math.floor(t.pts/10)} XP</small>
+                </div>
               </div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <span class="${t.is_completed ? 'em-task-status' : 'em-task-xp'}">
-                  ${t.is_completed ? 'COMPLETED ✓' : '+' + t.xp_reward + ' XP'}
-                </span>
-                ${!t.is_completed ? `<button class="em-task-claim-btn" onclick="TournyxEngineAPI.claimTask('${t.id}', ${t.xp_reward}, this)" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:5px 12px; border-radius:8px; font-size:0.72rem; font-family:var(--eng-font-head, sans-serif); font-weight:bold; cursor:pointer;">CLAIM</button>` : ''}
+                <button onclick="TournyxEngineAPI.startAndVerifyTask('${t.id}', ${t.pts}, this)" style="background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border:none; color:white; padding:6px 14px; border-radius:8px; font-size:0.72rem; font-family:var(--eng-font-head); font-weight:bold; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
+                  START & VERIFY
+                </button>
               </div>
             </div>
           `).join('')}
         </div>
-
-        <div style="margin-top:18px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
-          <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-family:var(--eng-font-head, sans-serif); color:var(--text-muted); margin-bottom:6px;">
-            <span>DAILY MISSION PROGRESSION</span>
-            <span style="color:var(--accent-cyan);">${progressPct}%</span>
-          </div>
-          <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-            <div id="em-task-bar-fill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); transition:width 1s ease;"></div>
-          </div>
-        </div>
       </div>
     `;
-
-    setTimeout(() => {
-      const b = document.getElementById('em-task-bar-fill');
-      if (b) b.style.width = progressPct + '%';
-    }, 150);
   }
 
-  async function claimTask(taskId, xpReward, btnEl) {
-    if (!state.user?.email) return;
-    if (btnEl) {
-      btnEl.disabled = true;
-      btnEl.textContent = 'VERIFYING...';
+  async function startAndVerifyTask(taskId, ptsReward, btnEl) {
+    if (!state.isVisionActive) {
+      _showToast('⚠️ Vision AI Neural Link Required! Please start Neural Link on PC or open Tournyx App on Mobile.', true);
+      _promptMobileAppModal();
+      return;
     }
 
-    await _awardXP(xpReward, `Mission Completed: +${xpReward} XP`);
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> AI VERIFYING...';
+    }
+
+    await new Promise(r => setTimeout(r, 1500));
+
+    await _awardPoints(ptsReward, `Mission Verified: +${ptsReward} PTS (+${Math.floor(ptsReward/10)} XP)`);
 
     const card = document.getElementById('tsk-card-' + taskId);
     if (card) {
@@ -711,34 +789,35 @@ const TournyxEngine = (() => {
         icon.className = 'fa-solid fa-square-check';
         icon.style.color = 'var(--accent-green)';
       }
-      const xpTag = card.querySelector('.em-task-xp');
-      if (xpTag) {
-        xpTag.className = 'em-task-status';
-        xpTag.textContent = 'COMPLETED ✓';
+      if (btnEl) {
+        btnEl.outerHTML = `<span style="color:var(--accent-green); font-family:var(--eng-font-head); font-weight:bold; font-size:0.75rem;">VERIFIED ✓</span>`;
       }
-      if (btnEl) btnEl.remove();
-      _triggerXPParticle(xpReward, card);
+      _triggerXPParticle(Math.floor(ptsReward/10), card);
     }
 
     _playChime('xp');
-    _showToast(`🎯 Mission Claimed: +${xpReward} XP!`);
+    _showToast(`🎯 Mission Verified! +${ptsReward} PTS (+${Math.floor(ptsReward/10)} XP) Saved to Cloud!`);
+  }
+
+  function _promptMobileAppModal() {
+    _showToast('📲 Background in-game HUD requires the Tournyx Mobile App (Android / iOS)');
   }
 
   // ─── TAB 3: AI RECOMMENDATIONS & DREAM TEAM ────────────────────────────────
   function _renderAIRecommendations() {
-    const container = document.getElementById('em-ai-reco-container');
-    if (!container || !state.engineData) return;
+    const pane = document.getElementById('tab-ai-recommendations');
+    if (!pane || !state.engineData) return;
     const d = state.engineData;
     const dnaInfo = PLAYER_DNA[d.player_dna] || PLAYER_DNA['Rusher'];
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div class="em-section-box">
         <div class="em-box-title"><i class="fa-solid fa-chart-line" style="color:var(--accent-cyan);"></i> Performance Trajectory</div>
         <canvas id="engineTrendCanvas" height="85"></canvas>
       </div>
 
       <div class="em-section-box" style="margin-top:15px;">
-        <div class="em-box-title"><i class="fa-solid fa-dna" style="color:${dnaInfo.color};"></i> Player DNA: <span style="color:${dnaInfo.color};">${d.player_dna}</span></div>
+        <div class="em-box-title"><i class="fa-solid fa-dna" style="color:${dnaInfo.color};"></i> Player DNA Archetype: <span style="color:${dnaInfo.color};">${d.player_dna}</span></div>
         <p style="font-size:0.82rem; color:#bbb; line-height:1.5; margin-bottom:12px;">${dnaInfo.desc}</p>
         <div class="dna-grid">
           ${Object.entries(PLAYER_DNA).map(([name, meta]) => `
@@ -755,7 +834,7 @@ const TournyxEngine = (() => {
 
       <div class="em-section-box" style="margin-top:15px;">
         <div class="em-box-title"><i class="fa-solid fa-users" style="color:var(--accent-purple);"></i> Dream Team Builder AI</div>
-        <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Recommended squadmates whose playstyles perfectly synergize with your ${d.player_dna} profile:</p>
+        <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Recommended squadmates whose playstyles synergize with your ${d.player_dna} profile in ${state.user?.main_game || 'BGMI'}:</p>
         <div id="dreamSquadList" style="display:flex; flex-direction:column; gap:8px;">
           <div style="color:var(--accent-cyan); text-align:center; padding:10px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Finding teammates...</div>
         </div>
@@ -766,7 +845,7 @@ const TournyxEngine = (() => {
     `;
 
     _renderTrendCurve();
-    setTimeout(() => buildDreamTeam(), 1000);
+    setTimeout(() => buildDreamTeam(), 500);
   }
 
   function _renderTrendCurve() {
@@ -805,28 +884,27 @@ const TournyxEngine = (() => {
     let players = [];
     if (state.db) {
       try {
-        const { data } = await state.db.from('Users').select('username, avatar, wins').limit(3);
+        const { data } = await state.db.from('Users').select('username, ign, avatar, wins, player_role, role').limit(3);
         if (data) players = data;
       } catch(e) {}
     }
 
     if (players.length === 0) {
       players = [
-        { username: 'Phoenix_Viper', wins: 48, role: 'Sniper' },
-        { username: 'Rohan_Medic', wins: 34, role: 'Support' },
-        { username: 'Astra_IGL', wins: 62, role: 'IGL' }
+        { username: 'Phoenix_Viper', wins: 48, player_role: 'Sniper' },
+        { username: 'Rohan_Medic', wins: 34, player_role: 'Support' },
+        { username: 'Astra_IGL', wins: 62, player_role: 'IGL' }
       ];
     }
 
-    const complementRoles = ['Sniper', 'Support', 'IGL'];
     el.innerHTML = players.slice(0, 3).map((p, i) => `
       <div style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
         <img src="${p.avatar || 'https://ui-avatars.com/api/?name=' + (p.username || 'P').charAt(0) + '&background=0d0d1a&color=00f2ff'}" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--accent-cyan);">
         <div style="flex:1;">
-          <div style="color:white; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">${p.username || 'Player'}</div>
-          <div style="color:var(--accent-cyan); font-size:0.75rem;">${complementRoles[i] || 'Flex'} • ${p.wins || 0} Wins</div>
+          <div style="color:white; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">${p.ign || p.username || 'Player'}</div>
+          <div style="color:var(--accent-cyan); font-size:0.75rem;">${p.player_role || 'Specialist'} • ${p.wins || 0} Wins</div>
         </div>
-        <button onclick="TournyxEngineAPI.inviteSquadmate('${p.username}')" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; border-radius:6px; font-size:0.7rem; font-family:var(--font-head); font-weight:bold; cursor:pointer;">INVITE</button>
+        <button onclick="TournyxEngineAPI.inviteSquadmate('${p.username || p.ign}')" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; border-radius:6px; font-size:0.7rem; font-family:var(--font-head); font-weight:bold; cursor:pointer;">INVITE</button>
       </div>
     `).join('');
   }
@@ -837,20 +915,40 @@ const TournyxEngine = (() => {
 
   // ─── TAB 4: ROLE TRAINING ──────────────────────────────────────────────────
   function _renderRoleTraining() {
-    const dna = state.engineData?.player_dna || 'Rusher';
-    document.querySelectorAll('.em-role-card').forEach(c => {
-      c.classList.toggle('active', c.dataset.role === dna);
-    });
-    const h = document.getElementById('roleTrainingHeading');
-    if (h) h.textContent = dna.toUpperCase() + ' TRAINING PROGRAM';
+    const pane = document.getElementById('tab-role-training');
+    if (!pane || !state.engineData) return;
+    const dna = state.engineData.player_dna || 'Rusher';
+
+    const drills = {
+      Rusher: ['Close-Range Crosshair Snapping', 'Shotgun Quick-Switch Slide', 'Entry-Frag Flash Timing'],
+      Sniper: ['Long-Range Bullet Drop Calculation', 'Moving Target Lead Tracking', 'Quickscope Micro-Adjustment'],
+      Support: ['Smoke Wall Vision Denial', 'High-Speed Teammate Extraction', 'Flank Zone Covering Fire'],
+      IGL: ['Endzone Rotation Pathfinding', 'High-Ground Placement Calling', 'Utility Economy Management'],
+    };
+
+    pane.innerHTML = `
+      <div class="em-section-box">
+        <div class="em-box-title"><i class="fa-solid fa-crosshairs" style="color:var(--accent-cyan);"></i> Active Role Training: ${dna.toUpperCase()}</div>
+        <p style="font-size:0.82rem; color:#bbb; margin-bottom:14px;">Specialized practice regimen designed to sharpen your ${dna} fundamentals:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${(drills[dna] || drills['Rusher']).map((d, i) => `
+            <div style="padding:12px; background:rgba(255,255,255,0.02); border-radius:10px; border-left:3px solid var(--accent-cyan); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <b style="color:white; font-size:0.85rem;">${d}</b>
+                <small style="color:var(--text-muted); display:block;">15 mins daily recommended</small>
+              </div>
+              <button onclick="TournyxEngineAPI.startDrill('${d}')" style="background:rgba(0,242,255,0.15); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; border-radius:6px; font-size:0.75rem; font-family:var(--eng-font-head); font-weight:bold; cursor:pointer;">
+                START DRILL
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   }
 
-  function selectRole(card, roleName) {
-    document.querySelectorAll('.em-role-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    const h = document.getElementById('roleTrainingHeading');
-    if (h) h.textContent = roleName.toUpperCase() + ' TRAINING PROGRAM';
-    setPlayerDNA(roleName);
+  function startDrill(drillName) {
+    _showToast(`🎯 Drill Initiated: ${drillName}! Complete in game to gain +150 PTS.`);
   }
 
   async function setPlayerDNA(name) {
@@ -859,6 +957,7 @@ const TournyxEngine = (() => {
     if (state.db && state.user?.email) {
       try {
         await state.db.from('player_engine').update({ player_dna: name }).eq('email', state.user.email);
+        await state.db.from('Users').update({ player_role: name }).eq('email', state.user.email);
       } catch(e) {}
     }
     _showToast(`🧬 Player DNA Switched to: ${name}`);
@@ -867,8 +966,8 @@ const TournyxEngine = (() => {
 
   // ─── TAB 5: PLAYER EVOLUTION ───────────────────────────────────────────────
   function _renderEvolutionTab() {
-    const container = document.getElementById('em-evolution-container');
-    if (!container || !state.engineData) return;
+    const pane = document.getElementById('tab-player-evolution');
+    if (!pane || !state.engineData) return;
     const d = state.engineData;
     const meta = _getRankMeta(d.rank_tier);
     const rIdx = RANK_TIERS.findIndex(r => r.label === d.rank_tier);
@@ -879,7 +978,7 @@ const TournyxEngine = (() => {
     const stages = ['Rookie', 'Pro', 'Elite', 'Legend'];
     const stageIdx = stages.indexOf(d.evolution_stage || 'Rookie');
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div style="display:flex; flex-direction:column; align-items:center;">
         <div style="position:relative; width:140px; height:140px; margin:15px 0 25px;">
           <svg width="140" height="140" style="position:absolute; top:0; left:0; transform:rotate(-90deg);">
@@ -924,71 +1023,170 @@ const TournyxEngine = (() => {
     `;
   }
 
-  // ─── TAB 6: INVENTORY & ENERGY BAR ─────────────────────────────────────────
+  // ─── TAB 6: INVENTORY & REWARDS & LUCKY WHEEL ──────────────────────────────
   function _renderInventoryTab() {
-    const d = state.engineData || {};
+    const pane = document.getElementById('tab-inventory');
+    if (!pane || !state.engineData) return;
+    const d = state.engineData;
     const u = state.user || {};
-    const container = document.getElementById('em-inventory-container');
-    if (!container) return;
 
     const items = [
-      { icon: 'fa-star',     color: 'var(--accent-green)',  label: 'Total XP',    value: (d.total_xp || 0).toLocaleString() },
-      { icon: 'fa-coins',    color: '#FFD700',               label: 'Coins',       value: (parseInt(u.points) || 0).toLocaleString() },
-      { icon: 'fa-ticket',   color: 'var(--accent-cyan)',    label: 'TX Tickets',  value: Math.floor((parseInt(u.earnings) || 0) / 10).toLocaleString() },
-      { icon: 'fa-rocket',   color: 'var(--accent-orange)',  label: 'Boost Cards', value: d.boost_cards || 0 },
-      { icon: 'fa-box-open', color: 'var(--accent-purple)',  label: 'Loot Boxes',  value: d.loot_boxes || 0 },
-      { icon: 'fa-bolt',     color: 'var(--accent-cyan)',    label: 'Energy',      value: (d.energy || 85) + '/100' },
+      { icon: 'fa-coins',    color: '#FFD700',               label: 'Points',      value: (parseInt(u.points) || 8000).toLocaleString() },
+      { icon: 'fa-star',     color: 'var(--accent-purple)',  label: 'Hunter XP',   value: (d.total_xp || 800).toLocaleString() },
+      { icon: 'fa-ticket',   color: 'var(--accent-cyan)',    label: 'TX Tickets',  value: Math.floor((parseInt(u.earnings) || 2000) / 10).toLocaleString() },
+      { icon: 'fa-bolt',     color: 'var(--accent-green)',   label: 'Energy',      value: (d.energy || 85) + '/100' },
     ];
 
-    container.innerHTML = `
-      <div class="em-inventory-list">
-        ${items.map(item => `
-          <div class="em-inv-item">
-            <span class="em-inv-name"><i class="fa-solid ${item.icon}" style="color:${item.color}; width:20px; text-align:center;"></i> ${item.label}</span>
-            <b style="font-family:var(--font-head); color:white;">${item.value}</b>
-          </div>
-        `).join('')}
-      </div>
-      <div style="margin-top:20px;">
-        <div class="em-box-title"><i class="fa-solid fa-bolt" style="color:var(--accent-cyan);"></i> Hunter Energy Capacitor</div>
-        <div style="position:relative; height:24px; background:rgba(255,255,255,0.05); border-radius:12px; overflow:hidden; margin-top:8px;">
-          <div style="height:100%; width:${d.energy || 85}%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); border-radius:12px; box-shadow:0 0 10px var(--accent-cyan);"></div>
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:var(--font-head); font-size:0.75rem; font-weight:bold; color:white;">${d.energy || 85}/100</div>
+    pane.innerHTML = `
+      <div class="em-section-box">
+        <div class="em-box-title"><i class="fa-solid fa-briefcase" style="color:var(--accent-cyan);"></i> Hunter Vault & Currencies</div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:10px;">
+          ${items.map(item => `
+            <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+              <i class="fa-solid ${item.icon}" style="color:${item.color}; font-size:1.1rem; margin-bottom:4px;"></i>
+              <div style="font-family:var(--eng-font-head); color:white; font-size:0.9rem; font-weight:bold;">${item.value}</div>
+              <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase;">${item.label}</div>
+            </div>
+          `).join('')}
         </div>
-        <button onclick="TournyxEngineAPI.refillEnergy()" style="width:100%; margin-top:10px; padding:10px; background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); border-radius:10px; color:var(--accent-cyan); font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
-          ⚡ REFILL ENERGY (+30)
+      </div>
+
+      <!-- CYBER LUCKY SPIN WHEEL -->
+      <div class="em-section-box" style="margin-top:15px; text-align:center;">
+        <div class="em-box-title"><i class="fa-solid fa-dharmachakra" style="color:#FFD700;"></i> Cyber Matrix Lucky Spin (1 Free Daily Spin)</div>
+        <div style="position:relative; width:180px; height:180px; margin:15px auto;">
+          <canvas id="luckySpinCanvas" width="180" height="180" style="border-radius:50%; box-shadow:0 0 25px rgba(0,242,255,0.4);"></canvas>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:32px; height:32px; background:#050508; border:2px solid #00f2ff; border-radius:50%; z-index:2; display:flex; align-items:center; justify-content:center; color:#00f2ff; font-size:0.75rem;">
+            🎯
+          </div>
+        </div>
+        <button onclick="TournyxEngineAPI.spinLuckyWheel()" id="luckySpinBtn" style="padding:12px 30px; background:linear-gradient(90deg, #FFD700, #ff9800); border:none; border-radius:30px; color:#000; font-family:var(--eng-font-head); font-weight:900; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 0 20px rgba(255,215,0,0.5);">
+          SPIN FOR REWARDS
         </button>
       </div>
+
+      <!-- HUNTER ITEM SHOP -->
+      <div class="em-section-box" style="margin-top:15px;">
+        <div class="em-box-title"><i class="fa-solid fa-shop" style="color:var(--accent-green);"></i> Hunter Shop (Spend Points / XP)</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+            <div>
+              <b style="color:white; font-size:0.85rem;">⚡ Energy Refill (+50)</b>
+              <small style="color:var(--text-muted); display:block;">Instantly restores 50 capacitor energy</small>
+            </div>
+            <button onclick="TournyxEngineAPI.buyShopItem('energy', 200)" style="background:rgba(0,255,127,0.15); border:1px solid var(--accent-green); color:var(--accent-green); padding:6px 12px; border-radius:6px; font-size:0.75rem; font-family:var(--eng-font-head); font-weight:bold; cursor:pointer;">
+              200 PTS
+            </button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+            <div>
+              <b style="color:white; font-size:0.85rem;">🚀 2x XP Surge Booster</b>
+              <small style="color:var(--text-muted); display:block;">Doubles all mission XP for 2 hours</small>
+            </div>
+            <button onclick="TournyxEngineAPI.buyShopItem('booster', 500)" style="background:rgba(0,242,255,0.15); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; border-radius:6px; font-size:0.75rem; font-family:var(--eng-font-head); font-weight:bold; cursor:pointer;">
+              500 PTS
+            </button>
+          </div>
+        </div>
+      </div>
     `;
+
+    setTimeout(() => _drawLuckyWheel(), 100);
   }
 
-  async function refillEnergy() {
-    if (!state.engineData) return;
-    state.engineData.energy = Math.min((state.engineData.energy || 85) + 30, 100);
-    if (state.db && state.user?.email) {
-      try {
-        await state.db.from('player_engine').update({ energy: state.engineData.energy }).eq('email', state.user.email);
-      } catch(e) {}
+  function _drawLuckyWheel(angle = 0) {
+    const canvas = document.getElementById('luckySpinCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const slices = ['+100 PTS', '+50 XP', '+250 PTS', '+1 TX TICKET', '+50 ENERGY', '+500 PTS', '+100 XP', 'BOOST CARD'];
+    const colors = ['#ff4d4d', '#00f2ff', '#FFD700', '#bd00ff', '#00ff7f', '#ff9800', '#5bc8f5', '#ff3300'];
+    const arc = (Math.PI * 2) / slices.length;
+
+    ctx.clearRect(0, 0, 180, 180);
+    ctx.save();
+    ctx.translate(90, 90);
+    ctx.rotate(angle);
+
+    slices.forEach((s, i) => {
+      ctx.beginPath();
+      ctx.fillStyle = colors[i];
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, 90, i * arc, (i + 1) * arc);
+      ctx.fill();
+
+      ctx.save();
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 8px Rajdhani, sans-serif';
+      ctx.translate(Math.cos(i * arc + arc / 2) * 60, Math.sin(i * arc + arc / 2) * 60);
+      ctx.rotate(i * arc + arc / 2 + Math.PI / 2);
+      ctx.fillText(s, -ctx.measureText(s).width / 2, 0);
+      ctx.restore();
+    });
+
+    ctx.restore();
+  }
+
+  let isSpinning = false;
+  async function spinLuckyWheel() {
+    if (isSpinning) return;
+    isSpinning = true;
+    const btn = document.getElementById('luckySpinBtn');
+    if (btn) btn.disabled = true;
+
+    let rot = 0;
+    const targetRot = Math.PI * 2 * 6 + Math.random() * Math.PI * 2;
+    const start = performance.now();
+    const duration = 3000;
+
+    const animate = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      rot = targetRot * easeOut;
+      _drawLuckyWheel(rot);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        isSpinning = false;
+        const prize = 250;
+        _awardPoints(prize, 'Cyber Lucky Wheel Prize');
+        _showToast(`🎉 Lucky Spin Won: +${prize} PTS (+${Math.floor(prize/10)} XP)!`);
+        _playChime('rankup');
+        if (btn) btn.disabled = false;
+        _renderInventoryTab();
+      }
+    };
+    requestAnimationFrame(animate);
+  }
+
+  async function buyShopItem(itemType, cost) {
+    const currentPoints = parseInt(state.user?.points) || 8000;
+    if (currentPoints < cost) {
+      _showToast('❌ Not enough Points to purchase this item!', true);
+      return;
     }
-    _showToast('⚡ Energy Capacitor Recharged! +30 Energy');
+    await _awardPoints(-cost, `Shop Purchase: ${itemType}`);
+    _showToast(`✅ Item purchased successfully! (-${cost} PTS)`);
     _renderInventoryTab();
   }
 
   // ─── TAB 7: HIDDEN QUESTS ──────────────────────────────────────────────────
   async function _renderHiddenQuests() {
-    const container = document.getElementById('em-hidden-quests-container');
-    if (!container) return;
+    const pane = document.getElementById('tab-hidden-quests');
+    if (!pane) return;
     const wins = parseInt(state.user?.wins) || 0;
-    const matches = parseInt(state.user?.matches) || 0;
+    const matches = parseInt(state.user?.matches_played || state.user?.matches) || 0;
 
     const quests = [
-      { id: 'hq1', name: 'First Blood',           xp_reward: 1000, badge: 'VETERAN FRAME',  cond: (w) => w >= 1 },
-      { id: 'hq2', name: 'Win 5 Squad Matches',   xp_reward: 2000, badge: 'LEGEND FRAME',   cond: (w) => w >= 5 },
-      { id: 'hq3', name: 'The Grinder (20 Games)', xp_reward: 1500, badge: 'GRIND BADGE',    cond: (w, m) => m >= 20 },
-      { id: 'hq4', name: 'Bharat Ke Yoddha',      xp_reward: 3000, badge: 'NATIONAL TITLE', cond: (w) => w >= 15 },
+      { id: 'hq1', name: 'First Blood',           pts: 1000, badge: 'VETERAN FRAME',  cond: (w) => w >= 1 },
+      { id: 'hq2', name: 'Win 5 Squad Matches',   pts: 2000, badge: 'LEGEND FRAME',   cond: (w) => w >= 5 },
+      { id: 'hq3', name: 'The Grinder (20 Games)', pts: 1500, badge: 'GRIND BADGE',    cond: (w, m) => m >= 20 },
+      { id: 'hq4', name: 'Bharat Ke Yoddha',      pts: 3000, badge: 'NATIONAL TITLE', cond: (w) => w >= 15 },
     ];
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:12px;">
         ${quests.map(q => {
           const unlocked = q.cond(wins, matches);
@@ -1005,13 +1203,13 @@ const TournyxEngine = (() => {
               ${unlocked ? `
                 <div style="display:flex; gap:8px; margin-bottom:10px;">
                   <div style="flex:1; text-align:center; padding:6px; background:rgba(255,255,255,0.03); border-radius:8px;">
-                    <div style="color:#FFD700; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">${q.xp_reward} XP</div>
+                    <div style="color:#FFD700; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">+${q.pts} PTS</div>
                   </div>
                   <div style="flex:1; text-align:center; padding:6px; background:rgba(255,255,255,0.03); border-radius:8px;">
                     <div style="color:var(--accent-cyan); font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">${q.badge}</div>
                   </div>
                 </div>
-                <button onclick="TournyxEngineAPI.claimHiddenQuest('${q.id}', ${q.xp_reward}, '${q.badge}', this)" style="width:100%; padding:10px; background:linear-gradient(90deg, #FFD700, #ff9800); border:none; border-radius:8px; color:#000; font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.8rem; text-transform:uppercase;">
+                <button onclick="TournyxEngineAPI.claimHiddenQuest('${q.id}', ${q.pts}, '${q.badge}', this)" style="width:100%; padding:10px; background:linear-gradient(90deg, #FFD700, #ff9800); border:none; border-radius:8px; color:#000; font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.8rem; text-transform:uppercase;">
                   CLAIM ACHIEVEMENT
                 </button>
               ` : ''}
@@ -1022,13 +1220,13 @@ const TournyxEngine = (() => {
     `;
   }
 
-  async function claimHiddenQuest(qId, xpReward, badge, btn) {
+  async function claimHiddenQuest(qId, ptsReward, badge, btn) {
     if (btn) {
       btn.disabled = true;
       btn.textContent = 'CLAIMING...';
     }
-    await _awardXP(xpReward, `Secret Quest: +${xpReward} XP & ${badge}`);
-    _showToast(`🏆 ${badge} UNLOCKED! +${xpReward} XP`);
+    await _awardPoints(ptsReward, `Secret Quest: +${ptsReward} PTS & ${badge}`);
+    _showToast(`🏆 ${badge} UNLOCKED! +${ptsReward} PTS`);
     _playChime('rankup');
     if (btn) {
       btn.textContent = 'CLAIMED ✓';
@@ -1039,8 +1237,8 @@ const TournyxEngine = (() => {
 
   // ─── TAB 8: SYSTEM AUDIT LOG ───────────────────────────────────────────────
   async function _renderSystemLog() {
-    const container = document.getElementById('em-system-log-container');
-    if (!container) return;
+    const pane = document.getElementById('tab-system-log');
+    if (!pane) return;
 
     let logs = [];
     if (state.db && state.user?.email) {
@@ -1065,7 +1263,7 @@ const TournyxEngine = (() => {
     const iconMap = { xp_gain: 'fa-circle-check', rank_up: 'fa-arrow-trend-up', achievement: 'fa-trophy', match_analyzed: 'fa-eye' };
     const colorMap = { xp_gain: 'var(--accent-green)', rank_up: '#FFD700', achievement: 'var(--accent-cyan)', match_analyzed: 'var(--accent-orange)' };
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div class="em-log-list">
         ${logs.map(log => `
           <div class="em-log-item">
@@ -1085,200 +1283,36 @@ const TournyxEngine = (() => {
 
   // ─── TAB 9: VISION AI SUBMIT & MONITOR ─────────────────────────────────────
   function _renderVisionAISubmit() {
-    const container = document.getElementById('em-vision-ai-container');
-    if (!container) return;
+    const pane = document.getElementById('tab-vision-ai');
+    if (!pane) return;
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div class="em-section-box">
-        <div class="em-box-title"><i class="fa-solid fa-eye fa-fade" style="color:var(--accent-orange);"></i> Tournyx Vision AI Scanner</div>
-        <p style="font-size:0.82rem; color:#aaa; margin-bottom:15px;">Input your match results, upload your victory screenshot, or let our Neural Link screen monitor evaluate your gameplay stats in real-time.</p>
-        
-        <!-- MOBILE SCREENSHOT SCANNER (ALL DEVICES) -->
-        <div style="background:rgba(0,242,255,0.06); border:1px dashed var(--accent-cyan); border-radius:12px; padding:14px; text-align:center; margin-bottom:16px;">
-          <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-cyan); font-size:1.6rem; margin-bottom:6px;"></i>
-          <div style="color:white; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">📸 UPLOAD MATCH SCORECARD / SCREENSHOT</div>
-          <div style="font-size:0.72rem; color:#aaa; margin:4px 0 10px;">Mobile & PC: AI will scan kills, placement, and damage directly from your image</div>
-          <input type="file" id="vas-screenshot-input" accept="image/*" style="display:none;" onchange="TournyxEngineAPI.handleScreenshotUpload(event)">
-          <button onclick="document.getElementById('vas-screenshot-input').click()" style="padding:8px 18px; background:rgba(0,242,255,0.15); border:1px solid var(--accent-cyan); border-radius:8px; color:var(--accent-cyan); font-family:var(--font-head); font-weight:bold; font-size:0.75rem; cursor:pointer;">
-            SELECT SCREENSHOT FROM GALLERY / CAMERA
-          </button>
-        </div>
+        <div class="em-box-title"><i class="fa-solid fa-eye fa-fade" style="color:var(--accent-orange);"></i> Tournyx Vision AI Neural Link</div>
+        <p style="font-size:0.82rem; color:#aaa; margin-bottom:15px;">Activate real-time neural gameplay monitoring. Vision AI tracks in-game frags, headshots, placement, and automatically awards Points & XP:</p>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-          <div>
-            <label style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-head);">GAME TITLE</label>
-            <select id="vas-game" style="width:100%; padding:10px; background:#0a0a0d; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:var(--font-head); font-size:0.85rem; margin-top:4px;">
-              <option value="BGMI">BGMI (Battlegrounds India)</option>
-              <option value="Free Fire MAX">Free Fire MAX</option>
-              <option value="CODM">Call of Duty Mobile</option>
-              <option value="Valorant">Valorant Mobile</option>
-            </select>
-          </div>
-          <div>
-            <label style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-head);">FINAL PLACEMENT</label>
-            <input id="vas-placement" type="number" min="1" max="100" placeholder="#1" style="width:100%; padding:10px; background:#0a0a0d; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:var(--font-head); font-size:0.85rem; margin-top:4px;">
-          </div>
-          <div>
-            <label style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-head);">ELIMINATIONS</label>
-            <input id="vas-kills" type="number" min="0" max="40" placeholder="0" style="width:100%; padding:10px; background:#0a0a0d; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:var(--font-head); font-size:0.85rem; margin-top:4px;">
-          </div>
-          <div>
-            <label style="color:var(--text-muted); font-size:0.75rem; font-family:var(--font-head);">TOTAL DAMAGE</label>
-            <input id="vas-damage" type="number" min="0" max="6000" placeholder="0" style="width:100%; padding:10px; background:#0a0a0d; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:var(--font-head); font-size:0.85rem; margin-top:4px;">
-          </div>
-        </div>
-
-        <div id="vas-ai-result" style="display:none; padding:14px; background:rgba(0,242,255,0.05); border-radius:10px; border:1px solid rgba(0,242,255,0.2); margin-bottom:15px;">
-          <div style="color:var(--accent-cyan); font-family:var(--font-head); font-size:0.85rem; margin-bottom:6px;"><i class="fa-solid fa-robot"></i> NEURAL EVALUATION COMPLETE</div>
-          <div id="vas-ai-text" style="color:#ddd; font-size:0.82rem; line-height:1.5;"></div>
-        </div>
-
-        <button onclick="TournyxEngineAPI.submitMatchToVisionAI()" id="vas-submit-btn" style="width:100%; padding:14px; background:linear-gradient(90deg, #ff8c00, #ff3300); border:none; border-radius:10px; color:white; font-family:var(--font-head); font-weight:bold; font-size:0.9rem; cursor:pointer; text-transform:uppercase; letter-spacing:2px; box-shadow:0 4px 20px rgba(255,51,0,0.35);">
-          <i class="fa-solid fa-bolt"></i> RUN VISION AI ANALYSIS
+        <button onclick="TournyxEngineAPI.startVisionScreenCapture()" style="width:100%; padding:14px; background:linear-gradient(90deg, #ff8c00, #ff3300); border:none; border-radius:10px; color:white; font-family:var(--eng-font-head); font-weight:bold; font-size:0.9rem; cursor:pointer; text-transform:uppercase; letter-spacing:2px; box-shadow:0 4px 20px rgba(255,51,0,0.35);">
+          <i class="fa-solid fa-desktop"></i> INITIALIZE LIVE NEURAL LINK
         </button>
       </div>
 
-      <div class="em-section-box" style="margin-top:15px;">
-        <div class="em-box-title"><i class="fa-solid fa-desktop" style="color:var(--accent-orange);"></i> Live Neural Screen / Camera Monitor</div>
-        <p style="font-size:0.82rem; color:#aaa; margin-bottom:12px;">Share your screen (Desktop) or activate camera monitor (Mobile) for automated HUD & kill tracking.</p>
-        <button onclick="TournyxEngineAPI.startVisionScreenCapture()" style="width:100%; padding:12px; background:rgba(255,140,0,0.1); border:1px solid var(--accent-orange); border-radius:10px; color:var(--accent-orange); font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
-          <i class="fa-solid fa-video"></i> INITIALIZE LIVE NEURAL LINK
-        </button>
-      </div>
-
-      <div class="em-section-box sharingan-box" style="margin-top:15px;">
-        <div class="em-box-title"><i class="fa-solid fa-eye" style="color:#ff3300;"></i> <span style="color:#ff3300;">SHARINGAN MODE (5 MATCH INTENSIVE)</span></div>
-        <p style="font-size:0.82rem; color:#ccc; margin-bottom:12px;">AI tracks your next 5 consecutive matches with microscopic accuracy to construct a custom esports masterclass program.</p>
-        <button onclick="TournyxEngineAPI.activateSharinganMode()" style="width:100%; padding:12px; background:rgba(255,51,0,0.15); border:1px solid #ff3300; border-radius:10px; color:#ff3300; font-family:var(--font-head); font-weight:bold; cursor:pointer; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
-          👁️ ACTIVATE SHARINGAN PROTOCOL
+      <div class="em-section-box" style="margin-top:15px; border-color:#FFD700; background:rgba(255,215,0,0.04);">
+        <div class="em-box-title"><i class="fa-solid fa-mobile-screen-button" style="color:#FFD700;"></i> Download Tournyx Mobile App (Android / iOS)</div>
+        <p style="font-size:0.8rem; color:#ccc; margin-bottom:12px; line-height:1.4;">
+          Get seamless floating HUD bubbles inside BGMI & Free Fire MAX with automatic background vision recognition!
+        </p>
+        <button onclick="TournyxEngineAPI.downloadMobileApp()" style="width:100%; padding:11px; background:rgba(255,215,0,0.2); border:1px solid #FFD700; border-radius:8px; color:#FFD700; font-family:var(--eng-font-head); font-weight:bold; font-size:0.82rem; cursor:pointer;">
+          <i class="fa-brands fa-google-play"></i> DOWNLOAD NATIVE APK (v3.5)
         </button>
       </div>
     `;
   }
 
-  async function handleScreenshotUpload(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-
-    _showToast('🔍 Vision AI Scanning Screenshot...');
-    
-    // Simulate Vision AI OCR parsing of screenshot
-    setTimeout(async () => {
-      const simulatedKills = Math.floor(4 + Math.random() * 9);
-      const simulatedDamage = Math.floor(simulatedKills * 160 + Math.random() * 400);
-      const simulatedPlacement = Math.random() > 0.4 ? 1 : Math.floor(2 + Math.random() * 5);
-
-      const kEl = document.getElementById('vas-kills');
-      const dEl = document.getElementById('vas-damage');
-      const pEl = document.getElementById('vas-placement');
-
-      if (kEl) kEl.value = simulatedKills;
-      if (dEl) dEl.value = simulatedDamage;
-      if (pEl) pEl.value = simulatedPlacement;
-
-      _showToast(`✅ Screenshot Parsed: #${simulatedPlacement} | ${simulatedKills} Kills | ${simulatedDamage} DMG`);
-      await submitMatchToVisionAI();
-    }, 1200);
-  }
-
-  async function submitMatchToVisionAI() {
-    const btn = document.getElementById('vas-submit-btn');
-    const game = document.getElementById('vas-game')?.value || 'BGMI';
-    const kills = parseInt(document.getElementById('vas-kills')?.value) || 0;
-    const damage = parseInt(document.getElementById('vas-damage')?.value) || 0;
-    const placement = parseInt(document.getElementById('vas-placement')?.value) || 10;
-
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> PARSING NEURAL FRAMES...';
+  function downloadMobileApp() {
+    _showToast('📲 Tournyx Native Mobile App APK Download initiated!');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText('https://tournyx.in/download/tournyx-esports.apk');
     }
-
-    await new Promise(r => setTimeout(r, 1200));
-
-    const xpEarned = Math.floor((kills * 50) + (damage * 0.1) + Math.max(0, (20 - placement) * 30));
-    const deltas = {
-      skill_combat: kills >= 8 ? 3 : kills >= 4 ? 2 : kills >= 1 ? 1 : -1,
-      skill_strategy: placement <= 3 ? 3 : placement <= 10 ? 1 : -1,
-      skill_consistency: damage >= 600 ? 2 : damage >= 300 ? 1 : 0
-    };
-
-    let report = `<b>${game} Match Report:</b> ${kills} Eliminations | ${damage} Damage | Placement #${placement}<br><br>`;
-    if (placement <= 3) report += '🏆 <span style="color:#FFD700">Podium Finish! Stellar zone control detected.</span><br>';
-    else if (kills === 0) report += '⚠️ <span style="color:var(--accent-orange)">0 Frags logged. Aggressive crosshair placement recommended.</span><br>';
-    else report += '✅ <span style="color:var(--accent-green)">Solid performance! XP bonus granted.</span><br>';
-
-    report += `<br><b>Skill Adjustments:</b> Combat ${deltas.skill_combat >= 0 ? '+' : ''}${deltas.skill_combat}%, Strategy ${deltas.skill_strategy >= 0 ? '+' : ''}${deltas.skill_strategy}%<br>`;
-    report += `<b>Coach Note:</b> ${placement > 10 ? 'Avoid early mid-map rotations.' : 'Your peak tempo is optimal!'}`;
-
-    const rEl = document.getElementById('vas-ai-result');
-    const tEl = document.getElementById('vas-ai-text');
-    if (rEl && tEl) {
-      tEl.innerHTML = report;
-      rEl.style.display = 'block';
-    }
-
-    await _awardXP(xpEarned, `Match Analyzed (${game}): +${xpEarned} XP`);
-
-    if (state.engineData) {
-      Object.entries(deltas).forEach(([k, v]) => {
-        state.engineData[k] = Math.min(99, Math.max(1, (state.engineData[k] || 50) + v));
-      });
-      if (state.db && state.user?.email) {
-        try {
-          await state.db.from('player_engine').update(state.engineData).eq('email', state.user.email);
-        } catch(e) {}
-      }
-    }
-
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '✓ ANALYSIS SAVED — SUBMIT ANOTHER MATCH';
-    }
-
-    _playChime('xp');
-    _showToast(`💥 Vision AI: +${xpEarned} XP injected!`);
-  }
-
-  async function startVisionScreenCapture() {
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-        state.visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
-        _showToast('🔴 Neural Link Established! Screen scanning active.');
-      } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Mobile fallback: camera stream
-        state.visionStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-        _showToast('📷 Mobile Camera Neural Link Established! Aim at game screen.');
-      } else {
-        // Open screenshot picker fallback
-        document.getElementById('vas-screenshot-input')?.click();
-        return;
-      }
-
-      let count = 0;
-      state.visionInterval = setInterval(async () => {
-        count++;
-        if (count >= 5) {
-          clearInterval(state.visionInterval);
-          if (state.visionStream) state.visionStream.getTracks().forEach(t => t.stop());
-          _showToast('✅ Live Match Session Parsed! +150 XP');
-          await _awardXP(150, 'Neural Link Monitor: +150 XP');
-        }
-      }, 2000);
-
-      state.visionStream.getVideoTracks()[0].onended = () => {
-        clearInterval(state.visionInterval);
-        _showToast('Neural Link Terminated.', true);
-      };
-    } catch(err) {
-      // Fallback to screenshot upload on permission cancel or mobile block
-      _showToast('📸 Switching to Screenshot Scanner...', false);
-      document.getElementById('vas-screenshot-input')?.click();
-    }
-  }
-
-  function activateSharinganMode() {
-    _showToast('👁️ SHARINGAN MODE ACTIVATED: Next 5 Matches Tracked!');
-    localStorage.setItem('tournyx_sharingan', JSON.stringify({ active: true, matchesLeft: 5, time: Date.now() }));
   }
 
   // ─── TAB 10: BOSS RAIDS ────────────────────────────────────────────────────
@@ -1293,12 +1327,12 @@ const TournyxEngine = (() => {
   }
 
   function _renderBossRaidTab() {
-    const container = document.getElementById('em-boss-raids-container');
-    if (!container) return;
+    const pane = document.getElementById('tab-boss-raids');
+    if (!pane) return;
     const b = state.bossRaidData || { totalHp: 1000000, currentHp: 742500, name: 'ASURA: THE VOID TITAN' };
     const pct = Math.floor((b.currentHp / b.totalHp) * 100);
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div class="boss-raid-container">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
@@ -1335,15 +1369,15 @@ const TournyxEngine = (() => {
     const fill = document.getElementById('bossHpFill');
     if (fill) fill.style.width = pct + '%';
 
-    await _awardXP(50, 'Boss Raid Strike: +50 XP');
-    _showToast('💥 Direct Hit on Boss! -500 Boss HP | +50 XP');
+    await _awardPoints(50, 'Boss Raid Strike: +50 PTS (+5 XP)');
+    _showToast('💥 Direct Hit on Boss! -500 Boss HP | +50 PTS');
     _playChime('xp');
   }
 
   // ─── TAB 11: REGIONAL RANKS ────────────────────────────────────────────────
   function _renderRegionalRanksTab() {
-    const container = document.getElementById('em-regional-ranks-container');
-    if (!container) return;
+    const pane = document.getElementById('tab-regional-ranks');
+    if (!pane) return;
 
     const regions = [
       { name: 'Tamil Nadu', leader: 'Karthi_Viper', power: '42,500' },
@@ -1353,7 +1387,7 @@ const TournyxEngine = (() => {
       { name: 'Punjab', leader: 'Singh_Sher', power: '31,900' },
     ];
 
-    container.innerHTML = `
+    pane.innerHTML = `
       <div class="em-section-box">
         <div class="em-box-title"><i class="fa-solid fa-map-pin" style="color:var(--accent-green);"></i> Bharat State Leaderboards</div>
         <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">Top-rated hunters representing each Indian state:</p>
@@ -1372,7 +1406,7 @@ const TournyxEngine = (() => {
     `;
   }
 
-  // ─── 8. RANK-UP CEREMONY ───────────────────────────────────────────────────
+  // ─── 10. RANK-UP CEREMONY ──────────────────────────────────────────────────
   function triggerRankUpCeremony(newRank) {
     const meta = _getRankMeta(newRank);
     const existing = document.getElementById('rankup-ceremony');
@@ -1452,60 +1486,85 @@ const TournyxEngine = (() => {
     triggerRankUpCeremony(nextTier.label);
   }
 
-  // ─── 9. XP ENGINE & PARTICLES ──────────────────────────────────────────────
-  async function _awardXP(amount, desc) {
-    if (!state.engineData) return;
-    const oldTier = state.engineData.rank_tier;
+  // ─── 11. POINTS & XP REWARD PIPELINE ───────────────────────────────────────
+  async function _awardPoints(ptsAmount, desc) {
+    if (!state.user) return;
+    const cleanEmail = (state.user.email || '').trim().toLowerCase();
 
-    state.engineData.total_xp = (state.engineData.total_xp || 0) + amount;
-    state.engineData.daily_xp = (state.engineData.daily_xp || 0) + amount;
-    state.engineData.power_level = (state.engineData.power_level || 100) + Math.floor(amount / 10);
+    // 100 Points = 10 XP
+    const xpAmount = Math.floor(ptsAmount / 10);
 
-    const newTier = _getRankTierByPower(state.engineData.power_level);
-    if (newTier !== oldTier) {
-      state.engineData.rank_tier = newTier;
-      setTimeout(() => triggerRankUpCeremony(newTier), 400);
+    const oldPoints = parseInt(state.user.points) || 8000;
+    const newPoints = Math.max(0, oldPoints + ptsAmount);
+    state.user.points = newPoints;
+    localStorage.setItem('tournyx_user', JSON.stringify(state.user));
+
+    if (state.engineData) {
+      state.engineData.total_xp = Math.max(0, (state.engineData.total_xp || 800) + xpAmount);
+      state.engineData.daily_xp = (state.engineData.daily_xp || 0) + xpAmount;
+      state.engineData.power_level = Math.max(100, (state.engineData.power_level || 100) + Math.floor(ptsAmount / 20));
+      
+      const newRank = _getRankTierByPower(state.engineData.power_level);
+      if (newRank !== state.engineData.rank_tier) {
+        state.engineData.rank_tier = newRank;
+        setTimeout(() => triggerRankUpCeremony(newRank), 400);
+      }
     }
 
     _updateEngineWidget(state.engineData);
     _updateModalHeader(state.engineData);
 
+    if (window.syncLiveWalletPoints) window.syncLiveWalletPoints(state.user);
     if (window.TournyxVisionAI && typeof window.TournyxVisionAI.updateBubble === 'function') {
       window.TournyxVisionAI.updateBubble(state.engineData);
     }
 
-    if (state.db && state.user?.email) {
+    // Save strictly to Supabase Users table & player_engine
+    if (state.db && cleanEmail) {
       try {
-        await state.db.from('player_engine').update({
-          total_xp: state.engineData.total_xp,
-          daily_xp: state.engineData.daily_xp,
-          power_level: state.engineData.power_level,
-          rank_tier: state.engineData.rank_tier,
-          last_updated: new Date().toISOString()
-        }).eq('email', state.user.email);
-
+        await state.db.from('Users').update({ points: newPoints }).ilike('email', cleanEmail);
+        if (state.engineData) {
+          await state.db.from('player_engine').update({
+            total_xp: state.engineData.total_xp,
+            daily_xp: state.engineData.daily_xp,
+            power_level: state.engineData.power_level,
+            rank_tier: state.engineData.rank_tier
+          }).ilike('email', cleanEmail);
+        }
         await state.db.from('engine_log').insert({
-          user_id: state.user.id || null,
           event_type: 'xp_gain',
           event_desc: desc,
-          xp_delta: amount
+          xp_delta: xpAmount
         });
-      } catch(e) {}
+      } catch(e) {
+        console.warn('Database point save notice:', e);
+      }
     }
   }
 
-  async function awardStreakXP(streakPoints) {
-    const xp = Math.floor((streakPoints || 50) * 2);
-    await _awardXP(xp, `Daily Streak Surge: +${xp} XP`);
-    _showToast(`⚡ Tournyx Engine: +${xp} XP Injected from Daily Streak!`);
+  async function awardStreakXP(streakRewardPts) {
+    await _awardPoints(streakRewardPts, `Daily Streak Surge: +${streakRewardPts} PTS`);
   }
 
-  function setGraphicTier(tier) {
-    state.graphicTier = tier;
-    document.body.classList.remove('eng-tier-performance', 'eng-tier-balanced', 'eng-tier-ultra');
-    document.body.classList.add('eng-tier-' + tier);
-    localStorage.setItem('tournyx_graphic_tier', tier);
-    _showToast(`🖥️ Engine Graphics: ${tier.toUpperCase()} Mode`);
+  async function startVisionScreenCapture() {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        state.visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
+        state.isVisionActive = true;
+        _showToast('🔴 Vision AI Neural Link Active! Monitoring Gameplay.');
+      } else {
+        _showToast('📲 Native Background Screen HUD requires the Tournyx Mobile App.');
+        downloadMobileApp();
+        return;
+      }
+
+      state.visionStream.getVideoTracks()[0].onended = () => {
+        state.isVisionActive = false;
+        _showToast('Neural Link Terminated.');
+      };
+    } catch(err) {
+      _showToast('📲 Open Tournyx Mobile App to activate background vision tracking.');
+    }
   }
 
   function _triggerXPParticle(amount, anchorEl) {
@@ -1519,7 +1578,7 @@ const TournyxEngine = (() => {
     setTimeout(() => el.remove(), 1600);
   }
 
-  // ─── 10. MATRIX BOOT SEQUENCE ──────────────────────────────────────────────
+  // ─── 12. MATRIX BOOT SEQUENCE ──────────────────────────────────────────────
   function _triggerBootSequence() {
     const modalBox = document.querySelector('.engine-modal-box');
     if (!modalBox) return;
@@ -1555,118 +1614,30 @@ const TournyxEngine = (() => {
     setTimeout(() => overlay.remove(), 1350);
   }
 
-  // ─── 11. DYNAMIC TABS & DOM OVERLAYS ───────────────────────────────────────
-  function _injectDynamicTabs() {
-    const navMenu = document.querySelector('.em-nav-menu');
-    if (navMenu && !document.querySelector('[data-tab="ai-recommendations"]')) {
-      const extraTabs = [
-        { id: 'ai-recommendations', icon: 'fa-robot',       label: 'AI RECO' },
-        { id: 'vision-ai',          icon: 'fa-eye',         label: 'VISION AI' },
-        { id: 'boss-raids',         icon: 'fa-skull',       label: 'BOSS RAIDS' },
-        { id: 'regional-ranks',     icon: 'fa-map-pin',     label: 'BHARAT RANKS' },
-      ];
-
-      extraTabs.forEach(t => {
-        const btn = document.createElement('button');
-        btn.className = 'em-nav-btn';
-        btn.dataset.tab = t.id;
-        btn.innerHTML = `<i class="fa-solid ${t.icon}"></i> ${t.label}`;
-        btn.onclick = function() { switchEngineTab(t.id, this); };
-        navMenu.appendChild(btn);
-      });
-    }
-
-    const tabContent = document.querySelector('.em-tab-content');
-    if (tabContent) {
-      const newPanes = [
-        { id: 'ai-recommendations', cId: 'em-ai-reco-container' },
-        { id: 'vision-ai',          cId: 'em-vision-ai-container' },
-        { id: 'boss-raids',         cId: 'em-boss-raids-container' },
-        { id: 'regional-ranks',     cId: 'em-regional-ranks-container' },
-      ];
-
-      newPanes.forEach(p => {
-        if (!document.getElementById('tab-' + p.id)) {
-          const pane = document.createElement('div');
-          pane.className = 'em-pane';
-          pane.id = 'tab-' + p.id;
-          pane.innerHTML = `<div id="${p.cId}"><div style="color:var(--accent-cyan); text-align:center; padding:30px;"><i class="fa-solid fa-circle-notch fa-spin"></i></div></div>`;
-          tabContent.appendChild(pane);
-        }
-      });
-
-      const dynamicContainers = [
-        ['tab-todays-tasks', 'em-tasks-container'],
-        ['tab-inventory', 'em-inventory-container'],
-        ['tab-hidden-quests', 'em-hidden-quests-container'],
-        ['tab-system-log', 'em-system-log-container'],
-        ['tab-player-evolution', 'em-evolution-container'],
-      ];
-
-      dynamicContainers.forEach(([paneId, cId]) => {
-        const p = document.getElementById(paneId);
-        if (p && !document.getElementById(cId)) {
-          p.innerHTML = `<div id="${cId}"></div>`;
-        }
-      });
-    }
-
-    // Embed radar chart canvas in analysis tab if missing
-    const analysisPane = document.getElementById('tab-player-analysis');
-    if (analysisPane && !document.getElementById('skillRadarCanvas')) {
-      const radarBox = document.createElement('div');
-      radarBox.className = 'em-radar-box';
-      radarBox.innerHTML = `
-        <div class="em-box-title" style="font-family:var(--font-head); color:var(--accent-purple); margin-bottom:10px;">
-          <i class="fa-solid fa-spider"></i> Skill Radar Matrix
-        </div>
-        <canvas id="skillRadarCanvas" height="210"></canvas>
-      `;
-      analysisPane.appendChild(radarBox);
-
-      const aiBox = document.createElement('div');
-      aiBox.className = 'em-section-box';
-      aiBox.style.marginTop = '15px';
-      aiBox.innerHTML = `
-        <div class="em-box-title" style="font-family:var(--font-head); color:var(--accent-cyan); margin-bottom:8px;">
-          <i class="fa-solid fa-robot"></i> AI Diagnostic Report
-        </div>
-        <div id="em-ai-report-text"></div>
-      `;
-      analysisPane.appendChild(aiBox);
-    }
-  }
-
   function _bindDOMEvents() {
     const openBtn = document.querySelector('.ew2-open-btn');
     if (openBtn) openBtn.onclick = openSystemPopup;
-
-    const closeBtn = document.querySelector('#ultimateSystemModal .auth-close');
-    if (closeBtn) closeBtn.onclick = closeEngineModal;
   }
 
-  // ─── 12. REALTIME SUBSCRIPTION ─────────────────────────────────────────────
+  // ─── 13. REALTIME SUBSCRIPTION ─────────────────────────────────────────────
   function _initRealtimeSubscription() {
     if (!state.db || !state.user?.email) return;
     try {
+      const cleanEmail = (state.user.email || '').trim().toLowerCase();
       state.realtimeChannel = state.db
         .channel('engine-sync-feed')
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'player_engine', filter: `email=eq.${state.user.email}` }, (payload) => {
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'player_engine', filter: `email=eq.${cleanEmail}` }, (payload) => {
           if (payload.new) {
-            const oldTier = state.engineData?.rank_tier;
             state.engineData = payload.new;
             _updateEngineWidget(payload.new);
             _updateModalHeader(payload.new);
-            if (oldTier && oldTier !== payload.new.rank_tier) {
-              triggerRankUpCeremony(payload.new.rank_tier);
-            }
           }
         })
         .subscribe();
     } catch(e) {}
   }
 
-  // ─── 13. UTILITY HELPERS ───────────────────────────────────────────────────
+  // ─── 14. UTILITY HELPERS ───────────────────────────────────────────────────
   function _showToast(msg, isError = false) {
     if (typeof showToast === 'function') {
       showToast(msg, isError);
@@ -1695,20 +1666,20 @@ const TournyxEngine = (() => {
     openSystemPopup,
     closeEngineModal,
     switchEngineTab,
-    claimTask,
+    startAndVerifyTask,
+    startDrill,
+    confirmAwakening,
     claimHiddenQuest,
-    selectRole,
     setPlayerDNA,
     buildDreamTeam,
     inviteSquadmate,
-    submitMatchToVisionAI,
-    handleScreenshotUpload,
+    spinLuckyWheel,
+    buyShopItem,
+    downloadMobileApp,
     startVisionScreenCapture,
-    activateSharinganMode,
     strikeBossRaid,
     simulateRankUp,
     triggerRankUpCeremony,
-    refillEnergy,
     awardStreakXP,
     setGraphicTier,
     loadEngineData,
@@ -1719,19 +1690,6 @@ const TournyxEngine = (() => {
 
 window.TournyxEngine = TournyxEngine;
 window.TournyxEngineAPI = TournyxEngine;
-
-// ─── FLUTTER APP HYBRID BRIDGE ───
-window.TournyxFlutterBridge = {
-  syncUserData: (jsonStr) => {
-    try {
-      localStorage.setItem('tournyx_user', jsonStr);
-      TournyxEngine.loadEngineData();
-    } catch(e) {}
-  },
-  triggerNativeCapture: () => {
-    TournyxEngine.startVisionScreenCapture();
-  }
-};
 
 document.addEventListener('DOMContentLoaded', () => {
   let attempts = 0;
@@ -1745,3 +1703,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 250);
 });
+
