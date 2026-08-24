@@ -1242,261 +1242,7 @@
             </div>
         </section>
 
-      <!-- TOURNYX ENGINE SYSTEM MODAL -->
-<div class="auth-popup-overlay" id="ultimateSystemModal" onclick="if(event.target === this) closeEngineModal()">
-    <div class="engine-modal-box glass-panel">
-        
-        <!-- TOP HEADER BAR -->
-        <div class="engine-modal-header">
-            <div class="em-header-left">
-                <i class="fa-solid fa-microchip em-chip-icon"></i>
-                <h2>TOURNYX ENGINE</h2>
-            </div>
-            
-            <div class="em-user-badge">
-                <img src="https://via.placeholder.com/40" id="emUserAvatar" class="em-avatar" alt="Avatar">
-                <div class="em-user-info">
-                    <span class="em-username" id="emUserName">PlayerX</span>
-                    <span class="em-user-lvl" id="emUserLvl">Level 45</span>
-                </div>
-            </div>
-
-            <div class="em-header-stats">
-                <div class="em-stat-item"><span>POWER</span><b id="emStatPower">450</b></div>
-                <div class="em-stat-item"><span>RANK</span><b id="emStatRank" style="color:#FFD700;">Pro</b></div>
-                <div class="em-stat-item"><span>WIN RATE</span><b id="emStatWinRate">0%</b></div>
-                <div class="em-stat-item"><span>XP</span><b id="emStatXP">5000</b></div>
-            </div>
-
-            <i class="fa-solid fa-xmark auth-close" onclick="closeEngineModal()"></i>
-        </div>
-
-        <!-- MAIN BODY -->
-        <div class="engine-modal-body">
-            
-            <!-- LEFT SIDEBAR MENU -->
-            <div class="em-nav-menu">
-                <button class="em-nav-btn active" onclick="switchEngineTab('player-analysis', this)">
-                    <i class="fa-solid fa-chart-column"></i> PLAYER ANALYSIS
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('todays-tasks', this)">
-                    <i class="fa-solid fa-list-check"></i> TODAY'S TASKS
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('role-training', this)">
-                    <i class="fa-solid fa-crosshairs"></i> ROLE & TRAINING
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('player-evolution', this)">
-                    <i class="fa-solid fa-bolt"></i> PLAYER EVOLUTION
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('inventory', this)">
-                    <i class="fa-solid fa-briefcase"></i> INVENTORY
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('hidden-quests', this)">
-                    <i class="fa-solid fa-user-ninja"></i> HIDDEN QUESTS
-                </button>
-                <button class="em-nav-btn" onclick="switchEngineTab('system-log', this)">
-                    <i class="fa-solid fa-terminal"></i> SYSTEM LOG
-                </button>
-            </div>
-
-            <!-- RIGHT DISPLAY VIEW -->
-            <div class="em-tab-content">
-                
-                <!-- TAB 1: PLAYER ANALYSIS -->
-                <div class="em-pane active" id="tab-player-analysis">
-                    <div class="em-section-box">
-                        <div class="em-box-title"><i class="fa-solid fa-chart-line" style="color:var(--accent-cyan)"></i> Player Analysis</div>
-                        <div class="em-skill-bars">
-                            <div class="em-skill-item">
-                                <div class="em-skill-info"><span><i class="fa-solid fa-crosshairs" style="color:var(--accent-green)"></i> Combat Skill</span><b>91%</b></div>
-                                <div class="em-bar-bg"><div class="em-bar-fill" style="width:91%; background:var(--accent-green); box-shadow:0 0 10px var(--accent-green);"></div></div>
-                            </div>
-                            <div class="em-skill-item">
-                                <div class="em-skill-info"><span><i class="fa-solid fa-bolt" style="color:var(--accent-cyan)"></i> Reaction Time</span><b>87%</b></div>
-                                <div class="em-bar-bg"><div class="em-bar-fill" style="width:87%; background:var(--accent-cyan); box-shadow:0 0 10px var(--accent-cyan);"></div></div>
-                            </div>
-                            <div class="em-skill-item">
-                                <div class="em-skill-info"><span><i class="fa-solid fa-brain" style="color:var(--accent-purple)"></i> Strategy</span><b>95%</b></div>
-                                <div class="em-bar-bg"><div class="em-bar-fill" style="width:95%; background:var(--accent-purple); box-shadow:0 0 10px var(--accent-purple);"></div></div>
-                            </div>
-                            <div class="em-skill-item">
-                                <div class="em-skill-info"><span><i class="fa-solid fa-bullseye" style="color:var(--accent-orange)"></i> Aim</span><b>84%</b></div>
-                                <div class="em-bar-bg"><div class="em-bar-fill" style="width:84%; background:var(--accent-orange); box-shadow:0 0 10px var(--accent-orange);"></div></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="em-section-box margin-top">
-                        <div class="em-box-title"><i class="fa-solid fa-robot" style="color:var(--accent-cyan)"></i> AI Report</div>
-                        <p class="em-report-text">You perform better in Squad mode.</p>
-                        <p class="em-report-text">Weakest Area: <span style="color:var(--accent-red); font-weight:bold;">Close Combat</span></p>
-                        <p class="em-report-text">Recommendation: <span style="color:var(--accent-green); font-weight:bold;">Practice TDM today.</span></p>
-                        <div class="em-report-reward">Reward: <b>+250 XP</b></div>
-                    </div>
-                </div>
-
-                <!-- TAB 2: TODAY'S TASKS -->
-                <div class="em-pane" id="tab-todays-tasks">
-                    <div class="em-section-box">
-                        <div class="em-box-title"><i class="fa-solid fa-list-check" style="color:var(--accent-cyan)"></i> Today's Tasks (Practice Based)</div>
-                        <div class="em-task-list">
-                            <div class="em-task-card">
-                                <div class="em-task-info"><i class="fa-regular fa-square"></i> <span>Play Headshots 10 Kills</span><small>0/10</small></div>
-                                <div class="em-task-xp">+200 XP</div>
-                            </div>
-                            <div class="em-task-card">
-                                <div class="em-task-info"><i class="fa-regular fa-square"></i> <span>Use Sniper and Kill 5</span><small>0/5</small></div>
-                                <div class="em-task-xp">+150 XP</div>
-                            </div>
-                            <div class="em-task-card">
-                                <div class="em-task-info"><i class="fa-regular fa-square"></i> <span>Play 3 CS Matches</span><small>0/3</small></div>
-                                <div class="em-task-xp">+150 XP</div>
-                            </div>
-                            <div class="em-task-card completed">
-                                <div class="em-task-info"><i class="fa-solid fa-square-check" style="color:var(--accent-green)"></i> <span>Reach Top 5</span><small>1/1</small></div>
-                                <div class="em-task-status">CLAIMED</div>
-                            </div>
-                        </div>
-                        <div class="em-progress-footer">
-                            <div class="em-pf-label"><span>PROGRESS</span><span>48%</span></div>
-                            <div class="em-bar-bg"><div class="em-bar-fill" style="width:48%; background:var(--accent-cyan);"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: ROLE & TRAINING -->
-                <div class="em-pane" id="tab-role-training">
-                    <div class="em-section-box">
-                        <div class="em-box-title"><i class="fa-solid fa-crosshairs" style="color:var(--accent-cyan)"></i> Choose Your Role</div>
-                        <div class="em-role-grid">
-                            <div class="em-role-card active" onclick="selectRole(this, 'Rusher')">
-                                <i class="fa-solid fa-person-running"></i>
-                                <span>Rusher</span>
-                            </div>
-                            <div class="em-role-card" onclick="selectRole(this, 'Support')">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <span>Support</span>
-                            </div>
-                            <div class="em-role-card" onclick="selectRole(this, 'Sniper')">
-                                <i class="fa-solid fa-crosshairs"></i>
-                                <span>Sniper</span>
-                            </div>
-                            <div class="em-role-card" onclick="selectRole(this, 'IGL')">
-                                <i class="fa-solid fa-map-location-dot"></i>
-                                <span>IGL</span>
-                            </div>
-                        </div>
-
-                        <div class="em-role-training-sec">
-                            <h4 id="roleTrainingHeading">RUSHER TRAINING</h4>
-                            <div class="em-task-list">
-                                <div class="em-task-card">
-                                    <div class="em-task-info"><i class="fa-regular fa-square"></i> <span>Close Range Kills 15</span><small>0/15</small></div>
-                                    <div class="em-task-xp">+150 XP</div>
-                                </div>
-                                <div class="em-task-card">
-                                    <div class="em-task-info"><i class="fa-regular fa-square"></i> <span>Movement Speed Kills 10</span><small>0/10</small></div>
-                                    <div class="em-task-xp">+150 XP</div>
-                                </div>
-                            </div>
-                            <button class="btn-pulse-system" style="margin-top:15px;" onclick="showToast('Training Mission Initiated!')">START TRAINING</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: PLAYER EVOLUTION -->
-                <div class="em-pane" id="tab-player-evolution">
-                    <div class="em-section-box text-center" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                        <div class="em-power-circle">
-                            <span>POWER</span>
-                            <b>5,460</b>
-                        </div>
-                        <div class="em-evo-stats">
-                            <div class="em-evo-row"><span>Reaction</span><b style="color:var(--accent-green);">91% <i class="fa-solid fa-caret-up"></i> 4%</b></div>
-                            <div class="em-evo-row"><span>Game Sense</span><b style="color:var(--accent-green);">89% <i class="fa-solid fa-caret-up"></i> 6%</b></div>
-                            <div class="em-evo-row"><span>Accuracy</span><b style="color:var(--accent-red);">82% <i class="fa-solid fa-caret-down"></i> 2%</b></div>
-                        </div>
-                        <div class="em-evo-rank">
-                            <span>Potential Rank</span>
-                            <b style="color:white; font-family:var(--font-head);">PLATINUM I</b>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 5: INVENTORY -->
-                <div class="em-pane" id="tab-inventory">
-                    <div class="em-section-box">
-                        <div class="em-inventory-list">
-                            <div class="em-inv-item"><span class="em-inv-name"><i class="fa-solid fa-star" style="color:var(--accent-green)"></i> XP</span><b>248,000</b></div>
-                            <div class="em-inv-item"><span class="em-inv-name"><i class="fa-solid fa-coins" style="color:#FFD700"></i> Coins</span><b>12,450</b></div>
-                            <div class="em-inv-item"><span class="em-inv-name"><i class="fa-solid fa-ticket" style="color:var(--accent-cyan)"></i> Tickets</span><b>5,000</b></div>
-                            <div class="em-inv-item"><span class="em-inv-name"><i class="fa-solid fa-rocket" style="color:var(--accent-orange)"></i> Boost Cards</span><b>4</b></div>
-                            <div class="em-inv-item"><span class="em-inv-name"><i class="fa-solid fa-box-open" style="color:var(--accent-purple)"></i> Loot Boxes</span><b>3</b></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 6: HIDDEN QUESTS -->
-                <div class="em-pane" id="tab-hidden-quests">
-                    <div class="em-section-box text-center" style="padding: 30px 20px;">
-                        <i class="fa-solid fa-crown" style="font-size:3.5rem; color:#FFD700; filter:drop-shadow(0 0 15px #FFD700);"></i>
-                        <h2 style="font-family:var(--font-head); color:white; margin:15px 0 5px; font-size:1.4rem;">Hidden Mission Found!</h2>
-                        <p style="color:var(--accent-cyan); font-weight:bold; font-size:0.9rem;">Win 5 Matches Without Losing</p>
-                        
-                        <div style="display:flex; justify-content:center; gap:25px; margin:25px 0;">
-                            <div><i class="fa-solid fa-star" style="color:var(--accent-purple); font-size:1.5rem;"></i><br><small style="color:white; font-weight:bold; font-size:0.75rem;">1,000 XP</small></div>
-                            <div><i class="fa-solid fa-id-badge" style="color:var(--accent-cyan); font-size:1.5rem;"></i><br><small style="color:white; font-weight:bold; font-size:0.75rem;">Legend Frame</small></div>
-                        </div>
-
-                        <div style="display:flex; gap:15px; justify-content:center;">
-                            <button class="auth-btn" style="flex:1; max-width:160px; background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));" onclick="showToast('Quest Accepted!')">ACCEPT</button>
-                            <button class="auth-btn" style="flex:1; max-width:160px; background:transparent; border:1px solid rgba(255,255,255,0.2);" onclick="switchEngineTab('player-analysis', document.querySelector('.em-nav-btn'))">LATER</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 7: SYSTEM LOG -->
-                <div class="em-pane" id="tab-system-log">
-                    <div class="em-section-box">
-                        <div class="em-log-list">
-                            <div class="em-log-item">
-                                <div class="em-log-left"><i class="fa-solid fa-circle-check" style="color:var(--accent-green)"></i> <div><b>+250 XP</b><small>Mission Complete</small></div></div>
-                                <span>2m ago</span>
-                            </div>
-                            <div class="em-log-item">
-                                <div class="em-log-left"><i class="fa-solid fa-arrow-trend-up" style="color:#FFD700"></i> <div><b>Rank Increased</b><small>Gold II</small></div></div>
-                                <span>15m ago</span>
-                            </div>
-                            <div class="em-log-item">
-                                <div class="em-log-left"><i class="fa-solid fa-trophy" style="color:var(--accent-cyan)"></i> <div><b>Achievement Unlocked</b><small>Tournament Winner</small></div></div>
-                                <span>1d ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-        <!-- TOURNYX VISION AI MODAL -->
-        <div class="auth-popup-overlay" id="visionAIModal" onclick="if(event.target === this) { document.getElementById('visionAIModal').classList.remove('active'); stopVisionAI(); }">
-            <div class="auth-popup-box glass-panel" style="max-width: 450px;">
-                <i class="fa-solid fa-xmark auth-close" onclick="document.getElementById('visionAIModal').classList.remove('active'); stopVisionAI();"></i>
-                <h2 style="font-family:var(--font-head); color:var(--accent-orange); margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-eye fa-fade"></i> Tournyx Vision AI</h2>
-                <p id="visionAIStatusText" style="font-size: 0.85rem; color: white; margin-bottom: 20px; font-weight:bold;">Live Matrix Analysis required.</p>
-                <div style="background:#000; border-radius:16px; padding:10px; border:1px solid var(--accent-orange); margin-bottom: 20px; position: relative; overflow:hidden;">
-                    <video id="visionAIVideo" autoplay playsinline muted style="width:100%; height: 200px; border-radius:10px; opacity:0.6; filter: grayscale(30%); background:#111; object-fit:cover;"></video>
-                    <canvas id="visionAICanvas" style="display:none;"></canvas>
-                    <div id="visionAIScanLine" class="live-scan-line" style="display:none; background: linear-gradient(to bottom, transparent, rgba(255,140,0,0.5) 50%, transparent); box-shadow: 0 0 20px rgba(255,140,0,0.6);"></div>
-                </div>
-                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px;">
-                    <i class="fa-solid fa-microchip" style="color:var(--accent-cyan); font-size:1.5rem;" id="aiChipIcon"></i>
-                </div>
-                <button class="auth-btn" id="visionStartBtn" style="background: linear-gradient(90deg, #ff8c00, #ff3300);" onclick="startVisionAI('Test Quest', 100)">INITIALIZE NEURAL LINK</button>
-            </div>
-        </div>
+        <!-- TOURNYX ENGINE SYSTEM CONTAINER MOUNTED DYNAMICALLY BY tournyx-engine.js -->
 
         <section class="stats-area glow-section fade-up">
             <div class="stats-grid">
@@ -2835,34 +2581,43 @@
 
        async function claimDailyStreak() {
             if(!checkAuth()) return;
-            let user = JSON.parse(localStorage.getItem('tournyx_user'));
+            let user = JSON.parse(localStorage.getItem('tournyx_user')) || {};
             const btn = document.getElementById('btnClaimStreak');
+            if(!btn) return;
             
             btn.innerText = "VERIFYING...";
             btn.disabled = true;
 
-            if (!db) {
-                showToast("Server offline. Cannot verify claim.", true);
-                btn.innerText = "CLAIM NEXT";
-                btn.disabled = false;
-                return;
-            }
+            const nowMs = Date.now();
+            const newDateISO = new Date(nowMs).toISOString();
+            const cleanEmail = (user.email || '').trim().toLowerCase();
 
             try {
-                // 1. Fetch strictly from DB to prevent exploits
-                const { data: liveData, error: fetchError } = await db.from('Users').select('last_claim_date, streak_count, points').eq('email', user.email).single();
-                if (fetchError) throw fetchError;
+                let liveData = null;
+                if (db && cleanEmail) {
+                    try {
+                        const { data, error } = await db.from('Users').select('id, email, last_claim_date, streak_count, points').ilike('email', cleanEmail).limit(1);
+                        if (!error && data && data.length > 0) {
+                            liveData = data[0];
+                        }
+                    } catch(fetchErr) {
+                        console.warn("DB fetch warning:", fetchErr);
+                    }
+                }
 
-                let nowMs = Date.now();
-                let lastClaimMs = liveData.last_claim_date ? Date.parse(liveData.last_claim_date) : 0;
-                let hoursPassed = 999; // Default to allow if no claim exists
-                
+                // Fallback to local user data if DB record not fetched yet
+                let lastClaimDate = liveData?.last_claim_date || user.last_claim_date;
+                let currentStreak = parseInt(liveData?.streak_count ?? user.streak_count) || 0;
+                let currentPoints = parseInt(liveData?.points ?? user.points) || 0;
+
+                let lastClaimMs = lastClaimDate ? Date.parse(lastClaimDate) : 0;
+                let hoursPassed = 999;
                 if (lastClaimMs > 0 && !isNaN(lastClaimMs)) {
                     hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
                 }
 
-                // 2. Validate Time
-                if(hoursPassed >= 0 && hoursPassed < 24) {
+                // Check 24-hour cooldown
+                if (hoursPassed >= 0 && hoursPassed < 24) {
                     let hoursLeft = Math.ceil(24 - hoursPassed);
                     showToast("Already claimed! Next in " + hoursLeft + "H", true);
                     btn.innerText = `NEXT IN ${hoursLeft}H`; 
@@ -2870,28 +2625,29 @@
                     return;
                 }
 
-                // 3. Math Logic: ONLY update Points, strictly ignore Earnings/Tickets
-                let newStreak = (parseInt(liveData.streak_count) || 0) + 1;
-                
-                // If over 48 hours, they broke the streak, restart at Day 1
-                if(hoursPassed >= 48) newStreak = 1; 
-
+                let newStreak = (hoursPassed >= 48) ? 1 : (currentStreak + 1);
                 let reward = Math.min(newStreak * 50, 1000);
-                let currentPoints = parseInt(liveData.points) || 0;
-                let newPoints = currentPoints + reward; 
-                let newDateISO = new Date(nowMs).toISOString();
+                let newPoints = currentPoints + reward;
 
                 btn.innerText = "SYNCING...";
 
                 // 4. Secure DB Push - ONLY pushing points and streak
-                const { error: updateError } = await db.from('Users').update({ 
-                    streak_count: newStreak, 
-                    points: newPoints,
-                    last_claim_date: newDateISO
-                }).eq('email', user.email);
-                
-                if (updateError) throw updateError;
-                
+                if (db) {
+                    try {
+                        const updateData = { 
+                            streak_count: newStreak, 
+                            points: newPoints,
+                            last_claim_date: newDateISO
+                        };
+                        let { error: updateError } = await db.from('Users').update(updateData).ilike('email', cleanEmail);
+                        if (updateError && (user.id || liveData?.id)) {
+                            await db.from('Users').update(updateData).eq('id', user.id || liveData?.id);
+                        }
+                    } catch(dbErr) {
+                        console.warn("Database streak update warning:", dbErr);
+                    }
+                }
+
                 // 5. Update local cache safely (do NOT overwrite earnings)
                 user.streak_count = newStreak;
                 user.points = newPoints;
@@ -2910,12 +2666,12 @@
                 if(navigator.vibrate) navigator.vibrate([50, 50, 50]);
                 btn.innerText = "CLAIMED TODAY"; 
                 btn.classList.add('claimed'); 
-                showToast(`Day ${newStreak} Claimed: +${reward} PTS Saved to Cloud!`);
+                showToast(`Day ${newStreak} Claimed: +${reward} Points Saved to Database!`);
                 triggerConfetti(btn);
 
             } catch(e) { 
-                console.error("DB Sync failed", e); 
-                showToast("Cloud sync failed. Make sure your network is stable.", true);
+                console.error("Streak claiming error", e); 
+                showToast("Network error. Please try again.", true);
                 btn.innerText = "CLAIM NEXT";
                 btn.disabled = false;
             }
