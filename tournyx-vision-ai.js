@@ -1,8 +1,8 @@
 /**
  * ==============================================================================
- * TOURNYX VISION AI v2.5 - MASTER HUD & NEURAL LINK
- * Hardware-Accelerated Mobile Dragging • Magnetic Docking • Tournyx Cyber Crest
- * Multi-Window Picture-in-Picture • Live Frame & Screenshot Scanner
+ * TOURNYX VISION AI v3.0 - MASTER HUD & NEURAL LINK
+ * Indestructible Floating Orb • Full Mobile/Desktop Drag • Cyber Crest
+ * Standalone Vision AI Modal • Multi-Window PiP • Mobile App Native Push
  * ==============================================================================
  */
 
@@ -12,7 +12,7 @@ const TournyxVisionAI = (() => {
 
   let state = {
     bubbleEl: null,
-    isExpanded: false,
+    modalEl: null,
     isDragging: false,
     hasMoved: false,
     posX: 0,
@@ -21,32 +21,30 @@ const TournyxVisionAI = (() => {
     dragStartY: 0,
     startPosX: 0,
     startPosY: 0,
-    rafId: null,
     pipVideo: null,
     pipCanvas: null,
     pipCtx: null,
   };
 
-  // ─── 1. INITIALIZE FLOATING BUBBLE ─────────────────────────────────────────
+  // ─── 1. INITIALIZE FLOATING ORB & VISION MODAL ─────────────────────────────
   function init() {
     if (document.getElementById('tx-vision-bubble')) return;
 
+    // 1. Create Floating Orb
     const bubble = document.createElement('div');
     bubble.id = 'tx-vision-bubble';
     
     // Initial position on screen (bottom-right)
-    const initRight = 16;
-    const initBottom = 90;
-    state.posX = window.innerWidth - 76 - initRight;
-    state.posY = window.innerHeight - 76 - initBottom;
+    state.posX = Math.max(10, window.innerWidth - 76);
+    state.posY = Math.max(10, window.innerHeight - 150);
 
-    bubble.style.transform = `translate3d(${state.posX}px, ${state.posY}px, 0)`;
+    bubble.style.left = `${state.posX}px`;
+    bubble.style.top = `${state.posY}px`;
 
     bubble.innerHTML = `
       <div id="tx-bubble-collapsed" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; pointer-events:none;">
-        <!-- TOURNYX CYBER CREST LOGO SVG -->
         <div class="tx-cyber-crest">
-          <svg width="42" height="42" viewBox="0 0 100 100" class="tx-crest-svg">
+          <svg width="40" height="40" viewBox="0 0 100 100" class="tx-crest-svg">
             <defs>
               <linearGradient id="txCrestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#00f2ff" />
@@ -61,92 +59,159 @@ const TournyxVisionAI = (() => {
                 </feMerge>
               </filter>
             </defs>
-            <!-- Rotating Outer Cyber Ring -->
             <circle cx="50" cy="50" r="44" fill="none" stroke="url(#txCrestGrad)" stroke-width="2.5" stroke-dasharray="18 8 36 8" class="tx-ring-spin" />
-            <!-- Hexagonal Armor Plate -->
-            <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.9)" stroke="#00f2ff" stroke-width="2" filter="url(#txGlow)" />
-            <!-- Inner Pulsing Core -->
+            <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.95)" stroke="#00f2ff" stroke-width="2" filter="url(#txGlow)" />
             <circle cx="50" cy="50" r="14" fill="url(#txCrestGrad)" class="tx-core-pulse" />
-            <!-- TX Monogram Symbol -->
             <path d="M40,42 L60,42 M50,42 L50,60 M56,48 L64,60 M44,48 L36,60" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
           </svg>
         </div>
-        <div style="font-size:0.52rem; font-family:var(--font-head); color:#00f2ff; letter-spacing:1px; margin-top:2px; font-weight:900; text-shadow:0 0 8px #00f2ff;">VISION</div>
-        <div id="tx-bubble-xp-tag" style="font-size:0.56rem; font-family:var(--font-head); color:#FFD700; font-weight:900; line-height:1;">+0 XP</div>
-      </div>
-
-      <div id="tx-bubble-expanded" style="display:none; width:100%;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(0,242,255,0.25); padding-bottom:6px;">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <div style="width:10px; height:10px; border-radius:50%; background:#00f2ff; box-shadow:0 0 10px #00f2ff; animation:pulse 1.5s infinite;"></div>
-            <span style="font-family:var(--font-head); font-size:0.8rem; font-weight:900; color:white; letter-spacing:1px;">TOURNYX VISION AI</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <button id="tx-pip-btn" onclick="TournyxVisionAI.togglePictureInPicture(event)" title="Open Floating Overlay (PiP)" style="background:none; border:none; color:var(--accent-cyan); cursor:pointer; font-size:0.85rem; padding:4px;">
-              <i class="fa-solid fa-up-right-from-square"></i>
-            </button>
-            <button id="tx-bubble-close-btn" style="background:none; border:none; color:rgba(255,255,255,0.7); cursor:pointer; font-size:1.1rem; padding:0 6px;">✕</button>
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px 4px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.06);">
-          <div style="text-align:center;">
-            <div id="hudPower" style="font-family:var(--font-head); font-size:0.85rem; font-weight:bold; color:#FFD700;">100</div>
-            <div style="font-size:0.55rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Power</div>
-          </div>
-          <div style="text-align:center; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08);">
-            <div id="hudRank" style="font-family:var(--font-head); font-size:0.85rem; font-weight:bold; color:#00f2ff;">E-RANK</div>
-            <div style="font-size:0.55rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Tier</div>
-          </div>
-          <div style="text-align:center;">
-            <div id="hudDailyXP" style="font-family:var(--font-head); font-size:0.85rem; font-weight:bold; color:#00ff7f;">+420</div>
-            <div style="font-size:0.55rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Today XP</div>
-          </div>
-        </div>
-
-        <div style="background:rgba(0,0,0,0.5); border-left:3px solid var(--accent-cyan); border-radius:6px; padding:8px; margin-bottom:10px;">
-          <div style="font-size:0.6rem; color:var(--accent-cyan); font-family:var(--font-head); font-weight:bold; margin-bottom:2px;">ACTIVE HUNTER MISSION</div>
-          <div id="hudActiveMission" style="font-size:0.75rem; color:#eee; line-height:1.3;">Headshot Hunter: Deal 10 headshots in Ranked BR</div>
-        </div>
-
-        <div style="display:flex; gap:6px;">
-          <button onclick="TournyxEngineAPI.openSystemPopup()" style="flex:1; padding:9px; background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border:none; border-radius:8px; color:white; font-family:var(--font-head); font-size:0.72rem; font-weight:bold; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
-            OPEN SYSTEM OS
-          </button>
-          <button onclick="TournyxVisionAI.startScreenScan()" style="padding:9px 12px; background:rgba(255,140,0,0.15); border:1px solid var(--accent-orange); border-radius:8px; color:var(--accent-orange); font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Start Neural Link / Screenshot Upload">
-            <i class="fa-solid fa-camera"></i>
-          </button>
-        </div>
+        <div style="font-size:0.52rem; font-family:var(--eng-font-head, sans-serif); color:#00f2ff; letter-spacing:1px; margin-top:2px; font-weight:900; text-shadow:0 0 8px #00f2ff;">VISION</div>
+        <div id="tx-bubble-xp-tag" style="font-size:0.56rem; font-family:var(--eng-font-head, sans-serif); color:#FFD700; font-weight:900; line-height:1;">+0 XP</div>
       </div>
     `;
 
     document.body.appendChild(bubble);
     state.bubbleEl = bubble;
 
+    // 2. Create Standalone Vision AI Modal
+    _injectVisionModal();
     _bindOptimizedDrag(bubble);
     _initPiPElements();
 
-    // Sync initial state
     if (window.TournyxEngine && window.TournyxEngine.state.engineData) {
       updateBubble(window.TournyxEngine.state.engineData);
     }
   }
 
-  // ─── 2. ZERO-LAG HARDWARE-ACCELERATED DRAGGING ─────────────────────────────
-  function _bindOptimizedDrag(bubble) {
-    const closeBtn = document.getElementById('tx-bubble-close-btn');
+  // ─── 2. VISION MODAL INJECTION ─────────────────────────────────────────────
+  function _injectVisionModal() {
+    if (document.getElementById('txVisionModalOverlay')) return;
 
-    closeBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      _collapse();
-    });
+    const overlay = document.createElement('div');
+    overlay.id = 'txVisionModalOverlay';
+    overlay.className = 'auth-popup-overlay';
+    overlay.onclick = (e) => { if (e.target === overlay) closeVisionModal(); };
 
-    const onPointerDown = (e) => {
-      if (state.isExpanded) {
-        // If expanded, don't drag unless on header
-        if (!e.target.closest('#tx-bubble-expanded > div:first-child')) return;
+    overlay.innerHTML = `
+      <div class="auth-popup-box glass-panel" style="max-width:440px; width:92%; max-height:90vh; overflow-y:auto; border-radius:20px; padding:24px; position:relative;">
+        <i class="fa-solid fa-xmark auth-close" onclick="TournyxVisionAI.closeVisionModal()" style="position:absolute; top:18px; right:20px; cursor:pointer; font-size:1.3rem; color:rgba(255,255,255,0.7);"></i>
+        
+        <!-- HEADER -->
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="width:36px; height:36px; border-radius:50%; background:rgba(0,242,255,0.1); border:1.5px solid #00f2ff; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-eye fa-fade" style="color:#00f2ff; font-size:1.1rem;"></i>
+          </div>
+          <div>
+            <h3 style="font-family:var(--eng-font-head, sans-serif); color:white; font-size:1.1rem; margin:0; letter-spacing:1px;">TOURNYX VISION AI HUD</h3>
+            <span style="font-size:0.72rem; color:var(--accent-cyan, #00f2ff);">Neural Matrix Live Game Monitor</span>
+          </div>
+        </div>
+
+        <!-- STATS BAR -->
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; background:rgba(255,255,255,0.03); border-radius:12px; padding:10px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.06); text-align:center;">
+          <div>
+            <div id="vmPower" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#FFD700;">100</div>
+            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Power</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08);">
+            <div id="vmRank" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#00f2ff;">E-RANK</div>
+            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Tier</div>
+          </div>
+          <div>
+            <div id="vmDailyXP" style="font-family:var(--eng-font-head, sans-serif); font-size:1.1rem; font-weight:900; color:#00ff7f;">+420</div>
+            <div style="font-size:0.6rem; color:rgba(255,255,255,0.5); text-transform:uppercase;">Today XP</div>
+          </div>
+        </div>
+
+        <!-- ACTIVE MISSION -->
+        <div style="background:rgba(0,0,0,0.5); border-left:3px solid #00f2ff; border-radius:8px; padding:10px; margin-bottom:16px;">
+          <div style="font-size:0.62rem; color:#00f2ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; margin-bottom:2px;">RECOMMENDED HUNTER OBJECTIVE</div>
+          <div id="vmActiveMission" style="font-size:0.8rem; color:#eee; line-height:1.4;">Complete 3 ranked matches to surge power and unlock next tier!</div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          
+          <!-- MOBILE/PC SCREENSHOT OCR -->
+          <button onclick="TournyxVisionAI.openScreenshotScanner()" style="width:100%; padding:12px; background:linear-gradient(90deg, #ff8c00, #ff3300); border:none; border-radius:10px; color:white; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 15px rgba(255,51,0,0.35);">
+            <i class="fa-solid fa-camera"></i> 📸 SCAN MATCH SCREENSHOT (OCR)
+          </button>
+
+          <!-- LIVE SCREEN / CAMERA MONITOR -->
+          <button onclick="TournyxVisionAI.startScreenScan()" style="width:100%; padding:11px; background:rgba(0,242,255,0.12); border:1px solid #00f2ff; border-radius:10px; color:#00f2ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.82rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <i class="fa-solid fa-desktop"></i> INITIALIZE LIVE NEURAL LINK
+          </button>
+
+          <!-- FLOATING MULTI-WINDOW PiP -->
+          <button onclick="TournyxVisionAI.togglePictureInPicture(event)" style="width:100%; padding:10px; background:rgba(189,0,255,0.1); border:1px solid #bd00ff; border-radius:10px; color:#bd00ff; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.8rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <i class="fa-solid fa-up-right-from-square"></i> OPEN FLOATING OVERLAY (PiP)
+          </button>
+
+          <!-- NATIVE APP DOWNLOAD PROMPT -->
+          <div style="background:rgba(255,215,0,0.06); border:1px dashed #FFD700; border-radius:10px; padding:12px; margin-top:4px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <i class="fa-solid fa-mobile-screen-button" style="color:#FFD700;"></i>
+              <b style="color:#FFD700; font-family:var(--eng-font-head, sans-serif); font-size:0.82rem;">TOURNYX MOBILE APP (ANDROID / IOS)</b>
+            </div>
+            <p style="font-size:0.72rem; color:#ccc; margin:0 0 8px; line-height:1.3;">
+              Get in-game floating bubbles directly inside BGMI & Free Fire with automatic background screen recognition!
+            </p>
+            <button onclick="TournyxVisionAI.downloadAppPrompt()" style="width:100%; padding:8px; background:rgba(255,215,0,0.2); border:1px solid #FFD700; border-radius:6px; color:#FFD700; font-size:0.75rem; font-family:var(--eng-font-head, sans-serif); font-weight:bold; cursor:pointer;">
+              <i class="fa-brands fa-google-play"></i> DOWNLOAD NATIVE APK
+            </button>
+          </div>
+
+          <!-- OPEN SYSTEM ENGINE -->
+          <button onclick="TournyxVisionAI.closeVisionModal(); TournyxEngineAPI.openSystemPopup();" style="width:100%; margin-top:6px; padding:12px; background:linear-gradient(90deg, var(--accent-purple, #bd00ff), var(--accent-cyan, #00f2ff)); border:none; border-radius:10px; color:white; font-family:var(--eng-font-head, sans-serif); font-weight:bold; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
+            ⚡ LAUNCH FULL ENGINE OS
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    state.modalEl = overlay;
+  }
+
+  function openVisionModal() {
+    _injectVisionModal();
+    const modal = document.getElementById('txVisionModalOverlay');
+    if (modal) {
+      modal.classList.add('active');
+      if (window.TournyxEngine && window.TournyxEngine.state.engineData) {
+        updateBubble(window.TournyxEngine.state.engineData);
       }
+    }
+  }
 
+  function closeVisionModal() {
+    const modal = document.getElementById('txVisionModalOverlay');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function openScreenshotScanner() {
+    closeVisionModal();
+    if (window.TournyxEngine && typeof window.TournyxEngine.openSystemPopup === 'function') {
+      window.TournyxEngine.openSystemPopup();
+      window.TournyxEngine.switchEngineTab('vision-ai');
+      setTimeout(() => {
+        document.getElementById('vas-screenshot-input')?.click();
+      }, 300);
+    }
+  }
+
+  function downloadAppPrompt() {
+    if (typeof showToast === 'function') {
+      showToast('📲 Tournyx Native Mobile App APK Download link copied to clipboard!');
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText('https://tournyx.in/download/tournyx-esports.apk');
+    }
+  }
+
+  // ─── 3. DRAGGING LOGIC ─────────────────────────────────────────────────────
+  function _bindOptimizedDrag(bubble) {
+    const onPointerDown = (e) => {
       state.isDragging = true;
       state.hasMoved = false;
       bubble.classList.add('is-dragging');
@@ -175,23 +240,16 @@ const TournyxVisionAI = (() => {
       const dx = clientX - state.dragStartX;
       const dy = clientY - state.dragStartY;
 
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
         state.hasMoved = true;
       }
 
-      const bubbleW = state.isExpanded ? 280 : 66;
-      const bubbleH = state.isExpanded ? 220 : 66;
+      const bubbleSize = 66;
+      state.posX = Math.max(10, Math.min(window.innerWidth - bubbleSize - 10, state.startPosX + dx));
+      state.posY = Math.max(10, Math.min(window.innerHeight - bubbleSize - 10, state.startPosY + dy));
 
-      // Bound within screen viewport
-      state.posX = Math.max(8, Math.min(window.innerWidth - bubbleW - 8, state.startPosX + dx));
-      state.posY = Math.max(8, Math.min(window.innerHeight - bubbleH - 8, state.startPosY + dy));
-
-      if (!state.rafId) {
-        state.rafId = requestAnimationFrame(() => {
-          bubble.style.transform = `translate3d(${state.posX}px, ${state.posY}px, 0)`;
-          state.rafId = null;
-        });
-      }
+      bubble.style.left = `${state.posX}px`;
+      bubble.style.top = `${state.posY}px`;
     };
 
     const onPointerUp = () => {
@@ -204,21 +262,9 @@ const TournyxVisionAI = (() => {
       window.removeEventListener('touchmove', onPointerMove);
       window.removeEventListener('touchend', onPointerUp);
 
-      if (!state.hasMoved && !state.isExpanded) {
-        _expand();
-        return;
-      }
-
-      // Magnetic snap to closest horizontal edge when collapsed
-      if (!state.isExpanded) {
-        const bubbleW = 66;
-        const screenMid = window.innerWidth / 2;
-        const snapX = (state.posX + bubbleW / 2 < screenMid) ? 12 : (window.innerWidth - bubbleW - 12);
-        state.posX = snapX;
-        
-        bubble.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2)';
-        bubble.style.transform = `translate3d(${state.posX}px, ${state.posY}px, 0)`;
-        setTimeout(() => { bubble.style.transition = ''; }, 300);
+      // If user tapped without dragging, open Vision AI HUD Modal
+      if (!state.hasMoved) {
+        openVisionModal();
       }
     };
 
@@ -226,46 +272,21 @@ const TournyxVisionAI = (() => {
     bubble.addEventListener('touchstart', onPointerDown, { passive: false });
   }
 
-  function _expand() {
-    state.isExpanded = true;
-    state.bubbleEl.classList.add('expanded');
-    document.getElementById('tx-bubble-collapsed').style.display = 'none';
-    document.getElementById('tx-bubble-expanded').style.display = 'block';
-    
-    // Reposition safely if expanded element overflows right/bottom
-    const bubbleW = 280;
-    const bubbleH = 220;
-    if (state.posX + bubbleW > window.innerWidth - 8) {
-      state.posX = window.innerWidth - bubbleW - 8;
-    }
-    if (state.posY + bubbleH > window.innerHeight - 8) {
-      state.posY = window.innerHeight - bubbleH - 8;
-    }
-    state.bubbleEl.style.transform = `translate3d(${state.posX}px, ${state.posY}px, 0)`;
-  }
-
-  function _collapse() {
-    state.isExpanded = false;
-    state.bubbleEl.classList.remove('expanded');
-    document.getElementById('tx-bubble-collapsed').style.display = 'flex';
-    document.getElementById('tx-bubble-expanded').style.display = 'none';
-  }
-
-  // ─── 3. UPDATE BUBBLE STATS ────────────────────────────────────────────────
+  // ─── 4. UPDATE BUBBLE STATS ────────────────────────────────────────────────
   function updateBubble(engineData) {
     if (!engineData) return;
     const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
     setTxt('tx-bubble-xp-tag', `+${engineData.daily_xp || 0} XP`);
-    setTxt('hudPower', (engineData.power_level || 100).toLocaleString());
-    setTxt('hudRank', engineData.rank_tier || 'E-RANK');
-    setTxt('hudDailyXP', `+${engineData.daily_xp || 0}`);
+    setTxt('vmPower', (engineData.power_level || 100).toLocaleString());
+    setTxt('vmRank', engineData.rank_tier || 'E-RANK');
+    setTxt('vmDailyXP', `+${engineData.daily_xp || 0}`);
     
     const dna = engineData.player_dna || 'Rusher';
-    setTxt('hudActiveMission', `${dna} Program: Complete ranked matches & boost power!`);
+    setTxt('vmActiveMission', `${dna} Protocol: Complete daily drills & climb to SSS-Rank!`);
   }
 
-  // ─── 4. PICTURE-IN-PICTURE (MULTI-WINDOW HUD) ──────────────────────────────
+  // ─── 5. PICTURE-IN-PICTURE (MULTI-WINDOW HUD) ──────────────────────────────
   function _initPiPElements() {
     const canvas = document.createElement('canvas');
     canvas.width = 400;
@@ -283,7 +304,7 @@ const TournyxVisionAI = (() => {
   async function togglePictureInPicture(e) {
     if (e) e.stopPropagation();
     if (!document.pictureInPictureEnabled) {
-      if (typeof showToast === 'function') showToast('Multi-window PiP not supported on this browser.', true);
+      if (typeof showToast === 'function') showToast('Picture-in-Picture not supported on this browser.', true);
       return;
     }
 
@@ -336,8 +357,9 @@ const TournyxVisionAI = (() => {
     requestAnimationFrame(_renderPiPFrame);
   }
 
-  // ─── 5. SCREEN SCANNER / NEURAL LINK ───────────────────────────────────────
+  // ─── 6. SCREEN SCANNER / NEURAL LINK ───────────────────────────────────────
   async function startScreenScan() {
+    closeVisionModal();
     if (window.TournyxEngine && typeof window.TournyxEngine.startVisionScreenCapture === 'function') {
       window.TournyxEngine.startVisionScreenCapture();
     }
@@ -346,6 +368,10 @@ const TournyxVisionAI = (() => {
   // ─── PUBLIC API ────────────────────────────────────────────────────────────
   return {
     init,
+    openVisionModal,
+    closeVisionModal,
+    openScreenshotScanner,
+    downloadAppPrompt,
     updateBubble,
     togglePictureInPicture,
     startScreenScan
