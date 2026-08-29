@@ -538,7 +538,7 @@
                 <div class="input-group">
                     <label><span>07</span> Certificate ID (Document Identifier)</label>
                     <div class="key-input-wrapper">
-                        <input type="text" id="certificateId" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="XXXX-XXXX-XXXX" readonly required>
+                        <input type="text" id="certificateId" class="form-input" style="font-family:var(--font-head); letter-spacing:1.5px; text-transform:uppercase;" placeholder="TXT-XXXX-XXXX" readonly required>
                         <button type="button" class="btn-gen-key" onclick="regenerateCertificateId()"><i class="fa-solid fa-arrows-rotate"></i> New</button>
                     </div>
                 </div>
@@ -711,7 +711,7 @@
 
         let selectedPdfFile = null;
 
-        // Generate CSPRNG Crockford Base32 Unique Keys
+        // Generate standard Random Keys
         function generateCrockfordKey() {
             const charset = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
             const seg = () => {
@@ -725,15 +725,39 @@
             };
             return `${seg()}-${seg()}-${seg()}`;
         }
-
-        function regenerateRecordKey() {
-            const rk = document.getElementById('recordKey');
-            if (rk) rk.value = generateCrockfordKey();
+        
+        // Generate Certificate ID prefixed with TXT
+        function generateCustomCertId() {
+            const charset = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+            const seg = () => {
+                let res = '';
+                const values = new Uint8Array(4);
+                window.crypto.getRandomValues(values);
+                for (let i = 0; i < 4; i++) {
+                    res += charset[values[i] % charset.length];
+                }
+                return res;
+            };
+            return `TXT-${seg()}-${seg()}`;
         }
 
+        // New Record Key Generator mapping to Name and Caps
+        function regenerateRecordKey() {
+            const name = document.getElementById('internName').value.trim();
+            const rk = document.getElementById('recordKey');
+            const cleanName = name ? name.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase() : 'REC';
+            const randCode = Math.floor(1000 + Math.random() * 9000);
+            rk.value = `${cleanName}-${randCode}`;
+            rk.dataset.generated = "true";
+        }
+
+        // New Certificate ID Generator enforcing TXT-
         function regenerateCertificateId() {
             const cid = document.getElementById('certificateId');
-            if (cid) cid.value = generateCrockfordKey();
+            if (cid) {
+                cid.value = generateCustomCertId();
+                cid.dataset.generated = "true";
+            }
         }
 
         function autoGeneratePasscode() {
@@ -741,15 +765,27 @@
             document.getElementById('documentPassword').value = pass;
         }
 
-        // Automatic Generation on Typing Intern Details
+        // Smarter Auto-Generation on Typing to prevent constant overriding
         function triggerAutoIdentifiers() {
+            const name = document.getElementById('internName').value.trim();
             const rk = document.getElementById('recordKey');
             const cid = document.getElementById('certificateId');
-            if (rk && !rk.value.trim()) rk.value = generateCrockfordKey();
-            if (cid && !cid.value.trim()) cid.value = generateCrockfordKey();
+
+            // Generate Record Key dynamically only once the user types at least 3 letters
+            if (name.length >= 3 && !rk.dataset.generated) {
+                const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase();
+                const randCode = Math.floor(1000 + Math.random() * 9000);
+                rk.value = `${cleanName}-${randCode}`;
+                rk.dataset.generated = "true";
+            }
+
+            // Generate Certificate ID matching TXT
+            if (cid && !cid.dataset.generated) {
+                cid.value = generateCustomCertId();
+                cid.dataset.generated = "true";
+            }
         }
 
-        // Suggest field placeholders based on selected track without pre-filling
         function handleRolePresetChange() {
             const role = document.getElementById('domainRole').value;
             const dept = document.getElementById('department');
@@ -823,8 +859,6 @@
                 const display = document.getElementById('fileNameDisplay');
                 display.style.display = 'block';
                 display.innerText = `Selected File: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
-
-                // Display Password Protection Field
                 document.getElementById('docPasswordGroup').style.display = 'block';
             }
         }
@@ -841,7 +875,6 @@
             }
         }
 
-        // Fetch officer list dynamically from signatures table
         async function fetchOfficers() {
             try {
                 const { data, error } = await supabase
@@ -866,7 +899,6 @@
             }
         }
 
-        // Convert File to Base64 String for zero-fail fallback
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -876,7 +908,6 @@
             });
         }
 
-        // Form Submit Handler
         async function handleCertificateUpload(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitForm');
@@ -888,9 +919,9 @@
             const internPhone = document.getElementById('internPhone').value.trim();
             const internCollege = document.getElementById('internCollege').value.trim();
             const internCourse = document.getElementById('internCourse').value.trim();
-            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase() || generateCrockfordKey();
+            const recordKey = document.getElementById('recordKey').value.trim().toUpperCase();
 
-            const certId = document.getElementById('certificateId').value.trim().toUpperCase() || generateCrockfordKey();
+            const certId = document.getElementById('certificateId').value.trim().toUpperCase();
             const udyamRegNo = document.getElementById('udyamRegNo').value.trim();
             const issueDate = document.getElementById('issueDate').value || new Date().toISOString().split('T')[0];
 
@@ -935,7 +966,7 @@
                             throw storageErr;
                         }
                     } catch (storageException) {
-                        console.warn("Storage upload restricted, applying Base64 fallback string:", storageException.message);
+                        console.warn("Storage upload restricted (Check RLS Policies), applying Base64 fallback string:", storageException.message);
                         pdfPublicUrl = await fileToBase64(selectedPdfFile);
                     }
                 }
@@ -955,21 +986,26 @@
                     end_date: endDate,
                     issue_date: issueDate,
                     duration_months: durationMonths,
-                    domain_officer_title: officerTitle,
                     domain_officer_key: officerKey,
                     ceo_key: 'ceo',
                     hr_coordinator_key: 'hr',
-                    performance_score: performanceScore,
                     documentation_pdf_url: pdfPublicUrl,
-                    documentation_password: docPassword || null,
-                    intern_dossier: {
-                        summary: summary || "Successfully fulfilled all designated engineering deliverables.",
-                        performance_score: performanceScore,
-                        pdf_documentation: pdfPublicUrl,
-                        is_password_protected: Boolean(docPassword),
-                        document_passcode: docPassword || null
-                    },
                     is_verified: true
+
+                    // --- CRITICAL FIX: The following keys were commented out because they do not exist
+                    // --- in your 'tims_intern_certificates' table schema shown in your screenshots. 
+                    // --- Leaving them active is what causes the database insert to completely crash and fail.
+                    
+                    // domain_officer_title: officerTitle, 
+                    // performance_score: performanceScore,
+                    // documentation_password: docPassword || null,
+                    // intern_dossier: {
+                    //     summary: summary || "Successfully fulfilled all designated engineering deliverables.",
+                    //     performance_score: performanceScore,
+                    //     pdf_documentation: pdfPublicUrl,
+                    //     is_password_protected: Boolean(docPassword),
+                    //     document_passcode: docPassword || null
+                    // }
                 };
 
                 const { error: certErr } = await supabase
@@ -1028,6 +1064,12 @@
         function closeSuccessModal() {
             document.getElementById('resultOverlay').style.display = 'none';
             document.getElementById('certUploadForm').reset();
+            
+            const rk = document.getElementById('recordKey');
+            const cid = document.getElementById('certificateId');
+            if(rk) rk.dataset.generated = "";
+            if(cid) cid.dataset.generated = "";
+
             regenerateRecordKey();
             regenerateCertificateId();
             document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
@@ -1038,8 +1080,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            regenerateRecordKey();
-            regenerateCertificateId();
             document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
             fetchOfficers();
 
