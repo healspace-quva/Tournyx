@@ -309,6 +309,7 @@
             z-index: 2;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
+            overflow: hidden; /* Added to block mobile scrolling */
         }
 
         .cert-export-wrapper.visible {
@@ -381,6 +382,7 @@
             justify-content: space-between;
             padding: 24px;
             flex-shrink: 0;
+            transform-origin: top center; /* Critical for seamless mobile scaling */
         }
 
         .cert-outer-border {
@@ -613,8 +615,6 @@
             font-size: 0.72rem;
             color: #111827;
             font-weight: 800;
-            
-            /* --- TEXT OVERFLOW FIX: Removed nowrap & ellipsis --- */
             white-space: normal;
             overflow: visible;
             word-wrap: break-word;
@@ -796,12 +796,8 @@
             body { background: #ffffff !important; padding: 0 !important; }
             .ambient-grid, .portal-header, .claim-card, .action-toolbar, .notification-toast, #tournyx-loader, .page-footer { display: none !important; }
             .cert-export-wrapper { display: block !important; width: 100% !important; max-width: none !important; opacity: 1 !important; }
-            #certificateCard { width: 100% !important; height: 100vh !important; box-shadow: none !important; }
+            #certificateCard { width: 100% !important; height: 100vh !important; box-shadow: none !important; transform: none !important; margin: 0 !important;}
             @page { size: A4 landscape; margin: 0; }
-        }
-
-        @media (max-width: 1040px) {
-            .cert-export-wrapper { overflow-x: auto; width: 100%; justify-content: flex-start; }
         }
     </style>
 </head>
@@ -1005,6 +1001,7 @@
         const API_BASE = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
 
+        // --- EXPANDED ROLE MATRIX FOR EXACT COLORS AND DESCRIPTIONS ---
         const ROLE_MATRIX = {
             'AI VIBE CODING': {
                 border: '#6b21a8',
@@ -1013,6 +1010,22 @@
                 text: '#6b21a8',
                 officerTitle: 'CHIEF AI & SYSTEMS ARCHITECT',
                 desc: 'demonstrated exceptional aptitude in prompt scaffolding, neural API integrations, and modern AI development frameworks, delivering robust components within scheduled engineering sprints.'
+            },
+            'AI PROMPT ENGINEERING': {
+                border: '#4f46e5',
+                badgeBg: 'rgba(79, 70, 229, 0.12)',
+                gradient: 'linear-gradient(135deg, #4f46e5, #312e81)',
+                text: '#4f46e5',
+                officerTitle: 'CHIEF AI & SYSTEMS ARCHITECT', 
+                desc: 'demonstrated exceptional aptitude in advanced prompt scaffolding, neural API integrations, and modern AI development frameworks, delivering robust components within scheduled engineering sprints.'
+            },
+            'VIDEO EDITOR': {
+                border: '#e11d48',
+                badgeBg: 'rgba(225, 29, 72, 0.12)',
+                gradient: 'linear-gradient(135deg, #e11d48, #881337)',
+                text: '#e11d48',
+                officerTitle: 'CHIEF MEDIA AND MARKETING MANAGING DIRECTOR',
+                desc: 'demonstrated outstanding creative vision in cinematic sequence compilation, visual effects integration, and high-fidelity video rendering to elevate the brand\'s digital presence.'
             },
             'FULL STACK DEVELOPER': {
                 border: '#0284c7',
@@ -1047,6 +1060,39 @@
                 desc: 'demonstrated exemplary leadership in tournament scheduling, competitive bracket management, and automated room administration with high operational efficiency.'
             }
         };
+
+        // --- BULLETPROOF OFFICER TITLE FALLBACK MAPPING ---
+        // Guarantees titles perfectly match your database keys regardless of the candidate's role.
+        const OFFICER_TITLES = {
+            'software_manager': 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER',
+            'media_marketing': 'CHIEF MEDIA AND MARKETING MANAGING DIRECTOR',
+            'domain_officer': 'CHIEF AI & SYSTEMS ARCHITECT',
+            'custom_training_mgr': 'CHIEF SOFTWARE DEVELOPMENT & TRAINING MANAGER',
+            'custom_creative_dir': 'LEAD PRODUCT DESIGN & CREATIVE DIRECTOR',
+            'custom_esports_dir': 'TOURNAMENT & LEAGUE OPERATIONS DIRECTOR',
+            'hr': 'HR & INTERNSHIP OPERATIONS COORDINATOR',
+            'ceo': 'FOUNDER & CHIEF EXECUTIVE OFFICER'
+        };
+
+        // --- MOBILE DEVICE SCALING ENGINE ---
+        // Dynamically shrinks the certificate card to fit any mobile phone screen without scrolling
+        function scaleCertificateForMobile() {
+            const card = document.getElementById('certificateCard');
+            if (!card) return;
+            
+            // Only scale down if the screen is smaller than the card
+            if (window.innerWidth < 1040) {
+                // Calculate scale ratio (padding of 30px total)
+                const scale = (window.innerWidth - 30) / 1000;
+                card.style.transform = `scale(${scale})`;
+                // Compensate for the empty space left by the CSS scaling transform
+                card.style.marginBottom = `-${700 * (1 - scale)}px`;
+            } else {
+                card.style.transform = 'none';
+                card.style.marginBottom = '0';
+            }
+        }
+        window.addEventListener('resize', scaleCertificateForMobile);
 
         // Kinetic Absorb Particle Physics
         function buildAbsorbParticles() {
@@ -1161,6 +1207,8 @@
                 try {
                     renderCertificateToCanvas(certData, officerSigs);
                     exportArea.classList.add('visible');
+                    // Execute mobile scale precisely when element is shown
+                    scaleCertificateForMobile();
                     exportArea.scrollIntoView({ behavior: 'smooth' });
                 } catch (renderError) {
                     console.error("Render error:", renderError);
@@ -1190,8 +1238,10 @@
             document.getElementById('viewDuration').innerText = data.duration_months ? `(${data.duration_months} Months)` : '--';
             document.getElementById('viewType').innerText = data.internship_type || 'Virtual / Project-Based';
 
-            // Role Accent System
-            const roleConfig = ROLE_MATRIX[data.domain_role] || ROLE_MATRIX['AI VIBE CODING'];
+            // --- ROLE ACCENT SYSTEM (Case Insensitive Lookup) ---
+            const roleKey = (data.domain_role || 'AI VIBE CODING').toUpperCase();
+            const roleConfig = ROLE_MATRIX[roleKey] || ROLE_MATRIX['AI VIBE CODING'];
+            
             document.documentElement.style.setProperty('--theme-border', roleConfig.border);
             document.documentElement.style.setProperty('--theme-badge-bg', roleConfig.badgeBg);
             document.documentElement.style.setProperty('--theme-gradient', roleConfig.gradient);
@@ -1201,23 +1251,23 @@
                 This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${roleConfig.desc}
             `;
 
-            // Signature Asset Mapping & Dynamic Titles
+            // Signature Asset Mapping & Database Key Titles
             if (sigs && sigs.length > 0) {
                 const ceoSig = sigs.find(s => s.officer_key === data.ceo_key || s.officer_key === 'ceo');
                 const hrSig = sigs.find(s => s.officer_key === data.hr_coordinator_key || s.officer_key === 'hr');
-                
-                // Exactly matching domain officer based on the database key
                 let domainSig = sigs.find(s => s.officer_key === data.domain_officer_key);
-                if (!domainSig) {
-                    domainSig = sigs.find(s => s.officer_key === 'domain_officer' || (s.officer_key && s.officer_key.startsWith('custom_')));
-                }
 
-                // Apply Perfect Officer Titles direct from the Database
+                // --- PERFECT TITLE ASSIGNMENT ENGINE ---
+                // Resolves Title Priority: 1. DB Sig Match -> 2. Hardcoded Key Match -> 3. Standard Fallback
+                let resolvedDomainTitle = '';
                 if (domainSig && domainSig.officer_title) {
-                    document.getElementById('titleDomainOfficer').innerText = domainSig.officer_title.toUpperCase();
+                    resolvedDomainTitle = domainSig.officer_title;
+                } else if (data.domain_officer_key && OFFICER_TITLES[data.domain_officer_key]) {
+                    resolvedDomainTitle = OFFICER_TITLES[data.domain_officer_key];
                 } else {
-                    document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
+                    resolvedDomainTitle = roleConfig.officerTitle;
                 }
+                document.getElementById('titleDomainOfficer').innerText = resolvedDomainTitle.toUpperCase();
 
                 if (ceoSig && ceoSig.officer_title) {
                     document.getElementById('titleCEO').innerText = ceoSig.officer_title.toUpperCase();
@@ -1226,7 +1276,7 @@
                     document.getElementById('titleHR').innerText = hrSig.officer_title.toUpperCase();
                 }
 
-                // Apply Signatures
+                // Apply Signature Images
                 if (ceoSig && ceoSig.signature_url) {
                     document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
                 }
@@ -1237,7 +1287,9 @@
                     document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
                 }
             } else {
-                document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
+                // If signatures fail to load entirely, still fall back safely
+                let resolvedDomainTitle = OFFICER_TITLES[data.domain_officer_key] || roleConfig.officerTitle;
+                document.getElementById('titleDomainOfficer').innerText = resolvedDomainTitle.toUpperCase();
             }
 
             // High-Resolution Scannable QR Execution
@@ -1299,23 +1351,37 @@
         }
 
         function exportPNG() {
+            // Unscale strictly for High-Res PNG Capture
             const card = document.getElementById('certificateCard');
+            const originalTransform = card.style.transform;
+            card.style.transform = 'none';
+
             html2canvas(card, { scale: 3.5, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+                
+                // Re-apply scale after capture
+                card.style.transform = originalTransform;
             });
         }
 
         function exportJsPDF() {
+            // Unscale strictly for High-Res PDF Capture
             const card = document.getElementById('certificateCard');
+            const originalTransform = card.style.transform;
+            card.style.transform = 'none';
+
             html2canvas(card, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
                 const img = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 700] });
                 pdf.addImage(img, 'PNG', 0, 0, 1000, 700);
                 pdf.save(`Tournyx_Certificate_${document.getElementById('viewName').innerText.replace(/\s+/g, '_')}.pdf`);
+                
+                // Re-apply scale after capture
+                card.style.transform = originalTransform;
             });
         }
 
