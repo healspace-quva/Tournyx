@@ -613,10 +613,13 @@
             font-size: 0.72rem;
             color: #111827;
             font-weight: 800;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px;
+            
+            /* --- TEXT OVERFLOW FIX: Removed nowrap & ellipsis --- */
+            white-space: normal;
+            overflow: visible;
+            word-wrap: break-word;
+            max-width: 160px;
+            line-height: 1.3;
         }
 
         /* SIGNATURES AREA */
@@ -944,7 +947,7 @@
                         <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
                     <div class="sig-divider"></div>
-                    <div class="sig-officer-title">HR & INTERNSHIP OPERATIONS COORDINATOR</div>
+                    <div class="sig-officer-title" id="titleHR">HR & INTERNSHIP OPERATIONS COORDINATOR</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
 
@@ -952,8 +955,9 @@
                     <div class="sig-img-wrap" id="sigSlotCEO">
                         <span class="pending-sig-text">DIGITALLY SIGNED</span>
                     </div>
-                    <div class="sig-divider" style="border-color: #4c1d95;"></div>
-                    <div class="sig-officer-title" style="color: #4c1d95;">FOUNDER & CHIEF EXECUTIVE OFFICER</div>
+                    <!-- --- CEO Border Colors explicitly synced with theme border to make design unified --- -->
+                    <div class="sig-divider" style="border-color: var(--theme-border);"></div>
+                    <div class="sig-officer-title" id="titleCEO" style="color: var(--theme-text);">FOUNDER & CHIEF EXECUTIVE OFFICER</div>
                     <div class="sig-officer-sub">Tournyx Esports</div>
                 </div>
             </div>
@@ -1193,18 +1197,36 @@
             document.documentElement.style.setProperty('--theme-gradient', roleConfig.gradient);
             document.documentElement.style.setProperty('--theme-text', roleConfig.text);
 
-            document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
-
             document.getElementById('viewCommendation').innerHTML = `
                 This is to certify that <strong>${data.intern_name}</strong> has successfully completed an internship with <strong>Tournyx Esports</strong> from <strong>${sDate}</strong> to <strong>${eDate}</strong>. During the tenure, the intern ${roleConfig.desc}
             `;
 
-            // Signature Asset Mapping
+            // Signature Asset Mapping & Dynamic Titles
             if (sigs && sigs.length > 0) {
                 const ceoSig = sigs.find(s => s.officer_key === data.ceo_key || s.officer_key === 'ceo');
                 const hrSig = sigs.find(s => s.officer_key === data.hr_coordinator_key || s.officer_key === 'hr');
-                const domainSig = sigs.find(s => s.officer_key === data.domain_officer_key || s.officer_key === 'domain_officer' || (s.officer_key && s.officer_key.startsWith('custom_')));
+                
+                // Exactly matching domain officer based on the database key
+                let domainSig = sigs.find(s => s.officer_key === data.domain_officer_key);
+                if (!domainSig) {
+                    domainSig = sigs.find(s => s.officer_key === 'domain_officer' || (s.officer_key && s.officer_key.startsWith('custom_')));
+                }
 
+                // Apply Perfect Officer Titles direct from the Database
+                if (domainSig && domainSig.officer_title) {
+                    document.getElementById('titleDomainOfficer').innerText = domainSig.officer_title.toUpperCase();
+                } else {
+                    document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
+                }
+
+                if (ceoSig && ceoSig.officer_title) {
+                    document.getElementById('titleCEO').innerText = ceoSig.officer_title.toUpperCase();
+                }
+                if (hrSig && hrSig.officer_title) {
+                    document.getElementById('titleHR').innerText = hrSig.officer_title.toUpperCase();
+                }
+
+                // Apply Signatures
                 if (ceoSig && ceoSig.signature_url) {
                     document.getElementById('sigSlotCEO').innerHTML = `<img src="${ceoSig.signature_url}" class="real-sig-img" alt="CEO Signature">`;
                 }
@@ -1214,6 +1236,8 @@
                 if (domainSig && domainSig.signature_url) {
                     document.getElementById('sigSlotDomain').innerHTML = `<img src="${domainSig.signature_url}" class="real-sig-img" alt="Domain Officer Signature">`;
                 }
+            } else {
+                document.getElementById('titleDomainOfficer').innerText = data.domain_officer_title || roleConfig.officerTitle;
             }
 
             // High-Resolution Scannable QR Execution
