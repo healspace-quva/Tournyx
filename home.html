@@ -1976,7 +1976,7 @@
             });
         }
 
-        // PERFECT LIVE UI & WALLET SYNC
+        // PERFECT LIVE UI, PROFILE & WALLET SYNC
         function syncLiveWalletPoints(user) {
             if (!user) return;
             
@@ -1997,7 +1997,7 @@
                 if(wdT) wdT.innerText = tix.toLocaleString();
                 if(wdP) wdP.innerText = pts.toLocaleString();
                 
-                // CRITICAL FIX: Globally update Avatar and Username
+                // CRITICAL FIX: Globally update Avatar and Username from DB
                 if(mImg && uAvatar) mImg.src = uAvatar;
                 if(mName && uName) {
                     let vipBadge = (user.is_premium === true || String(user.is_premium).toLowerCase() === 'true') ? ' <i class="fa-solid fa-crown" style="color:#FFD700; font-size:0.9rem; margin-left:5px; filter:drop-shadow(0 0 5px #FFD700);"></i>' : '';
@@ -2011,18 +2011,21 @@
             // Fetch Strict Columns from Database live
             if (user.email && db) {
                 const cleanEmail = (user.email || '').trim().toLowerCase();
-                db.from('Users').select('points, earnings, role, username, ign, avatar, state, main_game').ilike('email', cleanEmail).limit(1)
+                db.from('Users').select('points, earnings, role, username, ign, avatar, state, main_game, streak_count, last_claim_date, player_role').ilike('email', cleanEmail).limit(1)
                 .then(({data, error}) => {
                     if (!error && data && data.length > 0) {
                         const liveRow = data[0];
-                        user.points = liveRow.points !== undefined ? liveRow.points : user.points;
-                        user.earnings = liveRow.earnings !== undefined ? liveRow.earnings : user.earnings;
+                        user.points = liveRow.points !== null ? liveRow.points : user.points;
+                        user.earnings = liveRow.earnings !== null ? liveRow.earnings : user.earnings;
                         user.role = liveRow.role || user.role;
                         user.username = liveRow.username || user.username;
                         user.ign = liveRow.ign || user.ign;
                         user.avatar = liveRow.avatar || user.avatar;
                         user.state = liveRow.state || user.state;
                         user.main_game = liveRow.main_game || user.main_game;
+                        user.player_role = liveRow.player_role || user.player_role;
+                        user.streak_count = liveRow.streak_count || user.streak_count;
+                        user.last_claim_date = liveRow.last_claim_date || user.last_claim_date;
                         localStorage.setItem('tournyx_user', JSON.stringify(user));
                         
                         let livePoints = parseInt(user.points) || 0;
@@ -2608,7 +2611,7 @@
             }
         }
 
-      async function claimDailyStreak() {
+     async function claimDailyStreak() {
             if(!checkAuth()) return;
             let user = JSON.parse(localStorage.getItem('tournyx_user')) || {};
             const btn = document.getElementById('btnClaimStreak');
@@ -2618,21 +2621,14 @@
             btn.disabled = true;
 
             const nowMs = Date.now();
-            // CRITICAL FIX: Ensure Supabase compatible timestamp formatting
             const newDateISO = new Date(nowMs).toISOString();
             const cleanEmail = (user.email || '').trim().toLowerCase();
 
             try {
                 let liveData = null;
                 if (db && cleanEmail) {
-                    try {
-                        const { data, error } = await db.from('Users').select('id, email, last_claim_date, streak_count, points').ilike('email', cleanEmail).limit(1);
-                        if (!error && data && data.length > 0) {
-                            liveData = data[0];
-                        }
-                    } catch(fetchErr) {
-                        console.warn("DB fetch warning:", fetchErr);
-                    }
+                    const { data, error } = await db.from('Users').select('id, email, last_claim_date, streak_count, points').ilike('email', cleanEmail).limit(1);
+                    if (!error && data && data.length > 0) liveData = data[0];
                 }
 
                 let lastClaimDate = liveData?.last_claim_date || user.last_claim_date;
@@ -2645,7 +2641,7 @@
                     hoursPassed = (nowMs - lastClaimMs) / (1000 * 60 * 60);
                 }
 
-                // Check 24-hour cooldown
+                // Check 24-hour cooldown strictly
                 if (hoursPassed >= 0 && hoursPassed < 24) {
                     let hoursLeft = Math.ceil(24 - hoursPassed);
                     showToast("Already claimed! Next in " + hoursLeft + "H", true);
@@ -2660,27 +2656,17 @@
 
                 btn.innerText = "SYNCING...";
 
-                // Secure DB Push - updating both Users and player_engine
+                // Secure DB Push - Updating Database strictly
                 if (db) {
-                    try {
-                        const updateData = { 
-                            streak_count: newStreak, 
-                            points: newPoints,
-                            last_claim_date: newDateISO
-                        };
-                        
-                        let { error: updateError } = await db.from('Users').update(updateData).ilike('email', cleanEmail);
-                        
-                        if (updateError && (user.id || liveData?.id)) {
-                            await db.from('Users').update(updateData).eq('id', user.id || liveData?.id);
-                        }
-                        
-                        // Push to Engine to keep XP synced
-                        let xpAward = Math.floor(reward / 10);
-                        await db.rpc('increment_engine_xp', { user_email: cleanEmail, xp_amount: xpAward }).catch(e => console.warn(e));
-
-                    } catch(dbErr) {
-                        console.warn("Database streak update warning:", dbErr);
+                    const updateData = { 
+                        streak_count: newStreak, 
+                        points: newPoints,
+                        last_claim_date: newDateISO
+                    };
+                    
+                    let { error: updateError } = await db.from('Users').update(updateData).ilike('email', cleanEmail);
+                    if (updateError && (user.id || liveData?.id)) {
+                        await db.from('Users').update(updateData).eq('id', user.id || liveData?.id);
                     }
                 }
 
