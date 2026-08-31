@@ -392,8 +392,8 @@ const TournyxEngine = (() => {
             </div>
           </div>
           
-          <!-- CENTER: USER BADGE & LIVE STATS PILLS -->
-          <div class="em-header-center" style="display:flex; align-items:center; gap:14px; flex:1; justify-content:center; flex-wrap:wrap;">
+          <!-- CENTER: USER BADGE & LIVE STATS PILLS (HIDDEN ON VERY SMALL SCREENS) -->
+          <div class="em-header-center em-header-stats-container" style="display:flex; align-items:center; gap:14px; flex:1; justify-content:center; flex-wrap:wrap;">
             <div class="em-user-badge" style="display:flex; align-items:center; gap:8px;">
               <img src="https://via.placeholder.com/38" id="emUserAvatar" class="em-avatar" style="width:36px; height:36px; border-radius:50%; border:1.5px solid #00f2ff; object-fit:cover;">
               <div>
@@ -453,6 +453,12 @@ const TournyxEngine = (() => {
           </div>
         </div>
       </div>
+      <style>
+          @media (max-width: 800px) {
+              .em-header-stats-container { display: none !important; }
+              .em-header-left { flex: 1; }
+          }
+      </style>
     `;
 
     document.body.appendChild(overlay);
@@ -590,21 +596,22 @@ const TournyxEngine = (() => {
     openSystemPopup();
   }
 
-  // ─── TAB 1: PLAYER ANALYSIS + RADAR ────────────────────────────────────────
+  // ─── TAB 1: PLAYER ANALYSIS + DYNAMIC AI RADAR COACHING ────────────────────
   function _renderPlayerAnalysis() {
     const pane = document.getElementById('tab-player-analysis');
     if (!pane || !state.engineData) return;
     const data = state.engineData;
 
     const skills = [
-      { key: 'skill_combat',      label: 'Combat',       color: '#ff4d4d', icon: 'fa-crosshairs' },
-      { key: 'skill_reaction',    label: 'Reaction',     color: '#00f2ff', icon: 'fa-bolt' },
-      { key: 'skill_strategy',    label: 'Strategy',     color: '#bd00ff', icon: 'fa-brain' },
-      { key: 'skill_teamwork',    label: 'Teamwork',     color: '#00ff7f', icon: 'fa-shield-halved' },
-      { key: 'skill_leadership',  label: 'Leadership',   color: '#FFD700', icon: 'fa-map-location-dot' },
-      { key: 'skill_consistency', label: 'Consistency',  color: '#ff9800', icon: 'fa-arrow-trend-up' },
+      { key: 'skill_combat',      label: 'Combat',       color: '#ff4d4d', icon: 'fa-crosshairs', advice: "Focus on TDM and 1v1 arenas to improve pure mechanical aim." },
+      { key: 'skill_reaction',    label: 'Reaction',     color: '#00f2ff', icon: 'fa-bolt', advice: "Spend 15 mins daily on reflex training maps to lower TTK." },
+      { key: 'skill_strategy',    label: 'Strategy',     color: '#bd00ff', icon: 'fa-brain', advice: "Review VODs of professional players to learn rotation timings." },
+      { key: 'skill_teamwork',    label: 'Teamwork',     color: '#00ff7f', icon: 'fa-shield-halved', advice: "Communicate utility usage clearly before pushing sites." },
+      { key: 'skill_leadership',  label: 'Leadership',   color: '#FFD700', icon: 'fa-map-location-dot', advice: "Start making decisive micro-calls for your squad during mid-game." },
+      { key: 'skill_consistency', label: 'Consistency',  color: '#ff9800', icon: 'fa-arrow-trend-up', advice: "Stick to a dedicated warm-up routine before entering ranked." },
     ];
 
+    // Dynamic Calculation of Player's Profile
     const weakest = skills.reduce((a, b) => (data[a.key] || 50) < (data[b.key] || 50) ? a : b);
     const strongest = skills.reduce((a, b) => (data[a.key] || 50) > (data[b.key] || 50) ? a : b);
 
@@ -638,12 +645,12 @@ const TournyxEngine = (() => {
 
       <div class="em-section-box" style="margin-top:15px;">
         <div class="em-box-title" style="font-family:var(--eng-font-head); color:var(--accent-cyan); margin-bottom:8px;">
-          <i class="fa-solid fa-robot"></i> AI Diagnostic Report & Prescription
+          <i class="fa-solid fa-robot"></i> Dynamic AI Diagnostic Report
         </div>
         <div style="font-size:0.85rem; color:#ccc; line-height:1.6;">
           <p style="margin-bottom:6px;">🌟 Dominant Trait: <b style="color:#00ff7f;">${strongest.label} (${data[strongest.key]}%)</b></p>
           <p style="margin-bottom:6px;">⚠️ Area for Improvement: <b style="color:#ff4d4d;">${weakest.label} (${data[weakest.key]}%)</b></p>
-          <p style="margin-bottom:8px;">💡 AI Coach Prescription: <span style="color:#00f2ff;">Engage in 15 mins of daily ${weakest.label.toLowerCase()} drills to boost overall Power Rating.</span></p>
+          <p style="margin-bottom:8px;">💡 AI Coach Prescription: <span style="color:#00f2ff;">${weakest.advice}</span></p>
           <div style="font-family:var(--eng-font-head); color:var(--accent-purple); font-size:0.8rem; font-weight:bold;">
             BONUS: Complete AI drill today for <b>+250 PTS (+25 XP)</b>
           </div>
@@ -1703,4 +1710,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 250);
 });
-
