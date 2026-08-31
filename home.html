@@ -1984,20 +1984,29 @@
             let earnings = parseInt(user.earnings) || 0;
             let tickets = Math.floor(earnings / 10); 
             
-            const updateValues = (pts, tix) => {
+            const updateValues = (pts, tix, uName, uAvatar) => {
                 const wmT = document.getElementById('walletTicketsMobile');
                 const wmP = document.getElementById('walletPointsMobile');
                 const wdT = document.getElementById('walletTicketsDesk');
                 const wdP = document.getElementById('walletPointsDesk');
+                const mImg = document.getElementById('menuUserImg');
+                const mName = document.getElementById('menuUserName');
                 
                 if(wmT) wmT.innerText = tix.toLocaleString();
                 if(wmP) wmP.innerText = pts.toLocaleString();
                 if(wdT) wdT.innerText = tix.toLocaleString();
                 if(wdP) wdP.innerText = pts.toLocaleString();
+                
+                // CRITICAL FIX: Globally update Avatar and Username
+                if(mImg && uAvatar) mImg.src = uAvatar;
+                if(mName && uName) {
+                    let vipBadge = (user.is_premium === true || String(user.is_premium).toLowerCase() === 'true') ? ' <i class="fa-solid fa-crown" style="color:#FFD700; font-size:0.9rem; margin-left:5px; filter:drop-shadow(0 0 5px #FFD700);"></i>' : '';
+                    mName.innerHTML = uName + vipBadge;
+                }
             };
 
             // Inject offline/cached data instantly
-            updateValues(points, tickets);
+            updateValues(points, tickets, user.username || user.ign, user.avatar);
 
             // Fetch Strict Columns from Database live
             if (user.email && db) {
@@ -2019,7 +2028,7 @@
                         let livePoints = parseInt(user.points) || 0;
                         let liveTickets = Math.floor((parseInt(user.earnings) || 0) / 10);
 
-                        updateValues(livePoints, liveTickets);
+                        updateValues(livePoints, liveTickets, user.username || user.ign, user.avatar);
                     }
                 });
             }
@@ -2599,7 +2608,7 @@
             }
         }
 
-       async function claimDailyStreak() {
+      async function claimDailyStreak() {
             if(!checkAuth()) return;
             let user = JSON.parse(localStorage.getItem('tournyx_user')) || {};
             const btn = document.getElementById('btnClaimStreak');
@@ -2609,6 +2618,7 @@
             btn.disabled = true;
 
             const nowMs = Date.now();
+            // CRITICAL FIX: Ensure Supabase compatible timestamp formatting
             const newDateISO = new Date(nowMs).toISOString();
             const cleanEmail = (user.email || '').trim().toLowerCase();
 
@@ -2625,7 +2635,6 @@
                     }
                 }
 
-                // Fallback to local user data if DB record not fetched yet
                 let lastClaimDate = liveData?.last_claim_date || user.last_claim_date;
                 let currentStreak = parseInt(liveData?.streak_count ?? user.streak_count) || 0;
                 let currentPoints = parseInt(liveData?.points ?? user.points) || 0;
@@ -2651,7 +2660,7 @@
 
                 btn.innerText = "SYNCING...";
 
-                // 4. Secure DB Push - ONLY pushing points and streak
+                // Secure DB Push - updating both Users and player_engine
                 if (db) {
                     try {
                         const updateData = { 
@@ -2659,26 +2668,30 @@
                             points: newPoints,
                             last_claim_date: newDateISO
                         };
+                        
                         let { error: updateError } = await db.from('Users').update(updateData).ilike('email', cleanEmail);
+                        
                         if (updateError && (user.id || liveData?.id)) {
                             await db.from('Users').update(updateData).eq('id', user.id || liveData?.id);
                         }
+                        
+                        // Push to Engine to keep XP synced
+                        let xpAward = Math.floor(reward / 10);
+                        await db.rpc('increment_engine_xp', { user_email: cleanEmail, xp_amount: xpAward }).catch(e => console.warn(e));
+
                     } catch(dbErr) {
                         console.warn("Database streak update warning:", dbErr);
                     }
                 }
 
-                // 5. Update local cache safely (do NOT overwrite earnings)
                 user.streak_count = newStreak;
                 user.points = newPoints;
                 user.last_claim_date = newDateISO;
                 localStorage.setItem('tournyx_user', JSON.stringify(user));
 
-                // 6. UI Updates
                 buildStreakTimeline(newStreak);
                 syncLiveWalletPoints(user); 
                 
-                // 7. Live Engine XP Surge
                 if (window.TournyxEngine && typeof window.TournyxEngine.awardStreakXP === 'function') {
                     window.TournyxEngine.awardStreakXP(reward);
                 }
