@@ -1,8 +1,8 @@
 /**
  * ==============================================================================
- * TOURNYX VISION AI v3.5 - MASTER COMPANION & NEURAL LINK
- * Indestructible Floating Cyber Orb • Localized Docked Assistant HUD
- * Multi-Window PiP • Live Speech Synthesis & Waveform • Mobile Native APK Push
+ * TOURNYX VISION AI v4.0 - AUTOMATED ESPORTS NEURAL COMPANION
+ * Exact Tournyx Logo Integration • Expanding Interactive HUD Menu
+ * Live Gameplay Analytics Simulation • Auto-Database Sync for Tasks
  * ==============================================================================
  */
 
@@ -12,88 +12,117 @@ const TournyxVisionAI = (() => {
 
   let state = {
     bubbleEl: null,
-    dockEl: null,
+    menuEl: null,
     isDragging: false,
     hasMoved: false,
     isOpen: false,
+    isScanning: false,
+    isPaused: false,
     posX: 0,
     posY: 0,
     dragStartX: 0,
     dragStartY: 0,
     startPosX: 0,
     startPosY: 0,
-    pipVideo: null,
-    pipCanvas: null,
-    pipCtx: null,
+    scanInterval: null,
+    taskToCompleteId: null,
+    taskRewardPts: 0
   };
 
-  // ─── 1. INITIALIZE FLOATING CYBER ORB ──────────────────────────────────────
+  // ─── 1. INITIALIZE FLOATING TOURYNX ORB & MENU ──────────────────────────────
   function init() {
-    if (document.getElementById('tx-vision-bubble')) return;
+    if (document.getElementById('tx-vision-container')) return;
 
-    // 1. Create Floating Orb
-    const bubble = document.createElement('div');
-    bubble.id = 'tx-vision-bubble';
-    bubble.style.position = 'fixed';
-    bubble.style.zIndex = '99999';
-    bubble.style.cursor = 'grab';
-    bubble.style.userSelect = 'none';
-    bubble.style.touchAction = 'none';
+    // Main Container
+    const container = document.createElement('div');
+    container.id = 'tx-vision-container';
+    container.style.position = 'fixed';
+    container.style.zIndex = '99999';
+    container.style.pointerEvents = 'none'; // Let clicks pass through empty space
     
     // Initial position on screen (bottom-right)
-    state.posX = Math.max(10, window.innerWidth - 75);
-    state.posY = Math.max(10, window.innerHeight - 145);
+    state.posX = Math.max(10, window.innerWidth - 85);
+    state.posY = Math.max(10, window.innerHeight - 155);
 
-    bubble.style.left = `${state.posX}px`;
-    bubble.style.top = `${state.posY}px`;
+    container.style.left = `${state.posX}px`;
+    container.style.top = `${state.posY}px`;
 
-    bubble.innerHTML = `
-      <div class="tx-cyber-crest" style="width:44px; height:44px; pointer-events:none;">
-        <svg width="44" height="44" viewBox="0 0 100 100" class="tx-crest-svg">
-          <defs>
-            <linearGradient id="txOrbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00f2ff" />
-              <stop offset="50%" stop-color="#bd00ff" />
-              <stop offset="100%" stop-color="#ff3300" />
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="50" r="44" fill="none" stroke="url(#txOrbGrad)" stroke-width="3" stroke-dasharray="18 8 36 8" class="tx-ring-spin" />
-          <polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="rgba(8,8,16,0.95)" stroke="#00f2ff" stroke-width="2" />
-          <circle cx="50" cy="50" r="14" fill="url(#txOrbGrad)" class="tx-core-pulse" />
-          <path d="M40,42 L60,42 M50,42 L50,60 M56,48 L64,60 M44,48 L36,60" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
-        </svg>
-      </div>
-      <div id="tx-bubble-pulse-dot" style="position:absolute; top:2px; right:2px; width:10px; height:10px; border-radius:50%; background:#00ff7f; box-shadow:0 0 8px #00ff7f;"></div>
+    // The Expanding Control Menu
+    const menu = document.createElement('div');
+    menu.id = 'tx-vision-menu';
+    menu.style.position = 'absolute';
+    menu.style.bottom = '100%';
+    menu.style.left = '50%';
+    menu.style.transform = 'translate(-50%, 10px) scale(0)';
+    menu.style.transformOrigin = 'bottom center';
+    menu.style.opacity = '0';
+    menu.style.background = 'rgba(8, 8, 16, 0.95)';
+    menu.style.backdropFilter = 'blur(10px)';
+    menu.style.border = '1px solid #00f2ff';
+    menu.style.borderRadius = '16px';
+    menu.style.padding = '10px';
+    menu.style.display = 'flex';
+    menu.style.flexDirection = 'column';
+    menu.style.gap = '8px';
+    menu.style.pointerEvents = 'auto';
+    menu.style.transition = '0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    menu.style.boxShadow = '0 0 20px rgba(0,242,255,0.4)';
+    menu.style.marginBottom = '15px';
+
+    menu.innerHTML = `
+      <div style="font-family:'Orbitron', sans-serif; font-size:0.6rem; color:#00f2ff; text-align:center; font-weight:bold; letter-spacing:1px; border-bottom:1px solid rgba(0,242,255,0.2); padding-bottom:5px; margin-bottom:5px;">VISION HUD</div>
+      <button id="vBtnPause" onclick="TournyxVisionAI.togglePause()" style="width:140px; padding:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:'Orbitron', sans-serif; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-pause" style="color:#FFD700; width:15px;"></i> PAUSE AI</button>
+      <button id="vBtnAnalyze" onclick="TournyxVisionAI.forceAnalysis()" style="width:140px; padding:8px; background:rgba(0,242,255,0.1); border:1px solid #00f2ff; border-radius:8px; color:white; font-family:'Orbitron', sans-serif; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-crosshairs" style="color:#00f2ff; width:15px;"></i> ANALYZE SKILL</button>
+      <button id="vBtnStop" onclick="TournyxVisionAI.stopVision()" style="width:140px; padding:8px; background:rgba(255,51,0,0.1); border:1px solid #ff3300; border-radius:8px; color:white; font-family:'Orbitron', sans-serif; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-power-off" style="color:#ff3300; width:15px;"></i> STOP LINK</button>
     `;
 
-    document.body.appendChild(bubble);
+    // The Main Floating Orb (Exact Logo)
+    const bubble = document.createElement('div');
+    bubble.id = 'tx-vision-bubble';
+    bubble.style.width = '60px';
+    bubble.style.height = '60px';
+    bubble.style.borderRadius = '50%';
+    bubble.style.background = 'rgba(0,0,0,0.8)';
+    bubble.style.border = '2px solid #00f2ff';
+    bubble.style.boxShadow = '0 0 15px #00f2ff, inset 0 0 15px rgba(0,242,255,0.5)';
+    bubble.style.position = 'relative';
+    bubble.style.pointerEvents = 'auto';
+    bubble.style.cursor = 'grab';
+    bubble.style.display = 'flex';
+    bubble.style.alignItems = 'center';
+    // Exact Logo Image
+    bubble.innerHTML = `
+      <img src="https://tournyx.in/favicon.png" style="width:40px; height:40px; object-fit:contain; animation: floatLogo 2s infinite alternate; margin-left: 8px;">
+      <div id="tx-vision-pulse" style="position:absolute; inset:-4px; border-radius:50%; border:2px solid #00f2ff; animation: pingPulse 1.5s infinite;"></div>
+      <div id="tx-vision-dot" style="position:absolute; top:2px; right:2px; width:12px; height:12px; border-radius:50%; background:#00ff7f; box-shadow:0 0 8px #00ff7f; border:2px solid #000;"></div>
+    `;
+
+    // CSS Keyframes injected
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes floatLogo { 0% { transform: translateY(0); filter: drop-shadow(0 0 5px #00f2ff); } 100% { transform: translateY(-2px); filter: drop-shadow(0 0 15px #bd00ff); } }
+      @keyframes pingPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+      @keyframes scanDrop { 0% { top: -20%; } 100% { top: 120%; } }
+    `;
+    document.head.appendChild(style);
+
+    container.appendChild(menu);
+    container.appendChild(bubble);
+    document.body.appendChild(container);
+
     state.bubbleEl = bubble;
+    state.menuEl = menu;
+    state.containerEl = container;
 
-    _injectDockedHUD();
     _bindOptimizedDrag(bubble);
-    _initPiPElements();
-
-    if (window.TournyxEngine && window.TournyxEngine.state.engineData) {
-      updateBubble(window.TournyxEngine.state.engineData);
-    }
   }
 
-
-  function downloadAppPrompt() {
-    if (typeof showToast === 'function') {
-      showToast('📲 Tournyx Native Mobile App APK Download link copied to clipboard!');
-    }
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText('https://tournyx.in/download/tournyx-esports.apk');
-    }
-  }
-
-  // ─── 3. DRAGGING LOGIC ─────────────────────────────────────────────────────
+  // ─── 2. DRAGGING & CLICK LOGIC ─────────────────────────────────────────────
   function _bindOptimizedDrag(bubble) {
     const onPointerDown = (e) => {
       state.isDragging = true;
       state.hasMoved = false;
-      bubble.classList.add('is-dragging');
+      bubble.style.cursor = 'grabbing';
 
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -119,31 +148,33 @@ const TournyxVisionAI = (() => {
       const dx = clientX - state.dragStartX;
       const dy = clientY - state.dragStartY;
 
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
         state.hasMoved = true;
+        // Close menu if dragging
+        if (state.isOpen) toggleMenu(false);
       }
 
-      const bubbleSize = 66;
+      const bubbleSize = 60;
       state.posX = Math.max(10, Math.min(window.innerWidth - bubbleSize - 10, state.startPosX + dx));
       state.posY = Math.max(10, Math.min(window.innerHeight - bubbleSize - 10, state.startPosY + dy));
 
-      bubble.style.left = `${state.posX}px`;
-      bubble.style.top = `${state.posY}px`;
+      state.containerEl.style.left = `${state.posX}px`;
+      state.containerEl.style.top = `${state.posY}px`;
     };
 
     const onPointerUp = () => {
       if (!state.isDragging) return;
       state.isDragging = false;
-      bubble.classList.remove('is-dragging');
+      bubble.style.cursor = 'grab';
 
       window.removeEventListener('mousemove', onPointerMove);
       window.removeEventListener('mouseup', onPointerUp);
       window.removeEventListener('touchmove', onPointerMove);
       window.removeEventListener('touchend', onPointerUp);
 
-      // If user tapped without dragging, open Vision AI HUD Modal
+      // If clicked without moving, toggle the menu
       if (!state.hasMoved) {
-        openVisionModal();
+        toggleMenu(!state.isOpen);
       }
     };
 
@@ -151,117 +182,137 @@ const TournyxVisionAI = (() => {
     bubble.addEventListener('touchstart', onPointerDown, { passive: false });
   }
 
-  // ─── 4. UPDATE BUBBLE STATS ────────────────────────────────────────────────
-  function updateBubble(engineData) {
-    if (!engineData) return;
-    const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  // ─── 3. MENU CONTROLS ──────────────────────────────────────────────────────
+  function toggleMenu(forceState) {
+    state.isOpen = forceState !== undefined ? forceState : !state.isOpen;
+    if (state.isOpen) {
+      state.menuEl.style.transform = 'translate(-50%, -10px) scale(1)';
+      state.menuEl.style.opacity = '1';
+    } else {
+      state.menuEl.style.transform = 'translate(-50%, 10px) scale(0)';
+      state.menuEl.style.opacity = '0';
+    }
+  }
 
-    setTxt('tx-bubble-xp-tag', `+${engineData.daily_xp || 0} XP`);
-    setTxt('vmPower', (engineData.power_level || 100).toLocaleString());
-    setTxt('vmRank', engineData.rank_tier || 'E-RANK');
-    setTxt('vmDailyXP', `+${engineData.daily_xp || 0}`);
+  function togglePause() {
+    state.isPaused = !state.isPaused;
+    const btn = document.getElementById('vBtnPause');
+    const dot = document.getElementById('tx-vision-dot');
+    const pulse = document.getElementById('tx-vision-pulse');
     
-    const dna = engineData.player_dna || 'Rusher';
-    setTxt('vmActiveMission', `${dna} Protocol: Complete daily drills & climb to SSS-Rank!`);
+    if (state.isPaused) {
+      btn.innerHTML = `<i class="fa-solid fa-play" style="color:#00ff7f; width:15px;"></i> RESUME AI`;
+      dot.style.background = '#FFD700';
+      dot.style.boxShadow = '0 0 8px #FFD700';
+      pulse.style.animationPlayState = 'paused';
+      if (typeof showToast === 'function') showToast("⏸️ Vision AI Paused. Analytics halted.");
+    } else {
+      btn.innerHTML = `<i class="fa-solid fa-pause" style="color:#FFD700; width:15px;"></i> PAUSE AI`;
+      dot.style.background = '#00ff7f';
+      dot.style.boxShadow = '0 0 8px #00ff7f';
+      pulse.style.animationPlayState = 'running';
+      if (typeof showToast === 'function') showToast("▶️ Vision AI Resumed. Monitoring active.");
+    }
+    toggleMenu(false);
   }
 
-  // ─── 5. PICTURE-IN-PICTURE (MULTI-WINDOW HUD) ──────────────────────────────
-  function _initPiPElements() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 250;
-    state.pipCanvas = canvas;
-    state.pipCtx = canvas.getContext('2d');
-
-    const video = document.createElement('video');
-    video.muted = true;
-    video.playsInline = true;
-    video.srcObject = canvas.captureStream(30);
-    state.pipVideo = video;
+  function stopVision() {
+    if (state.containerEl) {
+      state.containerEl.remove();
+      state.containerEl = null;
+    }
+    if (state.scanInterval) clearInterval(state.scanInterval);
+    if (typeof showToast === 'function') showToast("🛑 Neural Link Terminated.");
+    if (window.TournyxEngineAPI) window.TournyxEngineAPI.state.isVisionActive = false;
   }
 
-  async function togglePictureInPicture(e) {
-    if (e) e.stopPropagation();
-    if (!document.pictureInPictureEnabled) {
-      if (typeof showToast === 'function') showToast('Picture-in-Picture not supported on this browser.', true);
+  // ─── 4. AI GAMEPLAY ANALYSIS & AUTO REWARDS ────────────────────────────────
+  function prepareTaskForDetection(taskId, reward) {
+    state.taskToCompleteId = taskId;
+    state.taskRewardPts = reward;
+    
+    // Automatically complete after a random duration (mocking AI detection of gameplay)
+    if(state.scanInterval) clearInterval(state.scanInterval);
+    state.scanInterval = setTimeout(() => {
+      if(!state.isPaused && state.containerEl) {
+        forceAnalysis(); // Auto-trigger completion
+      }
+    }, 15000 + Math.random() * 10000); // 15 to 25 seconds
+  }
+
+  function forceAnalysis() {
+    if (state.isPaused) {
+      if (typeof showToast === 'function') showToast("⚠️ Cannot analyze while paused. Resume AI first.", true);
       return;
     }
+    toggleMenu(false);
+    _showScanningHUD();
+  }
 
-    try {
-      if (document.pictureInPictureElement) {
-        await document.exitPictureInPicture();
+  function _showScanningHUD() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = 'rgba(0,0,0,0.6)';
+    overlay.style.zIndex = '999999';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.pointerEvents = 'none';
+
+    overlay.innerHTML = `
+      <div style="position:relative; width:80vw; height:40vw; max-width:600px; max-height:300px; border:2px solid #00f2ff; border-radius:20px; overflow:hidden; background:rgba(0,242,255,0.05); box-shadow:0 0 30px rgba(0,242,255,0.4);">
+        <div style="position:absolute; width:100%; height:10px; background:#00f2ff; opacity:0.8; box-shadow:0 0 20px #00f2ff; animation: scanDrop 2s infinite linear;"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; font-family:'Orbitron', sans-serif;">
+          <i class="fa-solid fa-crosshairs fa-spin" style="color:#00f2ff; font-size:3rem; margin-bottom:15px;"></i>
+          <h2 id="aiScanText" style="color:white; font-size:1.2rem; margin:0; text-shadow:0 0 10px #00f2ff;">ANALYZING GAMEPLAY...</h2>
+          <p id="aiScanSub" style="color:#FFD700; font-size:0.85rem; margin-top:5px;">Calculating Skill Matrix</p>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Sequence of AI Analysis
+    setTimeout(() => {
+      document.getElementById('aiScanText').innerText = "TARGET ACQUIRED";
+      document.getElementById('aiScanText').style.color = "#00ff7f";
+      document.getElementById('aiScanSub').innerText = "2 Headshots Confirmed. Precision: 94%";
+    }, 1500);
+
+    setTimeout(() => {
+      document.getElementById('aiScanText').innerText = "OBJECTIVE CLEARED!";
+      document.getElementById('aiScanSub').innerText = "Data syncing to Tournyx Cloud...";
+      document.getElementById('aiScanSub').style.color = "#00f2ff";
+      
+      // Trigger Database Award internally via Engine
+      if (state.taskToCompleteId && window.TournyxEngineAPI) {
+        window.TournyxEngineAPI.startAndVerifyTask(state.taskToCompleteId, state.taskRewardPts);
+        state.taskToCompleteId = null; 
       } else {
-        _renderPiPFrame();
-        await state.pipVideo.play();
-        await state.pipVideo.requestPictureInPicture();
-        if (typeof showToast === 'function') showToast('🎮 Tournyx Vision HUD Floating Multi-Window Active!');
+        // Generic reward if no specific task was queued
+        if (window.TournyxEngineAPI && typeof window.TournyxEngineAPI.awardStreakXP === 'function') {
+           window.TournyxEngineAPI.awardStreakXP(150); // Calling the internal DB point function
+           if (typeof showToast === 'function') showToast("🎯 Generic Match Analyzed: +150 PTS Saved to DB!");
+        }
       }
-    } catch(err) {
-      console.warn('PiP launch exception:', err);
-    }
-  }
+    }, 3000);
 
-  function _renderPiPFrame() {
-    if (!state.pipCtx) return;
-    const ctx = state.pipCtx;
-    const d = (window.TournyxEngine && window.TournyxEngine.state.engineData) || { power_level: 1200, rank_tier: 'A-RANK', daily_xp: 420 };
-
-    ctx.fillStyle = '#05050a';
-    ctx.fillRect(0, 0, 400, 250);
-
-    ctx.strokeStyle = '#00f2ff';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(6, 6, 388, 238);
-
-    ctx.fillStyle = '#00f2ff';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('TOURNYX VISION AI HUD', 20, 36);
-
-    ctx.fillStyle = '#FFD700';
-    ctx.font = 'bold 28px sans-serif';
-    ctx.fillText(`POWER: ${d.power_level.toLocaleString()}`, 20, 85);
-
-    ctx.fillStyle = '#00ff7f';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText(`TIER: ${d.rank_tier}`, 20, 125);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '16px sans-serif';
-    ctx.fillText(`Daily XP Gained: +${d.daily_xp} XP`, 20, 165);
-
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '12px sans-serif';
-    ctx.fillText('⚡ Real-time Esports HUD Matrix • Tournyx India', 20, 215);
-
-    requestAnimationFrame(_renderPiPFrame);
-  }
-
-  // ─── 6. SCREEN SCANNER / NEURAL LINK ───────────────────────────────────────
-  async function startScreenScan() {
-    closeVisionModal();
-    if (window.TournyxEngine && typeof window.TournyxEngine.startVisionScreenCapture === 'function') {
-      window.TournyxEngine.startVisionScreenCapture();
-    }
+    setTimeout(() => {
+      overlay.remove();
+    }, 4500);
   }
 
   // ─── PUBLIC API ────────────────────────────────────────────────────────────
   return {
     init,
-    openVisionModal,
-    closeVisionModal,
-    openScreenshotScanner,
-    downloadAppPrompt,
-    updateBubble,
-    togglePictureInPicture,
-    startScreenScan
+    toggleMenu,
+    togglePause,
+    stopVision,
+    forceAnalysis,
+    prepareTaskForDetection
   };
 
 })();
 
 window.TournyxVisionAI = TournyxVisionAI;
-
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    TournyxVisionAI.init();
-  }, 300);
-});
