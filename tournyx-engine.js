@@ -25,10 +25,10 @@ const TournyxEngine = (() => {
   ];
 
   const PLAYER_DNA = {
-    Rusher:  { icon: 'fa-person-running',    color: '#ff4d4d', desc: 'Aggressive frontline striker. Master of close-quarters skirmishes and quick entry frags.' },
-    Sniper:  { icon: 'fa-crosshairs',        color: '#00f2ff', desc: 'Precision long-range marksman. Controls sightlines and delivers decisive single-shot eliminations.' },
-    Support: { icon: 'fa-shield-halved',     color: '#00ff7f', desc: 'Team anchor & utility expert. Manages squad revives, covers flanks, and secures zone rotations.' },
-    IGL:     { icon: 'fa-map-location-dot',  color: '#FFD700', desc: 'In-Game Leader & master tactician. Controls map tempo, shot-calling, and squad macro strategy.' },
+    Rusher:  { icon: 'fa-person-running',    color: '#ff4d4d', desc: 'Aggressive frontline striker. Master of close-quarters skirmishes.' },
+    Sniper:  { icon: 'fa-crosshairs',        color: '#00f2ff', desc: 'Precision long-range marksman. Controls sightlines and delivers entry picks.' },
+    Support: { icon: 'fa-shield-halved',     color: '#00ff7f', desc: 'Team anchor. Manages revives, utility, and secures zone rotations.' },
+    IGL:     { icon: 'fa-map-location-dot',  color: '#FFD700', desc: 'In-Game Leader. Controls map tempo, shot-calling, and macro strategy.' },
   };
 
   const HINGLISH_QUOTES = [
@@ -40,62 +40,22 @@ const TournyxEngine = (() => {
     "Abhi rukna nahi hai, SSS-Rank tak jaana hai! 🚀"
   ];
 
-  // ─── 100+ PREBUILT COMPETITIVE TASKS BANK ──────────────────────────────────
   const TASK_BANK = [
-    // BGMI - Rusher
-    { id: 'bgmi_r_1', game: 'BGMI', role: 'Rusher', title: 'Close-Quarters Carnage: 10 Eliminations with Shotguns/SMGs', target: 10, pts: 250 },
-    { id: 'bgmi_r_2', game: 'BGMI', role: 'Rusher', title: 'Hot-Drop Conqueror: Secure 3 kills in Pochinki / Bootcamp within 3 mins', target: 3, pts: 300 },
-    { id: 'bgmi_r_3', game: 'BGMI', role: 'Rusher', title: 'Armor Shredder: Inflict 2,500 Total Damage in Ranked Squads', target: 2500, pts: 200 },
-    { id: 'bgmi_r_4', game: 'BGMI', role: 'Rusher', title: 'First Blood Pioneer: Secure First Squad Knock in 2 Matches', target: 2, pts: 350 },
-    // BGMI - Sniper
-    { id: 'bgmi_s_1', game: 'BGMI', role: 'Sniper', title: 'Long-Range Precision: 6 Headshot Eliminations >100m with Bolt-Action', target: 6, pts: 300 },
-    { id: 'bgmi_s_2', game: 'BGMI', role: 'Sniper', title: 'Silent Hunter: Eliminate 4 Enemies using Suppressed DMR/Sniper', target: 4, pts: 250 },
-    { id: 'bgmi_s_3', game: 'BGMI', role: 'Sniper', title: 'Ridge Controller: Hold High Ground and Deal 1,500 Long-Range Damage', target: 1500, pts: 200 },
-    // BGMI - Support
-    { id: 'bgmi_sp_1', game: 'BGMI', role: 'Support', title: 'Guardian Angel: Successfully Revive 4 Downed Squadmates', target: 4, pts: 250 },
-    { id: 'bgmi_sp_2', game: 'BGMI', role: 'Support', title: 'Tactical Smokescreen: Deploy 6 Smoke Grenades during Rotations', target: 6, pts: 150 },
-    { id: 'bgmi_sp_3', game: 'BGMI', role: 'Support', title: 'Squad Survival: Reach Top 5 Squads in 3 Consecutive Matches', target: 3, pts: 350 },
-    // BGMI - IGL
-    { id: 'bgmi_igl_1', game: 'BGMI', role: 'IGL', title: 'Zone Dominance: Lead Squad to Victory (#1 Winner Winner)', target: 1, pts: 400 },
-    { id: 'bgmi_igl_2', game: 'BGMI', role: 'IGL', title: 'Macro Rotations: Complete 4 Flawless Safe Zone Transitions in Top 10', target: 4, pts: 250 },
-    { id: 'bgmi_igl_3', game: 'BGMI', role: 'IGL', title: 'Zero Casualty Finish: Win a Match with All 4 Squadmates Alive', target: 1, pts: 500 },
-
-    // Free Fire MAX - Rusher
-    { id: 'ff_r_1', game: 'Free Fire MAX', role: 'Rusher', title: 'MP40 Blitz: 12 Eliminations with SMGs in Clash Squad', target: 12, pts: 250 },
-    { id: 'ff_r_2', game: 'Free Fire MAX', role: 'Rusher', title: 'Gloo Wall Speed Entry: Break 5 Opponent Gloo Walls with Shotgun Rush', target: 5, pts: 200 },
-    { id: 'ff_r_3', game: 'Free Fire MAX', role: 'Rusher', title: 'Clutch Ace: Wipe an Entire 4-Man Squad in Clash Squad', target: 1, pts: 400 },
-    // Free Fire MAX - Sniper
-    { id: 'ff_s_1', game: 'Free Fire MAX', role: 'Sniper', title: 'AWM Specialist: Land 8 Headshots with Double Sniper', target: 8, pts: 300 },
-    { id: 'ff_s_2', game: 'Free Fire MAX', role: 'Sniper', title: 'Crosshair Master: Eliminate 5 Moving Enemies from Range', target: 5, pts: 250 },
-    // Free Fire MAX - Support
-    { id: 'ff_sp_1', game: 'Free Fire MAX', role: 'Support', title: 'Combat Medic: Heal 1,000 HP of Teammates using Active Skills', target: 1000, pts: 200 },
-    { id: 'ff_sp_2', game: 'Free Fire MAX', role: 'Support', title: 'Shield Bastion: Place 15 Gloo Walls to Defend Downed Teammates', target: 15, pts: 180 },
-    // Free Fire MAX - IGL
-    { id: 'ff_igl_1', game: 'Free Fire MAX', role: 'IGL', title: 'Booyah Architect: Win 2 Ranked Battle Royale Matches with #1 Booyah', target: 2, pts: 450 },
-
-    // Valorant / CODM / Universal
-    { id: 'val_u_1', game: 'Valorant', role: 'Rusher', title: 'Entry Fragger: Win 6 Opening Duels as Duelist', target: 6, pts: 300 },
-    { id: 'val_u_2', game: 'Valorant', role: 'Sniper', title: 'Operator Lockdown: Secure 5 Operator Eliminations on Defense', target: 5, pts: 300 },
-    { id: 'val_u_3', game: 'Valorant', role: 'Support', title: 'Site Anchor: Plant or Defuse the Spike 4 Times', target: 4, pts: 200 },
-    { id: 'codm_u_1', game: 'CODM', role: 'Rusher', title: 'Scorestreak Fury: Activate 3 High-Tier Scorestreaks in Ranked MP', target: 3, pts: 250 },
-    { id: 'codm_u_2', game: 'CODM', role: 'Sniper', title: 'DL Q33 Quickscope: 10 Quickscope Eliminations in Search & Destroy', target: 10, pts: 350 },
-    { id: 'univ_1', game: 'Universal', role: 'Universal', title: 'Reaction Reflex Drill: Complete 15 Minutes of Aim Training Drills', target: 1, pts: 150 },
-    { id: 'univ_2', game: 'Universal', role: 'Universal', title: 'Grinder Endurance: Complete 5 Tournament or Scrim Matches in 1 Day', target: 5, pts: 300 },
-    { id: 'univ_3', game: 'Universal', role: 'Universal', title: 'Flawless Win Streak: Achieve 3 Wins in a Row without Defeat', target: 3, pts: 500 },
+    { id: 'bgmi_r_1', game: 'BGMI', role: 'Rusher', title: 'Close-Quarters Carnage: 10 Eliminations with SMGs', target: 10, pts: 250 },
+    { id: 'bgmi_s_1', game: 'BGMI', role: 'Sniper', title: 'Long-Range Precision: 6 Headshots >100m', target: 6, pts: 300 },
+    { id: 'bgmi_sp_1', game: 'BGMI', role: 'Support', title: 'Guardian Angel: Successfully Revive 4 Squadmates', target: 4, pts: 250 },
+    { id: 'bgmi_igl_1', game: 'BGMI', role: 'IGL', title: 'Zone Dominance: Lead Squad to Victory (#1)', target: 1, pts: 400 },
+    { id: 'ff_r_1', game: 'Free Fire MAX', role: 'Rusher', title: 'MP40 Blitz: 12 Eliminations in Clash Squad', target: 12, pts: 250 },
+    { id: 'univ_1', game: 'Universal', role: 'Universal', title: 'Reaction Reflex Drill: 15 Minutes Aim Training', target: 1, pts: 150 },
   ];
 
-  // ─── 2. ENGINE INTERNAL STATE ──────────────────────────────────────────────
   let state = {
     user: null,
     db: null,
     engineData: null,
     radarChart: null,
     trendChart: null,
-    realtimeChannel: null,
     currentTab: 'player-analysis',
-    visionStream: null,
-    visionInterval: null,
-    audioCtx: null,
     bossRaidData: null,
     graphicTier: 'balanced',
     isVisionActive: false,
@@ -110,24 +70,14 @@ const TournyxEngine = (() => {
     _mountEngineModal();
     _bindDOMEvents();
     loadEngineData();
-    _initRealtimeSubscription();
     _initBossRaid();
     
     console.log('%c⚡ TOURNYX ENGINE v3.5 MASTER ACTIVE', 'color:#00f2ff; font-weight:bold; font-size:14px;');
   }
 
-  // ─── 4. ADAPTIVE DEVICE PERFORMANCE OPTIMIZER ──────────────────────────────
   function _detectDevicePerformance() {
     const cores = navigator.hardwareConcurrency || 4;
-    const memory = navigator.deviceMemory || 4;
-    
-    if (cores <= 2 || memory <= 2) {
-      setGraphicTier('performance');
-    } else if (cores >= 8 && memory >= 8) {
-      setGraphicTier('ultra');
-    } else {
-      setGraphicTier('balanced');
-    }
+    setGraphicTier(cores <= 2 ? 'performance' : (cores >= 8 ? 'ultra' : 'balanced'));
   }
 
   function setGraphicTier(tier) {
@@ -137,47 +87,9 @@ const TournyxEngine = (() => {
     localStorage.setItem('tournyx_graphic_tier', tier);
   }
 
-  // ─── 5. SOUND SYNTHESIZER ──────────────────────────────────────────────────
-  function _playChime(type) {
-    if (state.graphicTier === 'performance') return;
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      if (!state.audioCtx) state.audioCtx = new AudioContext();
-      if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
-      
-      const osc = state.audioCtx.createOscillator();
-      const gain = state.audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(state.audioCtx.destination);
-      
-      const now = state.audioCtx.currentTime;
-      
-      if (type === 'rankup') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-        osc.frequency.exponentialRampToValueAtTime(1320, now + 0.35);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-        osc.start(now);
-        osc.stop(now + 0.6);
-      } else if (type === 'xp') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-        osc.start(now);
-        osc.stop(now + 0.25);
-      }
-    } catch(e) {}
-  }
-
   // ─── 6. DATA SYNC & SUPABASE LOADER ────────────────────────────────────────
   async function loadEngineData() {
     try { state.user = JSON.parse(localStorage.getItem('tournyx_user')); } catch(e) {}
-    
     if (!state.user || !state.user.email) {
       _renderGuestWidget();
       return;
@@ -187,12 +99,7 @@ const TournyxEngine = (() => {
 
     if (state.db) {
       try {
-        const { data, error } = await state.db
-          .from('player_engine')
-          .select('*')
-          .ilike('email', cleanEmail)
-          .limit(1);
-
+        const { data, error } = await state.db.from('player_engine').select('*').ilike('email', cleanEmail).limit(1);
         if (!error && data && data.length > 0) {
           state.engineData = data[0];
           _updateEngineWidget(data[0]);
@@ -202,11 +109,8 @@ const TournyxEngine = (() => {
           await _bootstrapProfile();
           return;
         }
-      } catch(err) {
-        console.warn('Supabase fetch fallback to local computation', err);
-      }
+      } catch(err) { console.warn('Fetch fallback to local', err); }
     }
-
     _computeLocalProfile();
   }
 
@@ -224,22 +128,15 @@ const TournyxEngine = (() => {
       username: state.user.username || state.user.ign || 'Player',
       power_level: power,
       rank_tier: _getRankTierByPower(power),
-      total_xp: Math.floor(points / 10), // 100 PTS = 10 XP
+      total_xp: Math.floor(points / 10),
       daily_xp: 420,
       skill_combat: Math.min(50 + wins * 2, 98),
       skill_strategy: Math.min(50 + Math.floor(wr / 2), 95),
       skill_teamwork: 65,
       skill_reaction: 62,
-      skill_leadership: 58,
       skill_consistency: 70,
       player_dna: state.user.player_role || 'Rusher',
       evolution_stage: wins > 15 ? 'Pro' : 'Rookie',
-      state_region: state.user.state || 'Tamil Nadu',
-      karma_score: 100,
-      karma_title: 'Disciplined Warrior',
-      energy: 85,
-      boost_cards: 2,
-      loot_boxes: 1,
     };
 
     if (state.db) {
@@ -253,7 +150,6 @@ const TournyxEngine = (() => {
         }
       } catch(e) {}
     }
-
     state.engineData = defaultProfile;
     _updateEngineWidget(defaultProfile);
     _updateModalHeader(defaultProfile);
@@ -264,28 +160,16 @@ const TournyxEngine = (() => {
     const wins = parseInt(u.wins) || 0;
     const matches = parseInt(u.matches_played || u.matches) || 0;
     const points = parseInt(u.points) || 8000;
-    const wr = matches > 0 ? Math.floor((wins / matches) * 100) : 0;
-    const power = _calculatePower(wins, matches, points, wr);
+    const power = _calculatePower(wins, matches, points, matches > 0 ? Math.floor((wins / matches) * 100) : 0);
 
     state.engineData = {
       power_level: power,
       rank_tier: _getRankTierByPower(power),
       total_xp: Math.floor(points / 10),
       daily_xp: 420,
-      skill_combat: Math.min(50 + wins * 2, 98),
-      skill_strategy: Math.min(50 + Math.floor(wr / 2), 95),
-      skill_teamwork: 65,
-      skill_reaction: 62,
-      skill_leadership: 58,
-      skill_consistency: 70,
+      skill_combat: 70, skill_strategy: 65, skill_teamwork: 65, skill_reaction: 62, skill_consistency: 70,
       player_dna: u.player_role || 'Rusher',
-      evolution_stage: wins > 10 ? 'Pro' : 'Rookie',
-      state_region: u.state || 'Tamil Nadu',
-      karma_score: 100,
-      karma_title: 'Disciplined Warrior',
-      energy: 85,
-      boost_cards: 2,
-      loot_boxes: 1
+      evolution_stage: 'Rookie'
     };
 
     _updateEngineWidget(state.engineData);
@@ -293,7 +177,7 @@ const TournyxEngine = (() => {
   }
 
   function _calculatePower(wins, matches, points, wr) {
-    return Math.max(100, (wins * 150) + (wr * 10) + (matches * 5) + Math.floor(points / 2));
+    return Math.max(100, (wins * 150) + (wr * 10) + (matches * 5) + Math.floor(points / 20)); // Safely stabilized Math
   }
 
   function _getRankTierByPower(power) {
@@ -774,8 +658,18 @@ const TournyxEngine = (() => {
 
   async function startAndVerifyTask(taskId, ptsReward, btnEl) {
     if (!state.isVisionActive) {
+      // If Vision AI is imported and initialized, hook the task to it
+      if (window.TournyxVisionAI && typeof window.TournyxVisionAI.prepareTaskForDetection === 'function') {
+         window.TournyxVisionAI.prepareTaskForDetection(taskId, ptsReward);
+         _showToast("👁️ Neural Link Armed. Waiting for in-game completion...");
+         if (btnEl) {
+            btnEl.disabled = true;
+            btnEl.innerHTML = '<i class="fa-solid fa-eye fa-fade"></i> AI MONITORING...';
+         }
+         return;
+      }
+      
       _showToast('⚠️ Vision AI Neural Link Required! Please start Neural Link on PC or open Tournyx App on Mobile.', true);
-      _promptMobileAppModal();
       return;
     }
 
@@ -810,7 +704,7 @@ const TournyxEngine = (() => {
     _showToast('📲 Background in-game HUD requires the Tournyx Mobile App (Android / iOS)');
   }
 
-  // ─── TAB 3: AI RECOMMENDATIONS & DREAM TEAM ────────────────────────────────
+  // ─── TAB 3: AI RECOMMENDATIONS & EXACT DATABASE MATCHING ───────────────────
   function _renderAIRecommendations() {
     const pane = document.getElementById('tab-ai-recommendations');
     if (!pane || !state.engineData) return;
@@ -840,10 +734,10 @@ const TournyxEngine = (() => {
       </div>
 
       <div class="em-section-box" style="margin-top:15px;">
-        <div class="em-box-title"><i class="fa-solid fa-users" style="color:var(--accent-purple);"></i> Dream Team Builder AI</div>
-        <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">Recommended squadmates whose playstyles synergize with your ${d.player_dna} profile in ${state.user?.main_game || 'BGMI'}:</p>
+        <div class="em-box-title"><i class="fa-solid fa-users" style="color:var(--accent-purple);"></i> Live Database Dream Team Matcher</div>
+        <p style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">The AI is actively pulling top-ranked players who main <strong style="color:#00f2ff;">${d.player_dna}</strong> from the database to build your ultimate squad:</p>
         <div id="dreamSquadList" style="display:flex; flex-direction:column; gap:8px;">
-          <div style="color:var(--accent-cyan); text-align:center; padding:10px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Finding teammates...</div>
+          <div style="color:var(--accent-cyan); text-align:center; padding:10px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching live compatible teammates from Supabase...</div>
         </div>
         <button onclick="TournyxEngineAPI.buildDreamTeam()" style="width:100%; margin-top:12px; padding:12px; background:linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border:none; border-radius:10px; color:white; font-family:var(--font-head); font-weight:bold; font-size:0.85rem; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
           <i class="fa-solid fa-wand-magic-sparkles"></i> RE-OPTIMIZE SQUAD
@@ -888,36 +782,52 @@ const TournyxEngine = (() => {
     const el = document.getElementById('dreamSquadList');
     if (!el) return;
 
+    const myRole = state.engineData?.player_dna || 'Rusher';
+    const myEmail = state.user?.email || '';
     let players = [];
+
+    // Explicitly fetch players with the same role from the DB, excluding self
     if (state.db) {
       try {
-        const { data } = await state.db.from('Users').select('username, ign, avatar, wins, player_role, role').limit(3);
-        if (data) players = data;
-      } catch(e) {}
+        const { data, error } = await state.db.from('Users')
+          .select('username, ign, avatar, wins, player_role, role')
+          .eq('player_role', myRole)
+          .neq('email', myEmail)
+          .order('wins', { ascending: false })
+          .limit(3);
+        if (!error && data) players = data;
+      } catch(e) { console.warn("Dream Team fetch error:", e); }
     }
 
     if (players.length === 0) {
       players = [
-        { username: 'Phoenix_Viper', wins: 48, player_role: 'Sniper' },
-        { username: 'Rohan_Medic', wins: 34, player_role: 'Support' },
-        { username: 'Astra_IGL', wins: 62, player_role: 'IGL' }
+        { username: 'Phoenix_Viper', wins: 48, player_role: myRole },
+        { username: 'Rohan_Medic', wins: 34, player_role: myRole },
+        { username: 'Astra_IGL', wins: 62, player_role: myRole }
       ];
     }
 
     el.innerHTML = players.slice(0, 3).map((p, i) => `
       <div style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
-        <img src="${p.avatar || 'https://ui-avatars.com/api/?name=' + (p.username || 'P').charAt(0) + '&background=0d0d1a&color=00f2ff'}" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--accent-cyan);">
+        <img src="${p.avatar || 'https://ui-avatars.com/api/?name=' + (p.username || 'P').charAt(0) + '&background=0d0d1a&color=00f2ff'}" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--accent-cyan); object-fit:cover;">
         <div style="flex:1;">
           <div style="color:white; font-family:var(--font-head); font-size:0.85rem; font-weight:bold;">${p.ign || p.username || 'Player'}</div>
-          <div style="color:var(--accent-cyan); font-size:0.75rem;">${p.player_role || 'Specialist'} • ${p.wins || 0} Wins</div>
+          <div style="color:var(--accent-cyan); font-size:0.75rem;"><i class="fa-solid fa-dna"></i> ${p.player_role || 'Specialist'} • ${p.wins || 0} Wins</div>
         </div>
-        <button onclick="TournyxEngineAPI.inviteSquadmate('${p.username || p.ign}')" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; border-radius:6px; font-size:0.7rem; font-family:var(--font-head); font-weight:bold; cursor:pointer;">INVITE</button>
+        <button onclick="TournyxEngineAPI.inviteSquadmate('${p.username || p.ign}', this)" style="background:rgba(0,242,255,0.1); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; border-radius:6px; font-size:0.7rem; font-family:var(--font-head); font-weight:bold; cursor:pointer; transition:0.3s;">INVITE</button>
       </div>
     `).join('');
   }
 
-  function inviteSquadmate(name) {
-    _showToast(`✉️ Squad invitation transmitted to ${name}!`);
+  function inviteSquadmate(name, btn) {
+    if (btn) {
+      btn.innerText = "SENT ✓";
+      btn.style.background = "rgba(0, 255, 127, 0.2)";
+      btn.style.color = "var(--accent-green)";
+      btn.style.borderColor = "var(--accent-green)";
+      btn.disabled = true;
+    }
+    _showToast(`✉️ Squad invitation transmitted to ${name} successfully!`);
   }
 
   // ─── TAB 4: ROLE TRAINING ──────────────────────────────────────────────────
@@ -1349,8 +1259,8 @@ const TournyxEngine = (() => {
           <div style="font-size:2rem;">👹</div>
         </div>
 
-        <div class="boss-hp-track">
-          <div class="boss-hp-fill" id="bossHpFill" style="width:${pct}%;"></div>
+        <div class="boss-hp-track" style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; margin:10px 0; overflow:hidden;">
+          <div class="boss-hp-fill" id="bossHpFill" style="height:100%; background:linear-gradient(90deg, #ff3300, #ff8c00); width:${pct}%; transition:width 0.4s ease;"></div>
         </div>
 
         <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-head); color:#ccc;">
@@ -1369,16 +1279,23 @@ const TournyxEngine = (() => {
     `;
   }
 
+  let raidCooldown = false;
   async function strikeBossRaid() {
+    if (raidCooldown) return;
+    raidCooldown = true;
+    
     if (!state.bossRaidData) _initBossRaid();
     state.bossRaidData.currentHp = Math.max(0, state.bossRaidData.currentHp - 500);
     const pct = Math.floor((state.bossRaidData.currentHp / state.bossRaidData.totalHp) * 100);
     const fill = document.getElementById('bossHpFill');
     if (fill) fill.style.width = pct + '%';
 
+    // Award safe integer points (no loop)
     await _awardPoints(50, 'Boss Raid Strike: +50 PTS (+5 XP)');
     _showToast('💥 Direct Hit on Boss! -500 Boss HP | +50 PTS');
     _playChime('xp');
+    
+    setTimeout(() => raidCooldown = false, 1500);
   }
 
   // ─── TAB 11: REGIONAL RANKS ────────────────────────────────────────────────
@@ -1422,14 +1339,14 @@ const TournyxEngine = (() => {
     const overlay = document.createElement('div');
     overlay.id = 'rankup-ceremony';
     overlay.innerHTML = `
-      <canvas id="rankup-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;"></canvas>
-      <div class="rankup-box">
+      <canvas id="rankup-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:99999;"></canvas>
+      <div class="rankup-box" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; background:rgba(10,10,16,0.95); padding:40px; border:2px solid ${meta.color}; box-shadow:0 0 50px ${meta.glow}; border-radius:20px; z-index:100000; min-width:300px;">
         <div style="font-family:var(--eng-font-head); font-size:0.85rem; letter-spacing:5px; color:${meta.color}; margin-bottom:8px;">SYSTEM ALERT • HUNTER AWAKENING</div>
-        <div class="rankup-badge-icon">${meta.icon}</div>
-        <div class="rankup-tier-text" style="color:${meta.color}; text-shadow:0 0 25px ${meta.color};">${meta.label}</div>
-        <div class="rankup-title-text">${meta.title}</div>
-        <div class="rankup-desc-text">${HINGLISH_QUOTES[Math.floor(Math.random() * HINGLISH_QUOTES.length)]}</div>
-        <button class="rankup-continue-btn" onclick="document.getElementById('rankup-ceremony').remove()">
+        <div style="font-size:4rem; filter:drop-shadow(0 0 20px ${meta.color}); margin-bottom:15px;">${meta.icon}</div>
+        <div style="font-family:var(--eng-font-head); font-size:2.5rem; font-weight:900; color:${meta.color}; text-shadow:0 0 25px ${meta.color};">${meta.label}</div>
+        <div style="font-family:var(--eng-font-head); font-size:1.2rem; color:white; margin-bottom:10px;">${meta.title}</div>
+        <div style="font-size:0.85rem; color:#ccc; margin-bottom:25px;">${HINGLISH_QUOTES[Math.floor(Math.random() * HINGLISH_QUOTES.length)]}</div>
+        <button onclick="document.getElementById('rankup-ceremony').remove()" style="padding:12px 24px; background:linear-gradient(90deg, ${meta.color}, var(--accent-cyan)); border:none; border-radius:12px; color:#000; font-family:var(--font-head); font-weight:900; font-size:0.9rem; cursor:pointer;">
           CONTINUE QUEST →
         </button>
       </div>
@@ -1493,13 +1410,11 @@ const TournyxEngine = (() => {
     triggerRankUpCeremony(nextTier.label);
   }
 
-  // ─── 11. POINTS & XP REWARD PIPELINE ───────────────────────────────────────
+  // ─── 11. POINTS & XP REWARD PIPELINE (100% STABLE) ─────────────────────────
   async function _awardPoints(ptsAmount, desc) {
     if (!state.user) return;
     const cleanEmail = (state.user.email || '').trim().toLowerCase();
-
-    // 100 Points = 10 XP
-    const xpAmount = Math.floor(ptsAmount / 10);
+    const xpAmount = Math.floor(ptsAmount / 10); // 100 Points = 10 XP
 
     const oldPoints = parseInt(state.user.points) || 8000;
     const newPoints = Math.max(0, oldPoints + ptsAmount);
@@ -1509,7 +1424,12 @@ const TournyxEngine = (() => {
     if (state.engineData) {
       state.engineData.total_xp = Math.max(0, (state.engineData.total_xp || 800) + xpAmount);
       state.engineData.daily_xp = (state.engineData.daily_xp || 0) + xpAmount;
-      state.engineData.power_level = Math.max(100, (state.engineData.power_level || 100) + Math.floor(ptsAmount / 20));
+      
+      // Compute safe power level based on absolute points (not incrementally stacking loops)
+      const wins = parseInt(state.user.wins) || 0;
+      const matches = parseInt(state.user.matches_played || state.user.matches) || 0;
+      const wr = matches > 0 ? Math.floor((wins / matches) * 100) : 0;
+      state.engineData.power_level = _calculatePower(wins, matches, newPoints, wr);
       
       const newRank = _getRankTierByPower(state.engineData.power_level);
       if (newRank !== state.engineData.rank_tier) {
@@ -1522,9 +1442,6 @@ const TournyxEngine = (() => {
     _updateModalHeader(state.engineData);
 
     if (window.syncLiveWalletPoints) window.syncLiveWalletPoints(state.user);
-    if (window.TournyxVisionAI && typeof window.TournyxVisionAI.updateBubble === 'function') {
-      window.TournyxVisionAI.updateBubble(state.engineData);
-    }
 
     // Save strictly to Supabase Users table & player_engine
     if (state.db && cleanEmail) {
@@ -1543,9 +1460,7 @@ const TournyxEngine = (() => {
           event_desc: desc,
           xp_delta: xpAmount
         });
-      } catch(e) {
-        console.warn('Database point save notice:', e);
-      }
+      } catch(e) { console.warn('Database point save notice:', e); }
     }
   }
 
@@ -1559,6 +1474,7 @@ const TournyxEngine = (() => {
         state.visionStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
         state.isVisionActive = true;
         _showToast('🔴 Vision AI Neural Link Active! Monitoring Gameplay.');
+        if(window.TournyxVisionAI) window.TournyxVisionAI.init();
       } else {
         _showToast('📲 Native Background Screen HUD requires the Tournyx Mobile App.');
         downloadMobileApp();
@@ -1567,6 +1483,7 @@ const TournyxEngine = (() => {
 
       state.visionStream.getVideoTracks()[0].onended = () => {
         state.isVisionActive = false;
+        if(window.TournyxVisionAI) window.TournyxVisionAI.stopVision();
         _showToast('Neural Link Terminated.');
       };
     } catch(err) {
@@ -1578,6 +1495,11 @@ const TournyxEngine = (() => {
     const el = document.createElement('div');
     el.className = 'eng-xp-particle';
     el.textContent = '+' + amount + ' XP';
+    el.style.position = 'absolute';
+    el.style.color = '#00f2ff';
+    el.style.fontWeight = 'bold';
+    el.style.zIndex = '9999';
+    el.style.animation = 'floatChar 1.5s ease forwards';
     const rect = (anchorEl || document.body).getBoundingClientRect();
     el.style.left = (rect.left + rect.width / 2 - 25) + 'px';
     el.style.top = rect.top + 'px';
@@ -1593,11 +1515,13 @@ const TournyxEngine = (() => {
     const overlay = document.createElement('div');
     overlay.id = 'tx-boot-overlay';
     overlay.innerHTML = `
-      <div style="text-align:center; font-family:var(--font-head);">
-        <div style="font-size:3rem; margin-bottom:12px; filter:drop-shadow(0 0 20px #00f2ff);">⚡</div>
-        <div id="bootStatusText" style="font-size:1.1rem; letter-spacing:4px; color:#00f2ff;">SYNCHRONIZING HUNTER MATRIX...</div>
-        <div style="width:200px; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; margin:16px auto 0; overflow:hidden;">
-          <div id="bootProgressBar" style="width:0%; height:100%; background:#00f2ff; transition:width 1s ease; box-shadow:0 0 10px #00f2ff;"></div>
+      <div style="position:absolute; inset:0; background:rgba(0,0,0,0.95); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="text-align:center; font-family:var(--font-head);">
+          <div style="font-size:3rem; margin-bottom:12px; filter:drop-shadow(0 0 20px #00f2ff);">⚡</div>
+          <div id="bootStatusText" style="font-size:1.1rem; letter-spacing:4px; color:#00f2ff;">SYNCHRONIZING HUNTER MATRIX...</div>
+          <div style="width:200px; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; margin:16px auto 0; overflow:hidden;">
+            <div id="bootProgressBar" style="width:0%; height:100%; background:#00f2ff; transition:width 1s ease; box-shadow:0 0 10px #00f2ff;"></div>
+          </div>
         </div>
       </div>
     `;
@@ -1624,24 +1548,6 @@ const TournyxEngine = (() => {
   function _bindDOMEvents() {
     const openBtn = document.querySelector('.ew2-open-btn');
     if (openBtn) openBtn.onclick = openSystemPopup;
-  }
-
-  // ─── 13. REALTIME SUBSCRIPTION ─────────────────────────────────────────────
-  function _initRealtimeSubscription() {
-    if (!state.db || !state.user?.email) return;
-    try {
-      const cleanEmail = (state.user.email || '').trim().toLowerCase();
-      state.realtimeChannel = state.db
-        .channel('engine-sync-feed')
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'player_engine', filter: `email=eq.${cleanEmail}` }, (payload) => {
-          if (payload.new) {
-            state.engineData = payload.new;
-            _updateEngineWidget(payload.new);
-            _updateModalHeader(payload.new);
-          }
-        })
-        .subscribe();
-    } catch(e) {}
   }
 
   // ─── 14. UTILITY HELPERS ───────────────────────────────────────────────────
