@@ -79,7 +79,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         *::-webkit-scrollbar { display: none !important; }
         
-        /* FIXED BODY LAYOUT: Removes the huge gap by enforcing block rendering */
         body { 
             background: var(--bg-void);
             color: #ffffff; 
@@ -87,7 +86,7 @@
             overflow-x: hidden; 
             width: 100vw; 
             min-height: 100vh; 
-            display: block; /* Overrides any previous flex-centering */
+            display: block; 
             padding-bottom: 50px; 
             padding-top: calc(100px + env(safe-area-inset-top)); 
         }
@@ -129,9 +128,7 @@
             display: block;
         }
         
-        /* =========================================================
-           HEADER (GLASSMORPHISM)
-           ========================================================= */
+        /* HEADER (GLASSMORPHISM) */
         .top-header { 
             position: fixed; top: 0; left: 0; width: 100%; 
             padding: calc(15px + env(safe-area-inset-top)) 24px 15px; 
@@ -162,9 +159,7 @@
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: blink 1.6s infinite alternate; }
         @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* =========================================================
-           INTRO BANNER
-           ========================================================= */
+        /* INTRO BANNER */
         .intro-banner { text-align: center; margin-bottom: 40px; animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
         .intro-badge {
             display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.08);
@@ -180,9 +175,7 @@
         }
         .intro-banner p { font-size: 1.1rem; color: #b7b0d3; max-width: 720px; margin: 0 auto; line-height: 1.7; font-weight: 600; }
 
-        /* =========================================================
-           HIGHLIGHTED MAIN OFFICE CARD (GLASS)
-           ========================================================= */
+        /* HIGHLIGHTED MAIN OFFICE CARD (GLASS) */
         .main-office-card { 
             background: var(--glass-bg); 
             border: 1px solid var(--glass-border); 
@@ -210,15 +203,9 @@
             max-width: 480px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 8px 30px rgba(0,242,255,0.4); border: none; padding: 16px; font-size: 1rem;
         }
 
-        /* =========================================================
-           GRID SYSTEM & CATEGORIES
-           ========================================================= */
+        /* GRID SYSTEM & CATEGORIES */
         .officer-category { width: 100%; margin-bottom: 60px; }
-        .officer-grid { 
-            display: grid; grid-template-columns: 1fr; gap: 35px; 
-            perspective: 1200px;
-        }
-        /* Perfect uniform grid scaling */
+        .officer-grid { display: grid; grid-template-columns: 1fr; gap: 35px; perspective: 1200px; }
         @media (min-width: 800px) { .officer-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1100px) { 
             #gridCLevel { grid-template-columns: repeat(2, 1fr); }
@@ -227,16 +214,14 @@
         
         .section-divider { 
             display: flex; align-items: center; text-align: center; margin: 50px 0 35px; color: #9c91c7; 
-            font-family: var(--font-head); font-size: 1.3rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; 
+            font-family: var(--font-head); font-size: clamp(1.1rem, 4vw, 1.3rem); font-weight: 900; letter-spacing: 4px; text-transform: uppercase; 
             text-shadow: 0 0 15px rgba(189, 0, 255, 0.4);
         }
         .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.2); }
         .section-divider::before { margin-right: 25px; }
         .section-divider::after { margin-left: 25px; }
 
-        /* =========================================================
-           ULTIMATE GLASSMORPHISM OFFICER CARDS (1:1 IMAGE + UNIFORM HEIGHT)
-           ========================================================= */
+        /* ULTIMATE GLASSMORPHISM OFFICER CARDS */
         .officer-card { 
             background: var(--glass-bg); 
             border: 1px solid var(--glass-border); 
@@ -249,7 +234,7 @@
             position: relative; overflow: hidden; display: flex; flex-direction: column;
             will-change: transform; transform-style: preserve-3d;
             animation: fadeInUp 0.6s ease backwards;
-            height: 100%; /* Forces all cards in a row to be the exact same height */
+            height: 100%;
         }
 
         .officer-card::after {
@@ -261,37 +246,26 @@
         /* 1:1 PERFECT SQUARE PROFILE IMAGE */
         .card-profile-header {
             width: 100%;
-            aspect-ratio: 1 / 1; /* FORCES PERFECT SQUARE */
+            aspect-ratio: 1 / 1;
             position: relative;
             overflow: hidden;
             border-bottom: 1px solid rgba(255,255,255,0.15);
             background: #000;
         }
         .card-profile-header img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Fills the square flawlessly */
-            object-position: top center; /* Keeps faces in frame */
+            width: 100%; height: 100%; object-fit: cover; object-position: top center;
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .officer-card:hover .card-profile-header img {
-            transform: scale(1.08);
-        }
+        .officer-card:hover .card-profile-header img { transform: scale(1.08); }
         
-        /* Deep Shadow Overlay for Text Legibility */
         .profile-overlay {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 65%;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 65%;
             background: linear-gradient(to top, rgba(5,2,10,1) 0%, rgba(5,2,10,0.8) 30%, transparent 100%);
             z-index: 2;
         }
 
-        /* Name & Title Overlay */
         .profile-titles {
-            position: absolute;
-            bottom: 20px; left: 24px; right: 24px;
-            z-index: 3;
-            transform: translateZ(30px);
+            position: absolute; bottom: 20px; left: 24px; right: 24px; z-index: 3; transform: translateZ(30px);
         }
         .name { 
             font-family: var(--font-head); font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 900; 
@@ -299,29 +273,17 @@
             text-shadow: 0 5px 15px rgba(0,0,0,0.9);
         }
         .role-tag { 
-            display: inline-block;
-            font-size: 0.8rem; font-weight: 800; text-transform: uppercase; 
-            padding: 6px 16px; border-radius: 30px;
-            background: rgba(0,0,0,0.7); border: 1px solid;
-            backdrop-filter: blur(12px);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-            letter-spacing: 1px;
+            display: inline-block; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; 
+            padding: 6px 16px; border-radius: 30px; background: rgba(0,0,0,0.7); border: 1px solid;
+            backdrop-filter: blur(12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6); letter-spacing: 1px;
         }
 
-        /* Card Content Area - Flex Grow pushes bottom elements down */
         .card-content {
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1; /* Magic rule for uniform card heights */
-            z-index: 3;
-            transform: translateZ(20px);
+            padding: 24px; display: flex; flex-direction: column; flex-grow: 1; z-index: 3; transform: translateZ(20px);
         }
 
-        .role-brief { 
-            font-size: 0.95rem; color: #ded9f0; line-height: 1.6; margin-bottom: 20px; font-weight: 500; 
-        }
+        .role-brief { font-size: 0.95rem; color: #ded9f0; line-height: 1.6; margin-bottom: 20px; font-weight: 500; }
         
         .responsibilities { list-style: none; margin-bottom: 24px; padding-left: 2px; flex-grow: 1; }
         .responsibilities li { font-size: 0.9rem; color: #cbc4e6; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px; font-weight: 600; line-height: 1.5; }
@@ -329,16 +291,9 @@
 
         /* Bottom Contact & Socials Row */
         .contact-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            margin-top: auto; /* Pins to bottom of the content area */
+            display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 12px 16px;
+            margin-bottom: 20px; transition: all 0.3s ease; margin-top: auto;
         }
         .contact-row:hover { background: rgba(0,0,0,0.7); border-color: rgba(255,255,255,0.25); }
         
@@ -350,11 +305,9 @@
 
         .social-icons { display: flex; gap: 10px; flex-shrink: 0; }
         .social-btn {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
             color: #fff; font-size: 1rem; text-decoration: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.15);
-            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(5px);
         }
 
         .contact-btn { 
@@ -362,9 +315,7 @@
         }
         .contact-btn:hover { filter: brightness(1.25); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* =========================================================
-           DYNAMIC THEMES (Applied via JS class)
-           ========================================================= */
+        /* DYNAMIC THEMES */
         .theme-ceo:hover { border-color: var(--accent-gold); box-shadow: 0 20px 50px rgba(255,215,0,0.25); }
         .theme-ceo .role-tag { border-color: var(--accent-gold); color: var(--accent-gold); }
         .theme-ceo .responsibilities li i, .theme-ceo .copy-icon:hover { color: var(--accent-gold); }
@@ -414,65 +365,44 @@
         .theme-media .social-btn:hover { background: var(--accent-crimson); color: #fff; border-color: var(--accent-crimson); box-shadow: 0 0 20px rgba(255,0,85,0.6); transform: scale(1.15);}
 
         /* =========================================================
-           ATTRACTIVE CYBER DATA FETCH LOADER
+           MOBILE OPTIMIZATIONS (Perfect Scaling)
            ========================================================= */
-        #loader-overlay {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 80px 0; gap: 24px;
+        @media (max-width: 600px) {
+            .name { font-size: 1.25rem !important; }
+            .role-tag { font-size: 0.65rem !important; padding: 4px 10px !important; }
+            .role-brief { font-size: 0.85rem !important; margin-bottom: 12px !important; line-height: 1.4 !important; }
+            .responsibilities li { font-size: 0.8rem !important; margin-bottom: 8px !important; }
+            .contact-btn { padding: 12px !important; font-size: 0.8rem !important; }
+            .card-content { padding: 16px !important; }
+            .contact-row { padding: 10px 12px !important; margin-bottom: 15px !important; }
+            .social-btn { width: 32px !important; height: 32px !important; font-size: 0.9rem !important; }
+            .main-office-card { padding: 30px 20px !important; }
+            .intro-banner h1 { font-size: 1.8rem !important; }
+            .email-text { font-size: 0.8rem !important; }
         }
-        .loader-ring {
-            width: 70px; height: 70px;
-            border: 5px solid rgba(0, 242, 255, 0.1);
-            border-top: 5px solid var(--accent-cyan);
-            border-left: 5px solid var(--accent-purple);
-            border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-            box-shadow: 0 0 20px rgba(0,242,255,0.3);
-        }
-        .loader-text {
-            font-family: var(--font-head); font-size: 1.2rem; color: var(--accent-cyan);
-            letter-spacing: 3px; text-transform: uppercase; animation: pulseText 1.5s infinite alternate;
-        }
+
+        /* DATA FETCH LOADER */
+        #loader-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; gap: 24px; }
+        .loader-ring { width: 70px; height: 70px; border: 5px solid rgba(0, 242, 255, 0.1); border-top: 5px solid var(--accent-cyan); border-left: 5px solid var(--accent-purple); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; box-shadow: 0 0 20px rgba(0,242,255,0.3); }
+        .loader-text { font-family: var(--font-head); font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 3px; text-transform: uppercase; animation: pulseText 1.5s infinite alternate; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 15px var(--accent-cyan); } }
 
         /* TOAST NOTIFICATION */
-        #toast { 
-            position: fixed; top: 100px; right: 20px; background: rgba(10,5,24,0.96); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); 
-            color: white; padding: 16px 26px; border-radius: 16px; font-family: var(--font-head); font-weight: 800; 
-            transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            z-index: 9999; box-shadow: 0 10px 40px rgba(0,242,255,0.5); text-transform: uppercase; 
-            display: flex; align-items: center; gap: 14px; font-size: 0.95rem;
-        }
+        #toast { position: fixed; top: 100px; right: 20px; background: rgba(10,5,24,0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 16px 26px; border-radius: 16px; font-family: var(--font-head); font-weight: 800; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 10px 40px rgba(0,242,255,0.5); text-transform: uppercase; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; }
         #toast.show { transform: translateX(0); }
 
-        /* BRAND FOOTER CREDITS */
-        .brand-footer { 
-            text-align: center; margin-top: 70px; padding-top: 35px; border-top: 1px solid rgba(255,255,255,0.1);
-            user-select: none; font-size: 0.9rem; color: #9c91c7; font-weight: 600; letter-spacing: 1.5px;
-            position: relative; z-index: 10; line-height: 1.8;
-        }
-        .brand-footer .footer-tournyx {
-            font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; 
-            margin-bottom: 15px; text-shadow: 0 0 20px rgba(0,242,255,0.5); text-transform: uppercase;
-        }
-        .brand-footer p { margin-bottom: 8px; }
-        .neon-quva-small { 
-            display: inline-block; font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-head); 
-            letter-spacing: 5px; margin-top: 10px; animation: pulsateQuva 2.5s infinite alternate; text-transform: uppercase;
-        }
-        @keyframes pulsateQuva { 
-            0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px var(--accent-cyan); } 
-            100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple), 0 0 30px var(--accent-magenta); } 
-        }
+        /* BRAND FOOTER */
+        .brand-footer { text-align: center; margin-top: 70px; padding-top: 35px; border-top: 1px solid rgba(255,255,255,0.1); user-select: none; font-size: 0.9rem; color: #9c91c7; font-weight: 600; letter-spacing: 1.5px; position: relative; z-index: 10; line-height: 1.8; }
+        .brand-footer .footer-tournyx { font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; margin-bottom: 15px; text-shadow: 0 0 20px rgba(0,242,255,0.5); text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-head); letter-spacing: 5px; margin-top: 10px; animation: pulsateQuva 2.5s infinite alternate; text-transform: uppercase; }
+        @keyframes pulsateQuva { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px var(--accent-cyan); } 100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple), 0 0 30px var(--accent-magenta); } }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- Hyper-Premium Dynamic Background Elements -->
     <div class="page-background"></div>
     <div class="ambient-orb-1"></div>
     <div class="ambient-orb-2"></div>
@@ -482,7 +412,7 @@
         <span id="toastMsg">Email Copied to Clipboard</span>
     </div>
 
-    <!-- STANDALONE TOP HEADER (GLASSMORPHISM) -->
+    <!-- STANDALONE TOP HEADER -->
     <header class="top-header" role="banner">
         <div class="header-brand">
             <img src="https://tournyx.in/favicon.png" class="header-logo" alt="Tournyx Esports" onclick="window.location.href='https://tournyx.in'">
@@ -493,7 +423,6 @@
         </div>
     </header>
 
-    <!-- FIXED VERTICAL GAP BUG: The main container now flows normally as a block -->
     <main class="container" role="main">
         
         <!-- INTRO HERO BANNER -->
@@ -572,17 +501,17 @@
         
         // 1. Fallback Data including Social Media Tags
         const fallbackOfficers = [
-            { name: 'Thilakeshwaran', role_title: 'Founder & Chief Executive Officer (CEO)', hierarchy_level: 'C_LEVEL', email: 'ceo@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTLzlaOmFzIsZyxOhLf3HvvQqZkJRJffYoV0jXlfJsZ1MgAFwL92o0GbQDRGndDc14GgysG9VTWf88gq4LdAvEHVX6AtAOqxVLFNihjy6BrASr_X6nX2ISO4_d6a3Swma6kezceKbq5m7rJVtr7mhRaB82zr7LTnIPdKeouxh-oraZsv_kLOB7TXvtwuc/s1080/1000054934.jpg', theme_class: 'theme-ceo', role_brief: 'Drives the overarching executive vision, venture investments, national esports league alignments, and enterprise growth strategies.', responsibilities: ['Corporate Investments, Major Esports Partnerships', 'Executive Leadership & B2B Infrastructure Integration'], linkedin: '#', twitter: '#', instagram: '#' },
-            { name: 'Chief Technology Officer', role_title: 'Chief Technology Officer (CTO)', hierarchy_level: 'C_LEVEL', email: 'cto@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron', theme_class: 'theme-cto', role_brief: 'Commands the full Tournyx cloud gaming platform architecture, low-latency match server clusters, automated bracket systems, and API pipelines.', responsibilities: ['API Integrations, Platform Bug Reports, and Tech Infra', 'AI & Game Server Development Leadership'], linkedin: '#', twitter: '#', instagram: '#' },
-            { name: 'Shiva Kumar', role_title: 'Chief Operations & Tech Comms Officer (COTCO)', hierarchy_level: 'C_LEVEL', email: 'ops@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Shiva+Kumar&background=ff6b00&color=000&font-family=Orbitron', theme_class: 'theme-cotco', role_brief: 'Supervises daily tournament schedules, match room coordination, instant prize payout distributions, and cross-departmental operations.', responsibilities: ['Esports Event Hosting & Payout Operations', 'Daily Technical Communication & Workflow'], linkedin: '#', twitter: '#', instagram: '#' },
-            { name: 'Surya Prakash A', role_title: 'Chief Cybersecurity & AI Operations Lead', hierarchy_level: 'C_LEVEL', email: 'security@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Surya+Prakash&background=00ff88&color=000&font-family=Orbitron', theme_class: 'theme-cyber', role_brief: 'Protects the ecosystem via automated AI fraud detection, competitive anti-cheat monitoring, and user data privacy defenses.', responsibilities: ['Vulnerability Disclosures & Data Privacy', 'Platform Security & Account Recovery Support'], linkedin: '#', twitter: '#', instagram: '#' },
-            { name: 'Surya S', role_title: 'Director of Community Outreach & Human Relations', hierarchy_level: 'DIRECTOR', email: 'community@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhe8bXN0D0aLqD9LK5U_4PhUgpNjbXxUh1S3a_D8Ghg6WzJDy9U5h0gfshD9F6-zRxlfNdbMdTH-ZJQTPgIuYV_sKpvzNWe4QCskTuZ_3veM0tntoZ4nkPBwbgWIKXhjw4z9eY_5gOv_-bPVlY9Z-Yfj5yseTmLHq1A11nla8gKYtUt4tQiO_9wsxvv6YE/s1280/1000132230.jpg', theme_class: 'theme-community', role_brief: 'Spearheads player community relations, collegiate esports leagues, influencer collaborations, and public community relations.', responsibilities: ['College Esports Networking & Influencer Marketing', 'Community Expansion & Public Relations'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Thilakeshwaran', role_title: 'Founder & Chief Executive Officer (CEO)', hierarchy_level: 'C_LEVEL', email: 'ceo@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTLzlaOmFzIsZyxOhLf3HvvQqZkJRJffYoV0jXlfJsZ1MgAFwL92o0GbQDRGndDc14GgysG9VTWf88gq4LdAvEHVX6AtAOqxVLFNihjy6BrASr_X6nX2ISO4_d6a3Swma6kezceKbq5m7rJVtr7mhRaB82zr7LTnIPdKeouxh-oraZsv_kLOB7TXvtwuc/s1080/1000054934.jpg', theme_class: 'theme-ceo', role_brief: 'Drives the overarching executive vision, venture investments, national esports league alignments, and enterprise growth strategies.', responsibilities: ['Corporate Investments, Major Esports Partnerships', 'Executive Leadership & B2B Infrastructure Integration'], linkedin: '', twitter: '', instagram: '' },
+            { name: 'Chief Technology Officer', role_title: 'Chief Technology Officer (CTO)', hierarchy_level: 'C_LEVEL', email: 'cto@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron', theme_class: 'theme-cto', role_brief: 'Commands the full Tournyx cloud gaming platform architecture, low-latency match server clusters, automated bracket systems, and API pipelines.', responsibilities: ['API Integrations, Platform Bug Reports, and Tech Infra', 'AI & Game Server Development Leadership'], linkedin: '', twitter: '', instagram: '' },
+            { name: 'Shiva Kumar', role_title: 'Chief Operations & Tech Comms Officer (COTCO)', hierarchy_level: 'C_LEVEL', email: 'ops@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Shiva+Kumar&background=ff6b00&color=000&font-family=Orbitron', theme_class: 'theme-cotco', role_brief: 'Supervises daily tournament schedules, match room coordination, instant prize payout distributions, and cross-departmental operations.', responsibilities: ['Esports Event Hosting & Payout Operations', 'Daily Technical Communication & Workflow'], linkedin: '', twitter: '', instagram: '' },
+            { name: 'Surya Prakash A', role_title: 'Chief Cybersecurity & AI Operations Lead', hierarchy_level: 'C_LEVEL', email: 'security@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Surya+Prakash&background=00ff88&color=000&font-family=Orbitron', theme_class: 'theme-cyber', role_brief: 'Protects the ecosystem via automated AI fraud detection, competitive anti-cheat monitoring, and user data privacy defenses.', responsibilities: ['Vulnerability Disclosures & Data Privacy', 'Platform Security & Account Recovery Support'], linkedin: '', twitter: '', instagram: '' },
+            { name: 'Surya S', role_title: 'Director of Community Outreach & Human Relations', hierarchy_level: 'DIRECTOR', email: 'community@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhe8bXN0D0aLqD9LK5U_4PhUgpNjbXxUh1S3a_D8Ghg6WzJDy9U5h0gfshD9F6-zRxlfNdbMdTH-ZJQTPgIuYV_sKpvzNWe4QCskTuZ_3veM0tntoZ4nkPBwbgWIKXhjw4z9eY_5gOv_-bPVlY9Z-Yfj5yseTmLHq1A11nla8gKYtUt4tQiO_9wsxvv6YE/s1280/1000132230.jpg', theme_class: 'theme-community', role_brief: 'Spearheads player community relations, collegiate esports leagues, influencer collaborations, and public community relations.', responsibilities: ['College Esports Networking & Influencer Marketing', 'Community Expansion & Public Relations'], linkedin: '', twitter: '', instagram: '' },
             { name: 'Rajesh Kumar A', role_title: 'Chief Software Development & Training Manager', hierarchy_level: 'MANAGER', email: 'dev@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=bd00ff&color=fff&font-family=Orbitron', theme_class: 'theme-dev', role_brief: 'Heads full-stack codebase maintenance, tournament client feature releases, engineer onboarding, and software developer mentorship.', responsibilities: ['Open Source Contributions & Developer Hiring', 'Full Stack Architecture Guidance'], linkedin: 'https://www.linkedin.com/in/rajesh-kumar-a-9991593a9', twitter: 'https://x.com/RajeshKumaxnlf', instagram: 'https://www.instagram.com/dev.tournyxesports' },
-            { name: 'Tharun Kumar G', role_title: 'HR / Team Operations Manager & Support Supervisor', hierarchy_level: 'MANAGER', email: 'hr@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Tharun+Kumar&background=00f5d4&color=000&font-family=Orbitron', theme_class: 'theme-hr', role_brief: 'Oversees recruitment pipelines, internal esports staff welfare, team performance metrics, and tier-2 player support escalations.', responsibilities: ['Internship Applications, Recruitment & Workflows', 'Player Support Ticket Escalations'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Tharun Kumar G', role_title: 'HR / Team Operations Manager & Support Supervisor', hierarchy_level: 'MANAGER', email: 'hr@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Tharun+Kumar&background=00f5d4&color=000&font-family=Orbitron', theme_class: 'theme-hr', role_brief: 'Oversees recruitment pipelines, internal esports staff welfare, team performance metrics, and tier-2 player support escalations.', responsibilities: ['Internship Applications, Recruitment & Workflows', 'Player Support Ticket Escalations'], linkedin: '', twitter: '', instagram: '' },
             { name: 'Umesh Sharma N', role_title: 'Communications & Media Operations Manager', hierarchy_level: 'MANAGER', email: 'media@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Umesh+Sharma&background=ff0055&color=fff&font-family=Orbitron', theme_class: 'theme-media', role_brief: 'Manages live tournament stream broadcasts, official press announcements, YouTube caster sponsorships, and social media communication.', responsibilities: ['Press Releases, Social Media Assets & Sponsorships', 'Tournament Content Coordination'], linkedin: 'https://www.linkedin.com/in/umesh-sharma-153543417', twitter: 'https://x.com/Umeshsharma9898', instagram: 'https://www.instagram.com/med.tournyxesports' }
         ];
 
-        // Ensure "Chief" titles are automatically routed to C-Level
+        // Automatically push "Chief" roles into the C_LEVEL grid
         function enforceHierarchyLogic(officer) {
             if (officer.role_title.toLowerCase().includes('chief')) {
                 officer.hierarchy_level = 'C_LEVEL';
@@ -598,7 +527,6 @@
                 if (!response.ok) throw new Error("Network Error");
                 const data = await response.json();
                 
-                // Add a slight delay to show off the cool loader
                 setTimeout(() => {
                     renderOfficers(data.length > 0 ? data.map(enforceHierarchyLogic) : fallbackOfficers.map(enforceHierarchyLogic));
                 }, 800);
@@ -610,17 +538,15 @@
             }
         }
 
-        // 2. Full Glassmorphism Card Generation with Perfect Square Image & Socials
         function createCardHTML(officer, index) {
             const respList = (Array.isArray(officer.responsibilities) ? officer.responsibilities : JSON.parse(officer.responsibilities || '[]'))
                 .map(r => `<li><i class="fa-solid fa-diamond"></i> <span>${r}</span></li>`).join('');
 
-            // Dynamic Social Media Buttons Generation
-            const linkedinHTML = officer.linkedin && officer.linkedin !== '#' ? `<a href="${officer.linkedin}" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>` : '';
-            const twitterHTML = officer.twitter && officer.twitter !== '#' ? `<a href="${officer.twitter}" target="_blank" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>` : '';
-            const instaHTML = officer.instagram && officer.instagram !== '#' ? `<a href="${officer.instagram}" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>` : '';
+            // Cleanly inject Social Links only if they exist and aren't empty
+            const linkedinHTML = officer.linkedin && officer.linkedin.length > 5 ? `<a href="${officer.linkedin}" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>` : '';
+            const twitterHTML = officer.twitter && officer.twitter.length > 5 ? `<a href="${officer.twitter}" target="_blank" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>` : '';
+            const instaHTML = officer.instagram && officer.instagram.length > 5 ? `<a href="${officer.instagram}" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>` : '';
 
-            // Staggered loading animation logic
             const animDelay = (index * 0.15) + 's';
 
             return `
@@ -680,7 +606,6 @@
                 }
             });
 
-            // Hide empty categories completely
             if(gridCLevel.innerHTML === '') gridCLevel.parentElement.style.display = 'none';
             if(gridDirector.innerHTML === '') gridDirector.parentElement.style.display = 'none';
             if(gridManager.innerHTML === '') gridManager.parentElement.style.display = 'none';
@@ -692,35 +617,33 @@
 
         window.addEventListener('DOMContentLoaded', fetchOfficers);
 
-        /* ==========================================
-           3. 3D INTERACTIVE TILT ENGINE (GLASS FX)
-           ========================================== */
+        /* 3D INTERACTIVE TILT ENGINE */
         function init3DTilt() {
             const cards = document.querySelectorAll('.officer-card');
             cards.forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -5; // Subtle physical rotation
-                    const rotateY = ((x - centerX) / centerX) * 5;
-                    
-                    card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                    card.style.transition = 'none'; 
-                });
+                // Ensure touch screens don't glitch the tilt
+                if (window.matchMedia("(pointer: fine)").matches) {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -5;
+                        const rotateY = ((x - centerX) / centerX) * 5;
+                        
+                        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                        card.style.transition = 'none'; 
+                    });
 
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-                    card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                });
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                        card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    });
+                }
             });
         }
 
-        /* ==========================================
-           4. UTILITIES (HAPTIC & CLIPBOARD)
-           ========================================== */
         function triggerHaptic() {
             if (navigator.vibrate) navigator.vibrate(30);
         }
