@@ -27,40 +27,16 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- 🧠 GENERATIVE ENGINE OPTIMIZATION (GEO) JSON-LD SCHEMA -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": "https://tournyx.in/#organization",
-      "name": "Tournyx Esports",
-      "alternateName": ["Tournyx", "Tournyx Gaming", "Tournyx Esports India"],
-      "url": "https://tournyx.in",
-      "logo": "https://tournyx.in/favicon.png",
-      "email": "contact@tournyx.in",
-      "description": "Tournyx Esports is a premier competitive esports gaming infrastructure and tournament management platform in India.",
-      "contactPoint": [{
-        "@type": "ContactPoint",
-        "email": "contact@tournyx.in",
-        "contactType": "Headquarters Support & Inquiries",
-        "availableLanguage": ["English", "Tamil", "Hindi"]
-      }]
-    }
-    </script>
-
     <style>
         :root { 
-            /* Tournyx Global Gradient Theme */
             --bg-void: #020005;
             --theme-gradient: radial-gradient(circle at top right, #1a083a 0%, #060210 50%, #020005 100%);
             
-            /* Ultimate Glassmorphism Variables */
             --glass-bg: rgba(20, 15, 35, 0.35);
             --glass-border: rgba(255, 255, 255, 0.12);
             --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
             --glass-blur: blur(30px);
             
-            /* GLOBAL PALETTE */
             --accent-cyan: #00f2ff; 
             --accent-purple: #bd00ff; 
             --accent-gold: #FFD700;
@@ -70,335 +46,179 @@
             --accent-magenta: #f72585;
             --accent-crimson: #ff0055;
             
-            /* TYPOGRAPHY */
             --font-head: 'Orbitron', sans-serif; 
             --font-body: 'Rajdhani', sans-serif;
-            --font-sub: 'Space Grotesk', sans-serif;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         *::-webkit-scrollbar { display: none !important; }
         
         body { 
-            background: var(--bg-void);
-            color: #ffffff; 
-            font-family: var(--font-body); 
-            overflow-x: hidden; 
-            width: 100vw; 
-            min-height: 100vh; 
-            display: block; 
-            padding-bottom: 50px; 
-            padding-top: calc(100px + env(safe-area-inset-top)); 
+            background: var(--bg-void); color: #ffffff; font-family: var(--font-body); 
+            overflow-x: hidden; width: 100vw; min-height: 100vh; display: block; 
+            padding-bottom: 50px; padding-top: calc(90px + env(safe-area-inset-top)); 
         }
 
-        /* DYNAMIC THEME GRADIENT BACKGROUND */
-        .page-background {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--theme-gradient);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Ambient Glow Orbs */
+        /* DYNAMIC THEME GRADIENT & ORBS */
+        .page-background { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--theme-gradient); z-index: 0; pointer-events: none; }
         .ambient-orb-1 {
             position: fixed; top: 5%; left: -10%; width: 500px; height: 500px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%);
-            pointer-events: none; z-index: 1; filter: blur(50px);
-            animation: orbFloat 12s infinite alternate ease-in-out;
+            background: radial-gradient(circle, rgba(189,0,255,0.12) 0%, transparent 60%);
+            pointer-events: none; z-index: 1; filter: blur(50px); animation: orbFloat 12s infinite alternate ease-in-out;
         }
         .ambient-orb-2 {
             position: fixed; bottom: 5%; right: -10%; width: 550px; height: 550px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,242,255,0.1) 0%, transparent 60%);
-            pointer-events: none; z-index: 1; filter: blur(60px);
-            animation: orbFloat 15s infinite alternate-reverse ease-in-out;
+            background: radial-gradient(circle, rgba(0,242,255,0.08) 0%, transparent 60%);
+            pointer-events: none; z-index: 1; filter: blur(60px); animation: orbFloat 15s infinite alternate-reverse ease-in-out;
         }
-        @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, 50px) scale(1.1); }
-        }
+        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 50px) scale(1.1); } }
 
-        .container { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            width: 100%; 
-            padding: 0 20px; 
-            position: relative; 
-            z-index: 10;
-            display: block;
-        }
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        .container { max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 15px; position: relative; z-index: 10; display: block; }
         
-        /* HEADER (GLASSMORPHISM) */
+        /* HEADER */
         .top-header { 
-            position: fixed; top: 0; left: 0; width: 100%; 
-            padding: calc(15px + env(safe-area-inset-top)) 24px 15px; 
-            background: rgba(10, 5, 20, 0.7); 
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border); 
-            z-index: 2000; display: flex; align-items: center; justify-content: space-between; 
-            box-shadow: 0 4px 40px rgba(0,0,0,0.6);
+            position: fixed; top: 0; left: 0; width: 100%; padding: calc(12px + env(safe-area-inset-top)) 20px 12px; 
+            background: rgba(10, 5, 20, 0.75); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border); z-index: 2000; display: flex; align-items: center; justify-content: space-between; 
+            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
         }
-        .header-brand { display: flex; align-items: center; gap: 14px; }
-        .header-logo { 
-            width: 42px; height: 42px; border-radius: 50%; 
-            border: 1.5px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.5); 
-            object-fit: cover; cursor: pointer; transition: 0.4s;
-        }
-        .header-logo:hover { transform: scale(1.15) rotate(10deg); box-shadow: 0 0 25px rgba(0,242,255,0.8); }
-        .page-title { 
-            font-family: var(--font-head); font-size: clamp(1rem, 4.5vw, 1.4rem); font-weight: 900; 
-            background: linear-gradient(135deg, #ffffff, #00f2ff, #bd00ff); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            text-transform: uppercase; letter-spacing: 2px; margin: 0; white-space: nowrap; 
-        }
-        .live-status {
-            display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; font-family: var(--font-head);
-            color: var(--accent-emerald); background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.35);
-            border-radius: 20px; padding: 6px 14px; letter-spacing: 1px; text-transform: uppercase;
-        }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: blink 1.6s infinite alternate; }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-logo { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.5); object-fit: cover; cursor: pointer; transition: 0.4s; }
+        .page-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; background: linear-gradient(135deg, #ffffff, #00f2ff, #bd00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; white-space: nowrap; }
+        .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.65rem; font-family: var(--font-head); color: var(--accent-emerald); background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.35); border-radius: 20px; padding: 4px 10px; letter-spacing: 1px; text-transform: uppercase; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: blink 1.6s infinite alternate; }
         @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* INTRO BANNER */
-        .intro-banner { text-align: center; margin-bottom: 40px; animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
-        .intro-badge {
-            display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.08);
-            border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px; padding: 8px 20px;
-            font-family: var(--font-head); font-size: 0.8rem; color: var(--accent-cyan);
-            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; box-shadow: 0 0 20px rgba(0,242,255,0.15);
+        /* INTRO & SEARCH ENGINE */
+        .intro-banner { text-align: center; margin-bottom: 25px; animation: fadeInDown 0.7s ease; }
+        .intro-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.08); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 30px; padding: 6px 16px; font-family: var(--font-head); font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .intro-banner h1 { font-family: var(--font-head); font-size: clamp(1.6rem, 6vw, 2.8rem); font-weight: 900; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1.5px; line-height: 1.2; background: linear-gradient(180deg, #ffffff 40%, #b8b1db 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 35px rgba(189,0,255,0.3); }
+        
+        /* SEARCH BAR */
+        .search-container {
+            max-width: 500px; margin: 0 auto 35px auto; position: relative;
         }
-        .intro-banner h1 { 
-            font-family: var(--font-head); font-size: clamp(2rem, 7vw, 3.2rem); font-weight: 900; 
-            text-transform: uppercase; margin-bottom: 15px; letter-spacing: 2px; line-height: 1.2;
-            background: linear-gradient(180deg, #ffffff 40%, #b8b1db 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 35px rgba(189,0,255,0.3);
+        .search-input {
+            width: 100%; padding: 16px 20px 16px 45px; border-radius: 50px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--accent-cyan); color: #fff; font-family: var(--font-body); font-size: 1rem;
+            outline: none; backdrop-filter: blur(10px); box-shadow: 0 5px 25px rgba(0,242,255,0.15); transition: 0.3s;
         }
-        .intro-banner p { font-size: 1.1rem; color: #b7b0d3; max-width: 720px; margin: 0 auto; line-height: 1.7; font-weight: 600; }
+        .search-input:focus { box-shadow: 0 5px 30px rgba(0,242,255,0.4); background: rgba(0,0,0,0.8); }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); font-size: 1.1rem; pointer-events: none; }
+        .clear-search { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; display: none; padding: 5px; }
 
-        /* HIGHLIGHTED MAIN OFFICE CARD (GLASS) */
+        /* MAIN OFFICE CARD */
         .main-office-card { 
-            background: var(--glass-bg); 
-            border: 1px solid var(--glass-border); 
-            border-top: 1px solid rgba(255,255,255,0.25);
-            border-left: 1px solid rgba(255,255,255,0.2);
-            border-radius: 28px; padding: 45px 30px; text-align: center; margin-bottom: 55px; 
-            box-shadow: var(--glass-shadow); 
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            animation: fadeInDown 0.8s ease backwards; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; overflow: hidden;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.25); border-left: 1px solid rgba(255,255,255,0.2);
+            border-radius: 24px; padding: 35px 20px; text-align: center; margin-bottom: 45px; box-shadow: var(--glass-shadow); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); position: relative; overflow: hidden;
         }
-        .main-office-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 25px 60px rgba(0,242,255,0.2), inset 0 0 40px rgba(0,242,255,0.08); 
-            border-color: rgba(0, 242, 255, 0.5);
-        }
-        .main-office-card h2 { font-family: var(--font-head); color: white; font-size: clamp(1.4rem, 5vw, 1.8rem); margin-bottom: 10px; font-weight: 900; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .main-office-card p { color: #c0b9db; font-size: 1.05rem; margin-bottom: 25px; font-weight: 600; }
-        
-        .main-office-card .contact-row {
-            max-width: 480px; margin: 0 auto 18px auto; border-color: rgba(0,242,255,0.4); background: rgba(0,0,0,0.6);
-        }
-        .main-office-card .contact-btn {
-            max-width: 480px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 8px 30px rgba(0,242,255,0.4); border: none; padding: 16px; font-size: 1rem;
-        }
+        .main-office-card h2 { font-family: var(--font-head); color: white; font-size: clamp(1.2rem, 4.5vw, 1.6rem); margin-bottom: 10px; font-weight: 900; letter-spacing: 2px; }
+        .main-office-card p { color: #c0b9db; font-size: 0.95rem; margin-bottom: 20px; font-weight: 600; }
+        .contact-row { max-width: 440px; margin: 0 auto 16px auto; border-color: rgba(0,242,255,0.4); background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 12px 16px; transition: all 0.3s ease; }
+        .email-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .email-text { font-family: monospace; font-size: 0.9rem; color: var(--accent-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contact-btn { width: 100%; max-width: 440px; margin: 0 auto; padding: 14px; border-radius: 14px; font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; text-transform: uppercase; text-align: center; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1.5px; border: none; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 8px 30px rgba(0,242,255,0.4); }
 
-        /* GRID SYSTEM & CATEGORIES */
-        .officer-category { width: 100%; margin-bottom: 60px; }
-        .officer-grid { display: grid; grid-template-columns: 1fr; gap: 35px; perspective: 1200px; }
-        @media (min-width: 800px) { .officer-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1100px) { 
-            #gridCLevel { grid-template-columns: repeat(2, 1fr); }
-            #gridDirector, #gridManager { grid-template-columns: repeat(3, 1fr); }
-        }
+        /* GRID SYSTEM */
+        .officer-category { width: 100%; margin-bottom: 50px; }
+        .officer-grid { display: grid; grid-template-columns: 1fr; gap: 25px; perspective: 1200px; }
+        @media (min-width: 768px) { .officer-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { #gridCLevel { grid-template-columns: repeat(2, 1fr); } #gridDirector, #gridManager { grid-template-columns: repeat(3, 1fr); } }
         
-        .section-divider { 
-            display: flex; align-items: center; text-align: center; margin: 50px 0 35px; color: #9c91c7; 
-            font-family: var(--font-head); font-size: clamp(1.1rem, 4vw, 1.3rem); font-weight: 900; letter-spacing: 4px; text-transform: uppercase; 
-            text-shadow: 0 0 15px rgba(189, 0, 255, 0.4);
-        }
-        .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .section-divider::before { margin-right: 25px; }
-        .section-divider::after { margin-left: 25px; }
+        .section-divider { display: flex; align-items: center; text-align: center; margin: 40px 0 25px; color: #9c91c7; font-family: var(--font-head); font-size: clamp(1rem, 4vw, 1.2rem); font-weight: 900; letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 15px rgba(189, 0, 255, 0.4); }
+        .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .section-divider::before { margin-right: 15px; } .section-divider::after { margin-left: 15px; }
 
         /* ULTIMATE GLASSMORPHISM OFFICER CARDS */
         .officer-card { 
-            background: var(--glass-bg); 
-            border: 1px solid var(--glass-border); 
-            border-top: 1px solid rgba(255,255,255,0.25);
-            border-left: 1px solid rgba(255,255,255,0.18);
-            border-radius: 24px; 
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: var(--glass-shadow); 
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.3s ease; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column;
-            will-change: transform; transform-style: preserve-3d;
-            animation: fadeInUp 0.6s ease backwards;
-            height: 100%;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.25); border-left: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); 
+            position: relative; overflow: hidden; display: flex; flex-direction: column; height: 100%;
+            animation: fadeInUp 0.6s ease backwards; transform-style: preserve-3d;
         }
-
+        
+        /* Glass Cut Reflection */
         .officer-card::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%);
-            pointer-events: none; z-index: 1;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 100%);
+            pointer-events: none; z-index: 1; transform: rotate(30deg); transition: 0.5s;
         }
+        .officer-card:hover::after { transform: rotate(30deg) translate(10%, 10%); background: linear-gradient(to bottom right, rgba(255,255,255,0.2) 0%, transparent 40%, transparent 100%); }
 
-        /* 1:1 PERFECT SQUARE PROFILE IMAGE */
+        /* 1:1 MOBILE-RESTRICTED PROFILE IMAGE */
         .card-profile-header {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            background: #000;
+            width: 100%; aspect-ratio: 1 / 1; max-height: 280px; /* Crucial fix for massive mobile images */
+            position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.15); background: #05020a;
         }
-        .card-profile-header img {
-            width: 100%; height: 100%; object-fit: cover; object-position: top center;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .officer-card:hover .card-profile-header img { transform: scale(1.08); }
+        .card-profile-header img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.6s ease; }
+        .officer-card:hover .card-profile-header img { transform: scale(1.06); }
+        .profile-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(to top, rgba(5,2,10,1) 0%, rgba(5,2,10,0.6) 40%, transparent 100%); z-index: 2; }
+
+        .profile-titles { position: absolute; bottom: 15px; left: 20px; right: 20px; z-index: 3; }
+        .name { font-family: var(--font-head); font-size: clamp(1.25rem, 5vw, 1.6rem); font-weight: 900; color: #ffffff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 4px 10px rgba(0,0,0,0.9); }
+        .role-tag { display: inline-block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; background: rgba(0,0,0,0.7); border: 1px solid; backdrop-filter: blur(12px); box-shadow: 0 4px 12px rgba(0,0,0,0.6); letter-spacing: 0.5px; line-height: 1.2; }
+
+        .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; z-index: 3; }
+        .role-brief { font-size: 0.88rem; color: #ded9f0; line-height: 1.5; margin-bottom: 16px; font-weight: 500; }
+        .responsibilities { list-style: none; margin-bottom: 20px; padding-left: 2px; flex-grow: 1; }
+        .responsibilities li { font-size: 0.82rem; color: #cbc4e6; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; font-weight: 600; line-height: 1.4; }
+        .responsibilities li i { font-size: 0.7rem; margin-top: 4px; flex-shrink: 0; }
+
+        .contact-row-multi { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 10px 14px; margin-bottom: 16px; margin-top: auto; }
+        .email-info-small { display: flex; align-items: center; gap: 8px; cursor: pointer; min-width: 0; overflow: hidden; }
+        .email-text-small { font-family: monospace; font-size: 0.8rem; color: #cec7e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .profile-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 65%;
-            background: linear-gradient(to top, rgba(5,2,10,1) 0%, rgba(5,2,10,0.8) 30%, transparent 100%);
-            z-index: 2;
-        }
+        .social-icons { display: flex; gap: 6px; flex-shrink: 0; }
+        .social-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9rem; text-decoration: none; transition: 0.3s; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(5px); }
 
-        .profile-titles {
-            position: absolute; bottom: 20px; left: 24px; right: 24px; z-index: 3; transform: translateZ(30px);
-        }
-        .name { 
-            font-family: var(--font-head); font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 900; 
-            color: #ffffff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            text-shadow: 0 5px 15px rgba(0,0,0,0.9);
-        }
-        .role-tag { 
-            display: inline-block; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; 
-            padding: 6px 16px; border-radius: 30px; background: rgba(0,0,0,0.7); border: 1px solid;
-            backdrop-filter: blur(12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6); letter-spacing: 1px;
-        }
+        /* THEMES */
+        .theme-ceo { border-color: rgba(255, 215, 0, 0.3); } .theme-ceo .role-tag { border-color: var(--accent-gold); color: var(--accent-gold); } .theme-ceo .responsibilities li i { color: var(--accent-gold); } .theme-ceo .contact-btn { background: linear-gradient(135deg, #FFE87C, #FF8C00); color: #000; } .theme-ceo .social-btn:hover { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255,215,0,0.6); }
+        .theme-cto { border-color: rgba(0, 242, 255, 0.3); } .theme-cto .role-tag { border-color: var(--accent-cyan); color: var(--accent-cyan); } .theme-cto .responsibilities li i { color: var(--accent-cyan); } .theme-cto .contact-btn { background: linear-gradient(135deg, #00f2ff, #0066ff); color: #000; } .theme-cto .social-btn:hover { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.6); }
+        .theme-cotco { border-color: rgba(255, 107, 0, 0.3); } .theme-cotco .role-tag { border-color: var(--accent-orange); color: var(--accent-orange); } .theme-cotco .responsibilities li i { color: var(--accent-orange); } .theme-cotco .contact-btn { background: linear-gradient(135deg, #ff9900, #ff5400); color: #000; } .theme-cotco .social-btn:hover { background: var(--accent-orange); color: #000; border-color: var(--accent-orange); box-shadow: 0 0 15px rgba(255,107,0,0.6); }
+        .theme-cyber { border-color: rgba(0, 255, 136, 0.3); } .theme-cyber .role-tag { border-color: var(--accent-emerald); color: var(--accent-emerald); } .theme-cyber .responsibilities li i { color: var(--accent-emerald); } .theme-cyber .contact-btn { background: linear-gradient(135deg, #00ff88, #00b4d8); color: #000; } .theme-cyber .social-btn:hover { background: var(--accent-emerald); color: #000; border-color: var(--accent-emerald); box-shadow: 0 0 15px rgba(0,255,136,0.6); }
+        .theme-community { border-color: rgba(247, 37, 133, 0.3); } .theme-community .role-tag { border-color: var(--accent-magenta); color: var(--accent-magenta); } .theme-community .responsibilities li i { color: var(--accent-magenta); } .theme-community .contact-btn { background: linear-gradient(135deg, #f72585, #b5179e); color: #fff; } .theme-community .social-btn:hover { background: var(--accent-magenta); color: #fff; border-color: var(--accent-magenta); box-shadow: 0 0 15px rgba(247,37,133,0.6); }
+        .theme-dev { border-color: rgba(189, 0, 255, 0.3); } .theme-dev .role-tag { border-color: var(--accent-purple); color: #e0aaff; } .theme-dev .responsibilities li i { color: var(--accent-purple); } .theme-dev .contact-btn { background: linear-gradient(135deg, #bd00ff, #7b2cbf); color: #fff; } .theme-dev .social-btn:hover { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(189,0,255,0.6); }
+        .theme-hr { border-color: rgba(0, 245, 212, 0.3); } .theme-hr .role-tag { border-color: var(--accent-teal); color: var(--accent-teal); } .theme-hr .responsibilities li i { color: var(--accent-teal); } .theme-hr .contact-btn { background: linear-gradient(135deg, #00f5d4, #00bbf9); color: #000; } .theme-hr .social-btn:hover { background: var(--accent-teal); color: #000; border-color: var(--accent-teal); box-shadow: 0 0 15px rgba(0,245,212,0.6); }
+        .theme-media { border-color: rgba(255, 0, 85, 0.3); } .theme-media .role-tag { border-color: var(--accent-crimson); color: var(--accent-crimson); } .theme-media .responsibilities li i { color: var(--accent-crimson); } .theme-media .contact-btn { background: linear-gradient(135deg, #ff0055, #ff5400); color: #fff; } .theme-media .social-btn:hover { background: var(--accent-crimson); color: #fff; border-color: var(--accent-crimson); box-shadow: 0 0 15px rgba(255,0,85,0.6); }
 
-        .card-content {
-            padding: 24px; display: flex; flex-direction: column; flex-grow: 1; z-index: 3; transform: translateZ(20px);
-        }
-
-        .role-brief { font-size: 0.95rem; color: #ded9f0; line-height: 1.6; margin-bottom: 20px; font-weight: 500; }
-        
-        .responsibilities { list-style: none; margin-bottom: 24px; padding-left: 2px; flex-grow: 1; }
-        .responsibilities li { font-size: 0.9rem; color: #cbc4e6; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px; font-weight: 600; line-height: 1.5; }
-        .responsibilities li i { font-size: 0.8rem; margin-top: 4px; flex-shrink: 0; }
-
-        /* Bottom Contact & Socials Row */
-        .contact-row {
-            display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 12px 16px;
-            margin-bottom: 20px; transition: all 0.3s ease; margin-top: auto;
-        }
-        .contact-row:hover { background: rgba(0,0,0,0.7); border-color: rgba(255,255,255,0.25); }
-        
-        .email-info { display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; }
-        .email-text { font-family: monospace; font-size: 0.9rem; color: #cec7e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s;}
-        .email-info:hover .email-text { color: #fff; }
-        .copy-icon { font-size: 1.1rem; cursor: pointer; color: #cec7e8; transition: 0.2s; }
-        .copy-icon:hover { transform: scale(1.2); color: #fff; }
-
-        .social-icons { display: flex; gap: 10px; flex-shrink: 0; }
-        .social-btn {
-            width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
-            color: #fff; font-size: 1rem; text-decoration: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(5px);
-        }
-
-        .contact-btn { 
-            width: 100%; padding: 16px; border-radius: 14px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; text-align: center; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1.5px; border: none; 
-        }
-        .contact-btn:hover { filter: brightness(1.25); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        /* DYNAMIC THEMES */
-        .theme-ceo:hover { border-color: var(--accent-gold); box-shadow: 0 20px 50px rgba(255,215,0,0.25); }
-        .theme-ceo .role-tag { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .theme-ceo .responsibilities li i, .theme-ceo .copy-icon:hover { color: var(--accent-gold); }
-        .theme-ceo .contact-btn { background: linear-gradient(135deg, #FFE87C, #FF8C00); color: #000; }
-        .theme-ceo .social-btn:hover { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(255,215,0,0.6); transform: scale(1.15);}
-
-        .theme-cto:hover { border-color: var(--accent-cyan); box-shadow: 0 20px 50px rgba(0,242,255,0.25); }
-        .theme-cto .role-tag { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-        .theme-cto .responsibilities li i, .theme-cto .copy-icon:hover { color: var(--accent-cyan); }
-        .theme-cto .contact-btn { background: linear-gradient(135deg, #00f2ff, #0066ff); color: #000; }
-        .theme-cto .social-btn:hover { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.6); transform: scale(1.15);}
-
-        .theme-cotco:hover { border-color: var(--accent-orange); box-shadow: 0 20px 50px rgba(255,107,0,0.25); }
-        .theme-cotco .role-tag { border-color: var(--accent-orange); color: var(--accent-orange); }
-        .theme-cotco .responsibilities li i, .theme-cotco .copy-icon:hover { color: var(--accent-orange); }
-        .theme-cotco .contact-btn { background: linear-gradient(135deg, #ff9900, #ff5400); color: #000; }
-        .theme-cotco .social-btn:hover { background: var(--accent-orange); color: #000; border-color: var(--accent-orange); box-shadow: 0 0 20px rgba(255,107,0,0.6); transform: scale(1.15);}
-
-        .theme-cyber:hover { border-color: var(--accent-emerald); box-shadow: 0 20px 50px rgba(0,255,136,0.25); }
-        .theme-cyber .role-tag { border-color: var(--accent-emerald); color: var(--accent-emerald); }
-        .theme-cyber .responsibilities li i, .theme-cyber .copy-icon:hover { color: var(--accent-emerald); }
-        .theme-cyber .contact-btn { background: linear-gradient(135deg, #00ff88, #00b4d8); color: #000; }
-        .theme-cyber .social-btn:hover { background: var(--accent-emerald); color: #000; border-color: var(--accent-emerald); box-shadow: 0 0 20px rgba(0,255,136,0.6); transform: scale(1.15);}
-
-        .theme-community:hover { border-color: var(--accent-magenta); box-shadow: 0 20px 50px rgba(247,37,133,0.25); }
-        .theme-community .role-tag { border-color: var(--accent-magenta); color: var(--accent-magenta); }
-        .theme-community .responsibilities li i, .theme-community .copy-icon:hover { color: var(--accent-magenta); }
-        .theme-community .contact-btn { background: linear-gradient(135deg, #f72585, #b5179e); color: #fff; }
-        .theme-community .social-btn:hover { background: var(--accent-magenta); color: #fff; border-color: var(--accent-magenta); box-shadow: 0 0 20px rgba(247,37,133,0.6); transform: scale(1.15);}
-
-        .theme-dev:hover { border-color: var(--accent-purple); box-shadow: 0 20px 50px rgba(189,0,255,0.25); }
-        .theme-dev .role-tag { border-color: var(--accent-purple); color: #e0aaff; }
-        .theme-dev .responsibilities li i, .theme-dev .copy-icon:hover { color: var(--accent-purple); }
-        .theme-dev .contact-btn { background: linear-gradient(135deg, #bd00ff, #7b2cbf); color: #fff; }
-        .theme-dev .social-btn:hover { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(189,0,255,0.6); transform: scale(1.15);}
-
-        .theme-hr:hover { border-color: var(--accent-teal); box-shadow: 0 20px 50px rgba(0,245,212,0.25); }
-        .theme-hr .role-tag { border-color: var(--accent-teal); color: var(--accent-teal); }
-        .theme-hr .responsibilities li i, .theme-hr .copy-icon:hover { color: var(--accent-teal); }
-        .theme-hr .contact-btn { background: linear-gradient(135deg, #00f5d4, #00bbf9); color: #000; }
-        .theme-hr .social-btn:hover { background: var(--accent-teal); color: #000; border-color: var(--accent-teal); box-shadow: 0 0 20px rgba(0,245,212,0.6); transform: scale(1.15);}
-
-        .theme-media:hover { border-color: var(--accent-crimson); box-shadow: 0 20px 50px rgba(255,0,85,0.25); }
-        .theme-media .role-tag { border-color: var(--accent-crimson); color: var(--accent-crimson); }
-        .theme-media .responsibilities li i, .theme-media .copy-icon:hover { color: var(--accent-crimson); }
-        .theme-media .contact-btn { background: linear-gradient(135deg, #ff0055, #ff5400); color: #fff; }
-        .theme-media .social-btn:hover { background: var(--accent-crimson); color: #fff; border-color: var(--accent-crimson); box-shadow: 0 0 20px rgba(255,0,85,0.6); transform: scale(1.15);}
-
-        /* =========================================================
-           MOBILE OPTIMIZATIONS (Perfect Scaling)
-           ========================================================= */
-        @media (max-width: 600px) {
-            .name { font-size: 1.25rem !important; }
-            .role-tag { font-size: 0.65rem !important; padding: 4px 10px !important; }
-            .role-brief { font-size: 0.85rem !important; margin-bottom: 12px !important; line-height: 1.4 !important; }
-            .responsibilities li { font-size: 0.8rem !important; margin-bottom: 8px !important; }
-            .contact-btn { padding: 12px !important; font-size: 0.8rem !important; }
-            .card-content { padding: 16px !important; }
-            .contact-row { padding: 10px 12px !important; margin-bottom: 15px !important; }
-            .social-btn { width: 32px !important; height: 32px !important; font-size: 0.9rem !important; }
-            .main-office-card { padding: 30px 20px !important; }
-            .intro-banner h1 { font-size: 1.8rem !important; }
-            .email-text { font-size: 0.8rem !important; }
-        }
-
-        /* DATA FETCH LOADER */
-        #loader-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; gap: 24px; }
-        .loader-ring { width: 70px; height: 70px; border: 5px solid rgba(0, 242, 255, 0.1); border-top: 5px solid var(--accent-cyan); border-left: 5px solid var(--accent-purple); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; box-shadow: 0 0 20px rgba(0,242,255,0.3); }
-        .loader-text { font-family: var(--font-head); font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 3px; text-transform: uppercase; animation: pulseText 1.5s infinite alternate; }
+        /* LOADER */
+        #loader-overlay { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; gap: 20px; }
+        .loader-ring { width: 50px; height: 50px; border: 4px solid rgba(0, 242, 255, 0.1); border-top: 4px solid var(--accent-cyan); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-text { font-family: var(--font-head); font-size: 1rem; color: var(--accent-cyan); letter-spacing: 2px; text-transform: uppercase; animation: pulseText 1.5s infinite alternate; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 15px var(--accent-cyan); } }
+        @keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 10px var(--accent-cyan); } }
 
-        /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 100px; right: 20px; background: rgba(10,5,24,0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 16px 26px; border-radius: 16px; font-family: var(--font-head); font-weight: 800; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 10px 40px rgba(0,242,255,0.5); text-transform: uppercase; display: flex; align-items: center; gap: 14px; font-size: 0.95rem; }
+        /* TOAST */
+        #toast { position: fixed; top: 90px; right: 20px; background: rgba(10,5,24,0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--accent-cyan); color: white; padding: 12px 20px; border-radius: 12px; font-family: var(--font-head); font-weight: 800; transform: translateX(150%); transition: 0.4s ease; z-index: 9999; box-shadow: 0 8px 30px rgba(0,242,255,0.4); text-transform: uppercase; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
         #toast.show { transform: translateX(0); }
 
-        /* BRAND FOOTER */
-        .brand-footer { text-align: center; margin-top: 70px; padding-top: 35px; border-top: 1px solid rgba(255,255,255,0.1); user-select: none; font-size: 0.9rem; color: #9c91c7; font-weight: 600; letter-spacing: 1.5px; position: relative; z-index: 10; line-height: 1.8; }
-        .brand-footer .footer-tournyx { font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; margin-bottom: 15px; text-shadow: 0 0 20px rgba(0,242,255,0.5); text-transform: uppercase; }
-        .neon-quva-small { display: inline-block; font-size: 1.2rem; font-weight: 900; color: white; font-family: var(--font-head); letter-spacing: 5px; margin-top: 10px; animation: pulsateQuva 2.5s infinite alternate; text-transform: uppercase; }
-        @keyframes pulsateQuva { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px var(--accent-cyan); } 100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple), 0 0 30px var(--accent-magenta); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        /* FOOTER */
+        .brand-footer { text-align: center; margin-top: 50px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); user-select: none; font-size: 0.8rem; color: #9c91c7; font-weight: 600; letter-spacing: 1px; position: relative; z-index: 10; line-height: 1.6; }
+        .brand-footer .footer-tournyx { font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.2rem; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 0 15px rgba(0,242,255,0.5); text-transform: uppercase; }
+        .neon-quva-small { display: inline-block; font-size: 1rem; font-weight: 900; color: white; font-family: var(--font-head); letter-spacing: 4px; margin-top: 8px; animation: pulsateQuva 2.5s infinite alternate; text-transform: uppercase; }
+        
+        @keyframes pulsateQuva { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px var(--accent-cyan); } 100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MOBILE FIXES */
+        @media (max-width: 600px) {
+            .page-title { font-size: 0.95rem !important; letter-spacing: 1px !important; }
+            .header-logo { width: 32px !important; height: 32px !important; }
+            .live-status { font-size: 0.6rem !important; padding: 4px 8px !important; }
+            .intro-banner h1 { font-size: 1.6rem !important; }
+            .intro-banner p { font-size: 0.95rem !important; }
+            .main-office-card { padding: 25px 15px !important; }
+            .main-office-card h2 { font-size: 1.15rem !important; }
+            .section-divider { font-size: 0.9rem !important; letter-spacing: 2px !important; margin: 35px 0 20px !important; }
+            .card-profile-header { max-height: 250px !important; } /* Stops giant images */
+            .name { font-size: 1.3rem !important; }
+            .role-tag { font-size: 0.65rem !important; padding: 4px 10px !important; }
+            .ambient-orb-1, .ambient-orb-2 { transform: scale(0.6); }
+        }
     </style>
 </head>
 <body>
@@ -406,13 +226,10 @@
     <div class="page-background"></div>
     <div class="ambient-orb-1"></div>
     <div class="ambient-orb-2"></div>
+    <canvas id="particles-canvas"></canvas>
     
-    <div id="toast">
-        <i class="fa-solid fa-circle-check" style="color:var(--accent-cyan); font-size: 1.2rem;"></i> 
-        <span id="toastMsg">Email Copied to Clipboard</span>
-    </div>
+    <div id="toast"><i class="fa-solid fa-circle-check" style="color:var(--accent-cyan);"></i> <span id="toastMsg">Copied</span></div>
 
-    <!-- STANDALONE TOP HEADER -->
     <header class="top-header" role="banner">
         <div class="header-brand">
             <img src="https://tournyx.in/favicon.png" class="header-logo" alt="Tournyx Esports" onclick="window.location.href='https://tournyx.in'">
@@ -425,81 +242,79 @@
 
     <main class="container" role="main">
         
-        <!-- INTRO HERO BANNER -->
         <section class="intro-banner" aria-label="Introduction">
             <div class="intro-badge"><i class="fa-solid fa-shield-halved"></i> Verified Organization Leadership</div>
             <h1>Global Support Command</h1>
             <p>The official executive directory of Tournyx Esports. Detailed routing for our leadership council, software development managers, operational heads, cybersecurity leads, and media directors.</p>
         </section>
 
-        <!-- HIGHLIGHTED MAIN OFFICE HQ (ULTIMATE GLASS) -->
-        <section class="main-office-card" aria-label="Main Corporate Office" itemscope itemtype="https://schema.org/Organization">
+        <!-- REAL-TIME SEARCH ENGINE -->
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="officerSearch" class="search-input" placeholder="Search by name, role, or keywords..." onkeyup="filterOfficers()" autocomplete="off">
+            <i class="fa-solid fa-xmark clear-search" id="clearSearch" onclick="clearSearchField()"></i>
+        </div>
+
+        <section class="main-office-card" aria-label="Main Corporate Office">
             <h2><i class="fa-solid fa-building"></i> TOURNYX MAIN OFFICE</h2>
             <p>Corporate relations, platform sponsorships, major esports league licensing, and central headquarters support.</p>
             
-            <div class="contact-row" style="max-width: 480px; margin: 0 auto 20px auto; border-color: rgba(0,242,255,0.4); background: rgba(0,0,0,0.6);">
+            <div class="contact-row" style="max-width: 480px; margin: 0 auto 15px auto; border-color: rgba(0,242,255,0.4); background: rgba(0,0,0,0.6);">
                 <div class="email-info" onclick="copyEmail('contact@tournyx.in')">
-                    <i class="fa-solid fa-envelope" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
-                    <div class="email-text" itemprop="email" style="font-size: 1.05rem; color: var(--accent-cyan);">contact@tournyx.in</div>
+                    <i class="fa-solid fa-envelope" style="color: var(--accent-cyan); font-size: 1.1rem;"></i>
+                    <div class="email-text" style="font-size: 0.95rem; color: var(--accent-cyan);">contact@tournyx.in</div>
                 </div>
                 <div class="social-icons">
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('contact@tournyx.in')" title="Copy Email" style="color: var(--accent-cyan);"></i>
+                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('contact@tournyx.in')" style="color: var(--accent-cyan);"></i>
                 </div>
             </div>
             
-            <a href="mailto:contact@tournyx.in?subject=Tournyx%20General%20Inquiry" class="contact-btn" style="max-width: 480px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 8px 30px rgba(0,242,255,0.4);">
+            <a href="mailto:contact@tournyx.in" class="contact-btn" style="max-width: 480px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 8px 25px rgba(0,242,255,0.3);">
                 <i class="fa-solid fa-paper-plane"></i> Email Main Office HQ
             </a>
         </section>
 
-        <!-- ATTRACTIVE CYBER LOADER -->
         <div id="loader-overlay">
             <div class="loader-ring"></div>
-            <div class="loader-text">Syncing Live Roster Matrix...</div>
+            <div class="loader-text">Syncing Live Roster...</div>
         </div>
         
-        <!-- DYNAMIC HIERARCHY GRIDS -->
         <div id="rosterContainer" style="display: none;">
-            
-            <!-- C-Level Executives -->
-            <div class="officer-category">
+            <div class="officer-category" id="catCLevel">
                 <div class="section-divider">EXECUTIVE COMMAND (C-LEVEL)</div>
                 <div class="officer-grid" id="gridCLevel"></div>
             </div>
 
-            <!-- Directors -->
-            <div class="officer-category">
+            <div class="officer-category" id="catDirector">
                 <div class="section-divider">DIRECTOR LEVEL</div>
                 <div class="officer-grid" id="gridDirector"></div>
             </div>
 
-            <!-- Managers -->
-            <div class="officer-category">
+            <div class="officer-category" id="catManager">
                 <div class="section-divider">MANAGER LEVEL</div>
                 <div class="officer-grid" id="gridManager"></div>
             </div>
-
+            
+            <div id="noResultsMsg" style="display:none; text-align:center; padding: 40px; color: var(--danger-red); font-family: var(--font-head); letter-spacing: 1px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                NO OFFICERS FOUND MATCHING YOUR QUERY.
+            </div>
         </div>
 
-        <!-- ULTIMATE BRAND FOOTER -->
         <footer class="brand-footer" role="contentinfo">
             <div class="footer-tournyx">TOURNYX ESPORTS</div>
             <p>© 2026 Tournyx Esports India. All rights reserved.</p>
             <p>Official Leadership & Global Support Matrix</p>
-            <div style="margin-top: 15px;">POWERED BY</div>
+            <div style="margin-top: 10px;">POWERED BY</div>
             <span class="neon-quva-small">QUVA TECHNOLOGIES</span>
         </footer>
         
     </main>
 
-    <!-- ==========================================
-         JAVASCRIPT ENGINE (SUPABASE + 3D GLASS FX)
-         ========================================== -->
     <script>
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         
-        // 1. Fallback Data including Social Media Tags
         const fallbackOfficers = [
             { name: 'Thilakeshwaran', role_title: 'Founder & Chief Executive Officer (CEO)', hierarchy_level: 'C_LEVEL', email: 'ceo@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTLzlaOmFzIsZyxOhLf3HvvQqZkJRJffYoV0jXlfJsZ1MgAFwL92o0GbQDRGndDc14GgysG9VTWf88gq4LdAvEHVX6AtAOqxVLFNihjy6BrASr_X6nX2ISO4_d6a3Swma6kezceKbq5m7rJVtr7mhRaB82zr7LTnIPdKeouxh-oraZsv_kLOB7TXvtwuc/s1080/1000054934.jpg', theme_class: 'theme-ceo', role_brief: 'Drives the overarching executive vision, venture investments, national esports league alignments, and enterprise growth strategies.', responsibilities: ['Corporate Investments, Major Esports Partnerships', 'Executive Leadership & B2B Infrastructure Integration'], linkedin: '', twitter: '', instagram: '' },
             { name: 'Chief Technology Officer', role_title: 'Chief Technology Officer (CTO)', hierarchy_level: 'C_LEVEL', email: 'cto@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron', theme_class: 'theme-cto', role_brief: 'Commands the full Tournyx cloud gaming platform architecture, low-latency match server clusters, automated bracket systems, and API pipelines.', responsibilities: ['API Integrations, Platform Bug Reports, and Tech Infra', 'AI & Game Server Development Leadership'], linkedin: '', twitter: '', instagram: '' },
@@ -511,10 +326,13 @@
             { name: 'Umesh Sharma N', role_title: 'Communications & Media Operations Manager', hierarchy_level: 'MANAGER', email: 'media@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Umesh+Sharma&background=ff0055&color=fff&font-family=Orbitron', theme_class: 'theme-media', role_brief: 'Manages live tournament stream broadcasts, official press announcements, YouTube caster sponsorships, and social media communication.', responsibilities: ['Press Releases, Social Media Assets & Sponsorships', 'Tournament Content Coordination'], linkedin: 'https://www.linkedin.com/in/umesh-sharma-153543417', twitter: 'https://x.com/Umeshsharma9898', instagram: 'https://www.instagram.com/med.tournyxesports' }
         ];
 
-        // Automatically push "Chief" roles into the C_LEVEL grid
+        // 10. Auto-Promote Logic
         function enforceHierarchyLogic(officer) {
-            if (officer.role_title.toLowerCase().includes('chief')) {
+            const title = officer.role_title.toLowerCase();
+            if (title.includes('chief') || title.includes('ceo') || title.includes('cto') || title.includes('cotco')) {
                 officer.hierarchy_level = 'C_LEVEL';
+            } else if (title.includes('director')) {
+                officer.hierarchy_level = 'DIRECTOR';
             }
             return officer;
         }
@@ -542,12 +360,15 @@
             const respList = (Array.isArray(officer.responsibilities) ? officer.responsibilities : JSON.parse(officer.responsibilities || '[]'))
                 .map(r => `<li><i class="fa-solid fa-diamond"></i> <span>${r}</span></li>`).join('');
 
-            // Cleanly inject Social Links only if they exist and aren't empty
-            const linkedinHTML = officer.linkedin && officer.linkedin.length > 5 ? `<a href="${officer.linkedin}" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>` : '';
-            const twitterHTML = officer.twitter && officer.twitter.length > 5 ? `<a href="${officer.twitter}" target="_blank" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>` : '';
-            const instaHTML = officer.instagram && officer.instagram.length > 5 ? `<a href="${officer.instagram}" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>` : '';
+            // Indestructible Inline SVG for Twitter (X)
+            const iconX = `<svg viewBox="0 0 1200 1227" fill="currentColor" style="width:14px;height:14px;"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"/></svg>`;
 
-            const animDelay = (index * 0.15) + 's';
+            // Smart Social Link Renderer
+            const linkedinHTML = (officer.linkedin && officer.linkedin.length > 5 && officer.linkedin !== '#') ? `<a href="${officer.linkedin}" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>` : '';
+            const twitterHTML = (officer.twitter && officer.twitter.length > 5 && officer.twitter !== '#') ? `<a href="${officer.twitter}" target="_blank" class="social-btn">${iconX}</a>` : '';
+            const instaHTML = (officer.instagram && officer.instagram.length > 5 && officer.instagram !== '#') ? `<a href="${officer.instagram}" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>` : '';
+
+            const animDelay = (index * 0.1) + 's';
 
             return `
             <article class="officer-card ${officer.theme_class}" data-tilt style="animation-delay: ${animDelay};">
@@ -569,13 +390,13 @@
                         ${respList}
                     </ul>
                     
-                    <div class="contact-row">
-                        <div class="email-info" onclick="copyEmail('${officer.email}')">
-                            <i class="fa-solid fa-envelope" style="color:var(--text-muted); font-size: 0.9rem;"></i>
-                            <div class="email-text" title="${officer.email}">${officer.email}</div>
+                    <div class="contact-row-multi">
+                        <div class="email-info-small" onclick="copyEmail('${officer.email}')">
+                            <i class="fa-solid fa-envelope" style="color:var(--text-muted); font-size: 0.8rem;"></i>
+                            <div class="email-text-small" title="${officer.email}">${officer.email}</div>
                         </div>
                         <div class="social-icons">
-                            <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('${officer.email}')" title="Copy Email"></i>
+                            <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('${officer.email}')" title="Copy Email" style="padding:4px; font-size:0.95rem;"></i>
                             ${linkedinHTML}
                             ${twitterHTML}
                             ${instaHTML}
@@ -597,18 +418,14 @@
             let cIndex = 0, dIndex = 0, mIndex = 0;
 
             officers.forEach(off => {
-                if (off.hierarchy_level === 'C_LEVEL') {
-                    gridCLevel.innerHTML += createCardHTML(off, cIndex++);
-                } else if (off.hierarchy_level === 'DIRECTOR') {
-                    gridDirector.innerHTML += createCardHTML(off, dIndex++);
-                } else if (off.hierarchy_level === 'MANAGER') {
-                    gridManager.innerHTML += createCardHTML(off, mIndex++);
-                }
+                if (off.hierarchy_level === 'C_LEVEL') gridCLevel.innerHTML += createCardHTML(off, cIndex++);
+                else if (off.hierarchy_level === 'DIRECTOR') gridDirector.innerHTML += createCardHTML(off, dIndex++);
+                else if (off.hierarchy_level === 'MANAGER') gridManager.innerHTML += createCardHTML(off, mIndex++);
             });
 
-            if(gridCLevel.innerHTML === '') gridCLevel.parentElement.style.display = 'none';
-            if(gridDirector.innerHTML === '') gridDirector.parentElement.style.display = 'none';
-            if(gridManager.innerHTML === '') gridManager.parentElement.style.display = 'none';
+            if(gridCLevel.innerHTML === '') document.getElementById('catCLevel').style.display = 'none';
+            if(gridDirector.innerHTML === '') document.getElementById('catDirector').style.display = 'none';
+            if(gridManager.innerHTML === '') document.getElementById('catManager').style.display = 'none';
 
             document.getElementById('loader-overlay').style.display = 'none';
             document.getElementById('rosterContainer').style.display = 'block';
@@ -617,12 +434,55 @@
 
         window.addEventListener('DOMContentLoaded', fetchOfficers);
 
-        /* 3D INTERACTIVE TILT ENGINE */
+        /* ==========================================
+           REAL-TIME SEMANTIC SEARCH ENGINE
+           ========================================== */
+        function filterOfficers() {
+            triggerHaptic();
+            const input = document.getElementById('officerSearch');
+            const filter = input.value.toLowerCase();
+            const cards = document.querySelectorAll('.officer-card');
+            const clearBtn = document.getElementById('clearSearch');
+            let hasVisible = false;
+
+            clearBtn.style.display = filter.length > 0 ? 'block' : 'none';
+
+            cards.forEach(card => {
+                // Scans Name, Role, and Responsibilities
+                const textContent = card.innerText.toLowerCase();
+                if (textContent.includes(filter)) {
+                    card.style.display = 'flex';
+                    hasVisible = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Dynamic Category Hiding
+            ['gridCLevel', 'gridDirector', 'gridManager'].forEach(id => {
+                const grid = document.getElementById(id);
+                if (!grid) return;
+                const visibleCards = Array.from(grid.children).filter(c => c.style.display !== 'none');
+                grid.parentElement.style.display = visibleCards.length === 0 ? 'none' : 'block';
+            });
+
+            document.getElementById('noResultsMsg').style.display = hasVisible ? 'none' : 'block';
+        }
+
+        function clearSearchField() {
+            triggerHaptic();
+            const input = document.getElementById('officerSearch');
+            input.value = '';
+            filterOfficers();
+        }
+
+        /* ==========================================
+           3D INTERACTIVE TILT ENGINE
+           ========================================== */
         function init3DTilt() {
             const cards = document.querySelectorAll('.officer-card');
             cards.forEach(card => {
-                // Ensure touch screens don't glitch the tilt
-                if (window.matchMedia("(pointer: fine)").matches) {
+                if (window.matchMedia("(pointer: fine)").matches) { // Only on desktop to protect mobile scroll
                     card.addEventListener('mousemove', (e) => {
                         const rect = card.getBoundingClientRect();
                         const x = e.clientX - rect.left;
@@ -631,11 +491,9 @@
                         const centerY = rect.height / 2;
                         const rotateX = ((y - centerY) / centerY) * -5;
                         const rotateY = ((x - centerX) / centerX) * 5;
-                        
                         card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
                         card.style.transition = 'none'; 
                     });
-
                     card.addEventListener('mouseleave', () => {
                         card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
                         card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
@@ -644,36 +502,81 @@
             });
         }
 
-        function triggerHaptic() {
-            if (navigator.vibrate) navigator.vibrate(30);
-        }
+        /* ==========================================
+           FLOATING GLASS SHARD PARTICLES
+           ========================================== */
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let pArray = [];
+        let mouse = { x: null, y: null, radius: 100 };
 
+        window.addEventListener('mousemove', (event) => { mouse.x = event.x; mouse.y = event.y; });
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        class GlassParticle { 
+            constructor() { 
+                this.x = Math.random() * canvas.width; 
+                this.y = Math.random() * canvas.height; 
+                this.size = (Math.random() * 4) + 1; 
+                this.baseX = this.x; this.baseY = this.y;
+                this.density = (Math.random() * 20) + 1;
+                this.angle = Math.random() * 360;
+                this.spinSpeed = (Math.random() * 2) - 1;
+            } 
+            update() { 
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius) {
+                    this.x -= (dx / distance) * ((mouse.radius - distance) / mouse.radius) * this.density;
+                    this.y -= (dy / distance) * ((mouse.radius - distance) / mouse.radius) * this.density;
+                } else {
+                    if (this.x !== this.baseX) this.x -= (this.x - this.baseX) / 20;
+                    if (this.y !== this.baseY) this.y -= (this.y - this.baseY) / 20;
+                }
+                this.angle += this.spinSpeed;
+            } 
+            draw() { 
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle * Math.PI / 180);
+                ctx.fillStyle = 'rgba(0, 242, 255, 0.3)';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = 'rgba(0, 242, 255, 0.5)';
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size);
+                ctx.lineTo(this.size, this.size);
+                ctx.lineTo(-this.size, this.size);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            } 
+        }
+        for (let i = 0; i < 40; i++) pArray.push(new GlassParticle());
+
+        function animateParticles() { 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            pArray.forEach(p => { p.update(); p.draw(); }); 
+            requestAnimationFrame(animateParticles); 
+        }
+        animateParticles();
+
+        /* UTILITIES */
+        function triggerHaptic() { if (navigator.vibrate) navigator.vibrate(25); }
         function copyEmail(emailStr) {
             triggerHaptic();
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(emailStr).then(() => {
-                    showToast("Copied: " + emailStr);
-                }).catch(() => fallbackCopy(emailStr));
-            } else {
-                fallbackCopy(emailStr);
-            }
+                navigator.clipboard.writeText(emailStr).then(() => showToast("Copied: " + emailStr)).catch(() => fallbackCopy(emailStr));
+            } else { fallbackCopy(emailStr); }
         }
-
         function fallbackCopy(text) {
-            const temp = document.createElement("textarea");
-            temp.value = text;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand("copy");
-            document.body.removeChild(temp);
-            showToast("Copied: " + text);
+            const temp = document.createElement("textarea"); temp.value = text; document.body.appendChild(temp);
+            temp.select(); document.execCommand("copy"); document.body.removeChild(temp); showToast("Copied: " + text);
         }
-
         function showToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
+            const t = document.getElementById('toast'); document.getElementById('toastMsg').innerText = msg;
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
         }
     </script>
 </body>
