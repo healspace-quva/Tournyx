@@ -50,9 +50,15 @@
 
     <style>
         :root { 
-            --primary-bg: #04010a; 
-            --secondary-bg: #080314; 
-            --card-base: rgba(14, 8, 26, 0.45); 
+            /* Tournyx Global Gradient Theme */
+            --bg-void: #020005;
+            --theme-gradient: radial-gradient(circle at top right, #1a083a 0%, #060210 50%, #020005 100%);
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(20, 15, 35, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            --glass-blur: blur(25px);
             
             /* GLOBAL PALETTE */
             --accent-cyan: #00f2ff; 
@@ -74,7 +80,7 @@
         *::-webkit-scrollbar { display: none !important; }
         
         body { 
-            background-color: var(--primary-bg); 
+            background: var(--bg-void);
             color: #ffffff; 
             font-family: var(--font-body); 
             overflow-x: hidden; 
@@ -84,8 +90,35 @@
             padding-top: calc(85px + env(safe-area-inset-top)); 
         }
 
+        /* DYNAMIC THEME GRADIENT BACKGROUND */
+        .page-background {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--theme-gradient);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Ambient Glow Orbs to enhance the glassmorphism */
+        .ambient-orb-1 {
+            position: fixed; top: 10%; left: -5%; width: 400px; height: 400px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(189,0,255,0.15) 0%, transparent 60%);
+            pointer-events: none; z-index: 1; filter: blur(40px);
+            animation: orbFloat 10s infinite alternate ease-in-out;
+        }
+        .ambient-orb-2 {
+            position: fixed; bottom: 10%; right: -5%; width: 450px; height: 450px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,242,255,0.1) 0%, transparent 60%);
+            pointer-events: none; z-index: 1; filter: blur(50px);
+            animation: orbFloat 12s infinite alternate-reverse ease-in-out;
+        }
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.1); }
+        }
+
         .container { 
-            max-width: 1080px; 
+            max-width: 1200px; /* Widened for full-size profile cards */
             margin: 0 auto; 
             width: 100%; 
             padding: 0 16px; 
@@ -93,37 +126,17 @@
             z-index: 10;
         }
         
-        /* BACKGROUND & GLOW FX */
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .bg-gradient { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; 
-            background: radial-gradient(circle at 50% 0%, #1a083a 0%, #060210 60%, #020005 100%); 
-            pointer-events: none;
-        }
-        .ambient-glow-1 {
-            position: fixed; top: 15%; left: 5%; width: 320px; height: 320px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(189,0,255,0.08) 0%, transparent 70%);
-            pointer-events: none; z-index: 2; animation: pulseGlow 8s infinite alternate ease-in-out;
-        }
-        .ambient-glow-2 {
-            position: fixed; bottom: 20%; right: 5%; width: 350px; height: 350px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,242,255,0.08) 0%, transparent 70%);
-            pointer-events: none; z-index: 2; animation: pulseGlow 10s infinite alternate-reverse ease-in-out;
-        }
-        @keyframes pulseGlow {
-            0% { transform: scale(1) translateY(0); opacity: 0.5; }
-            100% { transform: scale(1.3) translateY(40px); opacity: 0.9; }
-        }
-        
-        /* TOP HEADER BAR */
+        /* =========================================================
+           HEADER (GLASSMORPHISM)
+           ========================================================= */
         .top-header { 
             position: fixed; top: 0; left: 0; width: 100%; 
             padding: calc(12px + env(safe-area-inset-top)) 20px 12px; 
-            background: rgba(4, 1, 10, 0.85); 
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(0, 242, 255, 0.15); 
+            background: rgba(10, 5, 20, 0.65); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border); 
             z-index: 2000; display: flex; align-items: center; justify-content: space-between; 
-            box-shadow: 0 4px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
         }
         .header-brand { display: flex; align-items: center; gap: 12px; }
         .header-logo { 
@@ -146,7 +159,9 @@
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); animation: blink 1.6s infinite alternate; }
         @keyframes blink { 0% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* INTRO BANNER */
+        /* =========================================================
+           INTRO BANNER
+           ========================================================= */
         .intro-banner { text-align: center; margin-bottom: 30px; padding: 24px 15px 10px; animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
         .intro-badge {
             display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 242, 255, 0.08);
@@ -162,141 +177,290 @@
         }
         .intro-banner p { font-size: 1.05rem; color: #b7b0d3; max-width: 680px; margin: 0 auto; line-height: 1.65; font-weight: 600; }
 
-        /* HIGHLIGHTED MAIN OFFICE CARD */
+        /* =========================================================
+           HIGHLIGHTED MAIN OFFICE CARD (GLASS)
+           ========================================================= */
         .main-office-card { 
-            background: linear-gradient(180deg, rgba(0, 242, 255, 0.1) 0%, rgba(12, 6, 26, 0.6) 100%); 
-            border: 1px solid var(--accent-cyan); border-radius: 24px; padding: 35px 22px; text-align: center; margin-bottom: 45px; 
-            box-shadow: 0 10px 40px rgba(0,242,255,0.15), inset 0 0 30px rgba(0,242,255,0.05); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-left: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px; padding: 35px 22px; text-align: center; margin-bottom: 45px; 
+            box-shadow: var(--glass-shadow); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            animation: fadeInDown 0.8s ease backwards; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden;
         }
-        .main-office-card h2 { font-family: var(--font-head); color: white; font-size: clamp(1.2rem, 5vw, 1.6rem); margin-bottom: 8px; font-weight: 900; letter-spacing: 2px; }
+        .main-office-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 18px 45px rgba(0,242,255,0.2), inset 0 0 30px rgba(0,242,255,0.08); 
+            border-color: rgba(0, 242, 255, 0.4);
+        }
+        .main-office-card h2 { font-family: var(--font-head); color: white; font-size: clamp(1.2rem, 5vw, 1.6rem); margin-bottom: 8px; font-weight: 900; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .main-office-card p { color: #c0b9db; font-size: 0.95rem; margin-bottom: 22px; font-weight: 600; }
         
         /* GRID SYSTEM & CATEGORIES */
-        .officer-category { width: 100%; margin-bottom: 40px; }
+        .officer-category { width: 100%; margin-bottom: 50px; }
         .officer-grid { 
-            display: grid; grid-template-columns: 1fr; gap: 24px; 
-            perspective: 1000px;
+            display: grid; grid-template-columns: 1fr; gap: 30px; 
+            perspective: 1200px;
         }
-        @media (min-width: 768px) { .officer-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 800px) { .officer-grid { grid-template-columns: repeat(2, 1fr); } }
+        /* C-Level occupies full width on large screens to act as heroes */
+        @media (min-width: 1080px) { 
+            #gridCLevel { grid-template-columns: repeat(2, 1fr); }
+            #gridDirector, #gridManager { grid-template-columns: repeat(3, 1fr); }
+        }
         
         .section-divider { 
             display: flex; align-items: center; text-align: center; margin: 45px 0 30px; color: #9c91c7; 
-            font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; 
+            font-family: var(--font-head); font-size: 1.2rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; 
         }
         .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15); }
         .section-divider::before { margin-right: 20px; }
         .section-divider::after { margin-left: 20px; }
 
         /* =========================================================
-           ULTIMATE GLASSMORPHISM OFFICER CARDS
+           ULTIMATE GLASSMORPHISM OFFICER CARDS (FULL PROFILE)
            ========================================================= */
         .officer-card { 
-            background: var(--card-base); border-radius: 20px; padding: 28px 24px; 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05); 
-            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-left: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px; 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: var(--glass-shadow); 
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.3s ease; 
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
             will-change: transform; transform-style: preserve-3d;
+            animation: fadeInUp 0.6s ease backwards;
         }
-        .officer-card::before { 
-            content: ''; position: absolute; left: 0; top: 0; width: 6px; height: 100%; 
-            transition: width 0.35s ease, filter 0.35s ease; 
-        }
-        .officer-card:hover::before { width: 10px; filter: brightness(1.3); }
 
-        /* THEMES */
-        .theme-ceo { border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 12px 35px rgba(255,215,0,0.1); }
-        .theme-ceo::before { background: linear-gradient(180deg, #FFE87C, #FFD700, #FF8C00); }
-        .theme-ceo .avatar { border-color: var(--accent-gold); color: var(--accent-gold); box-shadow: 0 4px 20px rgba(255,215,0,0.35); }
-        .theme-ceo .title, .theme-ceo .responsibilities li i, .theme-ceo .copy-icon { color: var(--accent-gold); }
+        .officer-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* 3D Tilt Effect applied via JS */
+        
+        /* Full Size Profile Image Section */
+        .card-profile-header {
+            width: 100%;
+            height: 280px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-profile-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .officer-card:hover .card-profile-header img {
+            transform: scale(1.05);
+        }
+        
+        /* Dynamic Theme Overlay Gradient on Image */
+        .profile-overlay {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to top, rgba(10,5,20,1) 0%, transparent 100%);
+            z-index: 2;
+        }
+
+        /* Name & Title Positioned over Image */
+        .profile-titles {
+            position: absolute;
+            bottom: 15px; left: 20px; right: 20px;
+            z-index: 3;
+            transform: translateZ(30px); /* 3D effect */
+        }
+        .name { 
+            font-family: var(--font-head); font-size: clamp(1.3rem, 4vw, 1.6rem); font-weight: 900; 
+            color: #ffffff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+        }
+        .role-tag { 
+            display: inline-block;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; 
+            padding: 4px 12px; border-radius: 20px;
+            background: rgba(0,0,0,0.6); border: 1px solid;
+            backdrop-filter: blur(10px);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Card Content Area */
+        .card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            z-index: 3;
+            transform: translateZ(20px);
+        }
+
+        .role-brief { 
+            font-size: 0.9rem; color: #ded9f0; line-height: 1.5; margin-bottom: 16px; font-weight: 500; 
+        }
+        
+        .responsibilities { list-style: none; margin-bottom: 20px; padding-left: 2px; flex: 1; }
+        .responsibilities li { font-size: 0.85rem; color: #cbc4e6; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; font-weight: 600; line-height: 1.4; }
+        .responsibilities li i { font-size: 0.75rem; margin-top: 4px; flex-shrink: 0; }
+
+        /* Social Icons & Email Row */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .contact-row:hover { background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.2); }
+        
+        .email-info { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .email-text { font-family: monospace; font-size: 0.85rem; color: #cec7e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: color 0.3s;}
+        .email-text:hover { color: #fff; }
+        .copy-icon { font-size: 1rem; cursor: pointer; color: #cec7e8; transition: 0.2s; }
+        .copy-icon:hover { transform: scale(1.2); color: #fff; }
+
+        .social-icons { display: flex; gap: 10px; flex-shrink: 0; }
+        .social-btn {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 0.9rem; text-decoration: none; transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .contact-btn { 
+            width: 100%; padding: 14px 16px; border-radius: 12px; font-family: var(--font-head); font-size: 0.85rem; font-weight: 900; text-transform: uppercase; text-align: center; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1.2px; border: none; 
+        }
+        .contact-btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+
+        /* =========================================================
+           DYNAMIC THEMES (Applied via JS class)
+           ========================================================= */
+        .theme-ceo:hover { border-color: var(--accent-gold); box-shadow: 0 15px 40px rgba(255,215,0,0.2); }
+        .theme-ceo .role-tag { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .theme-ceo .responsibilities li i, .theme-ceo .copy-icon:hover { color: var(--accent-gold); }
         .theme-ceo .contact-btn { background: linear-gradient(135deg, #FFE87C, #FF8C00); color: #000; }
+        .theme-ceo .social-btn:hover { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255,215,0,0.5);}
 
-        .theme-cto { border-color: rgba(0, 242, 255, 0.35); box-shadow: 0 12px 35px rgba(0,242,255,0.1); }
-        .theme-cto::before { background: linear-gradient(180deg, #00f2ff, #0099ff, #7000ff); }
-        .theme-cto .avatar { border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 4px 20px rgba(0,242,255,0.3); }
-        .theme-cto .title, .theme-cto .responsibilities li i, .theme-cto .copy-icon { color: var(--accent-cyan); }
+        .theme-cto:hover { border-color: var(--accent-cyan); box-shadow: 0 15px 40px rgba(0,242,255,0.2); }
+        .theme-cto .role-tag { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .theme-cto .responsibilities li i, .theme-cto .copy-icon:hover { color: var(--accent-cyan); }
         .theme-cto .contact-btn { background: linear-gradient(135deg, #00f2ff, #0066ff); color: #000; }
+        .theme-cto .social-btn:hover { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,242,255,0.5);}
 
-        .theme-cotco { border-color: rgba(255, 107, 0, 0.35); box-shadow: 0 12px 35px rgba(255,107,0,0.1); }
-        .theme-cotco::before { background: linear-gradient(180deg, #ff9900, #ff6b00, #ff0055); }
-        .theme-cotco .avatar { border-color: var(--accent-orange); color: var(--accent-orange); box-shadow: 0 4px 20px rgba(255,107,0,0.3); }
-        .theme-cotco .title, .theme-cotco .responsibilities li i, .theme-cotco .copy-icon { color: var(--accent-orange); }
+        .theme-cotco:hover { border-color: var(--accent-orange); box-shadow: 0 15px 40px rgba(255,107,0,0.2); }
+        .theme-cotco .role-tag { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .theme-cotco .responsibilities li i, .theme-cotco .copy-icon:hover { color: var(--accent-orange); }
         .theme-cotco .contact-btn { background: linear-gradient(135deg, #ff9900, #ff5400); color: #000; }
+        .theme-cotco .social-btn:hover { background: var(--accent-orange); color: #000; border-color: var(--accent-orange); box-shadow: 0 0 15px rgba(255,107,0,0.5);}
 
-        .theme-cyber { border-color: rgba(0, 255, 136, 0.35); box-shadow: 0 12px 35px rgba(0,255,136,0.1); }
-        .theme-cyber::before { background: linear-gradient(180deg, #00ff88, #00f5d4, #00b4d8); }
-        .theme-cyber .avatar { border-color: var(--accent-emerald); color: var(--accent-emerald); box-shadow: 0 4px 20px rgba(0,255,136,0.3); }
-        .theme-cyber .title, .theme-cyber .responsibilities li i, .theme-cyber .copy-icon { color: var(--accent-emerald); }
+        .theme-cyber:hover { border-color: var(--accent-emerald); box-shadow: 0 15px 40px rgba(0,255,136,0.2); }
+        .theme-cyber .role-tag { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+        .theme-cyber .responsibilities li i, .theme-cyber .copy-icon:hover { color: var(--accent-emerald); }
         .theme-cyber .contact-btn { background: linear-gradient(135deg, #00ff88, #00b4d8); color: #000; }
+        .theme-cyber .social-btn:hover { background: var(--accent-emerald); color: #000; border-color: var(--accent-emerald); box-shadow: 0 0 15px rgba(0,255,136,0.5);}
 
-        .theme-community { border-color: rgba(247, 37, 133, 0.35); box-shadow: 0 12px 35px rgba(247,37,133,0.1); }
-        .theme-community::before { background: linear-gradient(180deg, #f72585, #b5179e, #7209b7); }
-        .theme-community .avatar { border-color: var(--accent-magenta); color: var(--accent-magenta); box-shadow: 0 4px 20px rgba(247,37,133,0.3); }
-        .theme-community .title, .theme-community .responsibilities li i, .theme-community .copy-icon { color: var(--accent-magenta); }
+        .theme-community:hover { border-color: var(--accent-magenta); box-shadow: 0 15px 40px rgba(247,37,133,0.2); }
+        .theme-community .role-tag { border-color: var(--accent-magenta); color: var(--accent-magenta); }
+        .theme-community .responsibilities li i, .theme-community .copy-icon:hover { color: var(--accent-magenta); }
         .theme-community .contact-btn { background: linear-gradient(135deg, #f72585, #b5179e); color: #fff; }
+        .theme-community .social-btn:hover { background: var(--accent-magenta); color: #fff; border-color: var(--accent-magenta); box-shadow: 0 0 15px rgba(247,37,133,0.5);}
 
-        .theme-dev { border-color: rgba(189, 0, 255, 0.35); box-shadow: 0 12px 35px rgba(189,0,255,0.1); }
-        .theme-dev::before { background: linear-gradient(180deg, #bd00ff, #7b2cbf, #480ca8); }
-        .theme-dev .avatar { border-color: var(--accent-purple); color: var(--accent-purple); box-shadow: 0 4px 20px rgba(189,0,255,0.3); }
-        .theme-dev .title, .theme-dev .responsibilities li i, .theme-dev .copy-icon { color: #d070ff; }
+        .theme-dev:hover { border-color: var(--accent-purple); box-shadow: 0 15px 40px rgba(189,0,255,0.2); }
+        .theme-dev .role-tag { border-color: var(--accent-purple); color: #d070ff; }
+        .theme-dev .responsibilities li i, .theme-dev .copy-icon:hover { color: var(--accent-purple); }
         .theme-dev .contact-btn { background: linear-gradient(135deg, #bd00ff, #7b2cbf); color: #fff; }
+        .theme-dev .social-btn:hover { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(189,0,255,0.5);}
 
-        .theme-hr { border-color: rgba(0, 245, 212, 0.35); box-shadow: 0 12px 35px rgba(0,245,212,0.1); }
-        .theme-hr::before { background: linear-gradient(180deg, #00f5d4, #00bbf9, #4361ee); }
-        .theme-hr .avatar { border-color: var(--accent-teal); color: var(--accent-teal); box-shadow: 0 4px 20px rgba(0,245,212,0.3); }
-        .theme-hr .title, .theme-hr .responsibilities li i, .theme-hr .copy-icon { color: var(--accent-teal); }
+        .theme-hr:hover { border-color: var(--accent-teal); box-shadow: 0 15px 40px rgba(0,245,212,0.2); }
+        .theme-hr .role-tag { border-color: var(--accent-teal); color: var(--accent-teal); }
+        .theme-hr .responsibilities li i, .theme-hr .copy-icon:hover { color: var(--accent-teal); }
         .theme-hr .contact-btn { background: linear-gradient(135deg, #00f5d4, #00bbf9); color: #000; }
+        .theme-hr .social-btn:hover { background: var(--accent-teal); color: #000; border-color: var(--accent-teal); box-shadow: 0 0 15px rgba(0,245,212,0.5);}
 
-        .theme-media { border-color: rgba(255, 0, 85, 0.35); box-shadow: 0 12px 35px rgba(255,0,85,0.1); }
-        .theme-media::before { background: linear-gradient(180deg, #ff0055, #ff5400, #ff9900); }
-        .theme-media .avatar { border-color: var(--accent-crimson); color: var(--accent-crimson); box-shadow: 0 4px 20px rgba(255,0,85,0.3); }
-        .theme-media .title, .theme-media .responsibilities li i, .theme-media .copy-icon { color: #ff4d88; }
+        .theme-media:hover { border-color: var(--accent-crimson); box-shadow: 0 15px 40px rgba(255,0,85,0.2); }
+        .theme-media .role-tag { border-color: var(--accent-crimson); color: var(--accent-crimson); }
+        .theme-media .responsibilities li i, .theme-media .copy-icon:hover { color: var(--accent-crimson); }
         .theme-media .contact-btn { background: linear-gradient(135deg, #ff0055, #ff5400); color: #fff; }
+        .theme-media .social-btn:hover { background: var(--accent-crimson); color: #fff; border-color: var(--accent-crimson); box-shadow: 0 0 15px rgba(255,0,85,0.5);}
 
-        /* Card Internals */
-        .card-top { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px; transform: translateZ(20px); }
-        .avatar { width: 72px; height: 72px; border-radius: 20px; border: 2px solid; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.05); }
-        .info { flex: 1; min-width: 0; overflow: hidden; }
-        .name { font-family: var(--font-head); font-size: clamp(1.2rem, 4vw, 1.4rem); font-weight: 900; color: #ffffff; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-        .role-brief { font-size: 0.88rem; color: #ded9f0; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; line-height: 1.6; margin-bottom: 16px; font-weight: 500; transform: translateZ(10px); }
-        .role-brief strong { color: #ffffff; font-weight: 700; }
-
-        .responsibilities { list-style: none; margin-bottom: 20px; padding-left: 2px; transform: translateZ(5px); }
-        .responsibilities li { font-size: 0.9rem; color: #cbc4e6; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; font-weight: 600; line-height: 1.5; }
-        .responsibilities li i { font-size: 0.75rem; margin-top: 5px; flex-shrink: 0; }
-
-        .email-display { background: rgba(0,0,0,0.7); padding: 12px 16px; border-radius: 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease; transform: translateZ(15px); }
-        .email-display:hover { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.9); }
-        .email-text { font-family: monospace; font-size: 0.9rem; color: #cec7e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: all; -webkit-user-select: all; }
-        .copy-icon { font-size: 1.1rem; cursor: pointer; padding: 4px; transition: 0.2s; }
-        .copy-icon:hover { transform: scale(1.3); }
-
-        .contact-btn { width: 100%; padding: 14px 16px; border-radius: 14px; font-family: var(--font-head); font-size: 0.9rem; font-weight: 900; text-transform: uppercase; text-align: center; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1.2px; transform: translateZ(25px); border: none; }
-        .contact-btn:hover { filter: brightness(1.2); transform: translateZ(25px) translateY(-3px); }
+        /* =========================================================
+           ATTRACTIVE DATA FETCH LOADER
+           ========================================================= */
+        #loader-overlay {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 60px 0; gap: 20px;
+        }
+        .loader-ring {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(0, 242, 255, 0.1);
+            border-top: 4px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loader-text {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulseText 1.5s infinite alternate;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; text-shadow: 0 0 10px var(--accent-cyan); } }
 
         /* TOAST NOTIFICATION */
-        #toast { position: fixed; top: 24px; right: 20px; background: rgba(10,5,24,0.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--accent-cyan); color: white; padding: 14px 24px; border-radius: 14px; font-family: var(--font-head); font-weight: 700; transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 8px 35px rgba(0,242,255,0.45); text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+        #toast { 
+            position: fixed; top: 90px; right: 20px; background: rgba(10,5,24,0.96); 
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--accent-cyan); 
+            color: white; padding: 14px 24px; border-radius: 14px; font-family: var(--font-head); font-weight: 700; 
+            transform: translateX(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 9999; box-shadow: 0 8px 35px rgba(0,242,255,0.45); text-transform: uppercase; 
+            display: flex; align-items: center; gap: 12px; 
+        }
         #toast.show { transform: translateX(0); }
 
-        /* BRAND FOOTER */
-        .brand-footer { text-align: center; margin-top: 55px; margin-bottom: 15px; user-select: none; font-size: 0.78rem; color: #9c91c7; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
-        .footer-tournyx { font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.15rem; letter-spacing: 3px; margin-bottom: 6px; text-shadow: 0 0 15px rgba(0,242,255,0.4); }
-        .neon-quva-small { display: inline-block; font-size: 1.8rem; font-weight: 900; color: white; font-family: var(--font-head); letter-spacing: 6px; margin-top: 6px; animation: pulsateQuva 2.5s infinite alternate; }
-        @keyframes pulsateQuva { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 15px var(--accent-cyan); } 100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple), 0 0 30px var(--accent-magenta); } }
+        /* BRAND FOOTER CREDITS */
+        .brand-footer { 
+            text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
+            user-select: none; font-size: 0.85rem; color: #9c91c7; font-weight: 600; letter-spacing: 1px;
+            position: relative; z-index: 10;
+        }
+        .brand-footer .footer-tournyx {
+            font-family: var(--font-head); color: #ffffff; font-weight: 900; font-size: 1.3rem; letter-spacing: 3px; 
+            margin-bottom: 12px; text-shadow: 0 0 15px rgba(0,242,255,0.4); text-transform: uppercase;
+        }
+        .brand-footer p { margin-bottom: 6px; }
+        .neon-quva-small { 
+            display: inline-block; font-size: 1.1rem; font-weight: 900; color: white; font-family: var(--font-head); 
+            letter-spacing: 4px; margin-top: 8px; animation: pulsateQuva 2.5s infinite alternate; text-transform: uppercase;
+        }
+        @keyframes pulsateQuva { 
+            0% { text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px var(--accent-cyan); } 
+            100% { text-shadow: 0 0 3px rgba(255,255,255,0.4), 0 0 15px var(--accent-purple); } 
+        }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Loader */
-        #loader { text-align: center; padding: 40px; color: var(--accent-cyan); font-family: var(--font-head); letter-spacing: 2px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
-    <div class="ambient-glow-1"></div>
-    <div class="ambient-glow-2"></div>
+    <div class="page-background"></div>
+    <div class="ambient-orb-1"></div>
+    <div class="ambient-orb-2"></div>
     <canvas id="particles-canvas"></canvas>
     
     <div id="toast">
@@ -304,10 +468,11 @@
         <span id="toastMsg">Email Copied to Clipboard</span>
     </div>
 
+    <!-- STANDALONE TOP HEADER (GLASSMORPHISM) -->
     <header class="top-header" role="banner">
         <div class="header-brand">
             <img src="https://tournyx.in/favicon.png" class="header-logo" alt="Tournyx Esports" onclick="window.location.href='https://tournyx.in'">
-            <h1 class="page-title">Officers Command Directory</h1>
+            <h1 class="page-title">Officers Directory</h1>
         </div>
         <div class="live-status">
             <span class="status-dot"></span> Active Roster
@@ -316,31 +481,43 @@
 
     <main class="container" role="main">
         
+        <!-- INTRO HERO BANNER -->
         <section class="intro-banner" aria-label="Introduction">
             <div class="intro-badge"><i class="fa-solid fa-shield-halved"></i> Verified Organization Leadership</div>
-            <h1>Tournyx Esports Officers</h1>
+            <h1>Global Support Command</h1>
             <p>The official executive directory of Tournyx Esports. Detailed routing for our leadership council, software development managers, operational heads, cybersecurity leads, and media directors.</p>
         </section>
 
-        <section class="main-office-card" aria-label="Main Corporate Office">
+        <!-- HIGHLIGHTED MAIN OFFICE HQ (GLASS) -->
+        <section class="main-office-card" aria-label="Main Corporate Office" itemscope itemtype="https://schema.org/Organization">
             <h2><i class="fa-solid fa-building"></i> TOURNYX MAIN OFFICE</h2>
             <p>Corporate relations, platform sponsorships, major esports league licensing, and central headquarters support.</p>
-            <div class="email-display" style="max-width: 440px; margin: 0 auto 16px auto; justify-content: center; gap: 16px; border-color: rgba(0,242,255,0.4);">
-                <div class="email-text" style="font-size: 0.96rem; color: var(--accent-cyan);">contact@tournyx.in</div>
-                <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('contact@tournyx.in')" title="Copy Email"></i>
+            
+            <div class="contact-row" style="max-width: 440px; margin: 0 auto 16px auto; border-color: rgba(0,242,255,0.4); background: rgba(0,0,0,0.6);">
+                <div class="email-info" onclick="copyEmail('contact@tournyx.in')">
+                    <i class="fa-solid fa-envelope" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                    <div class="email-text" itemprop="email" style="font-size: 1.05rem; color: var(--accent-cyan);">contact@tournyx.in</div>
+                </div>
+                <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('contact@tournyx.in')" title="Copy Email" style="color: var(--accent-cyan);"></i>
             </div>
-            <a href="mailto:contact@tournyx.in?subject=Tournyx%20General%20Inquiry" class="contact-btn" style="max-width: 440px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; border: none; box-shadow: 0 6px 25px rgba(0,242,255,0.4);">
-                <i class="fa-solid fa-envelope"></i> Email Main Office HQ
+            
+            <a href="mailto:contact@tournyx.in?subject=Tournyx%20General%20Inquiry" class="contact-btn" style="max-width: 440px; margin: 0 auto; background: linear-gradient(135deg, #7b2cbf, #bd00ff, #00f2ff); color: white; box-shadow: 0 6px 25px rgba(0,242,255,0.4);">
+                <i class="fa-solid fa-paper-plane"></i> Email Main Office HQ
             </a>
         </section>
 
-        <!-- DYNAMIC HIERARCHY GRIDS -->
-        <div id="loader"><i class="fa-solid fa-circle-notch fa-spin"></i> SYNCING LIVE ROSTER...</div>
+        <!-- ATTRACTIVE LOADER -->
+        <div id="loader-overlay">
+            <div class="loader-ring"></div>
+            <div class="loader-text">Syncing Live Roster Matrix...</div>
+        </div>
         
+        <!-- DYNAMIC HIERARCHY GRIDS -->
         <div id="rosterContainer" style="display: none;">
+            
             <!-- C-Level Executives -->
             <div class="officer-category">
-                <div class="section-divider">C-LEVEL EXECUTIVES</div>
+                <div class="section-divider">EXECUTIVE COMMAND (C-LEVEL)</div>
                 <div class="officer-grid" id="gridCLevel"></div>
             </div>
 
@@ -355,33 +532,46 @@
                 <div class="section-divider">MANAGER LEVEL</div>
                 <div class="officer-grid" id="gridManager"></div>
             </div>
+
         </div>
 
+        <!-- BRAND FOOTER -->
         <footer class="brand-footer" role="contentinfo">
             <div class="footer-tournyx">TOURNYX ESPORTS</div>
+            <p>© 2026 Tournyx Esports India. All rights reserved.</p>
+            <p>Official Leadership & Global Support Matrix</p>
             POWERED BY <br>
-            <span class="neon-quva-small">QUVA</span>
+            <span class="neon-quva-small">QUVA TECHNOLOGIES</span>
         </footer>
         
     </main>
 
+    <!-- ==========================================
+         JAVASCRIPT ENGINE (SUPABASE + 3D GLASS FX)
+         ========================================== -->
     <script>
-        /* ==========================================
-           1. SUPABASE INTEGRATION & FALLBACK DATA
-           ========================================== */
         const SUPABASE_URL = 'https://zuatrwfrejnwfnldqqgy.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1YXRyd2ZyZWpud2ZubGRxcWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDE5NjEsImV4cCI6MjA5OTYxNzk2MX0.zcJO4Es-DnuUKR-L_Eu44xIwmz4PxsFVCgs-t492t1g';
         
+        // 1. Database Parsing Logic & Fallback
         const fallbackOfficers = [
-            { name: 'Thilakeshwaran', role_title: 'Founder & Chief Executive Officer (CEO)', hierarchy_level: 'C_LEVEL', email: 'ceo@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTLzlaOmFzIsZyxOhLf3HvvQqZkJRJffYoV0jXlfJsZ1MgAFwL92o0GbQDRGndDc14GgysG9VTWf88gq4LdAvEHVX6AtAOqxVLFNihjy6BrASr_X6nX2ISO4_d6a3Swma6kezceKbq5m7rJVtr7mhRaB82zr7LTnIPdKeouxh-oraZsv_kLOB7TXvtwuc/s1080/1000054934.jpg', theme_class: 'theme-ceo', role_brief: 'Drives the overarching executive vision, venture investments, national esports league alignments, and enterprise growth strategies.', responsibilities: ['Corporate Investments, Major Esports Partnerships', 'Executive Leadership & B2B Infrastructure Integration'] },
-            { name: 'Chief Technology Officer', role_title: 'Chief Technology Officer (CTO)', hierarchy_level: 'C_LEVEL', email: 'cto@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron', theme_class: 'theme-cto', role_brief: 'Commands the full Tournyx cloud gaming platform architecture, low-latency match server clusters, automated bracket systems, and API pipelines.', responsibilities: ['API Integrations, Platform Bug Reports, and Tech Infra', 'AI & Game Server Development Leadership'] },
-            { name: 'Shiva Kumar', role_title: 'Chief Operations & Tech Comms Officer (COTCO)', hierarchy_level: 'C_LEVEL', email: 'ops@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Shiva+Kumar&background=ff6b00&color=000&font-family=Orbitron', theme_class: 'theme-cotco', role_brief: 'Supervises daily tournament schedules, match room coordination, instant prize payout distributions, and cross-departmental operations.', responsibilities: ['Esports Event Hosting & Payout Operations', 'Daily Technical Communication & Workflow'] },
-            { name: 'Surya Prakash A', role_title: 'Chief Cybersecurity & AI Operations Lead', hierarchy_level: 'C_LEVEL', email: 'security@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Surya+Prakash&background=00ff88&color=000&font-family=Orbitron', theme_class: 'theme-cyber', role_brief: 'Protects the ecosystem via automated AI fraud detection, competitive anti-cheat monitoring, and user data privacy defenses.', responsibilities: ['Vulnerability Disclosures & Data Privacy', 'Platform Security & Account Recovery Support'] },
-            { name: 'Surya S', role_title: 'Director of Community Outreach & Human Relations', hierarchy_level: 'DIRECTOR', email: 'community@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhe8bXN0D0aLqD9LK5U_4PhUgpNjbXxUh1S3a_D8Ghg6WzJDy9U5h0gfshD9F6-zRxlfNdbMdTH-ZJQTPgIuYV_sKpvzNWe4QCskTuZ_3veM0tntoZ4nkPBwbgWIKXhjw4z9eY_5gOv_-bPVlY9Z-Yfj5yseTmLHq1A11nla8gKYtUt4tQiO_9wsxvv6YE/s1280/1000132230.jpg', theme_class: 'theme-community', role_brief: 'Spearheads player community relations, collegiate esports leagues, influencer collaborations, and public community relations.', responsibilities: ['College Esports Networking & Influencer Marketing', 'Community Expansion & Public Relations'] },
-            { name: 'Rajesh Kumar A', role_title: 'Chief Software Development & Training Manager', hierarchy_level: 'MANAGER', email: 'dev@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=bd00ff&color=fff&font-family=Orbitron', theme_class: 'theme-dev', role_brief: 'Heads full-stack codebase maintenance, tournament client feature releases, engineer onboarding, and software developer mentorship.', responsibilities: ['Open Source Contributions & Developer Hiring', 'Full Stack Architecture Guidance'] },
-            { name: 'Tharun Kumar G', role_title: 'HR / Team Operations Manager & Support Supervisor', hierarchy_level: 'MANAGER', email: 'hr@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Tharun+Kumar&background=00f5d4&color=000&font-family=Orbitron', theme_class: 'theme-hr', role_brief: 'Oversees recruitment pipelines, internal esports staff welfare, team performance metrics, and tier-2 player support escalations.', responsibilities: ['Internship Applications, Recruitment & Workflows', 'Player Support Ticket Escalations'] },
-            { name: 'Umesh Sharma N', role_title: 'Communications & Media Operations Manager', hierarchy_level: 'MANAGER', email: 'media@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Umesh+Sharma&background=ff0055&color=fff&font-family=Orbitron', theme_class: 'theme-media', role_brief: 'Manages live tournament stream broadcasts, official press announcements, YouTube caster sponsorships, and social media communication.', responsibilities: ['Press Releases, Social Media Assets & Sponsorships', 'Tournament Content Coordination'] }
+            { name: 'Thilakeshwaran', role_title: 'Founder & Chief Executive Officer (CEO)', hierarchy_level: 'C_LEVEL', email: 'ceo@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTLzlaOmFzIsZyxOhLf3HvvQqZkJRJffYoV0jXlfJsZ1MgAFwL92o0GbQDRGndDc14GgysG9VTWf88gq4LdAvEHVX6AtAOqxVLFNihjy6BrASr_X6nX2ISO4_d6a3Swma6kezceKbq5m7rJVtr7mhRaB82zr7LTnIPdKeouxh-oraZsv_kLOB7TXvtwuc/s1080/1000054934.jpg', theme_class: 'theme-ceo', role_brief: 'Drives the overarching executive vision, venture investments, national esports league alignments, and enterprise growth strategies.', responsibilities: ['Corporate Investments, Major Esports Partnerships', 'Executive Leadership & B2B Infrastructure Integration'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Chief Technology Officer', role_title: 'Chief Technology Officer (CTO)', hierarchy_level: 'C_LEVEL', email: 'cto@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=CTO&background=00f2ff&color=000&font-family=Orbitron', theme_class: 'theme-cto', role_brief: 'Commands the full Tournyx cloud gaming platform architecture, low-latency match server clusters, automated bracket systems, and API pipelines.', responsibilities: ['API Integrations, Platform Bug Reports, and Tech Infra', 'AI & Game Server Development Leadership'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Shiva Kumar', role_title: 'Chief Operations & Tech Comms Officer (COTCO)', hierarchy_level: 'C_LEVEL', email: 'ops@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Shiva+Kumar&background=ff6b00&color=000&font-family=Orbitron', theme_class: 'theme-cotco', role_brief: 'Supervises daily tournament schedules, match room coordination, instant prize payout distributions, and cross-departmental operations.', responsibilities: ['Esports Event Hosting & Payout Operations', 'Daily Technical Communication & Workflow'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Surya Prakash A', role_title: 'Chief Cybersecurity & AI Operations Lead', hierarchy_level: 'C_LEVEL', email: 'security@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Surya+Prakash&background=00ff88&color=000&font-family=Orbitron', theme_class: 'theme-cyber', role_brief: 'Protects the ecosystem via automated AI fraud detection, competitive anti-cheat monitoring, and user data privacy defenses.', responsibilities: ['Vulnerability Disclosures & Data Privacy', 'Platform Security & Account Recovery Support'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Surya S', role_title: 'Director of Community Outreach & Human Relations', hierarchy_level: 'DIRECTOR', email: 'community@tournyx.in', image_url: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhe8bXN0D0aLqD9LK5U_4PhUgpNjbXxUh1S3a_D8Ghg6WzJDy9U5h0gfshD9F6-zRxlfNdbMdTH-ZJQTPgIuYV_sKpvzNWe4QCskTuZ_3veM0tntoZ4nkPBwbgWIKXhjw4z9eY_5gOv_-bPVlY9Z-Yfj5yseTmLHq1A11nla8gKYtUt4tQiO_9wsxvv6YE/s1280/1000132230.jpg', theme_class: 'theme-community', role_brief: 'Spearheads player community relations, collegiate esports leagues, influencer collaborations, and public community relations.', responsibilities: ['College Esports Networking & Influencer Marketing', 'Community Expansion & Public Relations'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Rajesh Kumar A', role_title: 'Chief Software Development & Training Manager', hierarchy_level: 'C_LEVEL', email: 'dev@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Rajesh+Kumar&background=bd00ff&color=fff&font-family=Orbitron', theme_class: 'theme-dev', role_brief: 'Heads full-stack codebase maintenance, tournament client feature releases, engineer onboarding, and software developer mentorship.', responsibilities: ['Open Source Contributions & Developer Hiring', 'Full Stack Architecture Guidance'], linkedin: 'https://www.linkedin.com/in/rajesh-kumar-a-9991593a9', twitter: 'https://x.com/RajeshKumaxnlf', instagram: 'https://www.instagram.com/dev.tournyxesports' },
+            { name: 'Tharun Kumar G', role_title: 'HR / Team Operations Manager & Support Supervisor', hierarchy_level: 'MANAGER', email: 'hr@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Tharun+Kumar&background=00f5d4&color=000&font-family=Orbitron', theme_class: 'theme-hr', role_brief: 'Oversees recruitment pipelines, internal esports staff welfare, team performance metrics, and tier-2 player support escalations.', responsibilities: ['Internship Applications, Recruitment & Workflows', 'Player Support Ticket Escalations'], linkedin: '#', twitter: '#', instagram: '#' },
+            { name: 'Umesh Sharma N', role_title: 'Communications & Media Operations Manager', hierarchy_level: 'MANAGER', email: 'media@tournyx.in', image_url: 'https://ui-avatars.com/api/?name=Umesh+Sharma&background=ff0055&color=fff&font-family=Orbitron', theme_class: 'theme-media', role_brief: 'Manages live tournament stream broadcasts, official press announcements, YouTube caster sponsorships, and social media communication.', responsibilities: ['Press Releases, Social Media Assets & Sponsorships', 'Tournament Content Coordination'], linkedin: 'https://www.linkedin.com/in/umesh-sharma-153543417', twitter: 'https://x.com/Umeshsharma9898', instagram: 'https://www.instagram.com/med.tournyxesports' }
         ];
+
+        // Ensure "Chief" titles are routed to C-Level
+        function enforceHierarchyLogic(officer) {
+            if (officer.role_title.toLowerCase().includes('chief')) {
+                officer.hierarchy_level = 'C_LEVEL';
+            }
+            return officer;
+        }
 
         async function fetchOfficers() {
             try {
@@ -390,39 +580,59 @@
                 });
                 if (!response.ok) throw new Error("Network Error");
                 const data = await response.json();
-                renderOfficers(data.length > 0 ? data : fallbackOfficers);
+                renderOfficers(data.length > 0 ? data.map(enforceHierarchyLogic) : fallbackOfficers.map(enforceHierarchyLogic));
             } catch (err) {
                 console.warn("Supabase fetch failed, loading local fallback matrix...", err);
-                renderOfficers(fallbackOfficers);
+                renderOfficers(fallbackOfficers.map(enforceHierarchyLogic));
             }
         }
 
+        // 2. Full Glassmorphism Card Generation
         function createCardHTML(officer) {
             const respList = (Array.isArray(officer.responsibilities) ? officer.responsibilities : JSON.parse(officer.responsibilities || '[]'))
-                .map(r => `<li><i class="fa-solid fa-diamond"></i> ${r}</li>`).join('');
+                .map(r => `<li><i class="fa-solid fa-diamond"></i> <span>${r}</span></li>`).join('');
+
+            // Social Media Buttons logic
+            const linkedinHTML = officer.linkedin && officer.linkedin !== '#' ? `<a href="${officer.linkedin}" target="_blank" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>` : '';
+            const twitterHTML = officer.twitter && officer.twitter !== '#' ? `<a href="${officer.twitter}" target="_blank" class="social-btn"><i class="fa-brands fa-x-twitter"></i></a>` : '';
+            const instaHTML = officer.instagram && officer.instagram !== '#' ? `<a href="${officer.instagram}" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>` : '';
 
             return `
             <article class="officer-card ${officer.theme_class}" data-tilt>
-                <div class="card-top">
-                    <img src="${officer.image_url}" class="avatar" alt="${officer.name}" onerror="this.src='https://tournyx.in/favicon.png'">
-                    <div class="info">
+                <div class="card-profile-header">
+                    <img src="${officer.image_url}" alt="${officer.name}" onerror="this.src='https://tournyx.in/favicon.png'">
+                    <div class="profile-overlay"></div>
+                    <div class="profile-titles">
                         <div class="name">${officer.name}</div>
-                        <div class="title">${officer.role_title}</div>
+                        <div class="role-tag">${officer.role_title}</div>
                     </div>
                 </div>
-                <div class="role-brief">
-                    <strong>Tournyx Role Brief:</strong> ${officer.role_brief}
+                
+                <div class="card-content">
+                    <div class="role-brief">
+                        <strong>Tournyx Brief:</strong> ${officer.role_brief}
+                    </div>
+                    
+                    <ul class="responsibilities">
+                        ${respList}
+                    </ul>
+                    
+                    <div class="contact-row">
+                        <div class="email-info" onclick="copyEmail('${officer.email}')">
+                            <div class="email-text" title="${officer.email}">${officer.email}</div>
+                        </div>
+                        <div class="social-icons">
+                            <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('${officer.email}')" title="Copy Email"></i>
+                            ${linkedinHTML}
+                            ${twitterHTML}
+                            ${instaHTML}
+                        </div>
+                    </div>
+                    
+                    <a href="mailto:${officer.email}" class="contact-btn">
+                        <i class="fa-solid fa-paper-plane"></i> Contact Direct
+                    </a>
                 </div>
-                <ul class="responsibilities">
-                    ${respList}
-                </ul>
-                <div class="email-display">
-                    <div class="email-text">${officer.email}</div>
-                    <i class="fa-regular fa-copy copy-icon" onclick="copyEmail('${officer.email}')" title="Copy Email"></i>
-                </div>
-                <a href="mailto:${officer.email}" class="contact-btn">
-                    <i class="fa-solid fa-envelope"></i> Contact Direct
-                </a>
             </article>`;
         }
 
@@ -438,15 +648,20 @@
                 else if (off.hierarchy_level === 'MANAGER') gridManager.innerHTML += card;
             });
 
-            document.getElementById('loader').style.display = 'none';
+            // Hide empty categories
+            if(gridCLevel.innerHTML === '') gridCLevel.parentElement.style.display = 'none';
+            if(gridDirector.innerHTML === '') gridDirector.parentElement.style.display = 'none';
+            if(gridManager.innerHTML === '') gridManager.parentElement.style.display = 'none';
+
+            document.getElementById('loader-overlay').style.display = 'none';
             document.getElementById('rosterContainer').style.display = 'block';
-            init3DTilt(); // Initialize 3D interaction after DOM injection
+            init3DTilt(); 
         }
 
         window.addEventListener('DOMContentLoaded', fetchOfficers);
 
         /* ==========================================
-           2. 3D INTERACTIVE TILT ENGINE
+           3. 3D INTERACTIVE TILT ENGINE (GLASS FX)
            ========================================== */
         function init3DTilt() {
             const cards = document.querySelectorAll('.officer-card');
@@ -457,27 +672,27 @@
                     const y = e.clientY - rect.top;
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -10; // Max rotation 10deg
-                    const rotateY = ((x - centerX) / centerX) * 10;
+                    const rotateX = ((y - centerY) / centerY) * -6; // Subtle 3D rotation
+                    const rotateY = ((x - centerX) / centerX) * 6;
                     
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                    card.style.transition = 'none'; // Instant follow
+                    card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    card.style.transition = 'none'; 
                 });
 
                 card.addEventListener('mouseleave', () => {
-                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-                    card.style.transition = 'transform 0.5s ease';
+                    card.style.transform = `perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                    card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 });
             });
         }
 
         /* ==========================================
-           3. INTERACTIVE REPELLING PARTICLE ENGINE
+           4. REPELLING PARTICLE ENGINE
            ========================================== */
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let pArray = [];
-        let mouse = { x: null, y: null, radius: 100 };
+        let mouse = { x: null, y: null, radius: 120 };
 
         window.addEventListener('mousemove', (event) => {
             mouse.x = event.x;
@@ -495,7 +710,7 @@
             constructor() { 
                 this.x = Math.random() * canvas.width; 
                 this.y = Math.random() * canvas.height; 
-                this.s = (Math.random() * 2) + 1; 
+                this.s = (Math.random() * 2) + 0.5; 
                 this.baseX = this.x;
                 this.baseY = this.y;
                 this.density = (Math.random() * 30) + 1;
@@ -503,7 +718,6 @@
                 this.c = colors[Math.floor(Math.random() * colors.length)]; 
             } 
             update() { 
-                // Mouse Repel Logic
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
@@ -520,24 +734,24 @@
                 } else {
                     if (this.x !== this.baseX) {
                         let dx = this.x - this.baseX;
-                        this.x -= dx / 10;
+                        this.x -= dx / 15; // Smooth return
                     }
                     if (this.y !== this.baseY) {
                         let dy = this.y - this.baseY;
-                        this.y -= dy / 10;
+                        this.y -= dy / 15;
                     }
                 }
             } 
             draw() { 
                 ctx.fillStyle = this.c; 
-                ctx.globalAlpha = 0.5; 
+                ctx.globalAlpha = 0.6; 
                 ctx.beginPath(); 
                 ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2); 
                 ctx.fill(); 
             } 
         }
 
-        for (let i = 0; i < 60; i++) pArray.push(new Particle());
+        for (let i = 0; i < 70; i++) pArray.push(new Particle());
 
         function animateParticles() { 
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
@@ -547,7 +761,7 @@
         animateParticles();
 
         /* ==========================================
-           4. UTILITIES (HAPTIC & CLIPBOARD)
+           5. UTILITIES (HAPTIC & CLIPBOARD)
            ========================================== */
         function triggerHaptic() {
             if (navigator.vibrate) navigator.vibrate(28);
