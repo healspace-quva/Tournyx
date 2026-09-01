@@ -1,46 +1,218 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-   
-   <url>
-      <loc>https://tournyx.in/</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>1.0</priority>
-   </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- ==============================================
+         1. PRIMARY HUBS & LANDING PAGES (PRIORITY 1.0)
+         ============================================== -->
+    <url>
+        <loc>https://tournyx.in/</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/home.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- ==============================================
+         2. COMPETITIVE ESPORTS & TOURNAMENTS (0.9 - 0.8)
+         ============================================== -->
+    <url>
+        <loc>https://tournyx.in/tournament.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/matches.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/explore.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/clans.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/leaderboard.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/roster.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/boosttournaments.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- ==============================================
+         3. LEADERSHIP, VERIFICATION & CREDENTIALS (0.9 - 0.7)
+         ============================================== -->
+    <url>
+        <loc>https://tournyx.in/Globe-support.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/certify-vg.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/verify.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- ==============================================
+         4. COMMUNITY, ENGAGEMENT & REWARDS (0.7 - 0.6)
+         ============================================== -->
+    <url>
+        <loc>https://tournyx.in/community.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/giveaway.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/premium.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/tickets.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/redeem.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/refer.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/offer.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- ==============================================
+         5. COMPANY, SUPPORT & LEGAL (0.6 - 0.4)
+         ============================================== -->
+    <url>
+        <loc>https://tournyx.in/about.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/contact.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/support.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/resolve.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/commissions.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/privacy.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <url>
+        <loc>https://tournyx.in/terms.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
 
    <url>
-      <loc>https://tournyx.in/explore.html</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>always</changefreq>
-      <priority>0.9</priority>
-   </url>
+        <loc>https://tournyx.in/dashboard-ui-creator-hub.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
 
-   <url>
-      <loc>https://tournyx.in/matches.html</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>0.8</priority>
-   </url>
-
-   <url>
-      <loc>https://tournyx.in/clans.html</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>0.8</priority>
-   </url>
-
-   <url>
-      <loc>https://tournyx.in/profile.html</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.6</priority>
-   </url>
-
-   <url>
-      <loc>https://tournyx.in/wallet.html</loc>
-      <lastmod>2026-03-12</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.5</priority>
-   </url>
+    <url>
+        <loc>https://tournyx.in/refund.html</loc>
+        <lastmod>2026-09-02</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
 
 </urlset>
