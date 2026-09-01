@@ -1,14 +1,21 @@
 User-agent: *
 Allow: /
 
-# Explicitly allow Google bots to fetch your Favicon
-User-agent: Googlebot
-Allow: /favicon.ico
-Allow: /favicon.png
+# Private Internal Portals & Keys
+Disallow: /admin-certify.html
+Disallow: /signature.html
+Disallow: /TIMS.html
+Disallow: /CScommendportal.html
+Disallow: /organizerportal.html
+Disallow: /dashboard-ui-creator-hub.html
+Disallow: /inrs.html
+Disallow: /Payoutportal*
+Disallow: /apply-core*
+Disallow: /withdraw.html
+Disallow: /settings.html
+Disallow: /notifications.html
+Disallow: /404.html
+Disallow: /maintenance.html
 
-User-agent: Googlebot-Image
-Allow: /favicon.ico
-Allow: /favicon.png
-
-# Point Google directly to your Sitemap
+# Sitemap Directive
 Sitemap: https://tournyx.in/sitemap.xml
